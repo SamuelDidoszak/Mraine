@@ -7,7 +7,6 @@ import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.use_case.map.GetMap
 import com.neutrino.game.domain.use_case.map.MapUseCases
 
-val mapUsecases = MapUseCases(GetMap())
 
 class Level(
     val name: String,
@@ -18,6 +17,8 @@ class Level(
     val sizeX: Int = LevelChunkSize,
     val sizeY: Int = LevelChunkSize,
 ) {
+    val mapUsecases = MapUseCases(this)
+
     val id: Int = "$xIndex-$yIndex-$zIndex".hashCode()
     val textureList: ArrayList<TextureAtlas> = ArrayList()
 
@@ -25,7 +26,7 @@ class Level(
         name = "$name $zIndex",
         xMax = sizeX,
         yMax = sizeY,
-        map = mapUsecases.getMap(this)
+        map = mapUsecases.getMap()
     )
 
     /**

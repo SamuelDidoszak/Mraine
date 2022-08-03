@@ -24,7 +24,7 @@ public class Mraine extends ApplicationAdapter {
 		render = new Render(batch);
 		initialize = new Initialize();
 		extendViewport = new ExtendViewport(800, 800);
-		extendViewport.getCamera().position.set(0, 400, 0);
+		extendViewport.getCamera().position.set(400, 400, 0);
 		input = new GameInput(extendViewport.getCamera());
 		Gdx.input.setInputProcessor(input);
 

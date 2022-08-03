@@ -19,19 +19,21 @@ class DungeonFloor(
     override val description = "The floor of a dungeon. You can walk on it and stuff"
 
     override var textureSrc = "environment/tiles.png"
-    override val textureNames: List<String> = listOf("basicFloor", "basicFloor2", "basicFloorDirty", "basicFloorDirty2")
+    override val textureNames: List<String> = listOf("basicFloor", "basicFloor2", "basicFloorDirty", "basicFloorDirty2", "crossRoadFloor")
     override var texture: TextureRegion = if(textureList.isNotEmpty()) textureList[0] else DefaultTextures[6][5]
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
         val randVal = RandomGenerator.nextInt(0, 100)
         when (randVal) {
-            in 0..40 -> {
+            in 0 until 47 -> {
                 texture = getTexture("basicFloor")
-            } in 41..80 -> {
+            } in 47 until 90 -> {
                 texture = getTexture("basicFloor2")
-            } in 81..90 -> {
+            } in 90 until 94 -> {
+                texture = getTexture("crossRoadFloor")
+            } in 94 until 97 -> {
                 texture = getTexture("basicFloorDirty")
-            } in 91..100 -> {
+            } in 97 until 100 -> {
                 texture = getTexture("basicFloorDirty2")
             }
         }

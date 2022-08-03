@@ -24,7 +24,7 @@ class Initialize {
     }
 
     fun oldStuff() {
-        val texture = Texture("environment/entities.png")
+        val texture = Texture("environment/raw/entities.png")
         println("texture value: $texture")
 
         val atlas = TextureAtlas("environment/tiles.atlas")

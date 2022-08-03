@@ -14,7 +14,7 @@ class Bush(
     override val allowOnTop = true
     override val allowCharacterOnTop = true
 
-    override var textureSrc = "environment/entities.png"
+    override var textureSrc = "environment/raw/entities.png"
     override val textureNames: List<String> = listOf()
     override var texture: TextureRegion = if(textureList.isNotEmpty()) textureList[0] else DefaultTextures[6][5]
 

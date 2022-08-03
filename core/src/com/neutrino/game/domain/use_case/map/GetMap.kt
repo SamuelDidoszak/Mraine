@@ -8,14 +8,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class GetMap (
+    private val level: Level
 ) {
-    operator fun invoke(level: Level): List<List<MutableList<Entity>>> {
-        val map: List<List<MutableList<Entity>>> = List(level.sizeY) {
-            List(level.sizeX) {
-                arrayListOf(DungeonFloor())
-            }
-        }
+    operator fun invoke(): List<List<MutableList<Entity>>> {
+        val map: List<List<MutableList<Entity>>> =
+            // Search for a map with the level.id, else
+            GenerateMap(level)()
 
-        return map.ifEmpty { List(level.sizeY){List(level.sizeX){ ArrayList() }} }
+
+
+        return map
     }
 }

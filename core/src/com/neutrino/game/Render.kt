@@ -21,7 +21,7 @@ class Render (
     val ratAnimation4 = handler.getAnimation(3)
     val ratAnimation5 = handler.getAnimation(4)
 
-    val envHandler = SpriteHandler(Texture("environment/entities.png"))
+    val envHandler = SpriteHandler(Texture("environment/raw/entities.png"))
 
     fun render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)

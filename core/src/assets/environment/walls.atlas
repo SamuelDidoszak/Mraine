@@ -1,0 +1,39 @@
+walls.png
+	size: 512, 16
+	repeat: none
+door
+	bounds: 128, 0, 16, 16
+doorOpen
+	bounds: 240, 0, 16, 16
+sewerHole
+	bounds: 144, 0, 16, 16
+sewerHole2
+	bounds: 16, 0, 16, 16
+sewerHoleLight
+	bounds: 32, 0, 16, 16
+sewerHoleLight2
+	bounds: 256, 0, 16, 16
+sewerHoleVariation
+	bounds: 64, 0, 16, 16
+sewerHoleVariation2
+	bounds: 192, 0, 16, 16
+wall
+	bounds: 96, 0, 16, 16
+wall3
+	bounds: 112, 0, 16, 16
+wallLight
+	bounds: 160, 0, 16, 16
+wallLight2
+	bounds: 48, 0, 16, 16
+wallPillar
+	bounds: 80, 0, 16, 16
+wallPillar2
+	bounds: 272, 0, 16, 16
+wallPillarVariation
+	bounds: 0, 0, 16, 16
+wallPillarVariation2
+	bounds: 208, 0, 16, 16
+wallVariation
+	bounds: 224, 0, 16, 16
+wallVariation3
+	bounds: 176, 0, 16, 16

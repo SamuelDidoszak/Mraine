@@ -1,0 +1,11 @@
+flora.png
+	size: 64, 32
+	repeat: none
+tallGrass
+	bounds: 48, 7, 16, 16
+tallGrass2
+	bounds: 32, 7, 16, 16
+tallGrassHigh
+	bounds: 0, 0, 16, 23
+tallGrassHigh2
+	bounds: 16, 0, 16, 23

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.neutrino.game.domain.model.map.Level
 
 class Render (
     private val batch: SpriteBatch
@@ -35,6 +36,24 @@ class Render (
         for (i in 0 until 48) {
             batch.draw(envHandler.getTexture(i), i*16f, 300f)
         }
+    }
+
+    fun renderLevel(level: Level) {
+        var screenX = 0f
+        var screenY = 448f
+
+        for (y in 0 until level.sizeY) {
+            for (x in 0 until level.sizeX) {
+                for (entity in level.map.map[y][x]) {
+                    batch.draw(entity.texture, screenX, screenY)
+                }
+                screenX += 16
+            }
+            screenY -= 16
+            screenX = 0f
+        }
+
+
     }
 
 }

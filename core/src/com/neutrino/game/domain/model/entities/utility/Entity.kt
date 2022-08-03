@@ -1,6 +1,7 @@
 package com.neutrino.game.domain.model.entities.utility
 
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 
 abstract class Entity (
@@ -10,13 +11,25 @@ abstract class Entity (
     abstract val name: String
     open val description: String? = ""
     abstract var textureSrc: String
-    abstract val textureList: List<TextureRegion>
+    abstract val textureNames: List<String>
+    open var textureList: List<TextureAtlas.AtlasRegion> = listOf()
     abstract var texture: TextureRegion
     abstract val allowOnTop: Boolean
     abstract val allowCharacterOnTop: Boolean
 
+    fun loadTextures(atlas: TextureAtlas) {
+        textureList = buildList {
+            for (name in textureNames) {
+                add(atlas.findRegion(name))
+            } }
+
+    }
 
     abstract fun pickTexture(onMapPosition: OnMapPosition)
+
+    fun getTexture(name: String): TextureAtlas.AtlasRegion {
+        return textureList.find { it.name.toString() == name }!!
+    }
 
     fun checkTile(onMapPosition: OnMapPosition, directionList: List<Int>): Entity? {
         var x = onMapPosition.xPos

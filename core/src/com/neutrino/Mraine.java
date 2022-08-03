@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.neutrino.game.Initialize;
 import com.neutrino.game.Render;
 
@@ -12,12 +13,14 @@ public class Mraine extends ApplicationAdapter {
 	SpriteBatch batch;
 	Render render;
 	Initialize initialize;
+	ExtendViewport viewport;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		render = new Render(batch);
 		initialize = new Initialize();
+		viewport = new ExtendViewport(500, 500);
 
 		initialize.initialize();
 
@@ -27,7 +30,7 @@ public class Mraine extends ApplicationAdapter {
 	public void render () {
 		ScreenUtils.clear(0, 0, 0, 0);
 		batch.begin();
-		render.render();
+		render.renderLevel(initialize.getLevel());
 		batch.end();
 	}
 	

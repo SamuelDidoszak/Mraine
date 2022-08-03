@@ -40,7 +40,7 @@ class Render (
 
     fun renderLevel(level: Level) {
         var screenX = 0f
-        var screenY = 448f
+        var screenY = 800f
 
         for (y in 0 until level.sizeY) {
             for (x in 0 until level.sizeX) {

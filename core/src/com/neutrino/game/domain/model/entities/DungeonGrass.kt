@@ -30,23 +30,12 @@ class DungeonGrass(
     override val burningTime: Float = 1f
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
-        val randVal = RandomGenerator.nextInt(0, 100)
-        if (!isBurnt) {
-            when (randVal) {
-                in 0 until 50 -> {
-                    texture = getTexture("basicFloorGrass")
-                } in 50 until 100 -> {
-                    texture = getTexture("basicFloorGrass2")
-                }
-            }
+        val randVal = RandomGenerator.nextFloat() * 100
+        val textureName = if (!isBurnt) {
+            getTextureFromEqualRange(randVal, until = 100f, textures = textureNames.subList(0, 2))
         } else {
-            when (randVal) {
-                in 0 until 50 -> {
-                    texture = getTexture("basicFloorGrassBurnt")
-                } in 50 until 100 -> {
-                    texture = getTexture("basicFloorGrassBurnt2")
-                }
-            }
-        }
+            getTextureFromEqualRange(randVal, until = 100f, textures = textureNames.subList(2, 4))
+        } ?: textureNames[0]
+        texture = getTexture(textureName)
     }
 }

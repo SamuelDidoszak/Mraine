@@ -19,7 +19,6 @@ class Bush(
     override var texture: TextureRegion = if(textureList.isNotEmpty()) textureList[0] else DefaultTextures[6][5]
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
-        if (checkTile(onMapPosition, listOf(2, 4)) == null)
-            texture = textureList[1]
+
     }
 }

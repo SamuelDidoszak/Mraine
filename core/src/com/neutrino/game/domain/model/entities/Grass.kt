@@ -30,24 +30,14 @@ class Grass(
     override val burningTime: Float = 1f
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
-        val randVal = RandomGenerator.nextInt(0, 100)
-        if (!isBurnt) {
-            when (randVal) {
-                in 0 until 44 -> {
-                    texture = getTexture("tallGrass")
-                }
-                in 44 until 88 -> {
-                    texture = getTexture("tallGrass2")
-                }
-                in 88 until 94 -> {
-                    texture = getTexture("tallGrassHigh")
-                }
-                in 94 until 100 -> {
-                    texture = getTexture("tallGrassHigh2")
-                }
-            }
+        val randVal = RandomGenerator.nextFloat() * 100
+        val textureName = if (!isBurnt) {
+            getTextureFromEqualRange(randVal, until = 88f, textures = textureNames.subList(0, 2)) ?:
+            getTextureFromEqualRange(randVal, 88f, until = 100f, textures = textureNames.subList(2, 4))
         } else {
-            println("TOO BAD!!")
-        }
+            // Not yet implemented, providing a default value
+            textureNames[0]
+        } ?: textureNames[0]
+        texture = getTexture(textureName)
     }
 }

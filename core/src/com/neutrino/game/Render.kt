@@ -38,9 +38,9 @@ class Render (
         }
     }
 
-    fun renderLevel(level: Level) {
-        var screenX = 0f
-        var screenY = 800f
+    fun renderLevel(level: Level, startXPosition: Float, startYPosition: Float) {
+        var screenX = startXPosition
+        var screenY = startYPosition
 
         for (y in 0 until level.sizeY) {
             for (x in 0 until level.sizeX) {

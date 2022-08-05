@@ -27,46 +27,22 @@ abstract class Entity (
 
     abstract fun pickTexture(onMapPosition: OnMapPosition)
 
-    fun getTexture(name: String): TextureAtlas.AtlasRegion {
-        return textureList.find { it.name.toString() == name }!!
-    }
-
-    fun checkTile(onMapPosition: OnMapPosition, directionList: List<Int>): Entity? {
-        var x = onMapPosition.xPos
-        var y = onMapPosition.yPos
-
-        for (i in directionList) {
-            when(i) {
-                1 -> {
-                    x -= 1
-                    y += 1
-                } 2 -> {
-                    y += 1
-                } 3 -> {
-                    x += 1
-                    y += 1
-                } 4 -> {
-                    x -= 1
-                } 5 -> {
-                    // the same tile
-                } 6 -> {
-                    x += 1
-                } 7 -> {
-                    x -= 1
-                    y -= 1
-                } 8 -> {
-                    y -= 1
-                } 9 -> {
-                    x += 1
-                    y -= 1
-                }
-            }
-        }
-        if(y >= 0 && y < onMapPosition.map.size) {
-            if(x >= 0 && x < onMapPosition.map[y].size) {
-                return onMapPosition.map[y][x][0]
-            }
+    /**
+     * Picks one texture name from provided with and equal probability
+     * Returns null if $to value was higher than value
+     */
+    fun getTextureFromEqualRange(randomValue: Float, from: Float = 0f, until: Float, textures: List<String>, weights: List<Float> = listOf()): String? {
+        val increment = (until - from) / textures.size
+        var max = from + increment
+        for (texture in textures) {
+            if (randomValue < max)
+                return texture
+            max += increment
         }
         return null
+    }
+
+    fun getTexture(name: String): TextureAtlas.AtlasRegion {
+        return textureList.find { it.name.toString() == name }!!
     }
 }

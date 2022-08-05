@@ -3,6 +3,7 @@ package com.neutrino.game.domain.use_case.map
 import com.neutrino.game.RandomGenerator
 import com.neutrino.game.domain.model.entities.DungeonFloor
 import com.neutrino.game.domain.model.entities.DungeonGrass
+import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.Grass
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.map.Level
@@ -23,6 +24,7 @@ class GenerateMap(
      * Generates the map
      */
     operator fun invoke(): List<List<MutableList<Entity>>> {
+        addEntities(DungeonWall().javaClass, 0.35f)
         addEntities(DungeonFloor().javaClass, 1f)
         addEntities(DungeonGrass().javaClass, 0.3f)
         addEntities(Grass().javaClass, 0.3f, listOf(DungeonGrass().javaClass))
@@ -34,14 +36,28 @@ class GenerateMap(
      * Adds entities to the map with a certain probability
      * Supports restrictions, that allow generation only if one of required entities exists underneath
      */
-    private fun addEntities(entity: Class<Entity>, probability: Float, requiredUnderneath: List<Class<Entity>> = listOf()) {
+    private fun addEntities(entity: Class<Entity>, probability: Float, requiredUnderneath: List<Class<Entity>> = listOf(), excludedUnderneath: List<Class<Entity>> = listOf()) {
         for (y in 0 until level.sizeY) {
             for (x in 0 until level.sizeX) {
                 var allowGeneration = true
+                if (map[y][x].isNotEmpty() && !map[y][x][0].allowOnTop)
+                    allowGeneration = false
+
                 if (requiredUnderneath.isNotEmpty()) {
                     allowGeneration = false
                     for (mapEntity in map[y][x]) {
-                        if (!mapEntity.allowOnTop)
+                        if (!mapEntity.allowOnTop) {
+                            allowGeneration = false
+                            break
+                        }
+                        var excluded = false
+                        for (excludedEntity in excludedUnderneath) {
+                            if (mapEntity.javaClass == excludedEntity) {
+                                excluded = true
+                                break
+                            }
+                        }
+                        if (excluded)
                             break
                         for (requiredEntity in requiredUnderneath) {
                             if (mapEntity.javaClass == requiredEntity) {

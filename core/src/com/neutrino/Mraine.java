@@ -17,7 +17,9 @@ public class Mraine extends ApplicationAdapter {
 	Initialize initialize;
 	ExtendViewport extendViewport;
 	GameInput input;
-	
+	Float startXPosition = 0f;
+	Float startYPosition = 800f - 16;
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -28,9 +30,11 @@ public class Mraine extends ApplicationAdapter {
 		input = new GameInput(extendViewport.getCamera());
 		Gdx.input.setInputProcessor(input);
 
-
-
 		initialize.initialize();
+		input.setLevel(initialize.getLevel());
+		input.setStartXPosition(startXPosition);
+		input.setStartXPosition(startYPosition);
+		extendViewport.getCamera().position.set((startXPosition + initialize.getLevel().getSizeX()) / 2, (startYPosition + initialize.getLevel().getSizeY()) / 2, 0);
 
 	}
 
@@ -41,7 +45,7 @@ public class Mraine extends ApplicationAdapter {
 		batch.setProjectionMatrix(extendViewport.getCamera().combined);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		render.renderLevel(initialize.getLevel());
+		render.renderLevel(initialize.getLevel(), startXPosition, startYPosition);
 //		render.render();
 		batch.end();
 

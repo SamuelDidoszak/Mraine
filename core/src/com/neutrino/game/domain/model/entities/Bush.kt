@@ -1,7 +1,6 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.DefaultTextures
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
@@ -16,7 +15,7 @@ class Bush(
 
     override var textureSrc = "environment/raw/entities.png"
     override val textureNames: List<String> = listOf()
-    override var texture: TextureRegion = if(textureList.isNotEmpty()) textureList[0] else DefaultTextures[6][5]
+    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
 

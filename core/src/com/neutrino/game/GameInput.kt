@@ -3,7 +3,6 @@ package com.neutrino.game
 import com.badlogic.gdx.*
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.neutrino.game.domain.model.map.Level
 
@@ -32,7 +31,7 @@ class GameInput(
 
         var entities: String = ""
         for (entity in level!!.map.map[tileY][tileX])
-            entities += entity.name + ": texture= " + entity.texture.toString() + "\n"
+            entities += entity.name + ": texture= " + entity.texture.toString() + " onTop=" + entity.allowCharacterOnTop + "\n"
         println("$tileX, $tileY")
 
 //        println("X: " + touch.x + " Y: " + touch.y)

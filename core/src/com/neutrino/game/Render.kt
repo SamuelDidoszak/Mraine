@@ -3,10 +3,10 @@ package com.neutrino.game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Animation
-import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.Player.textureSrc
 import com.neutrino.game.domain.model.map.Level
 
 class Render (
@@ -53,7 +53,19 @@ class Render (
             screenX = 0f
         }
 
+        batch.draw(Player.texture, Player.xPos * 16f + startXPosition, startYPosition - Player.yPos * 16f)
+    }
 
+    fun addAnimations() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        stateTime += Gdx.graphics.deltaTime
+
+        Player.setFrame(stateTime)
+
+    }
+
+    fun loadAdditionalTextures() {
+        Player.loadTextures(TextureAtlas(textureSrc.substring(0, textureSrc.lastIndexOf(".")) + ".atlas"))
     }
 
 }

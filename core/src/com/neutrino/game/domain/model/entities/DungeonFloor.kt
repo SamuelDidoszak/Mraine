@@ -1,14 +1,10 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.DefaultTextures
 import com.neutrino.game.RandomGenerator
-import com.neutrino.game.Seed
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
-import java.util.*
-import kotlin.random.Random
 
 class DungeonFloor(
 ) : Entity() {
@@ -20,7 +16,7 @@ class DungeonFloor(
 
     override var textureSrc = "environment/tiles.png"
     override val textureNames: List<String> = listOf("basicFloor", "basicFloor2", "basicFloorDirty", "basicFloorDirty2", "crossRoadFloor")
-    override var texture: TextureRegion = if(textureList.isNotEmpty()) textureList[0] else DefaultTextures[6][5]
+    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
         val randVal = RandomGenerator.nextFloat() * 100

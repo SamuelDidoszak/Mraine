@@ -10,6 +10,9 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.neutrino.game.GameInput;
 import com.neutrino.game.Initialize;
 import com.neutrino.game.Render;
+import com.neutrino.game.domain.model.characters.Player;
+
+import java.util.Random;
 
 public class Mraine extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -19,13 +22,14 @@ public class Mraine extends ApplicationAdapter {
 	GameInput input;
 	Float startXPosition = 0f;
 	Float startYPosition = 800f - 16;
+	Player player;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		render = new Render(batch);
 		initialize = new Initialize();
-		extendViewport = new ExtendViewport(800, 800);
+		extendViewport = new ExtendViewport(1600, 900);
 		extendViewport.getCamera().position.set(800, 400, 0);
 		input = new GameInput(extendViewport.getCamera());
 		Gdx.input.setInputProcessor(input);
@@ -36,6 +40,14 @@ public class Mraine extends ApplicationAdapter {
 		input.setStartXPosition(startYPosition);
 		extendViewport.getCamera().position.set((startXPosition + initialize.getLevel().getSizeX()) * 8, (startYPosition + initialize.getLevel().getSizeY()) * 2/3, 0);
 
+		render.loadAdditionalTextures();
+		player = Player.INSTANCE;
+		player.setAnimation("buddy");
+
+		initialize.setRandomPlayerPosition();
+		System.out.println("x: " + player.getXPos());
+		System.out.println("y: " + player.getYPos());
+
 	}
 
 	@Override
@@ -45,6 +57,7 @@ public class Mraine extends ApplicationAdapter {
 		batch.setProjectionMatrix(extendViewport.getCamera().combined);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
+		render.addAnimations();
 		render.renderLevel(initialize.getLevel(), startXPosition, startYPosition);
 //		render.render();
 		batch.end();

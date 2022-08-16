@@ -1,0 +1,13 @@
+player.png
+	size: 64, 32
+	repeat: none
+buddy#1
+	bounds: 0, 0, 16, 32
+buddy#5
+	bounds: 0, 0, 16, 32
+buddy#2
+	bounds: 32, 0, 16, 32
+buddy#3
+	bounds: 16, 0, 16, 32
+buddy#4
+	bounds: 48, 0, 16, 32

@@ -6,24 +6,16 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 
 abstract class Entity (
 
-) {
+): TextureHaver {
     abstract val id: Int
     abstract val name: String
     open val description: String? = ""
-    abstract var textureSrc: String
-    abstract val textureNames: List<String>
-    open var textureList: List<TextureAtlas.AtlasRegion> = listOf()
-    abstract var texture: TextureRegion
+//    abstract var textureSrc: String
+//    abstract val textureNames: List<String>
+    override var textureList: List<TextureAtlas.AtlasRegion> = listOf()
+//    abstract var texture: TextureRegion
     abstract val allowOnTop: Boolean
     abstract val allowCharacterOnTop: Boolean
-
-    fun loadTextures(atlas: TextureAtlas) {
-        textureList = buildList {
-            for (name in textureNames) {
-                add(atlas.findRegion(name))
-            } }
-
-    }
 
     abstract fun pickTexture(onMapPosition: OnMapPosition)
 
@@ -40,9 +32,5 @@ abstract class Entity (
             max += increment
         }
         return null
-    }
-
-    fun getTexture(name: String): TextureAtlas.AtlasRegion {
-        return textureList.find { it.name.toString() == name }!!
     }
 }

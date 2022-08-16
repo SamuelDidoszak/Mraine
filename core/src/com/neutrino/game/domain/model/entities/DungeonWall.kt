@@ -1,17 +1,12 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.DefaultTextures
 import com.neutrino.game.RandomGenerator
-import com.neutrino.game.Seed
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
-import java.util.*
-import kotlin.random.Random
 import kotlin.system.measureNanoTime
-import kotlin.system.measureTimeMillis
 
 class DungeonWall(
 ) : Entity() {
@@ -23,15 +18,15 @@ class DungeonWall(
 
     override var textureSrc = "environment/walls.png"
     override val textureNames: List<String> = listOf("wall", "wall2", "wallVariation", "wallVariation2", "sewerHole", "sewerHole2",
-        "wallPillar", "wallPillar2", "wallPillarVariation", "wallPillarVariation2",
+        "wallPillar", "wallPillar2", "wallPillarVariation", "wallPillarVariation2", "wallInBetween",
         "wallHorizontalMiddle", "wallHorizontalMiddleLeft", "wallHorizontalMiddleRight",
         "wallVertical", "wallVerticalEndUp", "wallVerticalEndDown", "wallVerticalEdgeUpLeft", "wallVerticalEdgeUpRight", "wallTSection",
         "singleWall", "wallVerticalEmptyLeft", "wallVerticalEmptyRight", "wallVerticalEmptyLeftRight",
         "wallVerticalClosed", "wallVerticalEmptyLeftClosed", "wallVerticalEmptyRightClosed", "wallVerticalEmptyLeftRightClosed")
-    override var texture: TextureRegion = if(textureList.isNotEmpty()) textureList[0] else DefaultTextures[6][5]
+    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
-        print(
+//        print(
             measureNanoTime {
         val randVal = RandomGenerator.nextFloat() * 100
 
@@ -44,7 +39,9 @@ class DungeonWall(
         getTextureFromEqualRange(randVal, 98f, until = 100f, textures = textureNames.subList(6, 10)) ?:
         textureNames[0]
 
+
         val textureName: String =
+//            if (entityChecker.checkAllTiles(listOf(1, 2, 3, 4, 6, 7, 8, 9))) "wallInBetween" else
             if (entityChecker.checkAllTiles(listOf(1, 2, 3, 8))) "wallVerticalEmptyLeftRight" else
             if (entityChecker.checkAllTiles(listOf(1, 2, 8))) "wallVerticalEmptyLeft" else
             if (entityChecker.checkAllTiles(listOf(2, 3, 8))) "wallVerticalEmptyRight" else
@@ -71,6 +68,10 @@ class DungeonWall(
                 defaultWall
 
             texture = getTexture(textureName)
+            }
+
+
+//        )print(", ")
 
 
 
@@ -106,8 +107,6 @@ class DungeonWall(
 
             texture = getTexture(textureName1)
                  */
-                })
-        print(", ")
 
 
 //        val textureName: String =

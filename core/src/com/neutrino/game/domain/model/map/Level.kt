@@ -66,4 +66,15 @@ class Level(
         }
     }
 
+    fun doesAllowCharacter(xPos: Int, yPos: Int): Boolean {
+        var allow = true
+        for (entity in map.map[yPos][xPos]) {
+            if (!entity.allowCharacterOnTop) {
+                allow = false
+                break
+            }
+        }
+        return allow
+    }
+
 }

@@ -14,6 +14,8 @@ import com.neutrino.game.domain.model.map.Level
 class GenerateMap(
     private val level: Level
 ) {
+    private val squidGeneration = SquidGeneration(level.sizeX, level.sizeY)
+
     val map: List<List<MutableList<Entity>>> = List(level.sizeY) {
         List(level.sizeX) {
             ArrayList<Entity>()
@@ -24,7 +26,8 @@ class GenerateMap(
      * Generates the map
      */
     operator fun invoke(): List<List<MutableList<Entity>>> {
-        addEntities(DungeonWall().javaClass, 0.35f)
+        squidGeneration.generateDungeon()
+        squidGeneration.setDungeonWalls(map)
         addEntities(DungeonFloor().javaClass, 1f)
         addEntities(DungeonGrass().javaClass, 0.3f)
         addEntities(Grass().javaClass, 0.3f, listOf(DungeonGrass().javaClass))

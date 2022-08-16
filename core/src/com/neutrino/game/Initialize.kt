@@ -14,9 +14,7 @@ class Initialize {
         0,
         0,
         0,
-        "A level for testing map generation",
-        30,
-        30
+        "A level for testing map generation"
     )
 
     fun initialize() {

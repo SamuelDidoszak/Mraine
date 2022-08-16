@@ -4,7 +4,7 @@ walls.png
 door
 	bounds: 288, 16, 16, 16
 doorOpen
-	bounds: 352, 16, 16, 16
+	bounds: 336, 0, 16, 16
 sewerHole
 	bounds: 288, 0, 16, 16
 sewerHole2
@@ -14,7 +14,7 @@ sewerHoleLight
 sewerHoleLight2
 	bounds: 368, 16, 16, 16
 sewerHoleVariation
-	bounds: 272, 16, 16, 16
+	bounds: 256, 16, 16, 16
 sewerHoleVariation2
 	bounds: 320, 16, 16, 16
 singleWall
@@ -22,19 +22,21 @@ singleWall
 wall
 	bounds: 272, 0, 16, 16
 wall2
-	bounds: 336, 0, 16, 16
+	bounds: 352, 16, 16, 16
 wallHorizontalMiddle
 	bounds: 16, 8, 16, 24
 wallHorizontalMiddleLeft
 	bounds: 160, 8, 16, 24
 wallHorizontalMiddleRight
 	bounds: 144, 8, 16, 24
+wallInBetween
+	bounds: 368, 0, 16, 16
 wallLight
 	bounds: 304, 16, 16, 16
 wallLight2
 	bounds: 240, 16, 16, 16
 wallPillar
-	bounds: 256, 16, 16, 16
+	bounds: 272, 16, 16, 16
 wallPillar2
 	bounds: 352, 0, 16, 16
 wallPillarVariation
@@ -46,7 +48,7 @@ wallTSection
 wallVariation
 	bounds: 336, 16, 16, 16
 wallVariation2
-	bounds: 368, 0, 16, 16
+	bounds: 384, 16, 16, 16
 wallVertical
 	bounds: 224, 16, 16, 16
 wallVerticalClosed

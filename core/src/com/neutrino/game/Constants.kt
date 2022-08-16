@@ -10,8 +10,8 @@ val DefaultTextures: Array<Array<TextureRegion>> = TextureRegion.split(Texture("
 
 // Level constants
 
-const val LevelChunkSize: Int = 100
+const val LevelChunkSize: Int = 80
 
-const val isSeeded: Boolean = false
+const val IsSeeded: Boolean = true
 const val Seed: Long = 2137213721372137
-val RandomGenerator: Random = if (isSeeded) Random(Seed) else Random.Default
+val RandomGenerator: Random = if (IsSeeded) Random(Seed) else Random.Default

@@ -1,18 +1,24 @@
-package com.neutrino.game
+package com.neutrino
 
-import com.badlogic.gdx.*
-import com.badlogic.gdx.graphics.Camera
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.map.Level
 
-class GameInput(
-    val camera: Camera
-) : InputAdapter() {
+class GameStage(
+    viewport: Viewport,
+//    batch: SpriteBatch
+): Stage(viewport) {
     var level: Level? = null
     var startXPosition: Float = 0f
     var startYPosition: Float = 800f
         set(value) {field = value + 16}
+
+    // Input processor
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (level == null)

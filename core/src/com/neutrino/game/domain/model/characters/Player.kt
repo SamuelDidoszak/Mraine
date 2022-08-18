@@ -8,11 +8,7 @@ import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.Stats
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
-object Player : Character(
-    id = 0,
-    name = "",
-    description = "it's you"
-), Stats, TextureHaver, Animated {
+object Player : Character(0, 0), Stats, Animated {
     override val hp: Float = 10f
     override val mp: Float = 10f
     override val strength: Float = 2f
@@ -25,8 +21,8 @@ object Player : Character(
     override val attackSpeed: Float = 2f
     override val movementSpeed: Float = 1f
 
-    var xPos: Int = 0
-    var yPos: Int = 0
+    override val description: String
+        get() = TODO("Not yet implemented")
 
     override var textureSrc: String = "characters/player.png"
     override val textureNames: List<String> = listOf(

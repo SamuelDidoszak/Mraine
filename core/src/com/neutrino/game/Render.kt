@@ -3,6 +3,7 @@ package com.neutrino.game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.Player
@@ -10,58 +11,13 @@ import com.neutrino.game.domain.model.characters.Player.textureSrc
 import com.neutrino.game.domain.model.map.Level
 
 class Render (
-    private val batch: SpriteBatch
 ) {
     private var stateTime: Float = 0f
 
-    val handler = SpriteHandler(Texture("sprites/rat.png"))
-    val ratAnimation = handler.getAnimation(0)
-    val ratAnimation2 = handler.getAnimation(1)
-    val ratAnimation3 = handler.getAnimation(2)
-    val ratAnimation4 = handler.getAnimation(3)
-    val ratAnimation5 = handler.getAnimation(4)
-
-    val envHandler = SpriteHandler(Texture("environment/raw/entities.png"))
-
-    fun render() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        stateTime += Gdx.graphics.deltaTime
-
-        batch.draw(ratAnimation.getKeyFrame(stateTime, true), 100f, 100f)
-        batch.draw(ratAnimation2.getKeyFrame(stateTime, true), 132f, 100f)
-        batch.draw(ratAnimation3.getKeyFrame(stateTime, true), 164f, 100f)
-        batch.draw(ratAnimation4.getKeyFrame(stateTime, true), 100f, 132f)
-        batch.draw(ratAnimation5.getKeyFrame(stateTime, true), 100f, 164f)
-
-        for (i in 0 until 48) {
-            batch.draw(envHandler.getTexture(i), i*16f, 300f)
-        }
-    }
-
-    fun renderLevel(level: Level, startXPosition: Float, startYPosition: Float) {
-        var screenX = startXPosition
-        var screenY = startYPosition
-
-        for (y in 0 until level.sizeY) {
-            for (x in 0 until level.sizeX) {
-                for (entity in level.map.map[y][x]) {
-                    batch.draw(entity.texture, screenX, screenY)
-                }
-                screenX += 16
-            }
-            screenY -= 16
-            screenX = 0f
-        }
-
-        batch.draw(Player.texture, Player.xPos * 16f + startXPosition, startYPosition - Player.yPos * 16f)
-    }
-
     fun addAnimations() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         stateTime += Gdx.graphics.deltaTime
 
         Player.setFrame(stateTime)
-
     }
 
     fun loadAdditionalTextures() {

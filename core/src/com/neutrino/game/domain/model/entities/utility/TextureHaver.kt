@@ -19,4 +19,8 @@ interface TextureHaver {
     fun getTexture(name: String): TextureAtlas.AtlasRegion {
         return textureList.find { it.name.toString() == name }!!
     }
+
+    fun setTexture(name: String) {
+        texture = textureList.find { it.name.toString() == name }!!
+    }
 }

@@ -19,30 +19,15 @@ class Initialize {
         0,
         "A level for testing map generation",
         LevelChunkSize,
-        LevelChunkSize
+        LevelChunkSize,
+        0f,
+        0f
     )
 
     fun initialize() {
         level.provideTextures()
         // for whatever reason this is needed for level to access correct LevelChunkSize values
         println(level.sizeX.toString() + ", " + level.sizeY.toString())
-    }
-
-    fun oldStuff() {
-        val texture = Texture("environment/raw/entities.png")
-        println("texture value: $texture")
-
-        val atlas = TextureAtlas("environment/tiles.atlas")
-        for (texture in atlas.textures) {
-            println(texture.toString())
-            println(texture.toString().substring(0, texture.toString().lastIndexOf(".")) + ".atlas")
-        }
-        val textureRegion: TextureRegion = atlas.regions[0]
-        for (region in atlas.regions)
-            println(region.name)
-
-        val textureList: List<TextureAtlas.AtlasRegion> = listOf()
-        println(textureList.isEmpty())
     }
 
     fun setRandomPlayerPosition() {

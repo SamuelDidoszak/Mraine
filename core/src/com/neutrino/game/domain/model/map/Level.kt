@@ -1,22 +1,28 @@
 package com.neutrino.game.domain.model.map
 
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.LevelChunkSize
+import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.use_case.map.GetMap
 import com.neutrino.game.domain.use_case.map.MapUseCases
 
 
 class Level(
-    val name: String,
+    name: String,
     val xIndex: Int,
     val yIndex: Int,
-    val zIndex: Int,
+    zIndex: Int,
     val description: String?,
     val sizeX: Int = LevelChunkSize,
     val sizeY: Int = LevelChunkSize,
-) {
+    val xScreen: Float = 0f,
+    val yScreen: Float = 0f
+): Group() {
     val mapUsecases = MapUseCases(this)
 
     val id: Int = "$xIndex-$yIndex-$zIndex".hashCode()
@@ -28,6 +34,10 @@ class Level(
         yMax = sizeY,
         map = mapUsecases.getMap()
     )
+
+    init {
+        setBounds(xScreen, yScreen, sizeX * 16f, sizeY * 16f)
+    }
 
     /**
      * Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
@@ -75,6 +85,22 @@ class Level(
             }
         }
         return allow
+    }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        var screenX = 0f
+        var screenY = height
+
+        for (y in 0 until sizeY) {
+            for (x in 0 until sizeX) {
+                for (entity in map.map[y][x]) {
+                    batch!!.draw(entity.texture, screenX, screenY)
+                }
+                screenX += 16
+            }
+            screenY -= 16
+            screenX = 0f
+        }
     }
 
 }

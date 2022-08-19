@@ -1,26 +1,36 @@
 package com.neutrino
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Gdx.files
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.github.tommyettinger.textra.Font
+import com.github.tommyettinger.textra.KnownFonts
+import com.github.tommyettinger.textra.KnownFonts.setAssetPrefix
 import com.neutrino.game.Initialize
 import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import ktx.app.KtxScreen
 
 class GameScreen: KtxScreen {
-    val font = BitmapFont()
     private val initialize: Initialize = Initialize()
     val render: Render = Render()
     private val extendViewport: ExtendViewport = ExtendViewport(1600f, 900f);
     private val startXPosition = 0f
     private val startYPosition = 800f - 16
     val player: Player = Player
+
+//    private val fontFamily: Font.FontFamily = Font.FontFamily(Skin(files.internal("data/uiskin.json")))
+//    val charactersUseCases = CharactersUseCases(initialize.level.characterMap, fontFamily.connected[0])
+//    val font: () -> Unit = {setAssetPrefix("fonts/")}
+    lateinit var charactersUseCases: CharactersUseCases
 
     private val stage = GameStage(extendViewport)
     val batch: Batch = stage.batch
@@ -39,9 +49,14 @@ class GameScreen: KtxScreen {
         render.loadAdditionalTextures()
         initialize.setRandomPlayerPosition()
 
+        charactersUseCases = CharactersUseCases(initialize.level.characterMap, KnownFonts.getStandardFamily())
+
+
         stage.addActor(initialize.level)
         initialize.level.addActor(Player)
         Player.setAnimation("buddy")
+        charactersUseCases.addCharacter(Player)
+
     }
 
     override fun render(delta: Float) {
@@ -57,6 +72,8 @@ class GameScreen: KtxScreen {
         batch.begin()
         Player.draw(batch, 1f)
         batch.end()
+
+
     }
 
     override fun dispose() {

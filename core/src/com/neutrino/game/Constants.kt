@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import kotlin.random.Random
 
 const val AnimationSpeed: Float = 0.1666666666666666f
+const val MoveSpeed: Float = 0.5f
     //  Textures are provided here to omit the need of loading them multiple times
 val DefaultTextures: Array<Array<TextureRegion>> = TextureRegion.split(Texture("environment/raw/tiles.png"), 16, 16)
 

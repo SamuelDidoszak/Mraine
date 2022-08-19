@@ -8,18 +8,24 @@ import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.Stats
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
-object Player : Character(0, 0), Stats, Animated {
-    override val hp: Float = 10f
-    override val mp: Float = 10f
-    override val strength: Float = 2f
-    override val defence: Float = 2f
-    override val agility: Float = 2f
-    override val evasiveness: Float = 2f
-    override val accuracy: Float = 2f
-    override val criticalChance: Float = 0.3f
-    override val luck: Float = 2f
-    override val attackSpeed: Float = 2f
-    override val movementSpeed: Float = 1f
+object Player : Character(0, 0), Animated {
+    override var hp: Float = 10f
+    override var currentHp: Float = hp
+    override var mp: Float = 10f
+    override var currentMp: Float = mp
+    override var strength: Float = 2f
+    override var defence: Float = 2f
+    override var agility: Float = 2f
+    override var evasiveness: Float = 2f
+    override var accuracy: Float = 2f
+    override var criticalChance: Float = 0.3f
+    override var luck: Float = 2f
+    override var attackSpeed: Float = 2f
+    override var movementSpeed: Float = 1f
+
+    init {
+        setName("Player")
+    }
 
     override val description: String
         get() = TODO("Not yet implemented")

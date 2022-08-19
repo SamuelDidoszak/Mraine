@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
 
 class GameStage(
@@ -17,6 +19,21 @@ class GameStage(
     var startXPosition: Float = 0f
     var startYPosition: Float = 800f
         set(value) {field = value + 16}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Input processor
 
@@ -51,15 +68,19 @@ class GameStage(
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.LEFT -> {
+                Player.move(Player.xPos - 1, Player.yPos)
                 camera.position.set(camera.position.x - 16, camera.position.y, 0f)
             }
             Input.Keys.RIGHT -> {
+                Player.move(Player.xPos + 1, Player.yPos)
                 camera.position.set(camera.position.x + 16, camera.position.y, 0f)
             }
             Input.Keys.UP -> {
+                Player.move(Player.xPos, Player.yPos - 1)
                 camera.position.set(camera.position.x, camera.position.y + 16, 0f)
             }
             Input.Keys.DOWN -> {
+                Player.move(Player.xPos, Player.yPos + 1)
                 camera.position.set(camera.position.x, camera.position.y - 16, 0f)
             }
         }

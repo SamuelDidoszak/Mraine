@@ -133,5 +133,11 @@ project(":core") {
         // squidLib
         api 'com.squidpony:squidlib-util:3.0.4'
         api 'com.squidpony:squidlib-extra:3.0.4'
+
+        // textraTypist
+        implementation "com.github.tommyettinger:textratypist:0.7.1"
+
+        // shapeDrawer
+        api "space.earlygrey:shapedrawer:2.5.0"
     }
 }

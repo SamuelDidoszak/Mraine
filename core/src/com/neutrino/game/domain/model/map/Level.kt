@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.LevelChunkSize
+import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.use_case.map.GetMap
@@ -39,10 +40,8 @@ class Level(
         setBounds(xScreen, yScreen, sizeX * 16f, sizeY * 16f)
     }
 
-    /**
-     * Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
-     */
-    val characterMap: CharacterMap? = null
+    // Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
+    val characterMap: MutableList<Character> = ArrayList()
 
     /**
      * Fills the level textureList with textures needed by the level

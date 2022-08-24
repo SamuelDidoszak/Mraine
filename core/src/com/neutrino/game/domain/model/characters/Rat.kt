@@ -8,14 +8,14 @@ import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
-object Player : Character(0, 0), Animated {
+class Rat(xPos: Int, yPos: Int) : Character(xPos, yPos), Animated {
     override var hp: Float = 10f
     override var currentHp: Float = hp
     override var mp: Float = 10f
     override var currentMp: Float = mp
     override var attack: Float = setAttack()
-    override var strength: Float = 4f
-    override var defence: Float = 2f
+    override var strength: Float = 2f
+    override var defence: Float = 1f
     override var agility: Float = 2f
     override var evasiveness: Float = 2f
     override var accuracy: Float = 2f
@@ -28,19 +28,19 @@ object Player : Character(0, 0), Animated {
     override var experience: Float = 0f
 
     init {
-        setName("Player")
+        setName("Rat")
         turn = 0.0
     }
 
-    override val description: String
-        get() = TODO("Not yet implemented")
+    override val description: String = "IT'S A RAAAAT"
 
-    override var textureSrc: String = "characters/player.png"
+    override var textureSrc: String = "characters/rat.png"
     override val textureNames: List<String> = listOf(
-        "buddy#1", "buddy#2", "buddy#3", "buddy#4", "buddy#5"
+        "rat#1", "rat#2", "rat#3", "rat#4", "rat#5", "rat#6"
     )
     override var textureList: List<TextureAtlas.AtlasRegion> = listOf()
-    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
+    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(
+        DefaultTextures[6][5])
 
     override val textureHaver: TextureHaver = this
 

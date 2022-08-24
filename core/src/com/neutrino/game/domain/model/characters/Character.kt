@@ -1,21 +1,12 @@
 package com.neutrino.game.domain.model.characters
 
-import com.badlogic.gdx.Gdx.files
-import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.scenes.scene2d.Action
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
-import com.github.tommyettinger.textra.TypingLabel
 import com.neutrino.game.MoveSpeed
+import com.neutrino.game.domain.model.characters.utility.Ai
 import com.neutrino.game.domain.model.characters.utility.HpBar
 import com.neutrino.game.domain.model.characters.utility.Stats
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
@@ -35,6 +26,8 @@ abstract class Character(
         infoGroup.addActor(nameLabel)
     }
 
+    open var turn: Double = Double.MAX_VALUE
+
     /**
      * This method is called only once, after initialization of Character implementation
      * Passing values here makes sure that they are initialized
@@ -48,6 +41,8 @@ abstract class Character(
     abstract val description: String
 
     abstract val textureHaver: TextureHaver
+
+    val ai: Ai = Ai(this)
 
     override fun setTexture(name: String) {
         super.setTexture(name)
@@ -69,5 +64,15 @@ abstract class Character(
         this.addAction(Actions.moveTo(xPos * 16f, parent.height - yPos * 16f, MoveSpeed))
         this.xPos = xPos
         this.yPos = yPos
+    }
+
+    fun getDamage(character: Character): Float {
+        var damage: Float = 0f
+        damage += character.attack - defence
+        damage = if (damage < 0) 0f else damage
+        damage = 4f
+        this.currentHp -= damage
+        this.findActor<HpBar>("hpBar").currentHp = if (currentHp < 0) 0f else currentHp
+        return damage
     }
 }

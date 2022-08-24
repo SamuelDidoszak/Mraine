@@ -1,0 +1,15 @@
+rat.png
+	size: 128, 32
+	repeat: none
+rat#1
+	bounds: 80, 0, 16, 32
+rat#2
+	bounds: 48, 0, 16, 32
+rat#3
+	bounds: 16, 0, 16, 32
+rat#4
+	bounds: 64, 0, 16, 32
+rat#5
+	bounds: 32, 0, 16, 32
+rat#6
+	bounds: 0, 0, 16, 32

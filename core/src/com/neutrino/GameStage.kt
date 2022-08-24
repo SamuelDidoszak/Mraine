@@ -3,13 +3,12 @@ package com.neutrino
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
+import squidpony.squidmath.Coord
 
 class GameStage(
     viewport: Viewport,
@@ -20,26 +19,37 @@ class GameStage(
     var startYPosition: Float = 800f
         set(value) {field = value + 16}
 
-
-
-
-
-
-
-
-
-
-
-
+    var waitForPlayerInput: Boolean = true
+    var clickedCoordinates: Coord? = null
 
 
 
 
     // Input processor
 
+    private var dragging = false
+
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        if (level == null)
+        if (button != Input.Buttons.LEFT || pointer > 0)
+            return false
+        return true
+    }
+
+    override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
+        dragging = true
+        val zoom = (camera as OrthographicCamera).zoom
+        camera.position.add(-Gdx.input.deltaX.toFloat() * zoom,
+            Gdx.input.deltaY.toFloat() * zoom, 0f)
+        return true
+    }
+
+    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        if (button != Input.Buttons.LEFT || pointer > 0) return false;
+        if (level == null) return false
+        if (dragging) {
+            dragging = false
             return true
+        }
 
         val touch: Vector3 = Vector3(screenX.toFloat(), screenY.toFloat(),0f)
         camera.unproject(touch)
@@ -55,15 +65,17 @@ class GameStage(
         var entities: String = ""
         for (entity in level!!.map.map[tileY][tileX])
             entities += entity.name + ": texture= " + entity.texture.toString() + " onTop=" + entity.allowCharacterOnTop + "\n"
-        println("$tileX, $tileY")
 
-//        println("X: " + touch.x + " Y: " + touch.y)
-        println(entities)
+        println("clicked: $tileX, $tileY\n$entities")
+        dragging = false
+
+        if (waitForPlayerInput) {
+            clickedCoordinates = Coord.get(tileX, tileY)
+            waitForPlayerInput = false
+        }
+
         return true
     }
-
-
-
 
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
@@ -84,13 +96,6 @@ class GameStage(
                 camera.position.set(camera.position.x, camera.position.y - 16, 0f)
             }
         }
-        return true
-    }
-
-    override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
-        val zoom = (camera as OrthographicCamera).zoom
-        camera.position.add(-Gdx.input.deltaX.toFloat() * zoom,
-            Gdx.input.deltaY.toFloat() * zoom, 0f)
         return true
     }
 

@@ -1,15 +1,13 @@
 package com.neutrino.game.domain.model.map
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
-import com.neutrino.game.domain.use_case.map.GetMap
+import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.use_case.map.MapUseCases
 
 
@@ -35,6 +33,13 @@ class Level(
         yMax = sizeY,
         map = mapUsecases.getMap()
     )
+
+    /**
+     * A list of current level characters.
+     */
+    var characterArray: CharacterArray = CharacterArray(Player)
+
+    val movementMap: Array<out CharArray> = mapUsecases.getMovementMap()
 
     init {
         setBounds(xScreen, yScreen, sizeX * 16f, sizeY * 16f)

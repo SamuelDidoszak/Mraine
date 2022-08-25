@@ -4,69 +4,71 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.LevelChunkSize
-import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.model.turn.CharacterArray
+import com.neutrino.game.domain.use_case.map.GenerateCharacters
 import com.neutrino.game.domain.use_case.map.MapUseCases
 
 
 class Level(
     name: String,
-    val xIndex: Int,
-    val yIndex: Int,
-    zIndex: Int,
+    val xPosition: Int,
+    val yPosition: Int,
+    val zPosition: Int,
     val description: String?,
     val sizeX: Int = LevelChunkSize,
     val sizeY: Int = LevelChunkSize,
     val xScreen: Float = 0f,
-    val yScreen: Float = 0f
+    val yScreen: Float = 0f,
+    val difficulty: Float,
+    movementMap: Array<out CharArray>? = null,
+    characterArray: CharacterArray? = null
 ): Group() {
-    val mapUsecases = MapUseCases(this)
-
-    val id: Int = "$xIndex-$yIndex-$zIndex".hashCode()
+    val id: Int = "$xPosition-$yPosition-$zPosition".hashCode()
     val textureList: ArrayList<TextureAtlas> = ArrayList()
 
+    private val mapUsecases = MapUseCases(this)
+
     val map: Map = Map(id,
-        name = "$name $zIndex",
+        name = "$name $zPosition",
         xMax = sizeX,
         yMax = sizeY,
         map = mapUsecases.getMap()
     )
 
+    val movementMap: Array<out CharArray> = movementMap?:mapUsecases.getMovementMap()
     /**
      * A list of current level characters.
      */
-    var characterArray: CharacterArray = CharacterArray(Player)
-
-    val movementMap: Array<out CharArray> = mapUsecases.getMovementMap()
+    // Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
+    val characterArray: CharacterArray = characterArray?:GenerateCharacters(this)()
 
     init {
         setBounds(xScreen, yScreen, sizeX * 16f, sizeY * 16f)
+        // scene2d name
+        setName("Level")
     }
-
-    // Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
-    val characterMap: MutableList<Character> = ArrayList()
 
     /**
      * Fills the level textureList with textures needed by the level
      * Provides the textures for every entity on the map
      */
     fun provideTextures() {
-        println("called")
+        // textures for tiles and entities
         for (y in 0 until map.yMax) {
             for (x in 0 until map.xMax) {
                 for (z in 0 until map.map[y][x].size) {
                     var exists = false
                     val textureSrc = map.map[y][x][z].textureSrc
 
-                    for (t in 0 until textureList.size) {
-                        for (texture in textureList[t].textures) {
-                            if (texture.toString() == textureSrc) {
+                    for (atlas in textureList) {
+                        atlas.textures.forEach {
+                            if (it.toString() == textureSrc) {
                                 exists = true
-                                map.map[y][x][z].loadTextures(textureList[t])
+                                map.map[y][x][z].loadTextures(atlas)
                                 map.map[y][x][z].pickTexture(OnMapPosition(map.map, x, y, z))
-                                continue
+                                return@forEach
                             }
                         }
                     }
@@ -76,6 +78,29 @@ class Level(
                         map.map[y][x][z].pickTexture(OnMapPosition(map.map, x, y, z))
                     }
                 }
+            }
+        }
+        // textures for characters
+        for (character in characterArray) {
+            var exists = false
+            val textureSrc = character.textureSrc
+
+            for (atlas in textureList) {
+                atlas.textures.forEach {
+                    if (it.toString() == textureSrc) {
+                        exists = true
+                        character.loadTextures(atlas)
+                        if (character is Animated)
+                            character.setDefaultAnimation()
+                        return@forEach
+                    }
+                }
+            }
+            if (!exists) {
+                textureList.add(TextureAtlas(character.textureSrc.substring(0, character.textureSrc.lastIndexOf(".")) + ".atlas"))
+                character.loadTextures(textureList[textureList.size - 1])
+                if (character is Animated)
+                    character.setDefaultAnimation()
             }
         }
     }
@@ -105,6 +130,8 @@ class Level(
             screenY -= 16
             screenX = 0f
         }
+        // draw the children after level layout
+        super.draw(batch, parentAlpha)
     }
 
 }

@@ -13,7 +13,8 @@ import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
 abstract class Character(
     var xPos: Int,
-    var yPos: Int
+    var yPos: Int,
+    var turn: Double
 ): Group(), TextureHaver, Stats {
     init {
         val infoGroup = Group()
@@ -25,8 +26,6 @@ abstract class Character(
         nameLabel.name = "name"
         infoGroup.addActor(nameLabel)
     }
-
-    open var turn: Double = Double.MAX_VALUE
 
     /**
      * This method is called only once, after initialization of Character implementation
@@ -72,7 +71,11 @@ abstract class Character(
         damage = if (damage < 0) 0f else damage
         damage = 4f
         this.currentHp -= damage
-        this.findActor<HpBar>("hpBar").currentHp = if (currentHp < 0) 0f else currentHp
+        if (currentHp <= 0) {
+            parent.removeActor(this)
+            currentHp = 0f
+        }
+        this.findActor<HpBar>("hpBar").currentHp = currentHp
         return damage
     }
 }

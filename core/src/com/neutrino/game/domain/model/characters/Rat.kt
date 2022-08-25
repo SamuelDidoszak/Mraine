@@ -8,7 +8,7 @@ import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
-class Rat(xPos: Int, yPos: Int) : Character(xPos, yPos), Animated {
+class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Animated {
     override var hp: Float = 10f
     override var currentHp: Float = hp
     override var mp: Float = 10f
@@ -29,7 +29,6 @@ class Rat(xPos: Int, yPos: Int) : Character(xPos, yPos), Animated {
 
     init {
         setName("Rat")
-        turn = 0.0
     }
 
     override val description: String = "IT'S A RAAAAT"
@@ -43,6 +42,9 @@ class Rat(xPos: Int, yPos: Int) : Character(xPos, yPos), Animated {
         DefaultTextures[6][5])
 
     override val textureHaver: TextureHaver = this
+
+    override lateinit var defaultAnimation: Animation<TextureRegion>
+    override val defaultAnimationName: String = "rat"
 
     override var animation: Animation<TextureRegion>? = null
 

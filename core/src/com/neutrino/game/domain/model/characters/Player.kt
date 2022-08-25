@@ -8,7 +8,7 @@ import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
-object Player : Character(0, 0), Animated {
+object Player : Character(0, 0, 0.0), Animated {
     override var hp: Float = 10f
     override var currentHp: Float = hp
     override var mp: Float = 10f
@@ -29,7 +29,6 @@ object Player : Character(0, 0), Animated {
 
     init {
         setName("Player")
-        turn = 0.0
     }
 
     override val description: String
@@ -42,6 +41,8 @@ object Player : Character(0, 0), Animated {
     override var textureList: List<TextureAtlas.AtlasRegion> = listOf()
     override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
 
+    override val defaultAnimationName: String = "buddy"
+    override lateinit var defaultAnimation: Animation<TextureRegion>
     override val textureHaver: TextureHaver = this
 
     override var animation: Animation<TextureRegion>? = null

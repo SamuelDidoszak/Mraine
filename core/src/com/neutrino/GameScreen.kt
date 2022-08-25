@@ -7,10 +7,8 @@ import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.neutrino.game.Initialize
 import com.neutrino.game.LevelChunkSize
-import com.neutrino.game.RandomGenerator
 import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.Rat
 import com.neutrino.game.domain.model.characters.utility.Action
 import com.neutrino.game.domain.model.turn.Turn
 import ktx.app.KtxScreen
@@ -23,15 +21,8 @@ class GameScreen: KtxScreen {
     private val startYPosition = LevelChunkSize * 16f
     val player: Player = Player
 
-//    private val fontFamily: Font.FontFamily = Font.FontFamily(Skin(files.internal("data/uiskin.json")))
-//    val charactersUseCases = CharactersUseCases(initialize.level.characterMap, fontFamily.connected[0])
-//    val font: () -> Unit = {setAssetPrefix("fonts/")}
-
     private val stage = GameStage(extendViewport)
     val batch: Batch = stage.batch
-
-    // one time thing for debugging purposes
-    var rat: Rat
 
     init {
         extendViewport.camera.position.set(800f, 400f, 0f)
@@ -44,27 +35,8 @@ class GameScreen: KtxScreen {
         extendViewport.camera.position.set((startXPosition + initialize.level.sizeX) * 8,
             (startYPosition + initialize.level.sizeY.toFloat()) * 2/3f, 0f)
 
-        render.loadAdditionalTextures()
-        initialize.setRandomPlayerPosition()
-
-        stage.addActor(initialize.level)
-        initialize.level.addActor(Player)
-        Player.setAnimation("buddy")
         Turn.setLevel(initialize.level)
-
-        // one time add for debugging purposes
-        var ratXPos: Int
-        var ratYPos: Int
-        do {
-            ratXPos = RandomGenerator.nextInt(0, initialize.level.sizeX)
-            ratYPos = RandomGenerator.nextInt(0, initialize.level.sizeY)
-        } while (!initialize.level.doesAllowCharacter(ratXPos, ratYPos))
-        rat = Rat(xPos = ratXPos, yPos = ratYPos)
-        initialize.level.characterArray.add(rat)
-        render.loadAdditionalTextures()
-        initialize.level.addActor(rat)
-        rat.setAnimation("rat")
-
+        stage.addActor(initialize.level)
     }
 
     override fun render(delta: Float) {
@@ -79,16 +51,6 @@ class GameScreen: KtxScreen {
         render.addAnimations()
         stage.act(delta)
         stage.draw()
-
-        // Player draw isn't called from stage.draw(). Have to call it manually
-        batch.begin()
-        Player.draw(batch, 1f)
-        batch.end()
-
-        // one time thing for debugging purposes
-        batch.begin()
-        rat.draw(batch, 1f)
-        batch.end()
     }
 
     override fun dispose() {
@@ -127,7 +89,7 @@ class GameScreen: KtxScreen {
 
                 if(clickedCharacter == Player)
                     Player.ai.action = Action.WAIT
-                            // Attack the enemy
+                // Attack the enemy
                 else if (clickedCharacter != null && Player.ai.canAttack(x, y))
                     Player.ai.action = Action.ATTACK(x, y) // can pass a character
                 // Calculate move list and move to the tile

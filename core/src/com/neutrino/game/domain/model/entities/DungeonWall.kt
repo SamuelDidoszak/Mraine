@@ -1,8 +1,8 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.DefaultTextures
-import com.neutrino.game.RandomGenerator
+import com.neutrino.game.Constants.DefaultTextures
+import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition

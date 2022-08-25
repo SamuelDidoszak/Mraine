@@ -3,7 +3,7 @@ package com.neutrino.game.domain.model.characters
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.neutrino.game.DefaultTextures
+import com.neutrino.game.Constants.DefaultTextures
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver

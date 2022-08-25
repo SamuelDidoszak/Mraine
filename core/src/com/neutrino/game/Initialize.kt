@@ -9,7 +9,5 @@ class Initialize {
     fun initialize() {
         level.characterArray.forEach {level.addActor(it)}
         level.provideTextures()
-        // for whatever reason this is needed for level to access correct LevelChunkSize values
-        println(level.sizeX.toString() + ", " + level.sizeY.toString())
     }
 }

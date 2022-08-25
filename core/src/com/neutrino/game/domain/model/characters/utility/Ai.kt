@@ -41,7 +41,12 @@ class Ai (private val character: Character) {
         setMoveList(xPos, yPos, dijkstraMap, impassable)
         dijkstraMap.clearGoals()
         val coord = getMove()
-        action = Action.MOVE(coord.getX(), coord.getY())
+        if (coord.getX() == character.xPos && coord.getY() == character.yPos) {
+            println("\n\nDECIDED TO WAIT\n\n")
+            action = Action.WAIT
+        }
+        else
+            action = Action.MOVE(coord.getX(), coord.getY())
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.turn
 
-import com.neutrino.game.IsSeeded
-import com.neutrino.game.Seed
+import com.neutrino.game.Constants.IsSeeded
+import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Action
 import com.neutrino.game.domain.model.map.Level
@@ -9,6 +9,7 @@ import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.GWTRNG
+import kotlin.math.abs
 
 /**
  * Singleton turn class containing turn and tick data
@@ -95,7 +96,12 @@ object Turn {
                     }
                 }
             } else {
-                character!!.ai.decide(Player.xPos, Player.yPos, dijkstraMap, charactersUseCases.getImpassable())
+                // initialize the ai if it's 30 tiles or less from the player
+                if (abs(character!!.xPos - Player.xPos) <= 30 || abs(character.yPos - Player.yPos) <= 30)
+                    character.ai.decide(Player.xPos, Player.yPos, dijkstraMap, charactersUseCases.getImpassable())
+                else
+                    character.ai.action = Action.WAIT
+
                 val action: Action = character.ai.useAction()
                 when (action) {
                     is Action.MOVE -> character.move(action.x, action.y)
@@ -111,12 +117,12 @@ object Turn {
                         }
                     }
                     is Action.SKILL -> {
-                        println("skill was used")}
+                        println(character.name + " used a skill")}
                     is Action.WAIT -> {
-                        println("passing turn")
+                        println(character.name + " is passing turn")
                     }
                     is Action.NOTHING -> {
-                        println("nothing")
+                        println(character.name + " did nothing")
                     }
                 }
             }

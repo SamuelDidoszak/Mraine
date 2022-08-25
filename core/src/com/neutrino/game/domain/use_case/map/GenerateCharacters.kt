@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.use_case.map
 
-import com.neutrino.game.RandomGenerator
+import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.Rat
@@ -16,8 +16,6 @@ class GenerateCharacters(
     val characterArray = CharacterArray()
 
     operator fun invoke(): CharacterArray {
-        println(level.xPosition.toString() + ", " + level.yPosition + ", " + level.zPosition)
-
         if (level.zPosition != 0)
             // TODO Spawn player on the stairs
             println("level is a dungeon")

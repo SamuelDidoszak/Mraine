@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.use_case.map
 
-import com.neutrino.game.RandomGenerator
+import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.DungeonFloor
 import com.neutrino.game.domain.model.entities.DungeonGrass
 import com.neutrino.game.domain.model.entities.DungeonWall

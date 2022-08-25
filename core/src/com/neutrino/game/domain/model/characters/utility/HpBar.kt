@@ -28,7 +28,7 @@ class HpBar(
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val drawer = ShapeDrawer(batch, textureRegion)
 
-        drawer.filledRectangle(0f, -6f, 16f * (currentHp / maxHp), 2f, color())
+        drawer.filledRectangle(2f, -24f, 60f * (currentHp / maxHp), 8f, color())
     }
 
     private fun color(): Color {

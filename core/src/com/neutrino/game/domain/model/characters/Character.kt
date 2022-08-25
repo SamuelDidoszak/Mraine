@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.MoveSpeed
+import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.domain.model.characters.utility.Ai
 import com.neutrino.game.domain.model.characters.utility.HpBar
 import com.neutrino.game.domain.model.characters.utility.Stats
@@ -20,9 +20,9 @@ abstract class Character(
         val infoGroup = Group()
         this.addActor(infoGroup)
         infoGroup.name = "infoGroup"
-        infoGroup.setPosition(0f, 32f)
+        infoGroup.setPosition(0f, 32f * 4)
 
-        val nameLabel = TextraLabel("[@Cozette][GREEN][%25]$name", KnownFonts.getStandardFamily())
+        val nameLabel = TextraLabel("", KnownFonts.getStandardFamily())
         nameLabel.name = "name"
         infoGroup.addActor(nameLabel)
     }
@@ -33,7 +33,7 @@ abstract class Character(
      */
     override fun setName(name: String?) {
         super.setName(name)
-        this.findActor<TextraLabel>("name").setText("[@Cozette][GREEN][%50]$name")
+        this.findActor<TextraLabel>("name").setText("[@Cozette][GREEN][%175]$name")
         (this.getChild(0) as Group).addActor(HpBar(currentHp, hp))
     }
 
@@ -45,9 +45,9 @@ abstract class Character(
 
     override fun setTexture(name: String) {
         super.setTexture(name)
-        setBounds(xPos * 16f, parent.height - yPos * 16f, textureHaver.texture.regionWidth.toFloat(), textureHaver.texture.regionHeight.toFloat())
+        setBounds(xPos * 64f, parent.height - yPos * 64f, textureHaver.texture.regionWidth.toFloat() * 4, textureHaver.texture.regionHeight.toFloat() * 4)
         val nameLabel = (this.getChild(0) as Group).getChild(0)
-        nameLabel.setPosition(nameLabel.x + 8 - nameLabel.width / 2, nameLabel.y)
+        nameLabel.setPosition(nameLabel.x + 32 - nameLabel.width / 2, nameLabel.y)
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
@@ -60,7 +60,7 @@ abstract class Character(
     }
 
     fun move(xPos: Int, yPos: Int) {
-        this.addAction(Actions.moveTo(xPos * 16f, parent.height - yPos * 16f, MoveSpeed))
+        this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, MoveSpeed))
         this.xPos = xPos
         this.yPos = yPos
     }

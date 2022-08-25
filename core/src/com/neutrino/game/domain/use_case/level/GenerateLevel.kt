@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.use_case.level
 
-import com.neutrino.game.LevelChunkSize
+import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.map.Level
 import kotlin.math.abs
 import kotlin.math.max
@@ -15,8 +15,8 @@ class GenerateLevel(
             yIndex,
             zIndex,
             "A level for testing map generation",
-            LevelChunkSize,
-            LevelChunkSize,
+            sizeX = LevelChunkSize,
+            sizeY = LevelChunkSize,
             0f,
             0f,
             getDifficultyFromDistance(xIndex, yIndex).toFloat(),

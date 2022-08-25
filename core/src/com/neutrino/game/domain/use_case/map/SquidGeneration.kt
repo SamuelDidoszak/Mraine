@@ -1,8 +1,8 @@
 package com.neutrino.game.domain.use_case.map
 
-import com.neutrino.game.IsSeeded
-import com.neutrino.game.RandomGenerator
-import com.neutrino.game.Seed
+import com.neutrino.game.Constants.IsSeeded
+import com.neutrino.game.Constants.RandomGenerator
+import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.utility.Entity
 import squidpony.squidgrid.mapping.DungeonGenerator
@@ -45,7 +45,8 @@ class SquidGeneration (
                 if (dungeonLayout[y][x] == '#')
                     map[y][x].add(DungeonWall())
                 else if(dungeonLayout[y][x] == '/' || dungeonLayout[y][x] == '+')
-                    print("Doors ")
+                    continue
+                    // TODO add doors here
             }
         }
     }

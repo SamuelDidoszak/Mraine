@@ -3,7 +3,7 @@ package com.neutrino.game.domain.model.map
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.neutrino.game.LevelChunkSize
+import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.model.turn.CharacterArray
@@ -45,7 +45,7 @@ class Level(
     val characterArray: CharacterArray = characterArray?:GenerateCharacters(this)()
 
     init {
-        setBounds(xScreen, yScreen, sizeX * 16f, sizeY * 16f)
+        setBounds(xScreen, yScreen, sizeX * 64f, sizeY * 64f)
         // scene2d name
         setName("Level")
     }
@@ -123,11 +123,11 @@ class Level(
         for (y in 0 until sizeY) {
             for (x in 0 until sizeX) {
                 for (entity in map.map[y][x]) {
-                    batch!!.draw(entity.texture, screenX, screenY)
+                    batch!!.draw(entity.texture, screenX, screenY, entity.texture.regionWidth * 4f, entity.texture.regionHeight * 4f)
                 }
-                screenX += 16
+                screenX += 64
             }
-            screenY -= 16
+            screenY -= 64
             screenX = 0f
         }
         // draw the children after level layout

@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
-import com.neutrino.game.LevelChunkSize
 import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Action
@@ -16,9 +16,9 @@ import ktx.app.KtxScreen
 class GameScreen: KtxScreen {
     private val initialize: Initialize = Initialize()
     val render: Render = Render(initialize.level)
-    private val extendViewport: ExtendViewport = ExtendViewport(1600f, 900f);
+    private val extendViewport: ExtendViewport = ExtendViewport(1600f, 900f)
     private val startXPosition = 0f
-    private val startYPosition = LevelChunkSize * 16f
+    private val startYPosition = LevelChunkSize * 64f
     val player: Player = Player
 
     private val stage = GameStage(extendViewport)
@@ -77,6 +77,7 @@ class GameScreen: KtxScreen {
             if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && stage.clickedCoordinates == null) {
                 val tile = Player.ai.getMove()
                 Player.ai.action = Action.MOVE(tile.x, tile.y)
+                stage.setCameraToPlayer()
             }
 
             if (Player.ai.action is Action.NOTHING) {
@@ -97,6 +98,7 @@ class GameScreen: KtxScreen {
                     Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
                     val coord = Player.ai.getMove()
                     Player.ai.action = Action.MOVE(coord.x, coord.y)
+                    stage.setCameraToPlayer()
                 }
             }
 

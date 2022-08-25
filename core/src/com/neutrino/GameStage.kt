@@ -17,12 +17,16 @@ class GameStage(
     var level: Level? = null
     var startXPosition: Float = 0f
     var startYPosition: Float = 800f
-        set(value) {field = value + 16}
+        set(value) {field = value + 64}
 
     var waitForPlayerInput: Boolean = true
     var clickedCoordinates: Coord? = null
 
 
+    fun setCameraToPlayer() {
+        camera.position.x = Player.xPos * 64f
+        camera.position.y = startYPosition - Player.yPos * 64f
+    }
 
 
     // Input processor
@@ -54,13 +58,13 @@ class GameStage(
         val touch: Vector3 = Vector3(screenX.toFloat(), screenY.toFloat(),0f)
         camera.unproject(touch)
         // Change the outOfBounds click behavior
-        val tileX: Int = if(touch.x.toInt() / 16 <= 0) 0 else
-            if (touch.x.toInt() / 16 >= level!!.map.map[0].size) level!!.map.map[0].size - 1 else
-                touch.x.toInt() / 16
+        val tileX: Int = if(touch.x.toInt() / 64 <= 0) 0 else
+            if (touch.x.toInt() / 64 >= level!!.sizeX) level!!.sizeX - 1 else
+                touch.x.toInt() / 64
 
-        val tileY: Int = if((startYPosition - touch.y) / 16 <= 0) 0 else
-            if ((startYPosition - touch.y) / 16 >= level!!.map.map.size) level!!.map.map.size - 1 else
-                (startYPosition - touch.y).toInt() / 16
+        val tileY: Int = if((startYPosition - touch.y) / 64 <= 0) 0 else
+            if ((startYPosition - touch.y) / 64 >= level!!.sizeY) level!!.sizeY - 1 else
+                (startYPosition - touch.y).toInt() / 64
 
         var entities: String = ""
         for (entity in level!!.map.map[tileY][tileX])
@@ -81,19 +85,19 @@ class GameStage(
         when (keycode) {
             Input.Keys.LEFT -> {
                 Player.move(Player.xPos - 1, Player.yPos)
-                camera.position.set(camera.position.x - 16, camera.position.y, 0f)
+                camera.position.set(camera.position.x - 64, camera.position.y, 0f)
             }
             Input.Keys.RIGHT -> {
                 Player.move(Player.xPos + 1, Player.yPos)
-                camera.position.set(camera.position.x + 16, camera.position.y, 0f)
+                camera.position.set(camera.position.x + 64, camera.position.y, 0f)
             }
             Input.Keys.UP -> {
                 Player.move(Player.xPos, Player.yPos - 1)
-                camera.position.set(camera.position.x, camera.position.y + 16, 0f)
+                camera.position.set(camera.position.x, camera.position.y + 64, 0f)
             }
             Input.Keys.DOWN -> {
                 Player.move(Player.xPos, Player.yPos + 1)
-                camera.position.set(camera.position.x, camera.position.y - 16, 0f)
+                camera.position.set(camera.position.x, camera.position.y - 64, 0f)
             }
         }
         return true
@@ -101,10 +105,10 @@ class GameStage(
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean {
         val zoom = (camera as OrthographicCamera).zoom + (amountY / 10)
-        if (zoom <= 0.1)
-            (camera as OrthographicCamera).zoom = 0.1f
-        else if (zoom >= 3f)
-            (camera as OrthographicCamera).zoom = 3f
+        if (zoom <= 0.4)
+            (camera as OrthographicCamera).zoom = 0.4f
+        else if (zoom >= 12f)
+            (camera as OrthographicCamera).zoom = 12f
         else
             (camera as OrthographicCamera).zoom = zoom
         return true

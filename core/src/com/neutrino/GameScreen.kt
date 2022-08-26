@@ -88,10 +88,11 @@ class GameScreen: KtxScreen {
 
                 val clickedCharacter = Turn.characterArray.get(x, y)
 
-                if(clickedCharacter == Player)
-                    Player.ai.action = Action.WAIT
-                // Attack the enemy
-                else if (clickedCharacter != null && Player.ai.canAttack(x, y))
+//                if(clickedCharacter == Player)
+//                    Player.ai.action = Action.WAIT
+//                // Attack the enemy
+//                else
+                    if (clickedCharacter != null && Player.ai.canAttack(x, y))
                     Player.ai.action = Action.ATTACK(x, y) // can pass a character
                 // Calculate move list and move to the tile
                 else {

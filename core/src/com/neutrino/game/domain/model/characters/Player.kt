@@ -13,7 +13,7 @@ object Player : Character(0, 0, 0.0), Animated {
     override var currentHp: Float = hp
     override var mp: Float = 10f
     override var currentMp: Float = mp
-    override var attack: Float = setAttack()
+    override var attack: Float = 0f
     override var strength: Float = 4f
     override var defence: Float = 2f
     override var agility: Float = 2f
@@ -27,8 +27,21 @@ object Player : Character(0, 0, 0.0), Animated {
     override var rangeType: RangeType = RangeType.SQUARE
     override var experience: Float = 0f
 
+    // environmental stats
+    override var fireDamage: Float = 0f
+    override var waterDamage: Float = 0f
+    override var earthDamage: Float = 0f
+    override var airDamage: Float = 0f
+    override var poisonDamage: Float = 0f
+    override var fireDefence: Float = 0f
+    override var waterDefence: Float = 0f
+    override var earthDefence: Float = 0f
+    override var airDefence: Float = 0f
+    override var poisonDefence: Float = 0f
+
     init {
         setName("Player")
+        attack = setAttack()
     }
 
     override val description: String

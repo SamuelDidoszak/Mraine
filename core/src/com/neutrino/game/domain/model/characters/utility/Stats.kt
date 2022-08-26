@@ -19,6 +19,23 @@ interface Stats {
     val rangeType: RangeType
     val experience: Float
 
+    // environmental
+    val fireDamage: Float
+    val waterDamage: Float
+    val earthDamage: Float
+    val airDamage: Float
+    val poisonDamage: Float
+    /** Range is 0 - 2, where 1+ heals instead of damaging */
+    val fireDefence: Float
+    /** Range is 0 - 2, where 1+ heals instead of damaging */
+    val waterDefence: Float
+    /** Range is 0 - 2, where 1+ heals instead of damaging */
+    val earthDefence: Float
+    /** Range is 0 - 2, where 1+ heals instead of damaging */
+    val airDefence: Float
+    /** Range is 0 - 2, where 1+ heals instead of damaging */
+    val poisonDefence: Float
+
     fun setAttack(): Float {
         return strength
     }

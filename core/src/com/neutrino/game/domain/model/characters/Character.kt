@@ -10,6 +10,10 @@ import com.neutrino.game.domain.model.characters.utility.Ai
 import com.neutrino.game.domain.model.characters.utility.HpBar
 import com.neutrino.game.domain.model.characters.utility.Stats
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import com.neutrino.game.domain.model.utility.ColorUtils
+import java.awt.Color
+import kotlin.math.round
+import kotlin.random.Random
 
 abstract class Character(
     var xPos: Int,
@@ -51,12 +55,12 @@ abstract class Character(
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
         if (batch != null) {
             batch.draw(textureHaver.texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
         } else {
             // TODO add a default character texture
         }
+        super.draw(batch, parentAlpha)
     }
 
     fun move(xPos: Int, yPos: Int) {
@@ -67,9 +71,45 @@ abstract class Character(
 
     fun getDamage(character: Character): Float {
         var damage: Float = 0f
-        damage += character.attack - defence
-        damage = if (damage < 0) 0f else damage
-        damage = 4f
+        var physicalDamage = character.attack - defence
+        physicalDamage = if (physicalDamage < 0) 0f else physicalDamage
+        val fireDamage = character.fireDamage * (1 - fireDefence)
+        val waterDamage = character.waterDamage * (1 - waterDefence)
+        val earthDamage = character.earthDamage * (1 - earthDefence)
+        val airDamage = character.airDamage * (1 - airDefence)
+        val poisonDamage = character.poisonDamage * (1 - poisonDefence)
+
+        damage += physicalDamage
+        damage += fireDamage
+        damage += waterDamage
+        damage += earthDamage
+        damage += airDamage
+        damage += poisonDamage
+
+        // for optimization, instead of creating Colors, pure rgb values can be passed
+        val colorUtils = ColorUtils()
+
+        // get damage color from interpolation
+        var damageColor: Color = Color(0, 0, 0)
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(255, 0, 0), (physicalDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(255, 128, 0), (fireDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(0, 0, 255), (waterDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(0, 255, 0), (earthDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(0, 255, 255), (airDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(128, 255, 0), (poisonDamage / damage).toInt())
+
+        damageColor = colorUtils.applySaturation(damageColor, 0.8f)
+
+        val damageLabel = TextraLabel("[@Cozette][${colorUtils.toHexadecimal(damageColor)}][%100]{SQUASH=0.3;false}" +
+                "${round(damage).toInt()}", KnownFonts.getStandardFamily())
+        damageLabel.name = "damage"
+        this.addActor(damageLabel)
+        damageLabel.setPosition(Random.nextFloat() * this.width * 0.8f, Random.nextFloat() * this.height / 3 + this.height / 4)
+        damageLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+        damageLabel.addAction(Actions.sequence(
+            Actions.fadeOut(1.25f),
+            Actions.removeActor()))
+
         this.currentHp -= damage
         if (currentHp <= 0) {
             parent.removeActor(this)

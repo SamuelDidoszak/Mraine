@@ -55,16 +55,22 @@ abstract class Character(
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
+        // required for fading
+        val color: com.badlogic.gdx.graphics.Color = color
+        batch?.setColor(color.r, color.g, color.b, color.a * parentAlpha)
+
         if (batch != null) {
             batch.draw(textureHaver.texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
         } else {
             // TODO add a default character texture
         }
         super.draw(batch, parentAlpha)
+        color.a = 1f
+        batch?.color = color
     }
 
-    fun move(xPos: Int, yPos: Int) {
-        this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, MoveSpeed))
+    fun move(xPos: Int, yPos: Int, speed: Float = MoveSpeed) {
+        this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, speed))
         this.xPos = xPos
         this.yPos = yPos
     }
@@ -112,7 +118,11 @@ abstract class Character(
 
         this.currentHp -= damage
         if (currentHp <= 0) {
-            parent.removeActor(this)
+//            this.addAction(Actions.fadeOut(1.25f))
+            this.addAction(Actions.sequence(
+                Actions.fadeOut(1.25f),
+                Actions.removeActor()
+            ))
             currentHp = 0f
         }
         this.findActor<HpBar>("hpBar").currentHp = currentHp

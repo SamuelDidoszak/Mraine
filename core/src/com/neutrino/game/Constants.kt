@@ -6,7 +6,8 @@ import kotlin.random.Random
 
 object Constants {
     const val AnimationSpeed: Float = 0.1666666666666666f
-    const val MoveSpeed: Float = 0.2f
+    const val MoveSpeed: Float = 0.5f
+    const val RunSpeed: Float = 0.2f
 
     //  Textures are provided here to omit the need of loading them multiple times
     val DefaultTextures: Array<Array<TextureRegion>> =

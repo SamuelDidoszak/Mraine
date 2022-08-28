@@ -25,7 +25,7 @@ class GameScreen: KtxScreen {
     val batch: Batch = stage.batch
 
     init {
-        extendViewport.camera.position.set(800f, 400f, 0f)
+        extendViewport.camera.position.set(800f, 400f, 0.5f)
         Gdx.input.inputProcessor = stage
         initialize.initialize()
         stage.level = initialize.level
@@ -37,6 +37,7 @@ class GameScreen: KtxScreen {
 
         Turn.setLevel(initialize.level)
         stage.addActor(initialize.level)
+        stage.setCameraToPlayer()
     }
 
     override fun render(delta: Float) {
@@ -51,6 +52,9 @@ class GameScreen: KtxScreen {
         render.addAnimations()
         stage.act(delta)
         stage.draw()
+
+        // showing fps
+        Gdx.graphics.setTitle("Mraine, ${Gdx.graphics.framesPerSecond}fps")
     }
 
     override fun dispose() {
@@ -88,10 +92,10 @@ class GameScreen: KtxScreen {
 
                 val clickedCharacter = Turn.characterArray.get(x, y)
 
-//                if(clickedCharacter == Player)
-//                    Player.ai.action = Action.WAIT
-//                // Attack the enemy
-//                else
+                if(clickedCharacter == Player)
+                    Player.ai.action = Action.WAIT
+                // Attack the enemy
+                else
                     if (clickedCharacter != null && Player.ai.canAttack(x, y))
                     Player.ai.action = Action.ATTACK(x, y) // can pass a character
                 // Calculate move list and move to the tile
@@ -99,15 +103,18 @@ class GameScreen: KtxScreen {
                     Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
                     val coord = Player.ai.getMove()
                     Player.ai.action = Action.MOVE(coord.x, coord.y)
-                    stage.setCameraToPlayer()
+                    stage.setCameraPosition(coord.x, coord.y)
                 }
             }
 
             // reset stage to wait for input
             stage.waitForPlayerInput = false
             stage.clickedCoordinates = null
+
+            Turn.playerAction = false
         }
-        Turn.makeTurn()
+        while (!Turn.playerAction)
+            Turn.makeTurn()
     }
 
 }

@@ -61,8 +61,8 @@ class Ai (private val character: Character) {
     /**
      * Finds the path to target if it isn't already set
      */
-    fun setMoveList(xPos: Int, yPos: Int, dijkstraMap: DijkstraMap, impassable: Collection<Coord>) {
-        if (xPos == xTarget && yPos == yTarget)
+    fun setMoveList(xPos: Int, yPos: Int, dijkstraMap: DijkstraMap, impassable: Collection<Coord>, forceUpdate: Boolean = false) {
+        if (xPos == xTarget && yPos == yTarget && !forceUpdate)
             return
         moveList = ArrayDeque()
         val map = dijkstraMap.findPath(30, 30,  null, null, Coord.get(character.xPos, character.yPos), Coord.get(xPos, yPos))

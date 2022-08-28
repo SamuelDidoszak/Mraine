@@ -1,6 +1,8 @@
 package com.neutrino.game.domain.model.turn
 
 import com.neutrino.game.Constants.IsSeeded
+import com.neutrino.game.Constants.MoveSpeed
+import com.neutrino.game.Constants.RunSpeed
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Action
@@ -26,7 +28,9 @@ object Turn {
         turn += 0.01
     }
 
-    var playerAction: Boolean = true
+    var playerAction: Boolean = false
+
+    var updateBatch: Action = Action.NOTHING
 
     /**
      * A list of current level characters. Should be changed / added to when entering a new Level
@@ -65,18 +69,25 @@ object Turn {
     fun makeTurn() {
         // character actions
         while (characterArray.get(turn) != null) {
-            val character = characterArray.get(turn)
+            val character = characterArray.get(turn)!!
             playerAction = character == Player
+
+            if (updateBatch == Action.MOVE(character.xPos, character.yPos))
+                updateBatch = Action.NOTHING
 
             // Player actions
             if (playerAction) {
                 // Makes the player action or returns if Action.NOTHING
-                val action: Action = character!!.ai.useAction()
+                val action: Action = character.ai.useAction()
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
-                        character.move(action.x, action.y)
-                        characterArray.move(character)
+                        if (updateBatch is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
+                            character.ai.setMoveList(character.ai.xTarget, character.ai.yTarget, dijkstraMap, charactersUseCases.getImpassable(), true)
+
+                        character.move(action.x, action.y,
+                            if (updateBatch is Action.NOTHING) RunSpeed else MoveSpeed)
+                        updateBatch = Action.MOVE(action.x, action.y)
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)
@@ -97,23 +108,28 @@ object Turn {
                 }
             } else {
                 // initialize the ai if it's 30 tiles or less from the player
-                if (abs(character!!.xPos - Player.xPos) <= 30 || abs(character.yPos - Player.yPos) <= 30)
+                if (abs(character.xPos - Player.xPos) <= 30 || abs(character.yPos - Player.yPos) <= 30)
                     character.ai.decide(Player.xPos, Player.yPos, dijkstraMap, charactersUseCases.getImpassable())
                 else
                     character.ai.action = Action.WAIT
 
                 val action: Action = character.ai.useAction()
                 when (action) {
-                    is Action.MOVE -> character.move(action.x, action.y)
+                    is Action.MOVE -> {
+                        if (updateBatch is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
+                            character.ai.setMoveList(character.ai.xTarget, character.ai.yTarget, dijkstraMap, charactersUseCases.getImpassable(), true)
+
+                        character.move(action.x, action.y)
+                        updateBatch = Action.MOVE(action.x, action.y)
+                    }
                     is Action.ATTACK -> {
                         val attackedCharacter = characterArray.get(action.x, action.y)
                         if (attackedCharacter == null) {
                             println("No character there")
                         } else {
                             attackedCharacter.getDamage(character)
-                            if (attackedCharacter.currentHp <= 0.0) {
+                            if (attackedCharacter.currentHp <= 0.0)
                                 characterArray.remove(attackedCharacter)
-                            }
                         }
                     }
                     is Action.SKILL -> {
@@ -136,7 +152,6 @@ object Turn {
         while (globalEventList.isNotEmpty() && globalEventList[0].turn == turn) {
             val globalEvent = globalEventList[0]
         }
-
         tick()
     }
 

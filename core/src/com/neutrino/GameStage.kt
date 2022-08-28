@@ -28,6 +28,11 @@ class GameStage(
         camera.position.y = startYPosition - Player.yPos * 64f
     }
 
+    fun setCameraPosition(xPos: Int, yPos: Int) {
+        camera.position.x = xPos * 64f
+        camera.position.y = startYPosition - yPos * 64f
+    }
+
 
     // Input processor
 

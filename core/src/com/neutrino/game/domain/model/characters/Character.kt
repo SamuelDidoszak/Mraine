@@ -9,6 +9,7 @@ import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.domain.model.characters.utility.Ai
 import com.neutrino.game.domain.model.characters.utility.HpBar
 import com.neutrino.game.domain.model.characters.utility.Stats
+import com.neutrino.game.domain.model.characters.utility.TurnBar
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.utility.ColorUtils
 import java.awt.Color
@@ -39,6 +40,9 @@ abstract class Character(
         super.setName(name)
         this.findActor<TextraLabel>("name").setText("[@Cozette][GREEN][%175]$name")
         (this.getChild(0) as Group).addActor(HpBar(currentHp, hp))
+
+        val turnBar = TurnBar(this.turn + this.movementSpeed, Player.turn + Player.movementSpeed, this.movementSpeed)
+        this.findActor<Group>("infoGroup").addActor(turnBar)
     }
 
     abstract val description: String
@@ -54,6 +58,15 @@ abstract class Character(
         nameLabel.setPosition(nameLabel.x + 32 - nameLabel.width / 2, nameLabel.y)
     }
 
+    fun updateTurnBar() {
+        val turnBar =  this.findActor<TurnBar>("turnBar")
+        turnBar.currentTurn = this.turn
+        turnBar.playerTurn = Player.turn
+
+        var size: Float = ((this.turn - Player.turn)/ this.movementSpeed).toFloat()
+        turnBar.addAction(Actions.sizeTo(size * 60f, 2f, MoveSpeed))
+    }
+
     override fun draw(batch: Batch?, parentAlpha: Float) {
         // required for fading
         val color: com.badlogic.gdx.graphics.Color = color
@@ -67,6 +80,9 @@ abstract class Character(
         super.draw(batch, parentAlpha)
         color.a = 1f
         batch?.color = color
+
+        val turnBar =  this.findActor<TurnBar>("turnBar")
+        turnBar.draw(batch, parentAlpha)
     }
 
     fun move(xPos: Int, yPos: Int, speed: Float = MoveSpeed) {
@@ -106,7 +122,7 @@ abstract class Character(
 
         damageColor = colorUtils.applySaturation(damageColor, 0.8f)
 
-        val damageLabel = TextraLabel("[@Cozette][${colorUtils.toHexadecimal(damageColor)}][%100]{SQUASH=0.3;false}" +
+        val damageLabel = TextraLabel("[@Cozette][${colorUtils.toHexadecimal(damageColor)}][%150][*]{SQUASH=0.3;false}" +
                 "${round(damage).toInt()}", KnownFonts.getStandardFamily())
         damageLabel.name = "damage"
         this.addActor(damageLabel)

@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
 import squidpony.squidmath.Coord
+import kotlin.math.abs
 
 class GameStage(
     viewport: Viewport,
@@ -21,16 +22,19 @@ class GameStage(
 
     var waitForPlayerInput: Boolean = true
     var clickedCoordinates: Coord? = null
+    var focusPlayer: Boolean = false
 
+    fun isPlayerFocused(): Boolean {
+        return (abs(camera.position.x - Player.xPos * 64f) < 16 &&
+            abs(camera.position.y - (startYPosition - Player.yPos * 64)) < 16)
+    }
 
     fun setCameraToPlayer() {
-        camera.position.x = Player.xPos * 64f
-        camera.position.y = startYPosition - Player.yPos * 64f
+        camera.position.lerp(Vector3(Player.xPos * 64f, startYPosition - Player.yPos * 64f, camera.position.z), 0.03f)
     }
 
     fun setCameraPosition(xPos: Int, yPos: Int) {
-        camera.position.x = xPos * 64f
-        camera.position.y = startYPosition - yPos * 64f
+        camera.position.lerp(Vector3(xPos * 64f, startYPosition - yPos * 64f, camera.position.z), 0.03f)
     }
 
 
@@ -73,9 +77,9 @@ class GameStage(
 
         var entities: String = ""
         for (entity in level!!.map.map[tileY][tileX])
-            entities += entity.name + ": texture= " + entity.texture.toString() + " onTop=" + entity.allowCharacterOnTop + "\n"
+            entities += "\t" + entity.name + ": texture= " + entity.texture.toString() + " onTop=" + entity.allowCharacterOnTop + "\n"
 
-        println("clicked: $tileX, $tileY\n$entities")
+        println("\nclicked: $tileX, $tileY\n$entities")
         dragging = false
 
         if (waitForPlayerInput) {

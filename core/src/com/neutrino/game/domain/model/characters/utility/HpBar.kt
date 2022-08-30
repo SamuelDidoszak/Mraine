@@ -1,7 +1,6 @@
 package com.neutrino.game.domain.model.characters.utility
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -12,16 +11,8 @@ class HpBar(
     var currentHp: Float,
     val maxHp: Float
 ): Actor() {
-    var texture: Texture
-    lateinit var textureRegion: TextureRegion
+    val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
     init {
-        val pixmap: Pixmap = Pixmap(1, 1, Pixmap.Format.RGBA8888)
-        pixmap.setColor(Color.WHITE)
-        pixmap.drawPixel(0, 0)
-        texture = Texture(pixmap)
-        pixmap.dispose()
-        textureRegion = TextureRegion(texture, 0, 0, 1, 1)
-
         name = "hpBar"
     }
 

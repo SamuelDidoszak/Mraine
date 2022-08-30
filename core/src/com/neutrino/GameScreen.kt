@@ -37,7 +37,7 @@ class GameScreen: KtxScreen {
 
         Turn.setLevel(initialize.level)
         stage.addActor(initialize.level)
-        stage.setCameraToPlayer()
+        stage.camera.position.set(Player.x, player.y, stage.camera.position.z)
     }
 
     override fun render(delta: Float) {
@@ -72,6 +72,11 @@ class GameScreen: KtxScreen {
     }
 
     fun gameEvents() {
+        if (Player.hasActions() || stage.focusPlayer) {
+            stage.setCameraToPlayer()
+            stage.focusPlayer = !stage.isPlayerFocused()
+        }
+
         // decide on the player action. They are executed in the Turn.makeTurn method along with ai actions
         if (Turn.playerAction) {
             stage.waitForPlayerInput = true
@@ -79,12 +84,15 @@ class GameScreen: KtxScreen {
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
             // Add the move action if the movement animation has ended
             if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && stage.clickedCoordinates == null) {
+                if (Turn.updateBatch is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
+                    Player.ai.setMoveList(Player.ai.xTarget, Player.ai.yTarget, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable(), true)
                 val tile = Player.ai.getMove()
                 Player.ai.action = Action.MOVE(tile.x, tile.y)
-                stage.setCameraToPlayer()
+                stage.focusPlayer = true
             }
 
             if (Player.ai.action is Action.NOTHING) {
+                // calls this method until a tile is clicked
                 if (stage.clickedCoordinates == null) return
                 // get coordinates
                 val x = stage.clickedCoordinates!!.x
@@ -103,14 +111,13 @@ class GameScreen: KtxScreen {
                     Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
                     val coord = Player.ai.getMove()
                     Player.ai.action = Action.MOVE(coord.x, coord.y)
-                    stage.setCameraPosition(coord.x, coord.y)
+                    stage.focusPlayer = true
                 }
             }
 
             // reset stage to wait for input
             stage.waitForPlayerInput = false
             stage.clickedCoordinates = null
-
             Turn.playerAction = false
         }
         while (!Turn.playerAction)

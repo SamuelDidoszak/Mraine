@@ -72,8 +72,10 @@ object Turn {
             val character = characterArray.get(turn)!!
             playerAction = character == Player
 
-            if (updateBatch == Action.MOVE(character.xPos, character.yPos))
+            if (updateBatch == Action.MOVE(character.xPos, character.yPos)) {
                 updateBatch = Action.NOTHING
+                println("resetting update batch")
+            }
 
             // Player actions
             if (playerAction) {
@@ -82,9 +84,6 @@ object Turn {
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
-                        if (updateBatch is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
-                            character.ai.setMoveList(character.ai.xTarget, character.ai.yTarget, dijkstraMap, charactersUseCases.getImpassable(), true)
-
                         character.move(action.x, action.y,
                             if (updateBatch is Action.NOTHING) RunSpeed else MoveSpeed)
                         updateBatch = Action.MOVE(action.x, action.y)
@@ -106,6 +105,8 @@ object Turn {
                         TODO("skills not implemented")
                     }
                 }
+                playerAction = false
+                charactersUseCases.updateTurnBars()
             } else {
                 // initialize the ai if it's 30 tiles or less from the player
                 if (abs(character.xPos - Player.xPos) <= 30 || abs(character.yPos - Player.yPos) <= 30)
@@ -135,12 +136,13 @@ object Turn {
                     is Action.SKILL -> {
                         println(character.name + " used a skill")}
                     is Action.WAIT -> {
-                        println(character.name + " is passing turn")
+//                        println(character.name + " is passing turn")
                     }
                     is Action.NOTHING -> {
                         println(character.name + " did nothing")
                     }
                 }
+                character.updateTurnBar()
             }
             characterArray.move(character)
         }

@@ -27,7 +27,7 @@ class Ai (private val character: Character) {
                 is Action.MOVE -> character.movementSpeed
                 is Action.ATTACK -> character.attackSpeed
                 is Action.SKILL -> 1.0
-                is Action.WAIT -> character.movementSpeed * 0.75f
+                is Action.WAIT -> character.movementSpeed
                 is Action.NOTHING -> 0.0
             }
         return thisAction
@@ -42,7 +42,7 @@ class Ai (private val character: Character) {
         dijkstraMap.clearGoals()
         val coord = getMove()
         if (coord.getX() == character.xPos && coord.getY() == character.yPos) {
-            println("\n\nDECIDED TO WAIT\n\n")
+//            println("\n\nDECIDED TO WAIT\n\n")
             action = Action.WAIT
         }
         else
@@ -65,7 +65,7 @@ class Ai (private val character: Character) {
         if (xPos == xTarget && yPos == yTarget && !forceUpdate)
             return
         moveList = ArrayDeque()
-        val map = dijkstraMap.findPath(30, 30,  null, null, Coord.get(character.xPos, character.yPos), Coord.get(xPos, yPos))
+        val map = dijkstraMap.findPath(30, 30,  impassable, null, Coord.get(character.xPos, character.yPos), Coord.get(xPos, yPos))
         moveList.addAll(map)
         xTarget = xPos
         yTarget = yPos

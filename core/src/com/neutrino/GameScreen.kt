@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
 import com.neutrino.game.Render
@@ -72,7 +73,7 @@ class GameScreen: KtxScreen {
     }
 
     fun gameEvents() {
-        if (Player.hasActions() || stage.focusPlayer) {
+        if ((Player.hasActions() || stage.focusPlayer) && !stage.lookingAround) {
             stage.setCameraToPlayer()
             stage.focusPlayer = !stage.isPlayerFocused()
         }
@@ -84,16 +85,37 @@ class GameScreen: KtxScreen {
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
             // Add the move action if the movement animation has ended
             if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && stage.clickedCoordinates == null) {
+                // check if the player wasn't attacked
+                if (Player.findActor<TextraLabel>("damage") != null) {
+                    stage.focusPlayer = true
+                    stage.lookingAround = false
+                    // TODO instead of removing player's planned moves, add a GUI button that resumes movement
+                    Player.ai.moveList = ArrayDeque()
+                    Player.ai.xTarget = Player.xPos
+                    Player.ai.yTarget = Player.yPos
+                    return
+                }
+
                 if (Turn.updateBatch is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
                     Player.ai.setMoveList(Player.ai.xTarget, Player.ai.yTarget, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable(), true)
                 val tile = Player.ai.getMove()
                 Player.ai.action = Action.MOVE(tile.x, tile.y)
-                stage.focusPlayer = true
+                if (!stage.lookingAround)
+                    stage.focusPlayer = true
             }
 
             if (Player.ai.action is Action.NOTHING) {
                 // calls this method until a tile is clicked
                 if (stage.clickedCoordinates == null) return
+                // player clicked during movement
+                if (Player.ai.moveList.isNotEmpty() || Player.hasActions()) {
+                    Player.ai.moveList = ArrayDeque()
+                    Player.ai.xTarget = Player.xPos
+                    Player.ai.yTarget = Player.yPos
+                    stage.clickedCoordinates = null
+                    return
+                }
+
                 // get coordinates
                 val x = stage.clickedCoordinates!!.x
                 val y = stage.clickedCoordinates!!.y
@@ -112,6 +134,7 @@ class GameScreen: KtxScreen {
                     val coord = Player.ai.getMove()
                     Player.ai.action = Action.MOVE(coord.x, coord.y)
                     stage.focusPlayer = true
+                    stage.lookingAround = false
                 }
             }
 

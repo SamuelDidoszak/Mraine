@@ -23,6 +23,7 @@ class GameStage(
     var waitForPlayerInput: Boolean = true
     var clickedCoordinates: Coord? = null
     var focusPlayer: Boolean = false
+    var lookingAround: Boolean = false
 
     fun isPlayerFocused(): Boolean {
         return (abs(camera.position.x - Player.xPos * 64f) < 16 &&
@@ -50,6 +51,7 @@ class GameStage(
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         dragging = true
+        lookingAround = true
         val zoom = (camera as OrthographicCamera).zoom
         camera.position.add(-Gdx.input.deltaX.toFloat() * zoom,
             Gdx.input.deltaY.toFloat() * zoom, 0f)
@@ -86,6 +88,8 @@ class GameStage(
             clickedCoordinates = Coord.get(tileX, tileY)
             waitForPlayerInput = false
         }
+
+        focusPlayer = false
 
         return true
     }

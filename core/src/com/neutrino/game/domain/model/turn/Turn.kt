@@ -4,6 +4,7 @@ import com.neutrino.game.Constants.IsSeeded
 import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.Constants.RunSpeed
 import com.neutrino.game.Constants.Seed
+import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Action
 import com.neutrino.game.domain.model.map.Level
@@ -41,6 +42,8 @@ object Turn {
             charactersUseCases = CharactersUseCases(characterArray)
         }
 
+    lateinit var characterMap: List<MutableList<Character?>>
+
     /**
      * List containing various short term events, often related to characters.
      * Incorporates cooldowns, buffs, etc.
@@ -60,6 +63,7 @@ object Turn {
 
     fun setLevel(level: Level) {
         characterArray = level.characterArray
+        characterMap = level.characterMap
         // terrain cost can be easily added by calling the initializeCost method.
         dijkstraMap.measurement = Measurement.EUCLIDEAN
 
@@ -84,6 +88,7 @@ object Turn {
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
+                        moveCharacter(character.xPos, character.yPos, action.x, action.y)
                         character.move(action.x, action.y,
                             if (updateBatch is Action.NOTHING) RunSpeed else MoveSpeed)
                         updateBatch = Action.MOVE(action.x, action.y)
@@ -120,6 +125,7 @@ object Turn {
                         if (updateBatch is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
                             character.ai.setMoveList(character.ai.xTarget, character.ai.yTarget, dijkstraMap, charactersUseCases.getImpassable(), true)
 
+                        moveCharacter(character.xPos, character.yPos, action.x, action.y)
                         character.move(action.x, action.y)
                         updateBatch = Action.MOVE(action.x, action.y)
                     }
@@ -129,8 +135,9 @@ object Turn {
                             println("No character there")
                         } else {
                             attackedCharacter.getDamage(character)
-                            if (attackedCharacter.currentHp <= 0.0)
+                            if (attackedCharacter.currentHp <= 0.0) {
                                 characterArray.remove(attackedCharacter)
+                            }
                         }
                     }
                     is Action.SKILL -> {
@@ -155,6 +162,12 @@ object Turn {
             val globalEvent = globalEventList[0]
         }
         tick()
+    }
+
+    private fun moveCharacter(fromX: Int, fromY: Int, toX: Int, toY: Int) {
+        val characterToMove = characterMap[fromY][fromX]
+        characterMap[fromY][fromX] = null
+        characterMap[toY][toX] = characterToMove
     }
 
 }

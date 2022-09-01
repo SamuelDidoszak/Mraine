@@ -2,8 +2,10 @@ package com.neutrino.game.domain.model.map
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.Constants.LevelChunkSize
+import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.model.turn.CharacterArray
@@ -43,11 +45,27 @@ class Level(
      */
     // Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
     val characterArray: CharacterArray = characterArray?:GenerateCharacters(this)()
+    // Map of character locations
+    val characterMap: List<MutableList<Character?>> = List(sizeY) {
+        ArrayList<Character?>(sizeX)
+    }
 
     init {
         setBounds(xScreen, yScreen, sizeX * 64f, sizeY * 64f)
         // scene2d name
         setName("Level")
+
+        // initialize characterMap
+        for (y in 0 until sizeY) {
+            for (x in 0 until sizeX) {
+                characterMap[y].add(this.characterArray.find { it.yPos == y && it.xPos == x })
+            }
+        }
+    }
+
+    fun printMap() {
+        println("character map:")
+        println(characterMap.map { it -> println(it.forEach { print((if(it != null) it.name else it) + " ") }) })
     }
 
     /**
@@ -127,11 +145,65 @@ class Level(
                 }
                 screenX += 64
             }
+            // Render characters
+            for (x in 0 until sizeX) {
+                if (characterMap[y][x] != null) {
+                    characterMap[y][x]!!.draw(batch, parentAlpha)
+                }
+
+                // do not cut out character when it's moving vertically
+                if (y != 0 && characterMap[y - 1][x] != null) {
+                    if (characterMap[y - 1][x]!!.y < screenY + 64) {
+                        val movingChar = characterMap[y - 1][x]!!
+                        movingChar.draw(batch, parentAlpha)
+
+                        for (entity in map.map[y][x]) {
+                            if (entity.texture.regionHeight > 16) {
+                                batch!!.draw(entity.texture,
+                                    movingChar.xPos * 64f,
+                                    screenY, entity.texture.regionWidth * 4f, entity.texture.regionHeight * 4f)
+                            }
+                        }
+                    }
+                }
+
+                // cases for downward diagonal movement
+                if (characterMap[y][x] != null) {
+                    val movingChar = characterMap[y][x]!!
+                    // down left
+                    if (movingChar.x > movingChar.xPos * 64 - 64) {
+                        for (entity in map.map[y][x + 1]) {
+                            if (entity.texture.regionHeight > 16) {
+                                batch!!.draw(entity.texture,
+                                    movingChar.xPos * 64f + 64,
+                                    screenY, entity.texture.regionWidth * 4f, entity.texture.regionHeight * 4f)
+                            }
+                        }
+                    }
+                    // down right
+                    if (movingChar.x < movingChar.xPos * 64) {
+                        for (entity in map.map[y][x - 1]) {
+                            if (entity.texture.regionHeight > 16) {
+                                batch!!.draw(entity.texture,
+                                    movingChar.xPos * 64f - 64,
+                                    screenY, entity.texture.regionWidth * 4f, entity.texture.regionHeight * 4f)
+                            }
+                        }
+                    }
+                }
+            }
             screenY -= 64
             screenX = 0f
         }
-        // draw the children after level layout
-        super.draw(batch, parentAlpha)
+//        // draw the children after level layout
+//        super.draw(batch, parentAlpha)
     }
 
+    /**
+     * Deletes the character from characterMap after fadeOut
+     */
+    override fun removeActor(actor: Actor?, unfocus: Boolean): Boolean {
+        characterMap[(actor as Character).yPos][(actor as Character).xPos] = null
+        return super.removeActor(actor, unfocus)
+    }
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.presentation.utility.EntityLookupPopup
 import squidpony.squidmath.Coord
 import kotlin.math.abs
 
@@ -44,7 +45,7 @@ class GameStage(
     private var dragging = false
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        if (button != Input.Buttons.LEFT || pointer > 0)
+        if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0)
             return false
         return true
     }
@@ -59,7 +60,7 @@ class GameStage(
     }
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        if (button != Input.Buttons.LEFT || pointer > 0) return false;
+        if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0) return false;
         if (level == null) return false
         if (dragging) {
             dragging = false
@@ -77,11 +78,23 @@ class GameStage(
             if ((startYPosition - touch.y) / 64 >= level!!.sizeY) level!!.sizeY - 1 else
                 (startYPosition - touch.y).toInt() / 64
 
-        var entities: String = ""
-        for (entity in level!!.map.map[tileY][tileX])
-            entities += "\t" + entity.name + ": texture= " + entity.texture.toString() + " onTop=" + entity.allowCharacterOnTop + "\n"
+        // If there is a popup, remove it
+        val currPopup: EntityLookupPopup? = this.actors.find { it.name == "entityPopup" } as EntityLookupPopup?
+        if (currPopup != null) {
+            currPopup.remove()
 
-        println("\nclicked: $tileX, $tileY\n$entities")
+            if (button == Input.Buttons.RIGHT && currPopup.tileX == tileX && currPopup.tileY == tileY)
+                return true
+        }
+
+        // create the entityLookupPopup
+        if (button == Input.Buttons.RIGHT) {
+            val popup = EntityLookupPopup(tileX, tileY, level!!.map.map[tileY][tileX], level!!.characterMap[tileY][tileX])
+            this.addActor(popup)
+            popup.setPosition(touch.x, touch.y)
+            return true
+        }
+
         dragging = false
 
         if (waitForPlayerInput) {

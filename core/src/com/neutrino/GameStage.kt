@@ -10,6 +10,7 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.presentation.utility.EntityLookupPopup
 import squidpony.squidmath.Coord
+import java.lang.Integer.max
 import kotlin.math.abs
 
 class GameStage(
@@ -43,14 +44,20 @@ class GameStage(
     // Input processor
 
     private var dragging = false
+    private var touchDownCoords: Pair<Int, Int> = Pair(0, 0)
+    private var calledFromLongpress: Boolean = false
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0)
             return false
+        touchDownCoords = Pair(screenX, screenY)
+        if (calledFromLongpress) calledFromLongpress = false
         return true
     }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
+        if (max(abs(touchDownCoords.first - screenX), abs(touchDownCoords.second - screenY)) < 32)
+            return true
         dragging = true
         lookingAround = true
         val zoom = (camera as OrthographicCamera).zoom
@@ -59,13 +66,20 @@ class GameStage(
         return true
     }
 
+
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0) return false;
+        if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT || button != Input.Buttons.FORWARD) || pointer > 0) return false;
         if (level == null) return false
         if (dragging) {
             dragging = false
             return true
         }
+        // related to android long press handling
+        if (calledFromLongpress)
+            return true
+        if (button == Input.Buttons.FORWARD)
+            calledFromLongpress = true
+        val button = if (button == Input.Buttons.FORWARD) Input.Buttons.RIGHT else button
 
         val touch: Vector3 = Vector3(screenX.toFloat(), screenY.toFloat(),0f)
         camera.unproject(touch)
@@ -83,7 +97,7 @@ class GameStage(
         if (currPopup != null) {
             currPopup.remove()
 
-            if (button == Input.Buttons.RIGHT && currPopup.tileX == tileX && currPopup.tileY == tileY)
+            if ((button == Input.Buttons.RIGHT || button == Input.Buttons.FORWARD) && currPopup.tileX == tileX && currPopup.tileY == tileY)
                 return true
         }
 

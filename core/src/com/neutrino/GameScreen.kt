@@ -1,8 +1,11 @@
 package com.neutrino
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.github.tommyettinger.textra.TextraLabel
@@ -27,7 +30,16 @@ class GameScreen: KtxScreen {
 
     init {
         extendViewport.camera.position.set(800f, 400f, 0.5f)
-        Gdx.input.inputProcessor = stage
+
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            val multiplexer: InputMultiplexer = InputMultiplexer()
+            val gestureDetector: GestureDetector = GestureDetector(GestureHandler(extendViewport))
+            multiplexer.addProcessor(gestureDetector)
+            multiplexer.addProcessor(stage)
+            Gdx.input.inputProcessor = multiplexer
+        } else
+            Gdx.input.inputProcessor = stage
+
         initialize.initialize()
         stage.level = initialize.level
         stage.startXPosition = startXPosition

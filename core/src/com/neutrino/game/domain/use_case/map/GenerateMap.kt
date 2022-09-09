@@ -3,9 +3,11 @@ package com.neutrino.game.domain.use_case.map
 import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.DungeonFloor
 import com.neutrino.game.domain.model.entities.DungeonGrass
-import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.Grass
 import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.entities.utility.ItemEntity
+import com.neutrino.game.domain.model.items.Gold
+import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.map.Level
 
 /**
@@ -31,6 +33,7 @@ class GenerateMap(
         addEntities(DungeonFloor().javaClass, 1f)
         addEntities(DungeonGrass().javaClass, 0.3f)
         addEntities(Grass().javaClass, 0.3f, listOf(DungeonGrass().javaClass))
+        addItems(Gold().javaClass, 0.005f)
 
         return map
     }
@@ -73,6 +76,23 @@ class GenerateMap(
 
                 if(allowGeneration && RandomGenerator.nextFloat() < probability)
                     map[y][x].add(entity.constructors[0].newInstance() as Entity)
+            }
+        }
+    }
+
+    /**
+     * Adds items to the map with a certain probability
+     * TODO add a richness value to some tiles and generate items based on that
+     */
+    private fun addItems(item: Class<Item>, probability: Float) {
+        for (y in 0 until level.sizeY) {
+            for (x in 0 until level.sizeX) {
+                var allowGeneration = true
+                if (map[y][x].isNotEmpty() && !map[y][x][0].allowOnTop)
+                    allowGeneration = false
+
+                if(allowGeneration && RandomGenerator.nextFloat() < probability)
+                    map[y][x].add(ItemEntity(item.constructors[0].newInstance() as Item) as Entity)
             }
         }
     }

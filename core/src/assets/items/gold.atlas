@@ -1,0 +1,19 @@
+gold.png
+	size: 128, 16
+	repeat: none
+gold1
+	bounds: 112, 0, 16, 16
+gold2
+	bounds: 64, 0, 16, 16
+gold3
+	bounds: 16, 0, 16, 16
+gold4
+	bounds: 96, 0, 16, 16
+gold5
+	bounds: 48, 0, 16, 16
+gold6
+	bounds: 0, 0, 16, 16
+gold7
+	bounds: 80, 0, 16, 16
+gold8
+	bounds: 32, 0, 16, 16

@@ -30,6 +30,8 @@ class Level(
     val id: Int = "$xPosition-$yPosition-$zPosition".hashCode()
     val textureList: ArrayList<TextureAtlas> = ArrayList()
 
+    private val tagList: List<MapTags> = listOf(MapTags.STARTING_AREA)
+
     private val mapUsecases = MapUseCases(this)
 
     val map: Map = Map(id,
@@ -61,6 +63,8 @@ class Level(
                 characterMap[y].add(this.characterArray.find { it.yPos == y && it.xPos == x })
             }
         }
+        // add item textures
+        textureList.addAll(mapUsecases.getItemsFromLevelTags())
     }
 
     fun printMap() {

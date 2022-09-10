@@ -7,6 +7,10 @@ import com.neutrino.game.Constants.DefaultTextures
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.items.equipment.EqElement
+import com.neutrino.game.domain.model.items.equipment.Equipment
+import com.neutrino.game.domain.model.turn.Turn
 
 object Player : Character(0, 0, 0.0), Animated {
     override var hp: Float = 10f
@@ -22,7 +26,7 @@ object Player : Character(0, 0, 0.0), Animated {
     override var criticalChance: Float = 0.3f
     override var luck: Float = 2f
     override var attackSpeed: Double = 1.0
-    override var movementSpeed: Double = 1.0
+    override var movementSpeed: Double = 0.25
     override var range: Int = 1
     override var rangeType: RangeType = RangeType.SQUARE
     override var experience: Float = 0f
@@ -44,6 +48,11 @@ object Player : Character(0, 0, 0.0), Animated {
         attack = setAttack()
     }
 
+    // Equipment
+    /** Player equipment */
+    val equipment: Equipment = Equipment()
+    val equipped: Equipment = Equipment()
+
     override val description: String
         get() = TODO("Not yet implemented")
 
@@ -60,4 +69,15 @@ object Player : Character(0, 0, 0.0), Animated {
 
     override var animation: Animation<TextureRegion>? = null
 
+    fun addToEquipment(item: Item) {
+        // add to stack
+        if (item.stackable) {
+            val stackableItem = equipment.itemList.find { it.item.name == item.name }
+            if (stackableItem != null)
+                stackableItem.item.amount = stackableItem.item.amount!!.plus(item.amount!!)
+            else
+                equipment.itemList.add(EqElement(item, Turn.turn))
+        } else
+            equipment.itemList.add(EqElement(item, Turn.turn))
+    }
 }

@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.Animated
+import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
 import com.neutrino.game.domain.use_case.map.MapUseCases
@@ -64,7 +66,7 @@ class Level(
             }
         }
         // add item textures
-        textureList.addAll(mapUsecases.getItemsFromLevelTags())
+//        textureList.addAll(mapUsecases.getItemsFromLevelTags())
     }
 
     fun printMap() {
@@ -136,6 +138,15 @@ class Level(
             }
         }
         return allow
+    }
+
+    /** Returns topmost item on the tile or null */
+    fun getTopItem(xPos: Int, yPos: Int): Item? {
+        val tile = map.map[yPos][xPos]
+        if (tile[tile.size - 1] is ItemEntity)
+            return (tile[tile.size - 1] as ItemEntity).item
+        else
+            return null
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {

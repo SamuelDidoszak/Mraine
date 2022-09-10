@@ -9,11 +9,12 @@ class Gold(amount: Int = RandomGenerator.nextInt(120)): Item() {
     override val name: String = "Gold"
     override val description: String = "Money"
     override val type: ItemType = ItemType.MISC
-    var amount = amount
+    override var amount: Int? = amount
         set(value) {
             field = value
             pickTexture()
         }
+    override val stackable: Boolean = true
 
     override var textureSrc: String = "items/gold.png"
     override val textureNames: List<String> = listOf(
@@ -29,13 +30,13 @@ class Gold(amount: Int = RandomGenerator.nextInt(120)): Item() {
 
     fun pickTexture() {
         val textureName =
-             if (amount < 10) "gold1"
-        else if (amount < 20) "gold2"
-        else if (amount < 50) "gold3"
-        else if (amount < 100) "gold4"
-        else if (amount < 200) "gold5"
-        else if (amount < 400) "gold6"
-        else if (amount < 700) "gold7"
+             if (amount!! < 10) "gold1"
+        else if (amount!! < 20) "gold2"
+        else if (amount!! < 50) "gold3"
+        else if (amount!! < 100) "gold4"
+        else if (amount!! < 200) "gold5"
+        else if (amount!! < 400) "gold6"
+        else if (amount!! < 700) "gold7"
         else "gold8"
 
         pickedTexture = textureName

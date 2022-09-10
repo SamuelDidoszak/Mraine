@@ -43,6 +43,7 @@ object Turn {
         }
 
     lateinit var characterMap: List<MutableList<Character?>>
+    lateinit var currentLevel: Level
 
     /**
      * List containing various short term events, often related to characters.
@@ -64,6 +65,7 @@ object Turn {
     fun setLevel(level: Level) {
         characterArray = level.characterArray
         characterMap = level.characterMap
+        currentLevel = level
         // terrain cost can be easily added by calling the initializeCost method.
         dijkstraMap.measurement = Measurement.EUCLIDEAN
 
@@ -92,6 +94,13 @@ object Turn {
                         character.move(action.x, action.y,
                             if (updateBatch is Action.NOTHING) RunSpeed else MoveSpeed)
                         updateBatch = Action.MOVE(action.x, action.y)
+
+                        // check if there are any items and pick them up
+                        val topmostItem = currentLevel.getTopItem(action.x, action.y)
+                        if (topmostItem != null) {
+                            Player.addToEquipment(topmostItem)
+                            currentLevel.map.map[action.y][action.x].removeLast()
+                        }
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)

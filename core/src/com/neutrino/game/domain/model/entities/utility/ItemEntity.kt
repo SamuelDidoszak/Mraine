@@ -3,7 +3,7 @@ package com.neutrino.game.domain.model.entities.utility
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.items.Item
 
-class ItemEntity(private val item: Item): Entity() {
+class ItemEntity(val item: Item): Entity() {
     override val id: Int = 0
     override val name: String = item.name
     override val allowOnTop: Boolean = true

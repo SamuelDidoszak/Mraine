@@ -140,6 +140,7 @@ class GameScreen: KtxScreen {
                 else
                     if (clickedCharacter != null && Player.ai.canAttack(x, y))
                     Player.ai.action = Action.ATTACK(x, y) // can pass a character
+                // No character is there
                 // Calculate move list and move to the tile
                 else {
                     Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())

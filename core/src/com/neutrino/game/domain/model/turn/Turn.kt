@@ -99,6 +99,7 @@ object Turn {
                         val topmostItem = currentLevel.getTopItem(action.x, action.y)
                         if (topmostItem != null) {
                             Player.addToEquipment(topmostItem)
+                            Player.showPickedUpItem(topmostItem)
                             currentLevel.map.map[action.y][action.x].removeLast()
                         }
                     }

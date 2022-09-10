@@ -40,5 +40,8 @@ class Gold(amount: Int = RandomGenerator.nextInt(120)): Item() {
         else "gold8"
 
         pickedTexture = textureName
+        // may be required eventually
+//        if(textureList.isNotEmpty())
+//            setTexture(textureName)
     }
 }

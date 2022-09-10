@@ -17,9 +17,13 @@ class ItemEntity(val item: Item): Entity() {
     val pickedTexture: String? = item.pickedTexture
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
-        if (pickedTexture != null)
+        if (pickedTexture != null) {
             texture = getTexture(pickedTexture)
-        else if (textureNames.isNotEmpty())
+            item.texture = getTexture(pickedTexture)
+        }
+        else if (textureNames.isNotEmpty()) {
             texture = getTexture(textureNames[0])
+            item.texture = getTexture(textureNames[0])
+        }
     }
 }

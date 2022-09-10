@@ -3,6 +3,8 @@ package com.neutrino.game.domain.model.characters
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.neutrino.game.Constants.DefaultTextures
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.RangeType
@@ -79,5 +81,18 @@ object Player : Character(0, 0, 0.0), Animated {
                 equipment.itemList.add(EqElement(item, Turn.turn))
         } else
             equipment.itemList.add(EqElement(item, Turn.turn))
+    }
+
+    fun showPickedUpItem(item: Item) {
+        val itemActor = Image(item.texture)
+        itemActor.setSize(itemActor.width * 4, itemActor.height * 4)
+
+        this.addActor(itemActor)
+        itemActor.setPosition(0f, this.height + 16)
+        itemActor.addAction(Actions.moveBy(0f, 36f, 1f))
+        itemActor.addAction(
+            Actions.sequence(
+            Actions.fadeOut(1.25f),
+            Actions.removeActor()))
     }
 }

@@ -6,8 +6,10 @@ import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.input.GestureDetector
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.badlogic.gdx.utils.viewport.FitViewport
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
@@ -16,6 +18,7 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Action
 import com.neutrino.game.domain.model.turn.Turn
 import ktx.app.KtxScreen
+import ktx.scene2d.Scene2DSkin
 
 class GameScreen: KtxScreen {
     private val initialize: Initialize = Initialize()
@@ -28,17 +31,17 @@ class GameScreen: KtxScreen {
     private val stage = GameStage(extendViewport)
     val batch: Batch = stage.batch
 
+    /** Viewport for UI and equipment */
+    private val fitViewport: FitViewport = FitViewport(1920f, 1080f)
+    private val uiStage: UiStage = UiStage(fitViewport)
+    private var isEqVisible: Boolean = true // force input setup
+
     init {
         extendViewport.camera.position.set(800f, 400f, 0.5f)
 
-        if (Gdx.app.type == Application.ApplicationType.Android) {
-            val multiplexer: InputMultiplexer = InputMultiplexer()
-            val gestureDetector: GestureDetector = GestureDetector(GestureHandler(extendViewport))
-            multiplexer.addProcessor(gestureDetector)
-            multiplexer.addProcessor(stage)
-            Gdx.input.inputProcessor = multiplexer
-        } else
-            Gdx.input.inputProcessor = stage
+        Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
+        uiStage.addactor()
+        selectInput(false)
 
         initialize.initialize()
         stage.level = initialize.level
@@ -53,6 +56,25 @@ class GameScreen: KtxScreen {
         stage.camera.position.set(Player.x, player.y, stage.camera.position.z)
     }
 
+    private fun selectInput(showEq: Boolean) {
+        if (showEq == isEqVisible)
+            return
+        if (!showEq) {
+            if (Gdx.app.type == Application.ApplicationType.Android) {
+                val multiplexer: InputMultiplexer = InputMultiplexer()
+                val gestureDetector: GestureDetector = GestureDetector(GestureHandler(extendViewport))
+                multiplexer.addProcessor(gestureDetector)
+                multiplexer.addProcessor(stage)
+                Gdx.input.inputProcessor = multiplexer
+            } else
+                Gdx.input.inputProcessor = stage
+            isEqVisible = false
+        } else {
+            Gdx.input.inputProcessor = uiStage
+            isEqVisible = true
+        }
+    }
+
     override fun render(delta: Float) {
         ScreenUtils.clear(0f, 0f, 0f, 0f)
         extendViewport.apply()
@@ -65,6 +87,21 @@ class GameScreen: KtxScreen {
         render.addAnimations()
         stage.act(delta)
         stage.draw()
+
+        if (stage.showEq) {
+            // show eq
+            selectInput(showEq = true)
+            uiStage.viewport.apply()
+            uiStage.act(delta)
+            uiStage.draw()
+            if (!uiStage.showEq) {
+                // show normal stuff
+                selectInput(showEq = false)
+                // cleanup
+                stage.showEq = false
+                uiStage.showEq = true
+            }
+        }
 
         // showing fps
         Gdx.graphics.setTitle("Mraine, ${Gdx.graphics.framesPerSecond}fps")
@@ -82,6 +119,7 @@ class GameScreen: KtxScreen {
 
     override fun resize(width: Int, height: Int) {
         extendViewport.update(width, height)
+        fitViewport.update(width, height)
     }
 
     fun gameEvents() {

@@ -27,6 +27,8 @@ class GameStage(
     var focusPlayer: Boolean = false
     var lookingAround: Boolean = false
 
+    var showEq: Boolean = false
+
     fun isPlayerFocused(): Boolean {
         return (abs(camera.position.x - Player.xPos * 64f) < 16 &&
             abs(camera.position.y - (startYPosition - Player.yPos * 64)) < 16)
@@ -123,6 +125,9 @@ class GameStage(
 
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
+            Input.Keys.TAB -> {
+                showEq = true
+            }
             Input.Keys.LEFT -> {
                 Player.move(Player.xPos - 1, Player.yPos)
                 camera.position.set(camera.position.x - 64, camera.position.y, 0f)

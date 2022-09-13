@@ -71,6 +71,13 @@ object Player : Character(0, 0, 0.0), Animated {
 
     override var animation: Animation<TextureRegion>? = null
 
+    var equipmentSize: Int = 96
+        private set(value) {
+            field = value
+            equipmentSizeChanged = true
+        }
+    var equipmentSizeChanged: Boolean = false
+
     fun addToEquipment(item: Item) {
         // add to stack
         if (item.stackable) {

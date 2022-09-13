@@ -9,7 +9,6 @@ import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.badlogic.gdx.utils.viewport.FitViewport
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
@@ -32,12 +31,16 @@ class GameScreen: KtxScreen {
     val batch: Batch = stage.batch
 
     /** Viewport for UI and equipment */
-    private val fitViewport: FitViewport = FitViewport(1920f, 1080f)
-    private val uiStage: UiStage = UiStage(fitViewport)
+    private val uiViewport: ExtendViewport = ExtendViewport(1920f, 1080f)
+    private val uiStage: UiStage = UiStage(uiViewport)
     private var isEqVisible: Boolean = true // force input setup
 
     init {
         extendViewport.camera.position.set(800f, 400f, 0.5f)
+
+        println("screen dimensions:")
+        println(Gdx.app.graphics.width)
+        println(Gdx.app.graphics.height)
 
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
         uiStage.addactor()
@@ -72,6 +75,8 @@ class GameScreen: KtxScreen {
         } else {
             Gdx.input.inputProcessor = uiStage
             isEqVisible = true
+            // refresh eq
+            uiStage.refreshEq = true
         }
     }
 
@@ -119,7 +124,8 @@ class GameScreen: KtxScreen {
 
     override fun resize(width: Int, height: Int) {
         extendViewport.update(width, height)
-        fitViewport.update(width, height)
+        uiViewport.update(width, height)
+        uiStage.updateRatio()
     }
 
     fun gameEvents() {

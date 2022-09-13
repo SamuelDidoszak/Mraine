@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		config.useVsync(false);
 		config.setForegroundFPS(0);
 		config.setTitle("Mraine");
+		config.setWindowedMode(1024, 768);
 		new Lwjgl3Application(new Mraine(), config);
 	}
 }

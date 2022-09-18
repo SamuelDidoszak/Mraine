@@ -5,10 +5,11 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.Constants.DefaultTextures
 import com.neutrino.game.domain.model.characters.utility.Animated
+import com.neutrino.game.domain.model.characters.utility.Randomization
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
-class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Animated {
+class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Animated , Randomization {
     override var hp: Float = 10f
     override var currentHp: Float = hp
     override var mp: Float = 10f
@@ -19,7 +20,7 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ani
     override var agility: Float = 2f
     override var evasiveness: Float = 2f
     override var accuracy: Float = 2f
-    override var criticalChance: Float = 0.3f
+    override var criticalChance: Float = 0.05f
     override var luck: Float = 2f
     override var attackSpeed: Double = 1.0
     override var movementSpeed: Double = 1.0
@@ -37,10 +38,11 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ani
     override var earthDefence: Float = 0f
     override var airDefence: Float = 0f
     override var poisonDefence: Float = 0f
+    override val randomizationProbability: Float = 0.5f
 
     init {
         setName("Rat")
-        attack = setAttack()
+        randomizeStats()
     }
 
     override val description: String = "IT'S A RAAAAT"
@@ -59,5 +61,10 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ani
     override val defaultAnimationName: String = "rat"
 
     override var animation: Animation<TextureRegion>? = null
+
+    private fun randomizeStats() {
+        movementSpeed = movementSpeed.randomizeByValue(0.3).roundToDecimalPlaces(10)
+        hp = hp.randomizeByPercent(0.2f).roundToDecimalPlaces(10)
+    }
 
 }

@@ -6,8 +6,8 @@ class CharacterArray() : ArrayList<Character>() {
     constructor(character: Character): this() {
         this.add(character)
     }
-    private fun Double.equalsDelta(other: Double) = abs(this - other) < 0.001
-    private fun Double.lessThanDelta(other: Double) = (this - other) < -0.001
+    private fun Double.equalsDelta(other: Double) = abs(this - other) <= 0.005
+    private fun Double.lessThanDelta(other: Double) = (this - other) < -0.0000001
 
     override fun add(element: Character): Boolean {
         for (i in 0 until this.size) {

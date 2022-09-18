@@ -14,7 +14,7 @@ interface Stats {
     val criticalChance: Float
     val luck: Float
     val attackSpeed: Double
-    val movementSpeed: Double
+    var movementSpeed: Double
     val range: Int
     val rangeType: RangeType
     val experience: Float

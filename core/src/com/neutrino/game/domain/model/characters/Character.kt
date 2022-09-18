@@ -6,10 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants.MoveSpeed
-import com.neutrino.game.domain.model.characters.utility.Ai
-import com.neutrino.game.domain.model.characters.utility.HpBar
-import com.neutrino.game.domain.model.characters.utility.Stats
-import com.neutrino.game.domain.model.characters.utility.TurnBar
+import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.utility.ColorUtils
 import java.awt.Color
@@ -20,7 +17,7 @@ abstract class Character(
     var xPos: Int,
     var yPos: Int,
     var turn: Double
-): Group(), TextureHaver, Stats {
+): Group(), TextureHaver, Stats, Randomization {
     init {
         val infoGroup = Group()
         this.addActor(infoGroup)
@@ -32,13 +29,16 @@ abstract class Character(
         infoGroup.addActor(nameLabel)
     }
 
+    override val randomizationProbability: Float = 0.3f
+    override var randomizationMultiplier: Float = 0f
+
     /**
      * This method is called only once, after initialization of Character implementation
      * Passing values here makes sure that they are initialized
      */
     override fun setName(name: String?) {
         super.setName(name)
-        this.findActor<TextraLabel>("name").setText("[@Cozette][GREEN][%175]$name")
+        this.findActor<TextraLabel>("name").setText("[@Cozette][WHITE][%175]$name")
         (this.getChild(0) as Group).addActor(HpBar(currentHp, hp))
 
         val turnBar = TurnBar(this.turn + this.movementSpeed, Player.turn + Player.movementSpeed, this.movementSpeed)

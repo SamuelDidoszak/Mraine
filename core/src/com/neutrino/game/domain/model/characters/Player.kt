@@ -15,7 +15,7 @@ import com.neutrino.game.domain.model.items.equipment.Equipment
 import com.neutrino.game.domain.model.turn.Turn
 
 object Player : Character(0, 0, 0.0), Animated {
-    override var hp: Float = 10f
+    override var hp: Float = 20f
     override var currentHp: Float = hp
     override var mp: Float = 10f
     override var currentMp: Float = mp
@@ -28,7 +28,7 @@ object Player : Character(0, 0, 0.0), Animated {
     override var criticalChance: Float = 0.3f
     override var luck: Float = 2f
     override var attackSpeed: Double = 1.0
-    override var movementSpeed: Double = 0.25
+    override var movementSpeed: Double = 1.0
     override var range: Int = 1
     override var rangeType: RangeType = RangeType.SQUARE
     override var experience: Float = 0f

@@ -218,7 +218,8 @@ class Level(
      * Deletes the character from characterMap after fadeOut
      */
     override fun removeActor(actor: Actor?, unfocus: Boolean): Boolean {
-        characterMap[(actor as Character).yPos][(actor as Character).xPos] = null
+        if (characterMap[(actor as Character).yPos][(actor as Character).xPos] == actor as Character)
+            characterMap[(actor as Character).yPos][(actor as Character).xPos] = null
         return super.removeActor(actor, unfocus)
     }
 }

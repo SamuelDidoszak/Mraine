@@ -94,6 +94,7 @@ object Turn {
                         character.move(action.x, action.y,
                             if (updateBatch is Action.NOTHING) RunSpeed else MoveSpeed)
                         updateBatch = Action.MOVE(action.x, action.y)
+                        println("")
 
                         // check if there are any items and pick them up
                         val topmostItem = currentLevel.getTopItem(action.x, action.y)
@@ -129,11 +130,14 @@ object Turn {
                 else
                     character.ai.action = Action.WAIT
 
-                val action: Action = character.ai.useAction()
+                var action: Action = character.ai.useAction()
                 when (action) {
                     is Action.MOVE -> {
-                        if (updateBatch is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
+                        if (updateBatch is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
                             character.ai.setMoveList(character.ai.xTarget, character.ai.yTarget, dijkstraMap, charactersUseCases.getImpassable(), true)
+                            val coord = character.ai.getMove()
+                            action = Action.MOVE(coord.x, coord.y)
+                        }
 
                         moveCharacter(character.xPos, character.yPos, action.x, action.y)
                         character.move(action.x, action.y)
@@ -145,9 +149,8 @@ object Turn {
                             println("No character there")
                         } else {
                             attackedCharacter.getDamage(character)
-                            if (attackedCharacter.currentHp <= 0.0) {
+                            if (attackedCharacter.currentHp <= 0.0)
                                 characterArray.remove(attackedCharacter)
-                            }
                         }
                     }
                     is Action.SKILL -> {
@@ -176,6 +179,7 @@ object Turn {
 
     private fun moveCharacter(fromX: Int, fromY: Int, toX: Int, toY: Int) {
         val characterToMove = characterMap[fromY][fromX]
+        println("called move for ${characterToMove?.name} $fromX, $fromY, $toX, $toY")
         characterMap[fromY][fromX] = null
         characterMap[toY][toX] = characterToMove
     }

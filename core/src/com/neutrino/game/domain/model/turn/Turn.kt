@@ -94,14 +94,6 @@ object Turn {
                         character.move(action.x, action.y,
                             if (updateBatch is Action.NOTHING) RunSpeed else MoveSpeed)
                         updateBatch = Action.MOVE(action.x, action.y)
-
-                        // check if there are any items and pick them up
-                        val topmostItem = currentLevel.getTopItem(action.x, action.y)
-                        if (topmostItem != null) {
-                            Player.addToEquipment(topmostItem)
-                            Player.showPickedUpItem(topmostItem)
-                            currentLevel.map.map[action.y][action.x].removeLast()
-                        }
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)
@@ -112,6 +104,13 @@ object Turn {
                             characterArray.remove(clickedCharacter)
                         }
                     }
+                    is Action.PICKUP -> {
+                        val topmostItem = currentLevel.getTopItem(action.x, action.y)!!
+                        Player.addToEquipment(topmostItem)
+                        Player.showPickedUpItem(topmostItem)
+                        currentLevel.map.map[action.y][action.x].removeLast()
+                    }
+
                     is Action.WAIT -> {
                         println("passing turn")
                     }
@@ -160,6 +159,7 @@ object Turn {
                     is Action.NOTHING -> {
                         println(character.name + " did nothing")
                     }
+                    is Action.PICKUP -> {}
                 }
                 character.updateTurnBar()
             }

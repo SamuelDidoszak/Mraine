@@ -27,6 +27,7 @@ class Ai (private val character: Character) {
                 is Action.MOVE -> character.movementSpeed
                 is Action.ATTACK -> character.attackSpeed
                 is Action.SKILL -> 1.0
+                is Action.PICKUP -> 1.0
                 is Action.WAIT -> character.movementSpeed
                 is Action.NOTHING -> 0.0
             }
@@ -42,7 +43,6 @@ class Ai (private val character: Character) {
         dijkstraMap.clearGoals()
         val coord = getMove()
         if (coord.getX() == character.xPos && coord.getY() == character.yPos) {
-//            println("\n\nDECIDED TO WAIT\n\n")
             action = Action.WAIT
         }
         else

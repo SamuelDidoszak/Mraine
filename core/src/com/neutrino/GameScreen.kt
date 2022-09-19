@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.input.GestureDetector
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
@@ -99,6 +100,8 @@ class GameScreen: KtxScreen {
 
         if (stage.showEq) {
             // show eq
+            if (Player.findActor<Image>("item") != null)
+                uiStage.refreshEq = true
             selectInput(showEq = true)
             uiStage.viewport.apply()
             uiStage.act(delta)
@@ -132,6 +135,9 @@ class GameScreen: KtxScreen {
         uiStage.updateRatio()
     }
 
+    /** Indicates, if there is an item to be picked up at the end of movelist */
+    var pickupItem: Boolean = false
+
     fun gameEvents() {
         if ((Player.hasActions() || stage.focusPlayer) && !stage.lookingAround) {
             stage.setCameraToPlayer()
@@ -164,6 +170,12 @@ class GameScreen: KtxScreen {
                     stage.focusPlayer = true
             }
 
+            // If an item was at the end of movelist, set the action to PICKUP
+            if (pickupItem && !Player.hasActions() && stage.clickedCoordinates == null && Player.xPos == Player.ai.xTarget && Player.yPos == Player.ai.yTarget) {
+                Player.ai.action = Action.PICKUP(Player.xPos, Player.yPos)
+                pickupItem = false
+            }
+
             if (Player.ai.action is Action.NOTHING) {
                 // calls this method until a tile is clicked
                 if (stage.clickedCoordinates == null) return
@@ -182,8 +194,12 @@ class GameScreen: KtxScreen {
 
                 val clickedCharacter = Turn.characterArray.get(x, y)
 
-                if(clickedCharacter == Player)
-                    Player.ai.action = Action.WAIT
+                if(clickedCharacter == Player) {
+                    if (Turn.currentLevel.getTopItem(x, y) != null)
+                        Player.ai.action = Action.PICKUP(x, y)
+                    else
+                        Player.ai.action = Action.WAIT
+                }
                 // Attack the enemy
                 else
                     if (clickedCharacter != null && Player.ai.canAttack(x, y))
@@ -196,6 +212,10 @@ class GameScreen: KtxScreen {
                     Player.ai.action = Action.MOVE(coord.x, coord.y)
                     stage.focusPlayer = true
                     stage.lookingAround = false
+
+                    // If there was an item at the clickedTile, pick it up on arrival
+                    if (Turn.currentLevel.getTopItem(x, y) != null)
+                        pickupItem = true
                 }
             }
 

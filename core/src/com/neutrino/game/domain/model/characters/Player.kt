@@ -93,6 +93,7 @@ object Player : Character(0, 0, 0.0), Animated {
     fun showPickedUpItem(item: Item) {
         val itemActor = Image(item.texture)
         itemActor.setSize(itemActor.width * 4, itemActor.height * 4)
+        itemActor.name = "item"
 
         this.addActor(itemActor)
         itemActor.setPosition(0f, this.height)

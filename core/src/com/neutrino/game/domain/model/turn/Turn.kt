@@ -94,7 +94,6 @@ object Turn {
                         character.move(action.x, action.y,
                             if (updateBatch is Action.NOTHING) RunSpeed else MoveSpeed)
                         updateBatch = Action.MOVE(action.x, action.y)
-                        println("")
 
                         // check if there are any items and pick them up
                         val topmostItem = currentLevel.getTopItem(action.x, action.y)
@@ -179,7 +178,6 @@ object Turn {
 
     private fun moveCharacter(fromX: Int, fromY: Int, toX: Int, toY: Int) {
         val characterToMove = characterMap[fromY][fromX]
-        println("called move for ${characterToMove?.name} $fromX, $fromY, $toX, $toY")
         characterMap[fromY][fromX] = null
         characterMap[toY][toX] = characterToMove
     }

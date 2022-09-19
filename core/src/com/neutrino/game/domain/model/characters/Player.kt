@@ -95,7 +95,7 @@ object Player : Character(0, 0, 0.0), Animated {
         itemActor.setSize(itemActor.width * 4, itemActor.height * 4)
 
         this.addActor(itemActor)
-        itemActor.setPosition(0f, this.height + 16)
+        itemActor.setPosition(0f, this.height)
         itemActor.addAction(Actions.moveBy(0f, 36f, 1f))
         itemActor.addAction(
             Actions.sequence(

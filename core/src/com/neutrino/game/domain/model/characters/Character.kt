@@ -78,11 +78,9 @@ abstract class Character(
             // TODO add a default character texture
         }
         super.draw(batch, parentAlpha)
+
         color.a = 1f
         batch?.color = color
-
-        val turnBar =  this.findActor<TurnBar>("turnBar")
-        turnBar.draw(batch, parentAlpha)
     }
 
     fun move(xPos: Int, yPos: Int, speed: Float = MoveSpeed) {

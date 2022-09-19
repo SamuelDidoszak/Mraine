@@ -8,6 +8,7 @@ import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.Gold
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.items.Knife
 import com.neutrino.game.domain.model.map.Level
 
 /**
@@ -34,6 +35,7 @@ class GenerateMap(
         addEntities(DungeonGrass().javaClass, 0.3f)
         addEntities(Grass().javaClass, 0.3f, listOf(DungeonGrass().javaClass))
         addItems(Gold().javaClass, 0.005f)
+        addItems(Knife().javaClass, 0.0005f)
 
         return map
     }

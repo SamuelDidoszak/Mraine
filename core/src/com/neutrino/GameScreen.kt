@@ -15,6 +15,7 @@ import com.neutrino.game.Initialize
 import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Action
+import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.turn.Turn
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
@@ -72,6 +73,9 @@ class GameScreen: KtxScreen {
             } else
                 Gdx.input.inputProcessor = stage
             isEqVisible = false
+            // add dropped items here
+            while (uiStage.itemDropList.isNotEmpty())
+                stage.level!!.map.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
         } else {
             Gdx.input.inputProcessor = uiStage
             isEqVisible = true

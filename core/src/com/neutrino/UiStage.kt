@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
@@ -14,7 +15,9 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.equipment.EqActor
+import com.neutrino.game.domain.model.items.equipment.Equipment
 import ktx.actors.centerPosition
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
@@ -25,6 +28,9 @@ class UiStage(
     viewport: Viewport
 ): Stage(viewport) {
     lateinit var eqScreen: ScrollPane
+
+    /** FIFO of dropped items */
+    val itemDropList: ArrayDeque<Item> = ArrayDeque()
 
     var showEq: Boolean = true
     var refreshEq = false
@@ -105,25 +111,33 @@ class UiStage(
     // input processor
     var timeClicked: Long = 0
     var originalContainer: Container<*>? = null
+    var originalEq: Equipment? = null
     // possibly change to EqActor
     var clickedItem: Actor? = null
     var dragItem: Boolean? = null
+    var itemClicked: Boolean? = null
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0) return false
+        if (itemClicked == true) {
+            timeClicked = TimeUtils.millis()
+            return super.touchDown(screenX, screenY, pointer, button)
+        }
+
         val coord: Vector2 = screenToStageCoordinates(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
+        // gets the eq ui and sets the originalEq
         val clickedEq = getEqClicked(coord.x, coord.y)
         if (clickedEq != null) {
             clickedItem = getEqCell(coord.x, coord.y, clickedEq)?.actor
-            if (clickedItem != null) {
+            if (clickedItem != null)
                 timeClicked = TimeUtils.millis()
-                dragItem = null
-            }
         }
         return super.touchDown(screenX, screenY, pointer, button)
     }
+
+
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         if (clickedItem == null)
@@ -131,14 +145,8 @@ class UiStage(
 
         if (dragItem == null) {
             dragItem = TimeUtils.millis() - timeClicked >= 650
-            if (dragItem!!) {
-                clickedItem!!.name = "movedItem"
-                originalContainer = clickedItem!!.parent as Container<*>
-                originalContainer!!.removeActor(clickedItem)
-                addActor(clickedItem)
-                clickedItem = actors.find { it.name == "movedItem" }!!
-                clickedItem!!.name = null
-            }
+            if (dragItem!!)
+                pickUpItem()
         }
 
         if (dragItem!!) {
@@ -152,22 +160,65 @@ class UiStage(
         return super.touchDragged(screenX, screenY, pointer)
     }
 
+    private fun pickUpItem() {
+        clickedItem!!.name = "movedItem"
+        originalContainer = clickedItem!!.parent as Container<*>
+        originalContainer!!.removeActor(clickedItem)
+        addActor(clickedItem)
+        clickedItem = actors.find { it.name == "movedItem" }!!
+        clickedItem!!.name = null
+        clickedItem!!.setScale(1.2f, 1.2f)
+    }
+
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         val coord: Vector2 = screenToStageCoordinates(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
         if (dragItem == true)
             parseItemDrop(coord.x, coord.y)
+
+        // Dropping the clicked item
+        if (itemClicked == true && TimeUtils.millis() - timeClicked <= 200) {
+            parseItemDrop(coord.x, coord.y)
+            clickedItem = null
+        }
+
+        // The item was clicked
+        if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
+            pickUpItem()
+            itemClicked = true
+            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f * 1.2f) / 2,
+                coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f * 1.2f) / 2)
+            return super.touchUp(screenX, screenY, pointer, button)
+        }
+
         clickedItem = null
         originalContainer = null
+        originalEq = null
+        itemClicked = null
+        dragItem = null
         return super.touchUp(screenX, screenY, pointer, button)
     }
 
+    override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
+        val coord: Vector2 = screenToStageCoordinates(
+            Vector2(screenX.toFloat(), screenY.toFloat())
+        )
+
+        if (itemClicked == true)
+            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f * 1.2f) / 2,
+                coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f * 1.2f) / 2)
+        return super.mouseMoved(screenX, screenY)
+    }
+
+    /** Returns the eq ui and sets the originalEq */
     private fun getEqClicked(x: Float, y: Float): ScrollPane? {
         val inPlayerEq = (x in eqScreen.x .. eqScreen.x + eqScreen.width - 1 &&
                 y in eqScreen.y .. eqScreen.y + eqScreen.height - 1)
-        if (inPlayerEq)
+        if (inPlayerEq) {
+            originalEq = Player.equipment
             return eqScreen
+        }
         else
             return null
     }
@@ -196,10 +247,24 @@ class UiStage(
 
         val clickedEq = getEqClicked(x, y)
         if (clickedEq == null) {
-            if (clickedItem != null)
-                println("//TODO drop item out of eq")
+            // DROPPING THE ITEM
+            if (clickedItem != null) {
+                itemDropList.add((clickedItem as EqActor).item)
+                // TODO change the remove implementation to this after adding the sorting and user defined positions
+//                originalEq!!.itemList.removeAt(originalContainer!!.name.toInt())
+                originalEq!!.itemList.remove(
+                    originalEq!!.itemList.find { it.item == (clickedItem as EqActor).item }
+                )
+
+                clickedItem!!.addAction(Actions.scaleTo(0f, 0f, 0.35f))
+                clickedItem!!.addAction(Actions.sequence(
+                    Actions.fadeOut(0.35f),
+                    Actions.removeActor()
+                ))
+            }
             return
         }
+        clickedItem!!.setScale(1f, 1f)
         // if the area between cells was clicked, reset the item position
         val container = getEqCell(x, y, clickedEq)
         if (container == null) {
@@ -227,6 +292,13 @@ class UiStage(
         when (keycode) {
             Input.Keys.TAB -> {
                 showEq = false
+                // nullify all values
+                clickedItem?.addAction(Actions.removeActor())
+                clickedItem = null
+                originalContainer = null
+                originalEq = null
+                itemClicked = null
+                dragItem = null
             }
         }
         return true

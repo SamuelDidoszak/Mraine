@@ -33,7 +33,7 @@ class GenerateCharacters(
 
     private fun spawnEnemies() {
         // TODO Amount and the type of enemies should be dependant on level difficulty and enemy difficulty
-        for (i in 0 until 20) {
+        for (i in 0 until 10) {
             try {
                 characterArray.add(getCharacter())
             } catch (e: Exception) {

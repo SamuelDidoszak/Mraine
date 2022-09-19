@@ -17,9 +17,9 @@ class TurnBar(
     val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
     val baseColor: Color =
         when (sign(movement.compareTo(Player.movementSpeed).toDouble())) {
-            -1.0 -> Color.WHITE
+            -1.0 -> Color.BLACK
             0.0 -> Color.CLEAR
-            1.0 -> Color.LIGHT_GRAY
+            1.0 -> Color.WHITE
             else -> {Color.CYAN}
         }
 
@@ -33,6 +33,7 @@ class TurnBar(
         // required for fading
         val color = pickColor()
         color.a = parentAlpha
+
         val drawer = ShapeDrawer(batch, textureRegion)
         drawer.filledRectangle(2f, -26f, size, 2f, color)
     }

@@ -38,11 +38,11 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ani
     override var earthDefence: Float = 0f
     override var airDefence: Float = 0f
     override var poisonDefence: Float = 0f
-    override val randomizationProbability: Float = 0.5f
+    override val randomizationProbability: Float = 1f
 
     init {
-        setName("Rat")
         randomizeStats()
+        setName("Rat")
     }
 
     override val description: String = "IT'S A RAAAAT"

@@ -7,7 +7,7 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.entities.utility.Entity
 
-class EntityLookupPopup(val tileX: Int, val tileY: Int, entityList: MutableList<Entity>, character: Character?): Table() {
+class EntityLookupPopup(entityList: MutableList<Entity>, character: Character?): Table() {
     init {
         if (character != null) {
             this.row()

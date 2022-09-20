@@ -100,7 +100,8 @@ class GameScreen: KtxScreen {
 
         if (stage.showEq) {
             // show eq
-            if (Player.findActor<Image>("item") != null)
+            //TODO force the refresh to execute only once, currently, the "uiStage.clickedItem == null" check resets the item positions of those changed while pickup icon is still visible
+            if (Player.findActor<Image>("item") != null && uiStage.clickedItem == null)
                 uiStage.refreshEq = true
             selectInput(showEq = true)
             uiStage.viewport.apply()
@@ -156,6 +157,8 @@ class GameScreen: KtxScreen {
                     stage.focusPlayer = true
                     stage.lookingAround = false
                     // TODO instead of removing player's planned moves, add a GUI button that resumes movement
+
+                    // TODO check if setting targets is necessary, it causes PICKUP bug
                     Player.ai.moveList = ArrayDeque()
                     Player.ai.xTarget = Player.xPos
                     Player.ai.yTarget = Player.yPos

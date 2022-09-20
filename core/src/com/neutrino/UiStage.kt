@@ -18,6 +18,7 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.equipment.EqActor
 import com.neutrino.game.domain.model.items.equipment.Equipment
+import com.neutrino.game.presentation.utility.ItemDetailsPopup
 import ktx.actors.centerPosition
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
@@ -72,8 +73,9 @@ class UiStage(
                     row().padTop(if (n != 12) 4f else 0f).space(0f)
                 }
         }
+        table.pack()
         eqScreen = ScrollPane(table)
-        eqScreen.name = "scrollEq"
+        eqScreen.name = "playerEq"
         // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
         eqScreen.setScrollingDisabled(true, false)
         eqScreen.setOverscroll(false, false)
@@ -82,11 +84,11 @@ class UiStage(
 
 
         val backgroundImage = Image(Texture("UI/equipmentSmaller.png"))
-        this.addActor(backgroundImage)
+        addActor(backgroundImage)
         backgroundImage.name = "background"
         backgroundImage.centerPosition()
 
-        this.addActor(eqScreen)
+        addActor(eqScreen)
         eqScreen.width = backgroundImage.width - 2 * borderWidth
         eqScreen.height = backgroundImage.height - 2 * borderHeight
         eqScreen.centerPosition()
@@ -107,6 +109,9 @@ class UiStage(
                 it.actor = EqActor(Player.equipment.itemList[cellNumber].item)
         }
     }
+
+    var detailsPopup: Table? = null
+    var displayedItem: Item? = null
 
     // input processor
     var timeClicked: Long = 0
@@ -130,6 +135,9 @@ class UiStage(
         // gets the eq ui and sets the originalEq
         val clickedEq = getEqClicked(coord.x, coord.y)
         if (clickedEq != null) {
+            if (clickedEq.name == "playerEq")
+                originalEq = Player.equipment
+
             clickedItem = getEqCell(coord.x, coord.y, clickedEq)?.actor
             if (clickedItem != null)
                 timeClicked = TimeUtils.millis()
@@ -205,6 +213,32 @@ class UiStage(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
 
+        // create new popup
+        val hoveredEq = getEqClicked(coord.x, coord.y)
+        var hoveredItem: Actor? = null
+        if (hoveredEq != null) {
+            hoveredItem = getEqCell(coord.x, coord.y, hoveredEq)?.actor
+            if (hoveredItem != null && (hoveredItem as EqActor).item != displayedItem) {
+                if (detailsPopup != null)
+                    this.actors.removeValue(detailsPopup, true)
+                detailsPopup = ItemDetailsPopup(hoveredItem.item, true)
+                detailsPopup!!.setPosition(coord.x, coord.y)
+                displayedItem = hoveredItem.item
+                addActor(detailsPopup)
+                detailsPopup!!.setPosition(coord.x, coord.y)
+                (detailsPopup!! as ItemDetailsPopup).assignBg(coord.x, coord.y)
+            }
+        }
+
+        // delete or move the popup
+        if (hoveredEq == null || hoveredItem == null) {
+            displayedItem = null
+            this.actors.removeValue(detailsPopup, true)
+            detailsPopup = null
+        } else {
+            detailsPopup!!.setPosition(coord.x, coord.y)
+        }
+
         if (itemClicked == true)
             clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f * 1.2f) / 2,
                 coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f * 1.2f) / 2)
@@ -216,7 +250,6 @@ class UiStage(
         val inPlayerEq = (x in eqScreen.x .. eqScreen.x + eqScreen.width - 1 &&
                 y in eqScreen.y .. eqScreen.y + eqScreen.height - 1)
         if (inPlayerEq) {
-            originalEq = Player.equipment
             return eqScreen
         }
         else
@@ -299,6 +332,11 @@ class UiStage(
                 originalEq = null
                 itemClicked = null
                 dragItem = null
+                if (detailsPopup != null) {
+                    this.actors.removeValue(detailsPopup, true)
+                    detailsPopup = null
+                }
+                displayedItem = null
             }
         }
         return true

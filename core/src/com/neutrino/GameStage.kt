@@ -5,10 +5,12 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.presentation.utility.EntityLookupPopup
+import com.neutrino.game.presentation.utility.ItemDetailsPopup
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
 import kotlin.math.abs
@@ -70,7 +72,7 @@ class GameStage(
 
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT || button != Input.Buttons.FORWARD) || pointer > 0) return false;
+        if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT || button != Input.Buttons.FORWARD) || pointer > 0) return false
         if (level == null) return false
         if (dragging) {
             dragging = false
@@ -95,17 +97,25 @@ class GameStage(
                 (startYPosition - touch.y).toInt() / 64
 
         // If there is a popup, remove it
-        val currPopup: EntityLookupPopup? = this.actors.find { it.name == "entityPopup" } as EntityLookupPopup?
+        var currPopup: Table? = this.actors.find { it.name == "entityPopup" } as EntityLookupPopup?
+        if (currPopup == null)
+            currPopup = this.actors.find { it.name == "itemDetails" } as ItemDetailsPopup?
         if (currPopup != null) {
             currPopup.remove()
 
-            if ((button == Input.Buttons.RIGHT || button == Input.Buttons.FORWARD) && currPopup.tileX == tileX && currPopup.tileY == tileY)
+            if (button == Input.Buttons.RIGHT || button == Input.Buttons.FORWARD)
                 return true
         }
 
         // create the entityLookupPopup
         if (button == Input.Buttons.RIGHT) {
-            val popup = EntityLookupPopup(tileX, tileY, level!!.map.map[tileY][tileX], level!!.characterMap[tileY][tileX])
+            val popup: Table
+            if (level!!.getTopItem(tileX, tileY) != null) {
+                popup = ItemDetailsPopup(level!!.getTopItem(tileX, tileY)!!, false)
+                popup.assignBg(touch.x, touch.y)
+            }
+            else
+                popup = EntityLookupPopup(level!!.map.map[tileY][tileX], level!!.characterMap[tileY][tileX])
             this.addActor(popup)
             popup.setPosition(touch.x, touch.y)
             return true

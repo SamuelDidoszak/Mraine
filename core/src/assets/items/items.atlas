@@ -1,0 +1,5 @@
+items.png
+    size: 16, 16
+    repeat: none
+meat
+	bounds: 0, 0, 16, 16

@@ -2,7 +2,7 @@ package com.neutrino.game.domain.model.turn
 import com.neutrino.game.domain.model.characters.Character
 import kotlin.math.abs
 
-class CharacterArray() : ArrayList<Character>() {
+class CharacterArray(): ArrayList<Character>() {
     constructor(character: Character): this() {
         this.add(character)
     }
@@ -40,7 +40,7 @@ class CharacterArray() : ArrayList<Character>() {
     }
 
     /**
-     * Adds a number of turns to the first character
+     * Adds a number of turns to the first character and move him in the list
      */
     fun addTurns(turns: Double): Boolean {
         // array always has an element at 0

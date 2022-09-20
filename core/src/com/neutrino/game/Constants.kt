@@ -1,6 +1,7 @@
 package com.neutrino.game
 
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import kotlin.random.Random
 
@@ -12,6 +13,8 @@ object Constants {
     //  Textures are provided here to omit the need of loading them multiple times
     val DefaultTextures: Array<Array<TextureRegion>> =
         TextureRegion.split(Texture("environment/raw/tiles.png"), 16, 16)
+
+    val DefaultItemTexture: TextureAtlas = TextureAtlas("items/items.atlas")
 
     // Level constants
     val LevelChunkSize: Int = 100

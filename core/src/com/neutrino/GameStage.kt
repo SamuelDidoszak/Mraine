@@ -112,10 +112,13 @@ class GameStage(
             val popup: Table
             if (level!!.getTopItem(tileX, tileY) != null) {
                 popup = ItemDetailsPopup(level!!.getTopItem(tileX, tileY)!!, false)
+                popup.width = 300f
                 popup.assignBg(touch.x, touch.y)
             }
-            else
+            else {
                 popup = EntityLookupPopup(level!!.map.map[tileY][tileX], level!!.characterMap[tileY][tileX])
+                popup.assignBg(touch.x, touch.y)
+            }
             this.addActor(popup)
             popup.setPosition(touch.x, touch.y)
             return true

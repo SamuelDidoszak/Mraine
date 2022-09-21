@@ -30,6 +30,7 @@ class Ai (private val character: Character) {
                 is Action.PICKUP -> 1.0
                 is Action.WAIT -> character.movementSpeed
                 is Action.NOTHING -> 0.0
+                is Action.ITEM -> 1.0
             }
         return thisAction
     }

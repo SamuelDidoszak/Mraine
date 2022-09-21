@@ -5,10 +5,9 @@ import com.neutrino.game.Constants
 import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
-class Gold(amount: Int = RandomGenerator.nextInt(120)): Item() {
+class Gold(amount: Int = RandomGenerator.nextInt(120)): Item(), ItemType.MISC {
     override val name: String = "Gold"
     override val description: String = "Money"
-    override val type: ItemType = ItemType.MISC
     override var amount: Int? = amount
         set(value) {
             field = value

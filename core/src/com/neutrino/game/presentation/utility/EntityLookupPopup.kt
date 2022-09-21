@@ -9,6 +9,7 @@ import com.neutrino.game.domain.model.entities.utility.Entity
 
 class EntityLookupPopup(entityList: MutableList<Entity>, character: Character?): Table() {
     init {
+        pad(8f)
         if (character != null) {
             this.row()
             this.add(
@@ -22,6 +23,14 @@ class EntityLookupPopup(entityList: MutableList<Entity>, character: Character?):
             ).fillX().left()
         }
         name = "entityPopup"
+        pack()
         this.align(Align.bottomLeft)
+    }
+
+    /** Made as a separate function in order to create the texture in the right place. Otherwise, it shows up for a split second at 0, 0 screen coordinates */
+    fun assignBg(x: Float, y: Float) {
+        val bgColor: BackgroundColor = BackgroundColor("UI/whiteColorTexture.png", x, y, width, height)
+        bgColor.setColor(0, 0, 0, 160)
+        this.background = bgColor
     }
 }

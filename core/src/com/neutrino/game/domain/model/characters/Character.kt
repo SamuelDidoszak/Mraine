@@ -5,9 +5,13 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.game.Constants
 import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.turn.CooldownType
+import com.neutrino.game.domain.model.turn.Event
 import com.neutrino.game.domain.model.utility.ColorUtils
 import java.awt.Color
 import kotlin.math.round
@@ -32,6 +36,9 @@ abstract class Character(
     override val randomizationProbability: Float = 0.3f
     override var randomizationMultiplier: Float = 0f
 
+    /** List of item drops */
+    open val itemDropList: List<Pair<Item, Double>> = listOf()
+
     /**
      * This method is called only once, after initialization of Character implementation
      * Passing values here makes sure that they are initialized
@@ -50,6 +57,10 @@ abstract class Character(
     abstract val textureHaver: TextureHaver
 
     val ai: Ai = Ai(this)
+    val eventArray: MutableList<com.neutrino.game.domain.model.turn.Event> = ArrayList()
+    fun hasCooldown(cooldownType: CooldownType): Boolean {
+        return eventArray.find { it is Event.COOLDOWN && it.cooldownType == cooldownType } != null
+    }
 
     override fun setTexture(name: String) {
         super.setTexture(name)
@@ -141,5 +152,14 @@ abstract class Character(
         }
         this.findActor<HpBar>("hpBar").currentHp = currentHp
         return damage
+    }
+
+    fun dropItems(): MutableList<Item> {
+        val droppedItemList: MutableList<Item> = ArrayList()
+        itemDropList.forEach {
+            if (Constants.RandomGenerator.nextDouble() < it.second)
+                droppedItemList.add(it.first)
+        }
+        return droppedItemList
     }
 }

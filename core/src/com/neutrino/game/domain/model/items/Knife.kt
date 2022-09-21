@@ -4,10 +4,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
-class Knife: Item() {
+class Knife: Item(), ItemType.WEAPON {
     override val name: String = "Knife"
     override val description: String = "Stabby stab stab"
-    override val type: ItemType = ItemType.WEAPON
     override val stackable: Boolean = false
 
 

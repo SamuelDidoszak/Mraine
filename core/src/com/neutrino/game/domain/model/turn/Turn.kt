@@ -7,6 +7,8 @@ import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Action
+import com.neutrino.game.domain.model.entities.utility.ItemEntity
+import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import squidpony.squidai.DijkstraMap
@@ -49,12 +51,12 @@ object Turn {
      * List containing various short term events, often related to characters.
      * Incorporates cooldowns, buffs, etc.
      */
-    var eventList: MutableList<Event> = mutableListOf()
+    var eventArray: EventArray = EventArray()
 
     /**
      * Stores time dependant global event information
      */
-    val globalEventList: MutableList<Event> = mutableListOf()
+    val globalEventArray: EventArray = EventArray()
 
 
     var charactersUseCases: CharactersUseCases = CharactersUseCases(characterArray)
@@ -102,13 +104,34 @@ object Turn {
                         if (clickedCharacter.currentHp <= 0) {
                             Player.experience += clickedCharacter.experience
                             characterArray.remove(clickedCharacter)
+                            // Drop its items
+                            clickedCharacter.dropItems().forEach {
+                                currentLevel.map.map[clickedCharacter.yPos][clickedCharacter.xPos].add(ItemEntity(it))
+                            }
                         }
                     }
                     is Action.PICKUP -> {
-                        val topmostItem = currentLevel.getTopItem(action.x, action.y)!!
-                        Player.addToEquipment(topmostItem)
-                        Player.showPickedUpItem(topmostItem)
-                        currentLevel.map.map[action.y][action.x].removeLast()
+                        val topmostItem = currentLevel.getTopItem(action.x, action.y)
+                        // TODO temporary solution
+                        if (topmostItem != null) {
+                            Player.addToEquipment(topmostItem)
+                            Player.showPickedUpItem(topmostItem)
+                            currentLevel.map.map[action.y][action.x].removeLast()
+                        }
+                    }
+                    is Action.ITEM -> {
+                        when(action.item) {
+                            is ItemType.EDIBLE -> {
+                                val event = action.item.use(Player, turn)
+                                eventArray.add(event)
+                                Player.eventArray.add(event)
+                                // TODO change the cooldown type if more edible effects are added
+                                val cooldownType = if (action.item.isFood) CooldownType.FOOD else CooldownType.HEAL
+                                val cooldown = Event.COOLDOWN(Player, cooldownType, turn, action.item.getEffectLength())
+                                eventArray.add(cooldown)
+                                Player.eventArray.add(cooldown)
+                            }
+                        }
                     }
 
                     is Action.WAIT -> {
@@ -116,7 +139,7 @@ object Turn {
                     }
                     is Action.SKILL -> {
                         println("using skill")
-                        TODO("skills not implemented")
+
                     }
                 }
                 playerAction = false
@@ -153,6 +176,9 @@ object Turn {
                     }
                     is Action.SKILL -> {
                         println(character.name + " used a skill")}
+                    is Action.ITEM -> {
+                        println(character.name + " used an item")
+                    }
                     is Action.WAIT -> {
 //                        println(character.name + " is passing turn")
                     }
@@ -166,12 +192,31 @@ object Turn {
             characterArray.move(character)
         }
         // events
-        while (eventList.isNotEmpty() && eventList[0].turn == turn) {
-            val event = eventList[0]
+        while (eventArray.isNotEmpty() && eventArray.get(turn) != null) {
+            val event = eventArray.get(turn)!!
+            when (event) {
+                is Event.HEAL -> {
+                    event.character.currentHp += event.power
+                    if (event.character.currentHp > event.character.hp)
+                        event.character.currentHp = event.character.hp
+                    event.turn += event.speed
+                    event.curRepeat++
+                    if (event.curRepeat < event.repeats)
+                        eventArray.move(0)
+                    else {
+                        eventArray.removeAt(0)
+                        event.character.eventArray.remove(event)
+                    }
+                }
+                is Event.COOLDOWN -> {
+                    eventArray.removeAt(0)
+                    event.character.eventArray.remove(event)
+                }
+            }
         }
         // global events
-        while (globalEventList.isNotEmpty() && globalEventList[0].turn == turn) {
-            val globalEvent = globalEventList[0]
+        while (globalEventArray.isNotEmpty() && globalEventArray.get(turn) != null) {
+            val globalEvent = globalEventArray[0]
         }
         tick()
     }

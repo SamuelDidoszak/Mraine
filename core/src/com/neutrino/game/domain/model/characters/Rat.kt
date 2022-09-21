@@ -8,6 +8,8 @@ import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.Randomization
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.items.edible.Meat
 
 class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Animated , Randomization {
     override var hp: Float = 10f
@@ -39,6 +41,10 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ani
     override var airDefence: Float = 0f
     override var poisonDefence: Float = 0f
     override val randomizationProbability: Float = 1f
+
+    override val itemDropList: List<Pair<Item, Double>> = listOf(
+        Pair(Meat(), 0.15)
+    )
 
     init {
         randomizeStats()

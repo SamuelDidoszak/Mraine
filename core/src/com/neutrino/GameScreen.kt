@@ -45,7 +45,7 @@ class GameScreen: KtxScreen {
         println(Gdx.app.graphics.height)
 
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
-        uiStage.addactor()
+        uiStage.addEquipmentActor()
         selectInput(false)
 
         initialize.initialize()
@@ -149,9 +149,29 @@ class GameScreen: KtxScreen {
         if (Turn.playerAction) {
             stage.waitForPlayerInput = true
 
+            // If an item was used in eq, make an adequate use action
+            if (uiStage.usedItemList.isNotEmpty() && !Player.hasActions()) {
+                // If user clicked, stop using items
+                if (stage.clickedCoordinates != null) {
+                    // Remove all items from the list
+                    while (uiStage.usedItemList.isNotEmpty()) {
+                        uiStage.usedItemList.removeFirst()
+                    }
+                }
+                // Use the item
+                val item = uiStage.usedItemList.removeFirst()
+                Player.ai.action = Action.ITEM(item)
+                // removing item from eq or decreasing its amount
+                val itemInEq = Player.equipment.itemList.find { it.item == item }!!
+                if (itemInEq.item.amount != null && itemInEq.item.amount!! > 1)
+                    itemInEq.item.amount = itemInEq.item.amount!! - 1
+                else
+                    Player.equipment.itemList.remove(itemInEq)
+            }
+
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
             // Add the move action if the movement animation has ended
-            if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && stage.clickedCoordinates == null) {
+            if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && stage.clickedCoordinates == null && Player.ai.action is Action.NOTHING) {
                 // check if the player wasn't attacked
                 if (Player.findActor<TextraLabel>("damage") != null) {
                     stage.focusPlayer = true

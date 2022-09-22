@@ -3,7 +3,13 @@ package com.neutrino.game
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import kotlin.math.abs
 import kotlin.random.Random
+
+fun Double.equalsDelta(other: Double) = abs(this - other) <= 0.005
+fun Double.lessThanDelta(other: Double) = (this - other) < -0.0000001
+fun Float.equalsDelta(other: Float) = abs(this - other) <= 0.005f
+fun Float.lessThanDelta(other: Float) = (this - other) < -0.0000001
 
 object Constants {
     const val AnimationSpeed: Float = 0.1666666666666666f

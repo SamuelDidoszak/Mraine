@@ -37,7 +37,7 @@ class GameStage(
     }
 
     fun setCameraToPlayer() {
-        camera.position.lerp(Vector3(Player.xPos * 64f, startYPosition - Player.yPos * 64f, camera.position.z), 0.03f)
+        camera.position.lerp(Vector3(Player.xPos * 64f, startYPosition - Player.yPos * 64f, camera.position.z), 0.03f * (100f / Gdx.graphics.framesPerSecond))
     }
 
     fun setCameraPosition(xPos: Int, yPos: Int) {
@@ -140,6 +140,11 @@ class GameStage(
         when (keycode) {
             Input.Keys.TAB -> {
                 showEq = true
+            }
+            Input.Keys.NUM_1 -> {
+                val debugInfo = actors.find { it.name == "debugInfo" }
+                if (debugInfo != null)
+                    debugInfo.isVisible = !debugInfo.isVisible
             }
             Input.Keys.LEFT -> {
                 Player.move(Player.xPos - 1, Player.yPos)

@@ -13,9 +13,23 @@ sealed class Event(
     data class HEAL(val character: Character, val isFood: Boolean, val power: Float,
                     override var turn: Double, override val speed: Double = 0.0, override val repeats: Int = 1): Event(turn, speed, repeats)
     data class COOLDOWN(val character: Character, val cooldownType: CooldownType,
-                        override var turn: Double, val cooldownLength: Double): Event(turn, 0.0, 1) {init {
+                    override var turn: Double, val cooldownLength: Double): Event(turn, 0.0, 1) {
+                        init {
                             turn = turn + cooldownLength
                         }}
+
+    // Statuses
+    data class STUN(val character: Character, override var turn: Double, val cooldownLength: Double): Event(turn, 0.0, 1) {
+        init {
+            turn = turn + cooldownLength
+        }}
+    data class POISON(val character: Character, val power: Float,
+                      override var turn: Double, override val speed: Double = 0.0, override val repeats: Int = 1): Event(turn, speed, repeats)
+    data class BURN(val character: Character, val power: Float,
+                    override var turn: Double, override val speed: Double = 0.0, override val repeats: Int = 1): Event(turn, speed, repeats)
+    data class BLEED(val character: Character, val power: Float,
+                    override var turn: Double, override val speed: Double = 0.0, override val repeats: Int = 1): Event(turn, speed, repeats)
+
 }
 sealed class CooldownType {
     object FOOD: CooldownType()

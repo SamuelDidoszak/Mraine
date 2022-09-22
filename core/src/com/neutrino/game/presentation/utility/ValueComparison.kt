@@ -1,11 +1,9 @@
 package com.neutrino.game.presentation.utility
 
+import com.neutrino.game.equalsDelta
 import kotlin.math.abs
 
 class ValueComparison {
-    private fun Double.equalsDelta(other: Double) = abs(this - other) <= 0.005
-    private fun Float.equalsDelta(other: Float) = abs(this - other) <= 0.005f
-
     private val equalsColor = "[WHITE]"
     private val lesserColor = "[RED]"
     private val biggerColor = "[GREEN]"

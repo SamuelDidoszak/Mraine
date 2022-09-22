@@ -187,7 +187,7 @@ object Turn {
                     }
                     is Action.PICKUP -> {}
                 }
-                character.updateTurnBar()
+                character.updateTurnBar(false)
             }
             characterArray.move(character)
         }
@@ -212,6 +212,7 @@ object Turn {
                     eventArray.removeAt(0)
                     event.character.eventArray.remove(event)
                 }
+                else -> {println("Event ${event::class} not yet implemented")}
             }
         }
         // global events

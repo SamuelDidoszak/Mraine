@@ -9,6 +9,7 @@ import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.Gold
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.Knife
+import com.neutrino.game.domain.model.items.edible.SmallHealingPotion
 import com.neutrino.game.domain.model.map.Level
 
 /**
@@ -36,6 +37,9 @@ class GenerateMap(
         addEntities(Grass().javaClass, 0.3f, listOf(DungeonGrass().javaClass))
         addItems(Gold().javaClass, 0.005f)
         addItems(Knife().javaClass, 0.0005f)
+//        addItems(SmallHealingPotion().javaClass, 0.001f)
+        println("Healing potion class: ${SmallHealingPotion().javaClass}")
+        println("\tsuperclass: ${SmallHealingPotion().javaClass.superclass}")
 
         return map
     }

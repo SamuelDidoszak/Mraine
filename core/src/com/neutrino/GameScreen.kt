@@ -8,18 +8,26 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Pool
+import com.badlogic.gdx.utils.Pools
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
 import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Action
+import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.turn.Turn
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
+import ktx.scene2d.scene2d
+import ktx.scene2d.table
 
 class GameScreen: KtxScreen {
     private val initialize: Initialize = Initialize()
@@ -36,6 +44,12 @@ class GameScreen: KtxScreen {
     private val uiViewport: ExtendViewport = ExtendViewport(1920f, 1080f)
     private val uiStage: UiStage = UiStage(uiViewport)
     private var isEqVisible: Boolean = true // force input setup
+
+    // debug stuff
+    private val renderLabel = TextraLabel("[%300]RENDER", KnownFonts.getStandardFamily())
+    private val fpsLabel = TextraLabel("[%300]FPS", KnownFonts.getStandardFamily())
+    private val memoryLabel = TextraLabel("[%300]MEMORY", KnownFonts.getStandardFamily())
+    private var totalRenderTime: Long = 0
 
     init {
         extendViewport.camera.position.set(800f, 400f, 0.5f)
@@ -59,6 +73,29 @@ class GameScreen: KtxScreen {
         Turn.setLevel(initialize.level)
         stage.addActor(initialize.level)
         stage.camera.position.set(Player.x, player.y, stage.camera.position.z)
+
+        val damagePool: Pool<DamageNumber> = Pools.get(DamageNumber::class.java)
+        damagePool.fill(50)
+
+        // debug
+        renderLabel.name = "renderLabel"
+        fpsLabel.name = "fpsLabel"
+        renderLabel.alignment = Align.left
+        fpsLabel.alignment = Align.left
+        val debugInfo: Table = scene2d.table {
+            align(Align.left)
+            pad(16f)
+            add(renderLabel).left()
+            row().pad(4f)
+            add(fpsLabel).left()
+            row().pad(4f)
+            add(memoryLabel).left()
+        }
+        debugInfo.name = "debugInfo"
+        debugInfo.pack()
+        stage.addActor(debugInfo)
+        debugInfo.setPosition(0f, stage.startYPosition)
+        debugInfo.isVisible = Gdx.app.type != Application.ApplicationType.Desktop
     }
 
     private fun selectInput(showEq: Boolean) {
@@ -86,6 +123,7 @@ class GameScreen: KtxScreen {
     }
 
     override fun render(delta: Float) {
+        val startNano = System.nanoTime()
         ScreenUtils.clear(0f, 0f, 0f, 0f)
         extendViewport.apply()
         batch.projectionMatrix = extendViewport.camera.combined
@@ -117,7 +155,14 @@ class GameScreen: KtxScreen {
         }
 
         // showing fps
-        Gdx.graphics.setTitle("Mraine, ${Gdx.graphics.framesPerSecond}fps")
+        val timeDiff = System.nanoTime() - startNano
+        totalRenderTime += timeDiff
+        if (totalRenderTime >= 1000000000) {
+            renderLabel.setText("[%300]$timeDiff")
+            fpsLabel.setText("[%300]${1000000000 / timeDiff}fps  |  ${Gdx.graphics.framesPerSecond}fps")
+            memoryLabel.setText("[%300]${(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576}MB")
+            totalRenderTime = 0
+        }
     }
 
     override fun dispose() {

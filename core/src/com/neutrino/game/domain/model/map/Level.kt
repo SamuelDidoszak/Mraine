@@ -1,7 +1,10 @@
 package com.neutrino.game.domain.model.map
 
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.math.MathUtils.ceil
+import com.badlogic.gdx.math.MathUtils.floor
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.Constants.LevelChunkSize
@@ -150,18 +153,31 @@ class Level(
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
-        var screenX = 0f
-        var screenY = height
+        val gameCamera = parent.stage.camera as OrthographicCamera
 
-        for (y in 0 until sizeY) {
-            for (x in 0 until sizeX) {
+        var yBottom = ceil((height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 64) + 2
+        var yTop = floor((height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 64) + 1
+        var xLeft: Int = floor((gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f) / 64)
+        var xRight = ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f) / 64)
+
+        // Make sure that values are in range
+        yBottom = if (yBottom <= 0) 0 else if (yBottom > map.map.size) map.map.size else yBottom
+        yTop = if (yTop <= 0) 0 else if (yTop > map.map.size) map.map.size else yTop
+        xLeft = if (xLeft <= 0) 0 else if (xLeft > map.map[0].size) map.map[0].size else xLeft
+        xRight = if (xRight <= 0) 0 else if (xRight > map.map[0].size) map.map[0].size else xRight
+
+        var screenX = xLeft * 64f
+        var screenY = height - (yTop * 64f)
+
+        for (y in yTop until yBottom) {
+            for (x in xLeft until xRight) {
                 for (entity in map.map[y][x]) {
                     batch!!.draw(entity.texture, screenX, screenY, entity.texture.regionWidth * 4f, entity.texture.regionHeight * 4f)
                 }
                 screenX += 64
             }
             // Render characters
-            for (x in 0 until sizeX) {
+            for (x in xLeft until xRight) {
                 if (characterMap[y][x] != null) {
                     characterMap[y][x]!!.draw(batch, parentAlpha)
                 }
@@ -208,7 +224,7 @@ class Level(
                 }
             }
             screenY -= 64
-            screenX = 0f
+            screenX = xLeft * 64f
         }
 //        // draw the children after level layout
 //        super.draw(batch, parentAlpha)

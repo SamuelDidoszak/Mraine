@@ -42,13 +42,15 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ani
     override var poisonDefence: Float = 0f
     override val randomizationProbability: Float = 1f
 
-    override val itemDropList: List<Pair<Item, Double>> = listOf(
-        Pair(Meat(), 0.15)
+    override val possibleItemDropList: List<Pair<Item, Double>> = listOf(
+        Pair(Meat(), 0.25)
     )
+    override val itemtemDropList: List<Item> = listOf()
 
     init {
         randomizeStats()
         setName("Rat")
+        println("itemDropList: $itemtemDropList")
     }
 
     override val description: String = "IT'S A RAAAAT"

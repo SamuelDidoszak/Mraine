@@ -3,6 +3,7 @@ package com.neutrino.game.domain.model.characters
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.utils.Pools
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants
@@ -14,8 +15,6 @@ import com.neutrino.game.domain.model.turn.CooldownType
 import com.neutrino.game.domain.model.turn.Event
 import com.neutrino.game.domain.model.utility.ColorUtils
 import java.awt.Color
-import kotlin.math.round
-import kotlin.random.Random
 
 abstract class Character(
     var xPos: Int,
@@ -37,7 +36,12 @@ abstract class Character(
     override var randomizationMultiplier: Float = 0f
 
     /** List of item drops */
-    open val itemDropList: List<Pair<Item, Double>> = listOf()
+    open val possibleItemDropList: List<Pair<Item, Double>> = listOf()
+    open val itemtemDropList: List<Item> = listOf()
+//        ArrayList<Item>(possibleItemDropList.map {
+//        if (Constants.RandomGenerator.nextDouble() < it.second) it.first else SmallHealingPotion()
+//        }
+//    )
 
     /**
      * This method is called only once, after initialization of Character implementation
@@ -69,18 +73,16 @@ abstract class Character(
         nameLabel.setPosition(nameLabel.x + 32 - nameLabel.width / 2, nameLabel.y)
     }
 
-    fun updateTurnBar() {
+    fun updateTurnBar(forceUpdateMovementColor: Boolean = false) {
         val turnBar =  this.findActor<TurnBar>("turnBar")
-        turnBar.currentTurn = this.turn
-        turnBar.playerTurn = Player.turn
+        turnBar.update(this.turn, Player.turn, this.movementSpeed, forceUpdateMovementColor)
 
-        var size: Float = ((this.turn - Player.turn)/ this.movementSpeed).toFloat()
+        val size: Float = ((this.turn - Player.turn)/ this.movementSpeed).toFloat()
         turnBar.addAction(Actions.sizeTo(size * 60f, 2f, MoveSpeed))
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         // required for fading
-        val color: com.badlogic.gdx.graphics.Color = color
         batch?.setColor(color.r, color.g, color.b, color.a * parentAlpha)
 
         if (batch != null) {
@@ -131,15 +133,25 @@ abstract class Character(
 
         damageColor = colorUtils.applySaturation(damageColor, 0.8f)
 
-        val damageLabel = TextraLabel("[@Cozette][${colorUtils.toHexadecimal(damageColor)}][%150][*]{SQUASH=0.3;false}" +
-                "${round(damage).toInt()}", KnownFonts.getStandardFamily())
-        damageLabel.name = "damage"
-        this.addActor(damageLabel)
-        damageLabel.setPosition(Random.nextFloat() * this.width * 0.8f, Random.nextFloat() * this.height / 3 + this.height / 4)
-        damageLabel.addAction(Actions.moveBy(0f, 36f, 1f))
-        damageLabel.addAction(Actions.sequence(
-            Actions.fadeOut(1.25f),
-            Actions.removeActor()))
+        // Old damage particle/number system
+
+//        val damageLabel = Label(round(damage).toInt().toString(), Scene2DSkin.defaultSkin)
+//        damageLabel.color = com.badlogic.gdx.graphics.Color(damageColor.red.toFloat(),
+//            damageColor.green.toFloat(), damageColor.blue.toFloat(), damageColor.alpha.toFloat())
+////        val damageLabel = TextraLabel("[@Cozette][${colorUtils.toHexadecimal(damageColor)}][%150][*]{SQUASH=0.3;false}" +
+////                "${round(damage).toInt()}", KnownFonts.getStandardFamily())
+//        damageLabel.name = "damage"
+//        this.addActor(damageLabel)
+//        damageLabel.setPosition(Random.nextFloat() * this.width * 0.8f, Random.nextFloat() * this.height / 3 + this.height / 4)
+//        damageLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+//        damageLabel.addAction(Actions.sequence(
+//            Actions.fadeOut(1.25f),
+//            Actions.removeActor()))
+
+        val damageNumber = Pools.get(DamageNumber::class.java).obtain()
+        this.addActor(damageNumber)
+        damageNumber.init(colorUtils.toHexadecimal(damageColor), damage)
+
 
         this.currentHp -= damage
         if (currentHp <= 0) {
@@ -150,13 +162,13 @@ abstract class Character(
             ))
             currentHp = 0f
         }
-        this.findActor<HpBar>("hpBar").currentHp = currentHp
+        this.findActor<HpBar>("hpBar").update(currentHp)
         return damage
     }
 
     fun dropItems(): MutableList<Item> {
         val droppedItemList: MutableList<Item> = ArrayList()
-        itemDropList.forEach {
+        possibleItemDropList.forEach {
             if (Constants.RandomGenerator.nextDouble() < it.second)
                 droppedItemList.add(it.first)
         }

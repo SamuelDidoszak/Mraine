@@ -1,13 +1,12 @@
 package com.neutrino.game.domain.model.turn
 
-import kotlin.math.abs
+import com.neutrino.game.equalsDelta
+import com.neutrino.game.lessThanDelta
 
 class EventArray(): ArrayList<Event>() {
     constructor(event: Event): this() {
         this.add(event)
     }
-    private fun Double.equalsDelta(other: Double) = abs(this - other) <= 0.005
-    private fun Double.lessThanDelta(other: Double) = (this - other) < -0.0000001
 
     override fun add(element: Event): Boolean {
         for (i in 0 until this.size) {

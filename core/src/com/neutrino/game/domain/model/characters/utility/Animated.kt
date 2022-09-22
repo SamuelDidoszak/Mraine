@@ -32,9 +32,9 @@ interface Animated {
 
     fun setFrame(stateTime: Float) {
         if (!animation!!.isAnimationFinished(stateTime))
-            textureHaver.texture = TextureAtlas.AtlasRegion(animation?.getKeyFrame(stateTime))
+            textureHaver.texture = animation!!.getKeyFrame(stateTime) as TextureAtlas.AtlasRegion
         else
-            textureHaver.texture = TextureAtlas.AtlasRegion(defaultAnimation.getKeyFrame(stateTime))
+            textureHaver.texture = defaultAnimation.getKeyFrame(stateTime) as TextureAtlas.AtlasRegion
     }
 
     fun setDefaultAnimation() {

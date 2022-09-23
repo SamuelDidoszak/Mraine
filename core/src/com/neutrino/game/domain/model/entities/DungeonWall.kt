@@ -1,29 +1,25 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants.DefaultTextures
 import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import kotlin.system.measureNanoTime
 
-class DungeonWall(
-) : Entity() {
-    override val id: Int = 1
+class DungeonWall: Entity() {
     override val allowOnTop = false
     override val allowCharacterOnTop = false
     override val name = "Dungeon wall"
     override val description = "The wall of a dungeon. It wouldn't be fun if it suddenly collapsed"
 
-    override var textureSrc = "environment/walls.png"
     override val textureNames: List<String> = listOf("wall", "wall2", "wallVariation", "wallVariation2", "sewerHole", "sewerHole2",
         "wallPillar", "wallPillar2", "wallPillarVariation", "wallPillarVariation2", "wallInBetween",
         "wallHorizontalMiddle", "wallHorizontalMiddleLeft", "wallHorizontalMiddleRight",
         "wallVertical", "wallVerticalEndUp", "wallVerticalEndDown", "wallVerticalEdgeUpLeft", "wallVerticalEdgeUpRight", "wallTSection",
         "singleWall", "wallVerticalEmptyLeft", "wallVerticalEmptyRight", "wallVerticalEmptyLeftRight",
         "wallVerticalClosed", "wallVerticalEmptyLeftClosed", "wallVerticalEmptyRightClosed", "wallVerticalEmptyLeftRightClosed")
-    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
 //        print(

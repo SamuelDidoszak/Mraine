@@ -1,0 +1,105 @@
+entities.png
+	size: 128, 128
+	repeat: none
+basicFloor
+	bounds: 80, 48, 16, 16
+basicFloor2
+	bounds: 80, 64, 16, 16
+basicFloorDirty
+	bounds: 48, 49, 16, 16
+basicFloorDirty2
+	bounds: 16, 16, 16, 16
+basicFloorGrass
+	bounds: 80, 96, 16, 16
+basicFloorGrass2
+	bounds: 32, 24, 16, 16
+basicFloorGrassBurnt
+	bounds: 32, 40, 16, 16
+basicFloorGrassBurnt2
+	bounds: 80, 0, 16, 16
+crossRoadFloor
+	bounds: 64, 9, 16, 16
+door
+	bounds: 112, 96, 16, 16
+doorOpen
+	bounds: 96, 48, 16, 16
+sewerHole
+	bounds: 48, 17, 16, 16
+sewerHole2
+	bounds: 48, 65, 16, 16
+sewerHoleLight
+	bounds: 64, 73, 16, 16
+sewerHoleLight2
+	bounds: 112, 32, 16, 16
+sewerHoleVariation
+	bounds: 32, 8, 16, 16
+sewerHoleVariation2
+	bounds: 96, 64, 16, 16
+singleWall
+	bounds: 0, 32, 16, 24
+tallGrass
+	bounds: 64, 25, 16, 16
+tallGrass2
+	bounds: 80, 112, 16, 16
+tallGrassHigh
+	bounds: 48, 81, 16, 23
+tallGrassHigh2
+	bounds: 64, 105, 16, 23
+wall
+	bounds: 80, 80, 16, 16
+wall2
+	bounds: 112, 48, 16, 16
+wallHorizontalMiddle
+	bounds: 0, 80, 16, 24
+wallHorizontalMiddleLeft
+	bounds: 0, 8, 16, 24
+wallHorizontalMiddleRight
+	bounds: 48, 104, 16, 24
+wallInBetween
+	bounds: 48, 1, 16, 16
+wallLight
+	bounds: 64, 41, 16, 16
+wallLight2
+	bounds: 96, 112, 16, 16
+wallPillar
+	bounds: 48, 33, 16, 16
+wallPillar2
+	bounds: 96, 32, 16, 16
+wallPillarVariation
+	bounds: 16, 0, 16, 16
+wallPillarVariation2
+	bounds: 112, 64, 16, 16
+wallTSection
+	bounds: 16, 104, 16, 24
+wallVariation
+	bounds: 80, 32, 16, 16
+wallVariation2
+	bounds: 80, 16, 16, 16
+wallVertical
+	bounds: 64, 89, 16, 16
+wallVerticalClosed
+	bounds: 16, 32, 16, 24
+wallVerticalEdgeUpLeft
+	bounds: 0, 104, 16, 24
+wallVerticalEdgeUpRight
+	bounds: 0, 56, 16, 24
+wallVerticalEmptyLeft
+	bounds: 112, 112, 16, 16
+wallVerticalEmptyLeftClosed
+	bounds: 32, 104, 16, 24
+wallVerticalEmptyLeftRight
+	bounds: 96, 80, 16, 16
+wallVerticalEmptyLeftRightClosed
+	bounds: 32, 80, 16, 24
+wallVerticalEmptyRight
+	bounds: 64, 57, 16, 16
+wallVerticalEmptyRightClosed
+	bounds: 16, 56, 16, 24
+wallVerticalEndDown
+	bounds: 16, 80, 16, 24
+wallVerticalEndUp
+	bounds: 32, 56, 16, 24
+woodenFloor
+	bounds: 112, 80, 16, 16
+woodenFloor2
+	bounds: 96, 96, 16, 16

@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.model.items.Item
@@ -68,13 +67,6 @@ class Level(
                 characterMap[y].add(this.characterArray.find { it.yPos == y && it.xPos == x })
             }
         }
-        // add item textures
-//        textureList.addAll(mapUsecases.getItemsFromLevelTags())
-    }
-
-    fun printMap() {
-        println("character map:")
-        println(characterMap.map { it -> println(it.forEach { print((if(it != null) it.name else it) + " ") }) })
     }
 
     /**
@@ -86,27 +78,14 @@ class Level(
         for (y in 0 until map.yMax) {
             for (x in 0 until map.xMax) {
                 for (z in 0 until map.map[y][x].size) {
-                    var exists = false
-                    val textureSrc = map.map[y][x][z].textureSrc
+                    if (map.map[y][x][z] is ItemEntity)
+                        continue
 
-                    for (atlas in textureList) {
-                        atlas.textures.forEach {
-                            if (it.toString() == textureSrc) {
-                                exists = true
-                                map.map[y][x][z].loadTextures(atlas)
-                                map.map[y][x][z].pickTexture(OnMapPosition(map.map, x, y, z))
-                                return@forEach
-                            }
-                        }
-                    }
-                    if (!exists) {
-                        textureList.add(TextureAtlas(textureSrc.substring(0, textureSrc.lastIndexOf(".")) + ".atlas"))
-                        map.map[y][x][z].loadTextures(textureList[textureList.size - 1])
-                        map.map[y][x][z].pickTexture(OnMapPosition(map.map, x, y, z))
-                    }
+                    map.map[y][x][z].pickTexture(OnMapPosition(map.map, x, y, z))
                 }
             }
         }
+
         // textures for characters
         for (character in characterArray) {
             var exists = false
@@ -117,8 +96,7 @@ class Level(
                     if (it.toString() == textureSrc) {
                         exists = true
                         character.loadTextures(atlas)
-                        if (character is Animated)
-                            character.setDefaultAnimation()
+                        character.setDefaultAnimation()
                         return@forEach
                     }
                 }
@@ -126,8 +104,7 @@ class Level(
             if (!exists) {
                 textureList.add(TextureAtlas(character.textureSrc.substring(0, character.textureSrc.lastIndexOf(".")) + ".atlas"))
                 character.loadTextures(textureList[textureList.size - 1])
-                if (character is Animated)
-                    character.setDefaultAnimation()
+                character.setDefaultAnimation()
             }
         }
     }

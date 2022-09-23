@@ -1,6 +1,7 @@
 package com.neutrino.game.domain.model.characters
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Pools
@@ -15,12 +16,17 @@ import com.neutrino.game.domain.model.turn.CooldownType
 import com.neutrino.game.domain.model.turn.Event
 import com.neutrino.game.domain.model.utility.ColorUtils
 import java.awt.Color
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 abstract class Character(
     var xPos: Int,
     var yPos: Int,
     var turn: Double
-): Group(), TextureHaver, Stats, Randomization {
+): Group(), TextureHaver, Animated, Stats, Randomization {
+    /** List of item drops */
+    open val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf()
+    private val itemtemDropList: MutableList<Item> = ArrayList()
     init {
         val infoGroup = Group()
         this.addActor(infoGroup)
@@ -35,30 +41,30 @@ abstract class Character(
     override val randomizationProbability: Float = 0.3f
     override var randomizationMultiplier: Float = 0f
 
-    /** List of item drops */
-    open val possibleItemDropList: List<Pair<Item, Double>> = listOf()
-    open val itemtemDropList: List<Item> = listOf()
-//        ArrayList<Item>(possibleItemDropList.map {
-//        if (Constants.RandomGenerator.nextDouble() < it.second) it.first else SmallHealingPotion()
-//        }
-//    )
-
     /**
      * This method is called only once, after initialization of Character implementation
      * Passing values here makes sure that they are initialized
      */
-    override fun setName(name: String?) {
+    fun initialize(name: String?) {
         super.setName(name)
         this.findActor<TextraLabel>("name").setText("[@Cozette][WHITE][%175]$name")
         (this.getChild(0) as Group).addActor(HpBar(currentHp, hp))
 
         val turnBar = TurnBar(this.turn + this.movementSpeed, Player.turn + Player.movementSpeed, this.movementSpeed)
         this.findActor<Group>("infoGroup").addActor(turnBar)
+
+        // TODO if unkillable characters will be added, add this::class check
+
+        possibleItemDropList.forEach {
+            if (Constants.RandomGenerator.nextDouble() < it.second)
+                itemtemDropList.add(it.first.createInstance())
+        }
     }
 
     abstract val description: String
 
-    abstract val textureHaver: TextureHaver
+    abstract val textureSrc: String
+    override val textureHaver: TextureHaver = this
 
     val ai: Ai = Ai(this)
     val eventArray: MutableList<com.neutrino.game.domain.model.turn.Event> = ArrayList()
@@ -66,8 +72,20 @@ abstract class Character(
         return eventArray.find { it is Event.COOLDOWN && it.cooldownType == cooldownType } != null
     }
 
+    override var textureList:  List<TextureAtlas.AtlasRegion> = listOf()
+    override fun loadTextures(atlas: TextureAtlas) {
+        textureList = buildList {
+            for (name in textureNames) {
+                add(atlas.findRegion(name))
+            } }
+    }
+
+    override fun getTexture(name: String): TextureAtlas.AtlasRegion {
+        return textureList.find { it.name.toString() == name }!!
+    }
+
     override fun setTexture(name: String) {
-        super.setTexture(name)
+        texture = getTexture(name)
         setBounds(xPos * 64f, parent.height - yPos * 64f, textureHaver.texture.regionWidth.toFloat() * 4, textureHaver.texture.regionHeight.toFloat() * 4)
         val nameLabel = (this.getChild(0) as Group).getChild(0)
         nameLabel.setPosition(nameLabel.x + 32 - nameLabel.width / 2, nameLabel.y)
@@ -155,7 +173,6 @@ abstract class Character(
 
         this.currentHp -= damage
         if (currentHp <= 0) {
-//            this.addAction(Actions.fadeOut(1.25f))
             this.addAction(Actions.sequence(
                 Actions.fadeOut(1.25f),
                 Actions.removeActor()
@@ -167,11 +184,6 @@ abstract class Character(
     }
 
     fun dropItems(): MutableList<Item> {
-        val droppedItemList: MutableList<Item> = ArrayList()
-        possibleItemDropList.forEach {
-            if (Constants.RandomGenerator.nextDouble() < it.second)
-                droppedItemList.add(it.first)
-        }
-        return droppedItemList
+        return itemtemDropList
     }
 }

@@ -1,0 +1,31 @@
+items.png
+	size: 256, 16
+	repeat: none
+gold1
+	bounds: 192, 0, 16, 16
+gold2
+	bounds: 128, 0, 16, 16
+gold3
+	bounds: 32, 0, 16, 16
+gold4
+	bounds: 160, 0, 16, 16
+gold5
+	bounds: 96, 0, 16, 16
+gold6
+	bounds: 16, 0, 16, 16
+gold7
+	bounds: 144, 0, 16, 16
+gold8
+	bounds: 64, 0, 16, 16
+knife
+	bounds: 48, 0, 16, 16
+meat
+	bounds: 176, 0, 16, 16
+scrollOfDefence
+	bounds: 0, 0, 16, 16
+scrollOfFireball
+	bounds: 208, 0, 16, 16
+scrollOfTeleportation
+	bounds: 80, 0, 16, 16
+smallHealingPotion
+	bounds: 112, 0, 16, 16

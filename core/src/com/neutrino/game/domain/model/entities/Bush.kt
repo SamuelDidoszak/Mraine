@@ -1,21 +1,17 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants.DefaultTextures
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 
-class Bush(
-) : Entity() {
-    override val id: Int = 2
+class Bush: Entity() {
     override val name = "Bush"
     override val description = "A little bush"
     override val allowOnTop = true
     override val allowCharacterOnTop = true
 
-    override var textureSrc = "environment/raw/entities.png"
     override val textureNames: List<String> = listOf()
-    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
 

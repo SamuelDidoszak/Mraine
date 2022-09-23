@@ -5,8 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.neutrino.game.Constants.DefaultTextures
-import com.neutrino.game.domain.model.characters.utility.Animated
+import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
@@ -14,7 +13,7 @@ import com.neutrino.game.domain.model.items.equipment.EqElement
 import com.neutrino.game.domain.model.items.equipment.Equipment
 import com.neutrino.game.domain.model.turn.Turn
 
-object Player : Character(0, 0, 0.0), Animated {
+object Player : Character(0, 0, 0.0) {
     override var hp: Float = 20f
     override var currentHp: Float = hp
     override var mp: Float = 10f
@@ -46,7 +45,7 @@ object Player : Character(0, 0, 0.0), Animated {
     override var poisonDefence: Float = 0f
 
     init {
-        setName("Player")
+        initialize("Player")
         attack = setAttack()
     }
 
@@ -62,8 +61,7 @@ object Player : Character(0, 0, 0.0), Animated {
     override val textureNames: List<String> = listOf(
         "buddy#1", "buddy#2", "buddy#3", "buddy#4", "buddy#5"
     )
-    override var textureList: List<TextureAtlas.AtlasRegion> = listOf()
-    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
+    override var texture: TextureAtlas.AtlasRegion = Constants.DefaultItemTexture.findRegion("knife")
 
     override val defaultAnimationName: String = "buddy"
     override lateinit var defaultAnimation: Animation<TextureRegion>

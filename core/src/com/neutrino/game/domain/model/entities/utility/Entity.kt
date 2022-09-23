@@ -1,23 +1,19 @@
 package com.neutrino.game.domain.model.entities.utility
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.neutrino.game.Constants
 
-abstract class Entity (
-
-): TextureHaver {
-    abstract val id: Int
+abstract class Entity: TextureHaver {
     abstract val name: String
     open val description: String? = ""
-//    abstract var textureSrc: String
-//    abstract val textureNames: List<String>
-    override var textureList: List<TextureAtlas.AtlasRegion> = listOf()
-//    abstract var texture: TextureRegion
     abstract val allowOnTop: Boolean
     abstract val allowCharacterOnTop: Boolean
 
     abstract fun pickTexture(onMapPosition: OnMapPosition)
+
+    override fun getTexture(name: String): TextureAtlas.AtlasRegion {
+        return Constants.DefaultEntityTexture.findRegion(name)
+    }
 
     /**
      * Picks one texture name from provided with and equal probability

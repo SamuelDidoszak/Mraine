@@ -11,6 +11,8 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.Knife
 import com.neutrino.game.domain.model.items.edible.SmallHealingPotion
 import com.neutrino.game.domain.model.map.Level
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 /**
  * Class used for map generation
@@ -32,14 +34,12 @@ class GenerateMap(
     operator fun invoke(): List<List<MutableList<Entity>>> {
         squidGeneration.generateDungeon()
         squidGeneration.setDungeonWalls(map)
-        addEntities(DungeonFloor().javaClass, 1f)
-        addEntities(DungeonGrass().javaClass, 0.3f)
-        addEntities(Grass().javaClass, 0.3f, listOf(DungeonGrass().javaClass))
-        addItems(Gold().javaClass, 0.005f)
-        addItems(Knife().javaClass, 0.0005f)
-//        addItems(SmallHealingPotion().javaClass, 0.001f)
-        println("Healing potion class: ${SmallHealingPotion().javaClass}")
-        println("\tsuperclass: ${SmallHealingPotion().javaClass.superclass}")
+        addEntities(DungeonFloor::class as KClass<Entity>, 1f)
+        addEntities(DungeonGrass::class as KClass<Entity>, 0.3f)
+        addEntities(Grass::class as KClass<Entity>, 0.3f, listOf(DungeonGrass::class as KClass<Entity>))
+        addItems(Gold::class as KClass<Item>, 0.005f)
+        addItems(Knife::class as KClass<Item>, 0.0005f)
+        addItems(SmallHealingPotion::class as KClass<Item>, 0.001f)
 
         return map
     }
@@ -48,7 +48,7 @@ class GenerateMap(
      * Adds entities to the map with a certain probability
      * Supports restrictions, that allow generation only if one of required entities exists underneath
      */
-    private fun addEntities(entity: Class<Entity>, probability: Float, requiredUnderneath: List<Class<Entity>> = listOf(), excludedUnderneath: List<Class<Entity>> = listOf()) {
+    private fun addEntities(entity: KClass<Entity>, probability: Float, requiredUnderneath: List<KClass<Entity>> = listOf(), excludedUnderneath: List<KClass<Entity>> = listOf()) {
         for (y in 0 until level.sizeY) {
             for (x in 0 until level.sizeX) {
                 var allowGeneration = true
@@ -64,7 +64,7 @@ class GenerateMap(
                         }
                         var excluded = false
                         for (excludedEntity in excludedUnderneath) {
-                            if (mapEntity.javaClass == excludedEntity) {
+                            if (mapEntity::class == excludedEntity) {
                                 excluded = true
                                 break
                             }
@@ -72,7 +72,7 @@ class GenerateMap(
                         if (excluded)
                             break
                         for (requiredEntity in requiredUnderneath) {
-                            if (mapEntity.javaClass == requiredEntity) {
+                            if (mapEntity::class == requiredEntity) {
                                 allowGeneration = true
                                 break
                             }
@@ -81,7 +81,7 @@ class GenerateMap(
                 }
 
                 if(allowGeneration && RandomGenerator.nextFloat() < probability)
-                    map[y][x].add(entity.constructors[0].newInstance() as Entity)
+                    map[y][x].add(entity.createInstance())
             }
         }
     }
@@ -90,7 +90,7 @@ class GenerateMap(
      * Adds items to the map with a certain probability
      * TODO add a richness value to some tiles and generate items based on that
      */
-    private fun addItems(item: Class<Item>, probability: Float) {
+    private fun addItems(item: KClass<Item>, probability: Float) {
         for (y in 0 until level.sizeY) {
             for (x in 0 until level.sizeX) {
                 var allowGeneration = true
@@ -98,7 +98,7 @@ class GenerateMap(
                     allowGeneration = false
 
                 if(allowGeneration && RandomGenerator.nextFloat() < probability)
-                    map[y][x].add(ItemEntity(item.constructors[0].newInstance() as Item) as Entity)
+                    map[y][x].add(ItemEntity(item.createInstance()) as Entity)
             }
         }
     }

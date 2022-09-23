@@ -37,7 +37,7 @@ class GenerateCharacters(
             try {
                 characterArray.add(getCharacter())
             } catch (e: Exception) {
-                println(e.message)
+                println("Error: ${e.message}")
                 break
             }
         }

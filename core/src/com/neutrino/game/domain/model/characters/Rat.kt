@@ -3,15 +3,15 @@ package com.neutrino.game.domain.model.characters
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.neutrino.game.Constants.DefaultTextures
-import com.neutrino.game.domain.model.characters.utility.Animated
+import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.utility.Randomization
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.edible.Meat
+import kotlin.reflect.KClass
 
-class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Animated , Randomization {
+class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Randomization {
     override var hp: Float = 10f
     override var currentHp: Float = hp
     override var mp: Float = 10f
@@ -42,15 +42,13 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ani
     override var poisonDefence: Float = 0f
     override val randomizationProbability: Float = 1f
 
-    override val possibleItemDropList: List<Pair<Item, Double>> = listOf(
-        Pair(Meat(), 0.25)
+    override val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf(
+        Pair(Meat::class as KClass<Item>, 0.25)
     )
-    override val itemtemDropList: List<Item> = listOf()
 
     init {
         randomizeStats()
-        setName("Rat")
-        println("itemDropList: $itemtemDropList")
+        initialize("Rat")
     }
 
     override val description: String = "IT'S A RAAAAT"
@@ -59,9 +57,7 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ani
     override val textureNames: List<String> = listOf(
         "rat#1", "rat#2", "rat#3", "rat#4", "rat#5", "rat#6"
     )
-    override var textureList: List<TextureAtlas.AtlasRegion> = listOf()
-    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(
-        DefaultTextures[6][5])
+    override var texture: TextureAtlas.AtlasRegion = Constants.DefaultItemTexture.findRegion("knife")
 
     override val textureHaver: TextureHaver = this
 

@@ -1,22 +1,18 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants.DefaultTextures
 import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 
-class DungeonFloor(
-) : Entity() {
-    override val id: Int = 1
+class DungeonFloor: Entity() {
     override val allowOnTop = true
     override val allowCharacterOnTop = true
     override val name = "Dungeon floor"
     override val description = "The floor of a dungeon. You can walk on it and stuff"
 
-    override var textureSrc = "environment/tiles.png"
     override val textureNames: List<String> = listOf("basicFloor", "basicFloor2", "basicFloorDirty", "basicFloorDirty2", "crossRoadFloor")
-    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
 
     override fun pickTexture(onMapPosition: OnMapPosition) {
         val randVal = RandomGenerator.nextFloat() * 100

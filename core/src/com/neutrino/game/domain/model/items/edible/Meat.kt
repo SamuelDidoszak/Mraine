@@ -2,7 +2,6 @@ package com.neutrino.game.domain.model.items.edible
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
-import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
 
@@ -12,11 +11,8 @@ class Meat: Item(), ItemType.EDIBLE {
     override val stackable: Boolean = true
     override var amount: Int? = 1
 
-    override var textureSrc: String = "items/meat.png"
     override val textureNames: List<String> = listOf("meat")
-    override var texture: TextureAtlas.AtlasRegion = Constants.DefaultItemTexture.findRegion(textureNames[0])
-    override val textureHaver: TextureHaver = this
-    override var pickedTexture: String? = "meat"
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
 
     override val isFood: Boolean = true
     override val powerOg: Float = 2f

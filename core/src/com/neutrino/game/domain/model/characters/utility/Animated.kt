@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.Constants.AnimationSpeed
+import com.neutrino.game.domain.model.characters.Player.textureNames
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
 interface Animated {
@@ -12,6 +13,8 @@ interface Animated {
     var defaultAnimation: Animation<TextureRegion>
     val defaultAnimationName: String
     val textureHaver: TextureHaver
+
+    var textureList:  List<TextureAtlas.AtlasRegion>
 
     fun setAnimation(name: String, looping: Boolean = true) {
         val regex = "$name#[0-9]+".toRegex()
@@ -41,5 +44,12 @@ interface Animated {
         setAnimation(defaultAnimationName, true)
         defaultAnimation = animation!!
         textureHaver.texture = TextureAtlas.AtlasRegion(defaultAnimation.getKeyFrame(0f))
+    }
+
+    fun loadTextures(atlas: TextureAtlas) {
+        textureList = buildList {
+            for (name in textureNames) {
+                add(atlas.findRegion(name))
+            } }
     }
 }

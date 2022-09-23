@@ -1,7 +1,6 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants.DefaultTextures
 import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.Flammable
@@ -10,16 +9,14 @@ import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 class Grass(
     override val isBurnt: Boolean = false
 ) : Entity(), Flammable {
-    override val id: Int = 1
     override val allowOnTop = true
     override val allowCharacterOnTop = true
     override val name = "High grass"
     override val description = "High and long grass"
 
     // Textures
-    override var textureSrc = "environment/flora.png"
     override val textureNames: List<String> = listOf("tallGrass", "tallGrass2", "tallGrassHigh", "tallGrassHigh2")
-    override var texture: TextureAtlas.AtlasRegion = if(textureList.isNotEmpty()) textureList[0] else TextureAtlas.AtlasRegion(DefaultTextures[6][5])
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
 
     // Flammable values
     override val fireResistance: Float = 0f

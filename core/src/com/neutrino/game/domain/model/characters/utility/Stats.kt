@@ -1,40 +1,40 @@
 package com.neutrino.game.domain.model.characters.utility
 
 interface Stats {
-    val hp: Float
+    var hp: Float
     var currentHp: Float
-    val mp: Float
+    var mp: Float
     var currentMp: Float
-    val attack: Float
-    val strength: Float
-    val defence: Float
-    val agility: Float
-    val evasiveness: Float
-    val accuracy: Float
-    val criticalChance: Float
-    val luck: Float
-    val attackSpeed: Double
+    var attack: Float
+    var strength: Float
+    var defence: Float
+    var agility: Float
+    var evasiveness: Float
+    var accuracy: Float
+    var criticalChance: Float
+    var luck: Float
+    var attackSpeed: Double
     var movementSpeed: Double
-    val range: Int
-    val rangeType: RangeType
-    val experience: Float
+    var range: Int
+    var rangeType: RangeType
+    var experience: Float
 
     // environmental
-    val fireDamage: Float
-    val waterDamage: Float
-    val earthDamage: Float
-    val airDamage: Float
-    val poisonDamage: Float
+    var fireDamage: Float
+    var waterDamage: Float
+    var earthDamage: Float
+    var airDamage: Float
+    var poisonDamage: Float
     /** Range is 0 - 2, where 1+ heals instead of damaging */
-    val fireDefence: Float
+    var fireDefence: Float
     /** Range is 0 - 2, where 1+ heals instead of damaging */
-    val waterDefence: Float
+    var waterDefence: Float
     /** Range is 0 - 2, where 1+ heals instead of damaging */
-    val earthDefence: Float
+    var earthDefence: Float
     /** Range is 0 - 2, where 1+ heals instead of damaging */
-    val airDefence: Float
+    var airDefence: Float
     /** Range is 0 - 2, where 1+ heals instead of damaging */
-    val poisonDefence: Float
+    var poisonDefence: Float
 
     fun setAttack(): Float {
         return strength

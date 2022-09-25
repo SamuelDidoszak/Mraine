@@ -29,11 +29,20 @@ sealed class Event(
                     override var turn: Double, override val speed: Double = 0.0, override val repeats: Int = 1): Event(turn, speed, repeats)
     data class BLEED(val character: Character, val power: Float,
                     override var turn: Double, override val speed: Double = 0.0, override val repeats: Int = 1): Event(turn, speed, repeats)
+    data class MODIFYSTAT(val character: Character, val statName: String, val power: Float,
+                          override var turn: Double, override val speed: Double, override val repeats: Int = 1): Event(turn, speed, repeats)
+    data class MODIFYSPEED(val character: Character, val stat: Double, val power: Double,
+                     override var turn: Double, val cooldownLength: Double): Event(turn, 0.0, 1) {
+        init {
+            turn = turn + cooldownLength
+        }}
 
 }
 sealed class CooldownType {
     object FOOD: CooldownType()
     object HEAL: CooldownType()
     // TODO skills not yet implemented
-    data class SKILL(val skill: Int)
+    data class SKILL(val skill: Int): CooldownType()
+    /** Cooldown for a specific item */
+    data class ITEM(val itemName: String): CooldownType()
 }

@@ -205,7 +205,7 @@ class GameScreen: KtxScreen {
                 }
                 // Use the item
                 val item = uiStage.usedItemList.removeFirst()
-                Player.ai.action = Action.ITEM(item)
+                Player.ai.action = Action.ITEM(item, Player)
                 // removing item from eq or decreasing its amount
                 val itemInEq = Player.equipment.itemList.find { it.item == item }!!
                 if (itemInEq.item.amount != null && itemInEq.item.amount!! > 1)

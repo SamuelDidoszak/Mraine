@@ -15,6 +15,7 @@ import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.GWTRNG
 import kotlin.math.abs
+import kotlin.reflect.KMutableProperty
 
 /**
  * Singleton turn class containing turn and tick data
@@ -89,6 +90,7 @@ object Turn {
             if (playerAction) {
                 // Makes the player action or returns if Action.NOTHING
                 val action: Action = character.ai.useAction()
+                println("Turn: $turn: ${Player.defence}")
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
@@ -122,14 +124,31 @@ object Turn {
                     is Action.ITEM -> {
                         when(action.item) {
                             is ItemType.EDIBLE -> {
-                                val event = action.item.use(Player, turn)
+                                val event = action.item.use(action.character, turn)
                                 eventArray.add(event)
-                                Player.eventArray.add(event)
+                                action.character.eventArray.add(event)
                                 // TODO change the cooldown type if more edible effects are added
                                 val cooldownType = if (action.item.isFood) CooldownType.FOOD else CooldownType.HEAL
-                                val cooldown = Event.COOLDOWN(Player, cooldownType, turn, action.item.getEffectLength())
+                                val cooldown = Event.COOLDOWN(action.character, cooldownType, turn, action.item.getEffectLength())
                                 eventArray.add(cooldown)
-                                Player.eventArray.add(cooldown)
+                                action.character.eventArray.add(cooldown)
+                            }
+                            is ItemType.SCROLL -> {
+                                when (action.item) {
+                                    is ItemType.SCROLL.STAT -> {
+                                        val event = action.item.use(action.character, turn)
+                                        eventArray.add(event)
+                                        action.character.eventArray.add(event)
+                                        if (action.item.causesCooldown >= 0) {
+                                            val cooldown = Event.COOLDOWN(Player, CooldownType.ITEM(action.item.name), turn, action.item.getEffectLength())
+                                            eventArray.add(cooldown)
+                                            action.character.eventArray.add(cooldown)
+                                        }
+                                    }
+                                    else -> {}
+                                }
+
+
                             }
                         }
                     }
@@ -211,6 +230,20 @@ object Turn {
                 is Event.COOLDOWN -> {
                     eventArray.removeAt(0)
                     event.character.eventArray.remove(event)
+                }
+                is Event.MODIFYSTAT -> {
+                    val stat = event.character::class.members.first {it.name == event.statName} as KMutableProperty<Float>
+                    // Modify the stat for its duration
+                    if (event.curRepeat < event.repeats) {
+                        stat.setter.call(event.character, stat.getter.call(event.character) + event.power)
+                        event.turn += event.speed
+                        event.curRepeat++
+                    }
+                    // Reset stat to previous value
+                    else {
+                        stat.setter.call(event.character, stat.getter.call(event.character) - event.repeats * event.power)
+                        eventArray.removeAt(0)
+                    }
                 }
                 else -> {println("Event ${event::class} not yet implemented")}
             }

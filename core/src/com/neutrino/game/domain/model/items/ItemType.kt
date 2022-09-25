@@ -6,7 +6,31 @@ import com.neutrino.game.domain.model.turn.Event
 sealed interface ItemType {
     interface WEAPON: ItemType
     interface EQUIPMENT: ItemType
-    interface SCROLL: ItemType
+    sealed interface SCROLL: ItemType {
+//        fun use(character: Character, turn: Double): Event
+//        fun use(character: Character, turn: Double, length: Double): Event
+        interface STAT: SCROLL {
+            val statName: String
+            val power: Float
+            val speed: Double
+            val repeats: Int
+            fun use(character: Character, turn: Double): Event {
+                return Event.MODIFYSTAT(
+                    character, statName, power, turn, speed, repeats
+                )
+            }
+            fun getEffectLength(): Double {
+                // repeats -1??? Idk, test it out
+                return speed * repeats
+            }
+        }
+        interface ATTACK: SCROLL {
+
+        }
+        interface EFFECT: SCROLL {
+
+        }
+    }
     interface EDIBLE: ItemType {
         val isFood: Boolean
         val powerOg: Float
@@ -19,6 +43,7 @@ sealed interface ItemType {
             return Event.HEAL(character, isFood, power, turn, speed, repeats)
         }
         fun getEffectLength(): Double {
+            // repeats -1??? Idk, test it out
             return speed * (repeats - 1)
         }
     }

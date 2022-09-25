@@ -10,6 +10,7 @@ import com.neutrino.game.domain.model.items.Gold
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.Knife
 import com.neutrino.game.domain.model.items.edible.SmallHealingPotion
+import com.neutrino.game.domain.model.items.scrolls.ScrollOfDefence
 import com.neutrino.game.domain.model.map.Level
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -39,7 +40,8 @@ class GenerateMap(
         addEntities(Grass::class as KClass<Entity>, 0.3f, listOf(DungeonGrass::class as KClass<Entity>))
         addItems(Gold::class as KClass<Item>, 0.005f)
         addItems(Knife::class as KClass<Item>, 0.0005f)
-        addItems(SmallHealingPotion::class as KClass<Item>, 0.001f)
+        addItems(SmallHealingPotion::class as KClass<Item>, 0.0007f)
+        addItems(ScrollOfDefence::class as KClass<Item>, 0.0001f)
 
         return map
     }

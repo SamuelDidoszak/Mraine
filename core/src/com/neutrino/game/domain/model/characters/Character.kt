@@ -24,6 +24,21 @@ abstract class Character(
     var yPos: Int,
     var turn: Double
 ): Group(), TextureHaver, Animated, Stats, Randomization {
+    // Stat initialization for character boilerplate reduction
+    override var currentHp: Float = 0f
+    override var currentMp: Float = 0f
+    // environmental stats
+    override var fireDamage: Float = 0f
+    override var waterDamage: Float = 0f
+    override var earthDamage: Float = 0f
+    override var airDamage: Float = 0f
+    override var poisonDamage: Float = 0f
+    override var fireDefence: Float = 0f
+    override var waterDefence: Float = 0f
+    override var earthDefence: Float = 0f
+    override var airDefence: Float = 0f
+    override var poisonDefence: Float = 0f
+
     /** List of item drops */
     open val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf()
     private val itemtemDropList: MutableList<Item> = ArrayList()
@@ -46,6 +61,8 @@ abstract class Character(
      * Passing values here makes sure that they are initialized
      */
     fun initialize(name: String?) {
+        currentHp = hp
+        currentMp = mp
         super.setName(name)
         this.findActor<TextraLabel>("name").setText("[@Cozette][WHITE][%175]$name")
         (this.getChild(0) as Group).addActor(HpBar(currentHp, hp))

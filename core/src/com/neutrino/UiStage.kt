@@ -149,7 +149,29 @@ class UiStage(
                     add(TextraButton("[%150][@Cozette]Equip", Scene2DSkin.defaultSkin)).prefWidth(90f).prefHeight(40f)
                 }
                 is ItemType.SCROLL -> {
-                    println("//TODO not implemented")
+                    val useButton = TextraButton("[%150][@Cozette]Use", Scene2DSkin.defaultSkin)
+                    useButton.addListener(object: ClickListener() {
+                        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                            if (event?.button != Input.Buttons.LEFT)
+                                return
+                            super.clicked(event, x, y)
+                            if (Player.hasCooldown(CooldownType.ITEM(item.name))) {
+                                val cooldownLabel = TextraLabel("[@Cozette][%600][*]This scroll is on cooldown", KnownFonts.getStandardFamily())
+                                cooldownLabel.name = "cooldown"
+                                addActor(cooldownLabel)
+                                cooldownLabel.setPosition(x, y + 8f)
+                                cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                                cooldownLabel.addAction(Actions.sequence(
+                                    Actions.fadeOut(1.25f),
+                                    Actions.removeActor()))
+                                return
+                            }
+                            usedItemList.add(item)
+                            showEq = false
+                            nullifyAllValues()
+                        }
+                    })
+                    add(useButton).prefWidth(90f).prefHeight(40f)
                 }
             }
             pack()

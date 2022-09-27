@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.items.equipment
+package com.neutrino.game.domain.model.items.equipment.utility
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group

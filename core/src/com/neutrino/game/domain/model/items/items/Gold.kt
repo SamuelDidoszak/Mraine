@@ -1,7 +1,9 @@
-package com.neutrino.game.domain.model.items
+package com.neutrino.game.domain.model.items.items
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants.RandomGenerator
+import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.items.ItemType
 
 class Gold(amount: Int = RandomGenerator.nextInt(120)): Item(), ItemType.MISC {
     override val name: String = "Gold"

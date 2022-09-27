@@ -3,9 +3,17 @@ package com.neutrino.game.domain.model.turn
 import com.neutrino.game.equalsDelta
 import com.neutrino.game.lessThanDelta
 
-class EventArray(): ArrayList<Event>() {
-    constructor(event: Event): this() {
-        this.add(event)
+class EventArray: ArrayList<Event>() {
+    /** Adds the event both to this list and the character arrayList */
+    fun startEvent(event: Event): Boolean {
+        event.character.eventArray.add(event)
+        return this.add(event)
+    }
+
+    /** Removes the event both from this list and the character arrayList */
+    fun stopEvent(event: Event): Boolean {
+        event.character.eventArray.remove(event)
+        return this.remove(event)
     }
 
     override fun add(element: Event): Boolean {

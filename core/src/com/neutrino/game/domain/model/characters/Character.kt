@@ -137,6 +137,70 @@ abstract class Character(
         this.yPos = yPos
     }
 
+    fun getDamage(damage: Float, type: String): Float {
+        var finalDamage: Float
+        // for optimization, instead of creating Colors, pure rgb values can be passed
+        val colorUtils = ColorUtils()
+        var damageColor: Color = Color(0, 0, 0)
+        val color: Color
+        when (type) {
+            "physical" -> {
+                finalDamage = damage - defence
+                finalDamage = if (finalDamage < 0) 0f else finalDamage
+                color = Color(255, 0, 0)
+            }
+            "bleeding" -> {
+                finalDamage = damage
+                color = Color(255, 0, 0)
+            }
+            "fire" -> {
+                finalDamage = damage * (1 - fireDefence)
+                color = Color(255, 128, 0)
+            }
+            "water" -> {
+                finalDamage = damage * (1 - waterDefence)
+                color = Color(0, 0, 255)
+            }
+            "earth" -> {
+                finalDamage = damage * (1 - earthDefence)
+                color = Color(0, 255, 0)
+            }
+            "air" -> {
+                finalDamage = damage * (1 - airDefence)
+                color = Color(0, 255, 255)
+            }
+            "poison" -> {
+                finalDamage = damage * (1 - poisonDefence)
+                finalDamage = if (currentHp - finalDamage <= 1) currentHp - 1f else finalDamage
+                color = Color(128, 255, 0)
+            }
+            else -> {
+                color = Color(255, 0, 0)
+                println("Damage type \"$type\" does not exist!")
+                return 0f
+            }
+        }
+        damageColor = colorUtils.colorInterpolation(damageColor, color, 1)
+        damageColor = colorUtils.applySaturation(damageColor, 0.8f)
+
+
+        val damageNumber = Pools.get(DamageNumber::class.java).obtain()
+        this.addActor(damageNumber)
+        damageNumber.init(colorUtils.toHexadecimal(damageColor), finalDamage)
+
+
+        this.currentHp -= damage
+        if (currentHp <= 0) {
+            this.addAction(Actions.sequence(
+                Actions.fadeOut(1.25f),
+                Actions.removeActor()
+            ))
+            currentHp = 0f
+        }
+        this.findActor<HpBar>("hpBar").update(currentHp)
+        return damage
+    }
+
     fun getDamage(character: Character): Float {
         var damage: Float = 0f
         var physicalDamage = character.attack - defence
@@ -145,7 +209,8 @@ abstract class Character(
         val waterDamage = character.waterDamage * (1 - waterDefence)
         val earthDamage = character.earthDamage * (1 - earthDefence)
         val airDamage = character.airDamage * (1 - airDefence)
-        val poisonDamage = character.poisonDamage * (1 - poisonDefence)
+        var poisonDamage = character.poisonDamage * (1 - poisonDefence)
+        poisonDamage = if (currentHp - poisonDamage <= 1) currentHp - 1f else poisonDamage
 
         damage += physicalDamage
         damage += fireDamage

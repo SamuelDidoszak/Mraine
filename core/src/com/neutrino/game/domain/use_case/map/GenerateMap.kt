@@ -6,10 +6,10 @@ import com.neutrino.game.domain.model.entities.DungeonGrass
 import com.neutrino.game.domain.model.entities.Grass
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
-import com.neutrino.game.domain.model.items.Gold
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.Knife
 import com.neutrino.game.domain.model.items.edible.SmallHealingPotion
+import com.neutrino.game.domain.model.items.equipment.Knife
+import com.neutrino.game.domain.model.items.items.Gold
 import com.neutrino.game.domain.model.items.scrolls.ScrollOfDefence
 import com.neutrino.game.domain.model.map.Level
 import kotlin.reflect.KClass
@@ -38,10 +38,12 @@ class GenerateMap(
         addEntities(DungeonFloor::class as KClass<Entity>, 1f)
         addEntities(DungeonGrass::class as KClass<Entity>, 0.3f)
         addEntities(Grass::class as KClass<Entity>, 0.3f, listOf(DungeonGrass::class as KClass<Entity>))
-        addItems(Gold::class as KClass<Item>, 0.005f)
-        addItems(Knife::class as KClass<Item>, 0.0005f)
-        addItems(SmallHealingPotion::class as KClass<Item>, 0.0007f)
-        addItems(ScrollOfDefence::class as KClass<Item>, 0.0001f)
+
+        val blockedTilesPercentage: Float = getBlockedTilesPercentage()
+        addItems(Gold::class as KClass<Item>, 50f)
+        addItems(Knife::class as KClass<Item>, 5f)
+        addItems(SmallHealingPotion::class as KClass<Item>, 7f, blockedTilesPercentage)
+        addItems(ScrollOfDefence::class as KClass<Item>, 0.3f)
 
         return map
     }
@@ -89,10 +91,51 @@ class GenerateMap(
     }
 
     /**
+     * Returns the percentage of tiles with .allowOnTop set to false
+     * Useful for making sure, that a certain amount of items will appear in chunk
+     */
+    private fun getBlockedTilesPercentage(): Float {
+        var blockedAmount = 0
+        for (y in 0 until level.sizeY) {
+            for (x in 0 until level.sizeX) {
+                for (mapEntity in map[y][x]) {
+                    if (!mapEntity.allowOnTop) {
+                        blockedAmount++
+                        break
+                    }
+                }
+            }
+        }
+        return blockedAmount / (level.sizeY * level.sizeX).toFloat()
+    }
+
+    /** Returns the amount of certain items spawned */
+    private fun checkSpawnedItemAmount(item: KClass<Item>): Int {
+        var amount = 0
+        for (y in 0 until level.sizeY) {
+            for (x in 0 until level.sizeX) {
+                for (mapEntity in map[y][x]) {
+                    if (mapEntity is ItemEntity && mapEntity.item::class == item) {
+                        amount++
+                        break
+                    }
+                }
+            }
+        }
+        return amount
+    }
+
+    /**
      * Adds items to the map with a certain probability
+     * @param amount how many items per 100x100 chunk
+     * @param includeBlocked if the value is set, percentage increases to account for blocked tiles. Pass value calculated from getBlockedTilesPercentage()
      * TODO add a richness value to some tiles and generate items based on that
      */
-    private fun addItems(item: KClass<Item>, probability: Float) {
+    private fun addItems(item: KClass<Item>, amount: Float, includeBlocked: Float? = null) {
+        var probability = amount * 0.0001
+        if (includeBlocked != null)
+            probability += probability * includeBlocked
+
         for (y in 0 until level.sizeY) {
             for (x in 0 until level.sizeX) {
                 var allowGeneration = true

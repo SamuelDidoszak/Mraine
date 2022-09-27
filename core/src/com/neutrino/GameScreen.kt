@@ -20,9 +20,9 @@ import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
 import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.utility.Action
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
+import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
@@ -230,7 +230,7 @@ class GameScreen: KtxScreen {
                     return
                 }
 
-                if (Turn.updateBatch is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
+                if (Turn.updateBatch.firstOrNull() is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
                     Player.ai.setMoveList(Player.ai.xTarget, Player.ai.yTarget, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable(), true)
                 val tile = Player.ai.getMove()
                 Player.ai.action = Action.MOVE(tile.x, tile.y)

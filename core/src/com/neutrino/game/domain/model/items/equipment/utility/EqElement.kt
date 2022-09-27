@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.items.equipment
+package com.neutrino.game.domain.model.items.equipment.utility
 
 import com.neutrino.game.domain.model.items.Item
 

@@ -6,12 +6,15 @@ import com.neutrino.game.domain.model.turn.Event
 sealed interface ItemType {
     interface WEAPON: ItemType
     interface EQUIPMENT: ItemType
+    interface CAUSESEVENT: ItemType {
+        fun use(character: Character, turn: Double): Event
+    }
     sealed interface SCROLL: ItemType {
 //        fun use(character: Character, turn: Double): Event
 //        fun use(character: Character, turn: Double, length: Double): Event
         interface STAT: SCROLL {
             val statName: String
-            val power: Float
+            val power: Any
             val speed: Double
             val repeats: Int
             fun use(character: Character, turn: Double): Event {

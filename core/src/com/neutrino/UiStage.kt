@@ -22,8 +22,8 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
-import com.neutrino.game.domain.model.items.equipment.EqActor
-import com.neutrino.game.domain.model.items.equipment.Equipment
+import com.neutrino.game.domain.model.items.equipment.utility.EqActor
+import com.neutrino.game.domain.model.items.equipment.utility.Equipment
 import com.neutrino.game.domain.model.turn.CooldownType
 import com.neutrino.game.presentation.utility.BackgroundColor
 import com.neutrino.game.presentation.utility.ItemDetailsPopup

@@ -9,8 +9,8 @@ import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.equipment.EqElement
-import com.neutrino.game.domain.model.items.equipment.Equipment
+import com.neutrino.game.domain.model.items.equipment.utility.EqElement
+import com.neutrino.game.domain.model.items.equipment.utility.Equipment
 import com.neutrino.game.domain.model.turn.Turn
 
 object Player : Character(0, 0, 0.0) {

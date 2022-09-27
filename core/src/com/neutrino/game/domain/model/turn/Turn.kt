@@ -6,7 +6,6 @@ import com.neutrino.game.Constants.RunSpeed
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.utility.Action
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.map.Level
@@ -15,7 +14,6 @@ import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.GWTRNG
 import kotlin.math.abs
-import kotlin.reflect.KMutableProperty
 
 /**
  * Singleton turn class containing turn and tick data
@@ -34,7 +32,15 @@ object Turn {
 
     var playerAction: Boolean = false
 
-    var updateBatch: Action = Action.NOTHING
+    var updateBatch: ArrayDeque<Action> = ArrayDeque()
+        private set
+
+    private fun setMovementUpdateBatch(moveAction: Action.MOVE) {
+        if (updateBatch.firstOrNull() is Action.MOVE)
+            updateBatch[0] = moveAction
+        else
+            updateBatch.addFirst(moveAction)
+    }
 
     /**
      * A list of current level characters. Should be changed / added to when entering a new Level
@@ -81,8 +87,8 @@ object Turn {
             val character = characterArray.get(turn)!!
             playerAction = character == Player
 
-            if (updateBatch == Action.MOVE(character.xPos, character.yPos)) {
-                updateBatch = Action.NOTHING
+            if (updateBatch.firstOrNull() == Action.MOVE(character.xPos, character.yPos)) {
+                updateBatch.removeFirst()
                 println("resetting update batch")
             }
 
@@ -90,14 +96,13 @@ object Turn {
             if (playerAction) {
                 // Makes the player action or returns if Action.NOTHING
                 val action: Action = character.ai.useAction()
-                println("Turn: $turn: ${Player.defence}")
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
                         moveCharacter(character.xPos, character.yPos, action.x, action.y)
                         character.move(action.x, action.y,
-                            if (updateBatch is Action.NOTHING) RunSpeed else MoveSpeed)
-                        updateBatch = Action.MOVE(action.x, action.y)
+                            if (updateBatch.firstOrNull() == null) RunSpeed else MoveSpeed)
+                        setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)
@@ -125,24 +130,22 @@ object Turn {
                         when(action.item) {
                             is ItemType.EDIBLE -> {
                                 val event = action.item.use(action.character, turn)
-                                eventArray.add(event)
-                                action.character.eventArray.add(event)
+                                eventArray.startEvent(event)
                                 // TODO change the cooldown type if more edible effects are added
                                 val cooldownType = if (action.item.isFood) CooldownType.FOOD else CooldownType.HEAL
                                 val cooldown = Event.COOLDOWN(action.character, cooldownType, turn, action.item.getEffectLength())
-                                eventArray.add(cooldown)
-                                action.character.eventArray.add(cooldown)
+                                eventArray.startEvent(cooldown)
+                                updateBatch.addFirst(Action.EVENT)
                             }
                             is ItemType.SCROLL -> {
                                 when (action.item) {
                                     is ItemType.SCROLL.STAT -> {
                                         val event = action.item.use(action.character, turn)
-                                        eventArray.add(event)
-                                        action.character.eventArray.add(event)
+                                        eventArray.startEvent(event)
                                         if (action.item.causesCooldown >= 0) {
                                             val cooldown = Event.COOLDOWN(Player, CooldownType.ITEM(action.item.name), turn, action.item.getEffectLength())
-                                            eventArray.add(cooldown)
-                                            action.character.eventArray.add(cooldown)
+                                            eventArray.startEvent(cooldown)
+                                            updateBatch.addFirst(Action.EVENT)
                                         }
                                     }
                                     else -> {}
@@ -158,14 +161,17 @@ object Turn {
                     }
                     is Action.SKILL -> {
                         println("using skill")
-
+                    }
+                    is Action.EVENT -> {
+                        println("caused an event")
                     }
                 }
                 playerAction = false
                 charactersUseCases.updateTurnBars()
             } else {
-                // initialize the ai if it's 30 tiles or less from the player
-                if (abs(character.xPos - Player.xPos) <= 30 || abs(character.yPos - Player.yPos) <= 30)
+                // initialize the ai if it's 10 tiles or less from the player
+
+                if (abs(character.xPos - Player.xPos) <= 10 && abs(character.yPos - Player.yPos) <= 10)
                     character.ai.decide(Player.xPos, Player.yPos, dijkstraMap, charactersUseCases.getImpassable())
                 else
                     character.ai.action = Action.WAIT
@@ -173,7 +179,7 @@ object Turn {
                 var action: Action = character.ai.useAction()
                 when (action) {
                     is Action.MOVE -> {
-                        if (updateBatch is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
+                        if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
                             character.ai.setMoveList(character.ai.xTarget, character.ai.yTarget, dijkstraMap, charactersUseCases.getImpassable(), true)
                             val coord = character.ai.getMove()
                             action = Action.MOVE(coord.x, coord.y)
@@ -181,7 +187,7 @@ object Turn {
 
                         moveCharacter(character.xPos, character.yPos, action.x, action.y)
                         character.move(action.x, action.y)
-                        updateBatch = Action.MOVE(action.x, action.y)
+                        setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                     }
                     is Action.ATTACK -> {
                         val attackedCharacter = characterArray.get(action.x, action.y)
@@ -205,13 +211,34 @@ object Turn {
                         println(character.name + " did nothing")
                     }
                     is Action.PICKUP -> {}
+                    is Action.EVENT -> {
+                        println("caused an event")
+                    }
                 }
                 character.updateTurnBar(false)
             }
             characterArray.move(character)
+            while (updateBatch.firstOrNull() is Action.EVENT) {
+                println("Executing event from updatebatch")
+                executeEvent()
+                updateBatch.removeFirst()
+            }
+
         }
         // events
         while (eventArray.isNotEmpty() && eventArray.get(turn) != null) {
+            executeEvent()
+        }
+        // global events
+        while (globalEventArray.isNotEmpty() && globalEventArray.get(turn) != null) {
+            val globalEvent = globalEventArray[0]
+        }
+        tick()
+    }
+
+    /** Executes the event happening at current turn */
+    private fun executeEvent() {
+        try {
             val event = eventArray.get(turn)!!
             when (event) {
                 is Event.HEAL -> {
@@ -223,8 +250,7 @@ object Turn {
                     if (event.curRepeat < event.repeats)
                         eventArray.move(0)
                     else {
-                        eventArray.removeAt(0)
-                        event.character.eventArray.remove(event)
+                        eventArray.stopEvent(event)
                     }
                 }
                 is Event.COOLDOWN -> {
@@ -232,27 +258,59 @@ object Turn {
                     event.character.eventArray.remove(event)
                 }
                 is Event.MODIFYSTAT -> {
-                    val stat = event.character::class.members.first {it.name == event.statName} as KMutableProperty<Float>
-                    // Modify the stat for its duration
+                    val field = event.character.javaClass.declaredFields.first {it.name == event.statName}
+                    field.trySetAccessible()
+                    val fieldValue = field.get(event.character)
+
+                    val multiplier: Int
                     if (event.curRepeat < event.repeats) {
-                        stat.setter.call(event.character, stat.getter.call(event.character) + event.power)
                         event.turn += event.speed
                         event.curRepeat++
+                        multiplier = 1
+                    } else {
+                        multiplier = -1 * event.repeats
                     }
-                    // Reset stat to previous value
-                    else {
-                        stat.setter.call(event.character, stat.getter.call(event.character) - event.repeats * event.power)
-                        eventArray.removeAt(0)
+
+                    when (field.type.toString()) {
+                        "float" -> {
+                            field.set(event.character, (fieldValue as Float) + multiplier * (event.power as Float))
+                        }
+                        "double" -> {
+                            field.set(event.character, (fieldValue as Double) + multiplier * (event.power as Double))
+                        }
+                        "int" -> {
+                            field.set(event.character, (fieldValue as Int) + multiplier * (event.power as Int))
+                        }
+                        else -> {
+                            throw Exception("Field type is not supported")
+                        }
+                    }
+
+                    if (multiplier != 1)
+                        eventArray.stopEvent(event)
+                }
+                is Event.STUN -> {
+                    event.character.turn += event.stunLength
+                    eventArray.stopEvent(event)
+                }
+                // damage
+                is Event.DAMAGE -> {
+                    event.character.getDamage(event.power, event.damageType)
+                    // Character is killed
+                    if (event.character.currentHp <= 0) {
+                        Player.experience += event.character.experience
+                        characterArray.remove(event.character)
+                        // Drop its items
+                        event.character.dropItems().forEach {
+                            currentLevel.map.map[event.character.yPos][event.character.xPos].add(ItemEntity(it))
+                        }
                     }
                 }
                 else -> {println("Event ${event::class} not yet implemented")}
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        // global events
-        while (globalEventArray.isNotEmpty() && globalEventArray.get(turn) != null) {
-            val globalEvent = globalEventArray[0]
-        }
-        tick()
     }
 
     private fun moveCharacter(fromX: Int, fromY: Int, toX: Int, toY: Int) {

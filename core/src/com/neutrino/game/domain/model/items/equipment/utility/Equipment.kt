@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.items.equipment
+package com.neutrino.game.domain.model.items.equipment.utility
 
 data class Equipment(
     val itemList: MutableList<EqElement> = ArrayList(),

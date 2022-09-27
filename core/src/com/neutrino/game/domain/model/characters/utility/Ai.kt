@@ -1,6 +1,7 @@
 package com.neutrino.game.domain.model.characters.utility
 
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.turn.Action
 import squidpony.squidai.DijkstraMap
 import squidpony.squidmath.Coord
 
@@ -31,6 +32,7 @@ class Ai (private val character: Character) {
                 is Action.WAIT -> character.movementSpeed
                 is Action.NOTHING -> 0.0
                 is Action.ITEM -> 1.0
+                is Action.EVENT -> 0.0
             }
         return thisAction
     }

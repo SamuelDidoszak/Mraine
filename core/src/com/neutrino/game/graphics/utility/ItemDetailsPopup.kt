@@ -1,4 +1,4 @@
-package com.neutrino.game.presentation.utility
+package com.neutrino.game.graphics.utility
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Value

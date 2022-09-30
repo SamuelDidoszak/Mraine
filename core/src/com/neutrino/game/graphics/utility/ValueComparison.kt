@@ -1,7 +1,6 @@
-package com.neutrino.game.presentation.utility
+package com.neutrino.game.graphics.utility
 
 import com.neutrino.game.equalsDelta
-import kotlin.math.abs
 
 class ValueComparison {
     private val equalsColor = "[WHITE]"

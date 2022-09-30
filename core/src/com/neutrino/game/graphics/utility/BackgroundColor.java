@@ -1,4 +1,4 @@
-package com.neutrino.game.presentation.utility;
+package com.neutrino.game.graphics.utility;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;

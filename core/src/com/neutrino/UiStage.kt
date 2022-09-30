@@ -23,10 +23,10 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.equipment.utility.EqActor
-import com.neutrino.game.domain.model.items.equipment.utility.Equipment
+import com.neutrino.game.domain.model.items.equipment.utility.Inventory
 import com.neutrino.game.domain.model.turn.CooldownType
-import com.neutrino.game.presentation.utility.BackgroundColor
-import com.neutrino.game.presentation.utility.ItemDetailsPopup
+import com.neutrino.game.graphics.utility.BackgroundColor
+import com.neutrino.game.graphics.utility.ItemDetailsPopup
 import ktx.actors.centerPosition
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.container
@@ -37,7 +37,7 @@ import ktx.scene2d.table
 class UiStage(
     viewport: Viewport
 ): Stage(viewport) {
-    lateinit var eqScreen: ScrollPane
+    lateinit var invScreen: ScrollPane
 
     /** FIFO of dropped items */
     val itemDropList: ArrayDeque<Item> = ArrayDeque()
@@ -45,11 +45,11 @@ class UiStage(
     /** FIFO of used item actions */
     val usedItemList: ArrayDeque<Item> = ArrayDeque()
 
-    var showEq: Boolean = true
-    var refreshEq = false
+    var showInventory: Boolean = true
+    var refreshInventory = false
         set(value) {
             if (value)
-                refreshEquipment()
+                refreshInventory()
             field = false
         }
 
@@ -60,14 +60,14 @@ class UiStage(
         screenRatio = viewport.screenWidth / viewport.screenHeight.toFloat()
     }
 
-    fun addEquipmentActor() {
+    fun addInventoryActor() {
         val borderWidth: Int = 13
         val borderHeight: Int = 13
 //        val padding: Int = 4
 
         val color = Color(238f, 195f, 154f, 1f)
 
-        val rows = Player.equipmentSize / 9 + if (Player.equipmentSize % 9 != 0) 1 else 0
+        val rows = Player.inventorySize / 9 + if (Player.inventorySize % 9 != 0) 1 else 0
         val table = scene2d.table {
                 pad(0f)
                 this.setFillParent(false)
@@ -78,20 +78,20 @@ class UiStage(
                             val cellNumber = n * 9 + i
                             name = (cellNumber).toString()
                             align(Align.bottomLeft)
-                            if (cellNumber < Player.equipment.itemList.size)
-                                actor = EqActor(Player.equipment.itemList[cellNumber].item)
+                            if (cellNumber < Player.inventory.itemList.size)
+                                actor = EqActor(Player.inventory.itemList[cellNumber].item)
                         }).size(64f * zoomLevel, 64f * zoomLevel).left().bottom().padRight(if (i != 8) 4f else 0f).space(0f)
                     row().padTop(if (n != 12) 4f else 0f).space(0f)
                 }
         }
         table.pack()
-        eqScreen = ScrollPane(table)
-        eqScreen.name = "playerEq"
+        invScreen = ScrollPane(table)
+        invScreen.name = "playerEq"
         // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
-        eqScreen.setScrollingDisabled(true, false)
-        eqScreen.setOverscroll(false, false)
-        eqScreen.setScrollbarsVisible(false)
-        eqScreen.layout()
+        invScreen.setScrollingDisabled(true, false)
+        invScreen.setOverscroll(false, false)
+        invScreen.setScrollbarsVisible(false)
+        invScreen.layout()
 
 
         val backgroundImage = Image(Texture("UI/equipmentSmaller.png"))
@@ -99,15 +99,15 @@ class UiStage(
         backgroundImage.name = "background"
         backgroundImage.centerPosition()
 
-        addActor(eqScreen)
-        eqScreen.width = backgroundImage.width - 2 * borderWidth
-        eqScreen.height = backgroundImage.height - 2 * borderHeight
-        eqScreen.centerPosition()
+        addActor(invScreen)
+        invScreen.width = backgroundImage.width - 2 * borderWidth
+        invScreen.height = backgroundImage.height - 2 * borderHeight
+        invScreen.centerPosition()
 
         backgroundImage.setSize(backgroundImage.width * zoomLevel, backgroundImage.height * zoomLevel)
-        eqScreen.setSize(eqScreen.width * zoomLevel, eqScreen.height * zoomLevel)
+        invScreen.setSize(invScreen.width * zoomLevel, invScreen.height * zoomLevel)
         backgroundImage.centerPosition()
-        eqScreen.centerPosition()
+        invScreen.centerPosition()
     }
 
     private fun createContextMenu(item: Item, x: Float, y: Float): Table? {
@@ -134,7 +134,7 @@ class UiStage(
                                 return
                             }
                             usedItemList.add(item)
-                            showEq = false
+                            showInventory = false
                             nullifyAllValues()
                         }
                     })
@@ -167,7 +167,7 @@ class UiStage(
                                 return
                             }
                             usedItemList.add(item)
-                            showEq = false
+                            showInventory = false
                             nullifyAllValues()
                         }
                     })
@@ -184,12 +184,12 @@ class UiStage(
         return table
     }
 
-    private fun refreshEquipment() {
-        (eqScreen.actor as Table).children.forEach {
+    private fun refreshInventory() {
+        (invScreen.actor as Table).children.forEach {
             (it as Container<*>).actor = null
             val cellNumber = it.name.toInt()
-            if (cellNumber < Player.equipment.itemList.size)
-                it.actor = EqActor(Player.equipment.itemList[cellNumber].item)
+            if (cellNumber < Player.inventory.itemList.size)
+                it.actor = EqActor(Player.inventory.itemList[cellNumber].item)
         }
     }
 
@@ -200,7 +200,7 @@ class UiStage(
     // input processor
     private var timeClicked: Long = 0
     private var originalContainer: Container<*>? = null
-    private var originalEq: Equipment? = null
+    private var originalInventory: Inventory? = null
     // possibly change to EqActor
     var clickedItem: Actor? = null
     private var dragItem: Boolean? = null
@@ -220,12 +220,12 @@ class UiStage(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
         // gets the eq ui and sets the originalEq
-        val clickedEq = getEqClicked(coord.x, coord.y)
-        if (clickedEq != null) {
-            if (clickedEq.name == "playerEq")
-                originalEq = Player.equipment
+        val clickedInv = getInvClicked(coord.x, coord.y)
+        if (clickedInv != null) {
+            if (clickedInv.name == "playerEq")
+                originalInventory = Player.inventory
 
-            clickedItem = getEqCell(coord.x, coord.y, clickedEq)?.actor
+            clickedItem = getInvCell(coord.x, coord.y, clickedInv)?.actor
             if (clickedItem != null)
                 timeClicked = TimeUtils.millis()
         }
@@ -289,9 +289,9 @@ class UiStage(
                 contextPopup = null
             }
             else {
-                val hoveredEq = getEqClicked(coord.x, coord.y)
-                if (hoveredEq != null) {
-                    val hoveredItem: Actor? = getEqCell(coord.x, coord.y, hoveredEq)?.actor
+                val hoveredInv = getInvClicked(coord.x, coord.y)
+                if (hoveredInv != null) {
+                    val hoveredItem: Actor? = getInvCell(coord.x, coord.y, hoveredInv)?.actor
                     if (hoveredItem != null) {
                         contextPopup = createContextMenu((hoveredItem as EqActor).item, coord.x, coord.y)
                         if (contextPopup != null) {
@@ -307,7 +307,7 @@ class UiStage(
 
         clickedItem = null
         originalContainer = null
-        originalEq = null
+        originalInventory = null
         itemClicked = null
         dragItem = null
         return super.touchUp(screenX, screenY, pointer, button)
@@ -319,10 +319,10 @@ class UiStage(
         )
 
         // create new popup
-        val hoveredEq = getEqClicked(coord.x, coord.y)
+        val hoveredInv = getInvClicked(coord.x, coord.y)
         var hoveredItem: Actor? = null
-        if (hoveredEq != null && contextPopup == null) {
-            hoveredItem = getEqCell(coord.x, coord.y, hoveredEq)?.actor
+        if (hoveredInv != null && contextPopup == null) {
+            hoveredItem = getInvCell(coord.x, coord.y, hoveredInv)?.actor
             if (hoveredItem != null && (hoveredItem as EqActor).item != displayedItem) {
                 if (detailsPopup != null)
                     this.actors.removeValue(detailsPopup, true)
@@ -336,7 +336,7 @@ class UiStage(
         }
 
         // delete or move the popup
-        if (hoveredEq == null || hoveredItem == null) {
+        if (hoveredInv == null || hoveredItem == null) {
             displayedItem = null
             this.actors.removeValue(detailsPopup, true)
             detailsPopup = null
@@ -361,17 +361,17 @@ class UiStage(
     }
 
     /** Returns the eq ui and sets the originalEq */
-    private fun getEqClicked(x: Float, y: Float): ScrollPane? {
-        val inPlayerEq = (x in eqScreen.x .. eqScreen.x + eqScreen.width - 1 &&
-                y in eqScreen.y .. eqScreen.y + eqScreen.height - 1)
+    private fun getInvClicked(x: Float, y: Float): ScrollPane? {
+        val inPlayerEq = (x in invScreen.x .. invScreen.x + invScreen.width - 1 &&
+                y in invScreen.y .. invScreen.y + invScreen.height - 1)
         if (inPlayerEq) {
-            return eqScreen
+            return invScreen
         }
         else
             return null
     }
 
-    private fun getEqCell(x: Float, y: Float, clickedEq: ScrollPane): Container<*>? {
+    private fun getInvCell(x: Float, y: Float, clickedEq: ScrollPane): Container<*>? {
         val coord: Vector2 = clickedEq.stageToLocalCoordinates(
             Vector2(x, y)
         )
@@ -393,15 +393,15 @@ class UiStage(
         if (clickedItem == null)
             return
 
-        val clickedEq = getEqClicked(x, y)
-        if (clickedEq == null) {
+        val clickedInv = getInvClicked(x, y)
+        if (clickedInv == null) {
             // DROPPING THE ITEM
             if (clickedItem != null) {
                 itemDropList.add((clickedItem as EqActor).item)
                 // TODO change the remove implementation to this after adding the sorting and user defined positions
 //                originalEq!!.itemList.removeAt(originalContainer!!.name.toInt())
-                originalEq!!.itemList.remove(
-                    originalEq!!.itemList.find { it.item == (clickedItem as EqActor).item }
+                originalInventory!!.itemList.remove(
+                    originalInventory!!.itemList.find { it.item == (clickedItem as EqActor).item }
                 )
 
                 clickedItem!!.addAction(Actions.scaleTo(0f, 0f, 0.35f))
@@ -414,7 +414,7 @@ class UiStage(
         }
         clickedItem!!.setScale(1f, 1f)
         // if the area between cells was clicked, reset the item position
-        val container = getEqCell(x, y, clickedEq)
+        val container = getInvCell(x, y, clickedInv)
         if (container == null) {
             originalContainer!!.actor = clickedItem
             return
@@ -439,7 +439,7 @@ class UiStage(
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.TAB -> {
-                showEq = false
+                showInventory = false
                 nullifyAllValues()
             }
         }
@@ -451,7 +451,7 @@ class UiStage(
         clickedItem?.addAction(Actions.removeActor())
         clickedItem = null
         originalContainer = null
-        originalEq = null
+        originalInventory = null
         itemClicked = null
         dragItem = null
         if (detailsPopup != null) {
@@ -466,10 +466,10 @@ class UiStage(
     }
 
     override fun draw() {
-        if (Player.equipmentSizeChanged) {
-            Player.equipmentSizeChanged = false
-            actors.removeValue(eqScreen, true)
-            addEquipmentActor()
+        if (Player.inventorySizeChanged) {
+            Player.inventorySizeChanged = false
+            actors.removeValue(invScreen, true)
+            addInventoryActor()
         }
         super.draw()
     }

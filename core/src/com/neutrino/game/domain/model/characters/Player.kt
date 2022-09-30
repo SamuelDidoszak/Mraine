@@ -10,7 +10,7 @@ import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.equipment.utility.EqElement
-import com.neutrino.game.domain.model.items.equipment.utility.Equipment
+import com.neutrino.game.domain.model.items.equipment.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
 
 object Player : Character(0, 0, 0.0) {
@@ -35,10 +35,10 @@ object Player : Character(0, 0, 0.0) {
         attack = setAttack()
     }
 
-    // Equipment
-    /** Player equipment */
-    val equipment: Equipment = Equipment()
-    val equipped: Equipment = Equipment()
+    // Inventory
+    /** Player inventory */
+    val inventory: Inventory = Inventory()
+    val equipped: Inventory = Inventory()
 
     override val description: String
         get() = TODO("Not yet implemented")
@@ -55,23 +55,23 @@ object Player : Character(0, 0, 0.0) {
 
     override var animation: Animation<TextureRegion>? = null
 
-    var equipmentSize: Int = 96
+    var inventorySize: Int = 30
         private set(value) {
             field = value
-            equipmentSizeChanged = true
+            inventorySizeChanged = true
         }
-    var equipmentSizeChanged: Boolean = false
+    var inventorySizeChanged: Boolean = false
 
-    fun addToEquipment(item: Item) {
+    fun addToInventory(item: Item) {
         // add to stack
         if (item.stackable) {
-            val stackableItem = equipment.itemList.find { it.item.name == item.name }
+            val stackableItem = inventory.itemList.find { it.item.name == item.name }
             if (stackableItem != null)
                 stackableItem.item.amount = stackableItem.item.amount!!.plus(item.amount!!)
             else
-                equipment.itemList.add(EqElement(item, Turn.turn))
+                inventory.itemList.add(EqElement(item, Turn.turn))
         } else
-            equipment.itemList.add(EqElement(item, Turn.turn))
+            inventory.itemList.add(EqElement(item, Turn.turn))
     }
 
     fun showPickedUpItem(item: Item) {

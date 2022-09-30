@@ -59,7 +59,7 @@ class GameScreen: KtxScreen {
         println(Gdx.app.graphics.height)
 
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
-        uiStage.addEquipmentActor()
+        uiStage.addInventoryActor()
         selectInput(false)
 
         initialize.initialize()
@@ -117,8 +117,8 @@ class GameScreen: KtxScreen {
         } else {
             Gdx.input.inputProcessor = uiStage
             isEqVisible = true
-            // refresh eq
-            uiStage.refreshEq = true
+            // refresh inventory
+            uiStage.refreshInventory = true
         }
     }
 
@@ -140,17 +140,17 @@ class GameScreen: KtxScreen {
             // show eq
             //TODO force the refresh to execute only once, currently, the "uiStage.clickedItem == null" check resets the item positions of those changed while pickup icon is still visible
             if (Player.findActor<Image>("item") != null && uiStage.clickedItem == null)
-                uiStage.refreshEq = true
+                uiStage.refreshInventory = true
             selectInput(showEq = true)
             uiStage.viewport.apply()
             uiStage.act(delta)
             uiStage.draw()
-            if (!uiStage.showEq) {
+            if (!uiStage.showInventory) {
                 // show normal stuff
                 selectInput(showEq = false)
                 // cleanup
                 stage.showEq = false
-                uiStage.showEq = true
+                uiStage.showInventory = true
             }
         }
 
@@ -207,11 +207,11 @@ class GameScreen: KtxScreen {
                 val item = uiStage.usedItemList.removeFirst()
                 Player.ai.action = Action.ITEM(item, Player)
                 // removing item from eq or decreasing its amount
-                val itemInEq = Player.equipment.itemList.find { it.item == item }!!
+                val itemInEq = Player.inventory.itemList.find { it.item == item }!!
                 if (itemInEq.item.amount != null && itemInEq.item.amount!! > 1)
                     itemInEq.item.amount = itemInEq.item.amount!! - 1
                 else
-                    Player.equipment.itemList.remove(itemInEq)
+                    Player.inventory.itemList.remove(itemInEq)
             }
 
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement

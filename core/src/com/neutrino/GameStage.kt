@@ -9,8 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
-import com.neutrino.game.presentation.utility.EntityLookupPopup
-import com.neutrino.game.presentation.utility.ItemDetailsPopup
+import com.neutrino.game.graphics.utility.EntityLookupPopup
+import com.neutrino.game.graphics.utility.ItemDetailsPopup
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
 import kotlin.math.abs

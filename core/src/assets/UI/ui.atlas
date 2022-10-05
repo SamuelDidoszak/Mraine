@@ -1,0 +1,55 @@
+ui.png
+	size: 2048, 1024
+	repeat: none
+BottomBar
+	bounds: 0, 288, 860, 107
+EQClosed
+	bounds: 1934, 811, 105, 52
+EqOpen
+	bounds: 1720, 631, 117, 56
+InventoryBackground
+	bounds: 0, 395, 860, 524
+InventoryBorder
+	bounds: 860, 395, 860, 524
+InventoryClosed
+	bounds: 1050, 287, 190, 52
+InventoryOpen
+	bounds: 1720, 855, 214, 64
+MapClosed
+	bounds: 860, 287, 190, 52
+MapOpen
+	bounds: 0, 224, 214, 64
+QuestsClosed
+	bounds: 1451, 343, 190, 52
+QuestsOpen
+	bounds: 860, 339, 216, 56
+SkillsClosed
+	bounds: 590, 236, 190, 52
+SkillsOpen
+	bounds: 1720, 799, 214, 56
+SortingAsc
+	bounds: 1934, 863, 112, 56
+SortingClosed
+	bounds: 1240, 287, 111, 52
+SortingClosedCentered
+	bounds: 1720, 579, 111, 52
+SortingCustom
+	bounds: 1720, 687, 187, 56
+SortingCustomSelected
+	bounds: 1264, 339, 187, 56
+SortingDate
+	bounds: 1076, 339, 188, 56
+SortingDateSelected
+	bounds: 1720, 743, 188, 56
+SortingDesc
+	bounds: 0, 0, 112, 56
+SortingOpen
+	bounds: 0, 56, 117, 56
+SortingType
+	bounds: 0, 112, 188, 56
+SortingTypeSelected
+	bounds: 214, 232, 188, 56
+SortingValue
+	bounds: 402, 232, 188, 56
+SortingValueSelected
+	bounds: 0, 168, 188, 56

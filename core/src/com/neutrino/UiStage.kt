@@ -3,8 +3,10 @@ package com.neutrino
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -60,20 +62,54 @@ class UiStage(
         screenRatio = viewport.screenWidth / viewport.screenHeight.toFloat()
     }
 
-    fun addInventoryActor() {
-        val borderWidth: Int = 13
-        val borderHeight: Int = 13
+    // UI elements
+    private val uiAtlas = TextureAtlas("UI/ui.atlas")
+    private val uiElements: Map<String, TextureAtlas.AtlasRegion> = mapOf(
+        "BottomBar" to uiAtlas.findRegion("BottomBar"),
+        "InventoryBorder" to uiAtlas.findRegion("InventoryBorder"),
+        "InventoryBackground" to uiAtlas.findRegion("InventoryBackground"),
+        "EQClosed" to uiAtlas.findRegion("EQClosed"),
+        "EQOpen" to uiAtlas.findRegion("EQOpen"),
+        "InventoryClosed" to uiAtlas.findRegion("InventoryClosed"),
+        "InventoryOpen" to uiAtlas.findRegion("InventoryOpen"),
+        "SkillsClosed" to uiAtlas.findRegion("SkillsClosed"),
+        "SkillsOpen" to uiAtlas.findRegion("SkillsOpen"),
+        "QuestsClosed" to uiAtlas.findRegion("QuestsClosed"),
+        "QuestsOpen" to uiAtlas.findRegion("QuestsOpen"),
+        "MapClosed" to uiAtlas.findRegion("MapClosed"),
+        "MapOpen" to uiAtlas.findRegion("MapOpen"),
+            "SortingClosed" to uiAtlas.findRegion("SortingClosed"),
+            "SortingClosedCentered" to uiAtlas.findRegion("SortingClosedCentered"),
+        "SortingOpen" to uiAtlas.findRegion("SortingOpen"),
+        "SortingCustom" to uiAtlas.findRegion("SortingCustom"),
+        "SortingCustomSelected" to uiAtlas.findRegion("SortingCustomSelected"),
+        "SortingType" to uiAtlas.findRegion("SortingType"),
+        "SortingTypeSelected" to uiAtlas.findRegion("SortingTypeSelected"),
+        "SortingValue" to uiAtlas.findRegion("SortingValue"),
+        "SortingValueSelected" to uiAtlas.findRegion("SortingValueSelected"),
+        "SortingDate" to uiAtlas.findRegion("SortingDate"),
+        "SortingDateSelected" to uiAtlas.findRegion("SortingDateSelected"),
+        "SortingAsc" to uiAtlas.findRegion("SortingAsc"),
+        "SortingDesc" to uiAtlas.findRegion("SortingDesc"),
+    )
+
+    private val tabsGroup = Group()
+
+
+    fun addInventoryActorOld() {
+        val borderWidth: Int = 12
+        val borderHeight: Int = 12
 //        val padding: Int = 4
 
         val color = Color(238f, 195f, 154f, 1f)
 
-        val rows = Player.inventorySize / 9 + if (Player.inventorySize % 9 != 0) 1 else 0
+        val rows = Player.inventorySize / 10 + if (Player.inventorySize % 10 != 0) 1 else 0
         val table = scene2d.table {
                 pad(0f)
                 this.setFillParent(false)
                 clip(true)
                 for (n in 0 until rows) {
-                    for (i in 0 until 9)
+                    for (i in 0 until 10)
                         add(container {
                             val cellNumber = n * 9 + i
                             name = (cellNumber).toString()
@@ -108,6 +144,127 @@ class UiStage(
         invScreen.setSize(invScreen.width * zoomLevel, invScreen.height * zoomLevel)
         backgroundImage.centerPosition()
         invScreen.centerPosition()
+    }
+    fun addInventoryActor() {
+        val borderWidth: Int = 12
+        val borderHeight: Int = 12
+
+        val color = Color(238f, 195f, 154f, 1f)
+
+        var rows = Player.inventorySize / 10 + if (Player.inventorySize % 10 != 0) 1 else 0
+        rows = if (rows < 6) 6 else rows
+        val table = scene2d.table {
+                pad(0f)
+                this.setFillParent(false)
+                clip(true)
+                for (n in 0 until rows) {
+                    for (i in 0 until 10)
+                        add(container {
+                            val cellNumber = n * 10 + i
+                            name = (cellNumber).toString()
+                            align(Align.bottomLeft)
+                            if (cellNumber < Player.inventory.itemList.size)
+                                actor = EqActor(Player.inventory.itemList[cellNumber].item)
+                        }).size(84f, 84f).left().top().space(0f)
+                    row().space(0f)
+                }
+        }
+        table.pack()
+        invScreen = ScrollPane(table)
+        invScreen.name = "playerEq"
+        // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
+        invScreen.setScrollingDisabled(true, false)
+        invScreen.setOverscroll(false, false)
+        invScreen.setScrollbarsVisible(false)
+        invScreen.layout()
+//        invScreen.setDebug(true, true)
+
+        val inventoryBackground = Image(uiElements["InventoryBackground"])
+        addActor(inventoryBackground)
+        inventoryBackground.name = "background"
+        inventoryBackground.centerPosition()
+
+        addActor(invScreen)
+        invScreen.width = inventoryBackground.width - 2 * (borderWidth - 2)
+        invScreen.height = inventoryBackground.height - 2 * borderHeight
+        invScreen.centerPosition()
+
+        val inventoryBorder = Image(uiElements["InventoryBorder"])
+        addActor(inventoryBorder)
+        inventoryBorder.name = "border"
+        inventoryBorder.centerPosition()
+
+        inventoryBackground.centerPosition()
+        invScreen.centerPosition()
+
+        addTabs()
+        tabsGroup.zIndex = 1
+        println("Border z index: ${inventoryBorder.zIndex}")
+    }
+
+    fun addTabs() {
+        val borderImage = actors.find {it.name == "border"}!!
+        var xPos = borderImage.x
+        val yPos = borderImage.y + borderImage.height - 14
+
+        // Main tabs
+        val eqClosed = Image(uiElements["EQClosed"])
+        eqClosed.name = "EQClosed"
+        eqClosed.setPosition(xPos, yPos)
+        val eqOpen = Image(uiElements["EQOpen"])
+        eqOpen.name = "EQOpen"
+        eqOpen.setPosition(xPos, yPos)
+        eqOpen.isVisible = false
+        xPos += 83f
+        val inventoryClosed = Image(uiElements["InventoryClosed"])
+        inventoryClosed.name = "InventoryClosed"
+        inventoryClosed.setPosition(xPos, yPos)
+        val inventoryOpen = Image(uiElements["InventoryOpen"])
+        inventoryOpen.name = "InventoryOpen"
+        inventoryOpen.setPosition(xPos, yPos)
+        inventoryOpen.isVisible = false
+        xPos += 168f
+        val skillsClosed = Image(uiElements["SkillsClosed"])
+        skillsClosed.name = "SkillsClosed"
+        skillsClosed.setPosition(xPos, yPos)
+        val skillsOpen = Image(uiElements["SkillsOpen"])
+        skillsOpen.name = "SkillsOpen"
+        skillsOpen.setPosition(xPos, yPos)
+        skillsOpen.isVisible = false
+        xPos += 168f
+        val questsClosed = Image(uiElements["QuestsClosed"])
+        questsClosed.name = "QuestsClosed"
+        questsClosed.setPosition(xPos, yPos)
+        val questsOpen = Image(uiElements["QuestsOpen"])
+        questsOpen.name = "QuestsOpen"
+        questsOpen.setPosition(xPos, yPos)
+        questsOpen.isVisible = false
+        xPos += 168f
+        val mapClosed = Image(uiElements["MapClosed"])
+        mapClosed.name = "MapClosed"
+        mapClosed.setPosition(xPos, yPos)
+        val mapOpen = Image(uiElements["MapOpen"])
+        mapOpen.name = "MapOpen"
+        mapOpen.setPosition(xPos, yPos)
+        mapOpen.isVisible = false
+        xPos += 162f
+        val sortingClosed = Image(uiElements["SortingClosed"])
+        sortingClosed.name = "SortingClosed"
+        sortingClosed.setPosition(xPos, yPos)
+        val sortingOpen = Image(uiElements["SortingOpen"])
+        sortingOpen.name = "SortingOpen"
+        sortingOpen.setPosition(xPos, yPos)
+        sortingOpen.isVisible = false
+
+        // Adding tabs
+        tabsGroup.addActor(sortingClosed)
+        tabsGroup.addActor(mapClosed)
+        tabsGroup.addActor(questsClosed)
+        tabsGroup.addActor(skillsClosed)
+        tabsGroup.addActor(inventoryClosed)
+        tabsGroup.addActor(eqClosed)
+
+        addActor(tabsGroup)
     }
 
     private fun createContextMenu(item: Item, x: Float, y: Float): Table? {

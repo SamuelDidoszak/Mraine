@@ -9,6 +9,9 @@ fun Double.lessThanDelta(other: Double) = (this - other) < -0.0000001
 fun Float.equalsDelta(other: Float) = abs(this - other) <= 0.005f
 fun Float.lessThanDelta(other: Float) = (this - other) < -0.0000001
 
+fun Float.compareDelta(other: Float) = if (this.equalsDelta(other)) 0
+    else if (this.lessThanDelta(other)) -1 else 1
+
 object Constants {
     const val AnimationSpeed: Float = 0.1666666666666666f
     const val MoveSpeed: Float = 0.5f

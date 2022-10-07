@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraButton
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
@@ -68,8 +69,8 @@ class UiStage(
         "BottomBar" to uiAtlas.findRegion("BottomBar"),
         "InventoryBorder" to uiAtlas.findRegion("InventoryBorder"),
         "InventoryBackground" to uiAtlas.findRegion("InventoryBackground"),
-        "EQClosed" to uiAtlas.findRegion("EQClosed"),
-        "EQOpen" to uiAtlas.findRegion("EQOpen"),
+        "EqClosed" to uiAtlas.findRegion("EqClosed"),
+        "EqOpen" to uiAtlas.findRegion("EqOpen"),
         "InventoryClosed" to uiAtlas.findRegion("InventoryClosed"),
         "InventoryOpen" to uiAtlas.findRegion("InventoryOpen"),
         "SkillsClosed" to uiAtlas.findRegion("SkillsClosed"),
@@ -94,6 +95,8 @@ class UiStage(
     )
 
     private val tabsGroup = Group()
+    private val openTabsGroup = Group()
+    private val sortingTabsGroup = Group()
 
 
     fun addInventoryActorOld() {
@@ -198,22 +201,22 @@ class UiStage(
         invScreen.centerPosition()
 
         addTabs()
-        tabsGroup.zIndex = 1
-        println("Border z index: ${inventoryBorder.zIndex}")
+        tabsGroup.zIndex = 0
     }
 
+    /** Adds tabs of the UI */
     fun addTabs() {
         val borderImage = actors.find {it.name == "border"}!!
         var xPos = borderImage.x
         val yPos = borderImage.y + borderImage.height - 14
 
         // Main tabs
-        val eqClosed = Image(uiElements["EQClosed"])
-        eqClosed.name = "EQClosed"
+        val eqClosed = Image(uiElements["EqClosed"])
+        eqClosed.name = "EqClosed"
         eqClosed.setPosition(xPos, yPos)
-        val eqOpen = Image(uiElements["EQOpen"])
-        eqOpen.name = "EQOpen"
-        eqOpen.setPosition(xPos, yPos)
+        val eqOpen = Image(uiElements["EqOpen"])
+        eqOpen.name = "EqOpen"
+        eqOpen.setPosition(xPos, yPos + 10)
         eqOpen.isVisible = false
         xPos += 83f
         val inventoryClosed = Image(uiElements["InventoryClosed"])
@@ -221,7 +224,7 @@ class UiStage(
         inventoryClosed.setPosition(xPos, yPos)
         val inventoryOpen = Image(uiElements["InventoryOpen"])
         inventoryOpen.name = "InventoryOpen"
-        inventoryOpen.setPosition(xPos, yPos)
+        inventoryOpen.setPosition(xPos - 12, yPos + 10 - 8)
         inventoryOpen.isVisible = false
         xPos += 168f
         val skillsClosed = Image(uiElements["SkillsClosed"])
@@ -229,7 +232,7 @@ class UiStage(
         skillsClosed.setPosition(xPos, yPos)
         val skillsOpen = Image(uiElements["SkillsOpen"])
         skillsOpen.name = "SkillsOpen"
-        skillsOpen.setPosition(xPos, yPos)
+        skillsOpen.setPosition(xPos - 12, yPos + 10)
         skillsOpen.isVisible = false
         xPos += 168f
         val questsClosed = Image(uiElements["QuestsClosed"])
@@ -237,7 +240,7 @@ class UiStage(
         questsClosed.setPosition(xPos, yPos)
         val questsOpen = Image(uiElements["QuestsOpen"])
         questsOpen.name = "QuestsOpen"
-        questsOpen.setPosition(xPos, yPos)
+        questsOpen.setPosition(xPos - 12, yPos + 10)
         questsOpen.isVisible = false
         xPos += 168f
         val mapClosed = Image(uiElements["MapClosed"])
@@ -245,7 +248,7 @@ class UiStage(
         mapClosed.setPosition(xPos, yPos)
         val mapOpen = Image(uiElements["MapOpen"])
         mapOpen.name = "MapOpen"
-        mapOpen.setPosition(xPos, yPos)
+        mapOpen.setPosition(xPos - 12, yPos + 10 - 8)
         mapOpen.isVisible = false
         xPos += 162f
         val sortingClosed = Image(uiElements["SortingClosed"])
@@ -253,7 +256,7 @@ class UiStage(
         sortingClosed.setPosition(xPos, yPos)
         val sortingOpen = Image(uiElements["SortingOpen"])
         sortingOpen.name = "SortingOpen"
-        sortingOpen.setPosition(xPos, yPos)
+        sortingOpen.setPosition(xPos - 6, yPos + 10)
         sortingOpen.isVisible = false
 
         // Adding tabs
@@ -264,7 +267,18 @@ class UiStage(
         tabsGroup.addActor(inventoryClosed)
         tabsGroup.addActor(eqClosed)
 
+        // Adding open tabs
+        openTabsGroup.addActor(sortingOpen)
+        openTabsGroup.addActor(mapOpen)
+        openTabsGroup.addActor(questsOpen)
+        openTabsGroup.addActor(skillsOpen)
+        openTabsGroup.addActor(inventoryOpen)
+        openTabsGroup.addActor(eqOpen)
+
         addActor(tabsGroup)
+        addActor(openTabsGroup)
+        activeTab = eqOpen
+        activeTab.isVisible = true
     }
 
     private fun createContextMenu(item: Item, x: Float, y: Float): Table? {
@@ -362,6 +376,9 @@ class UiStage(
     var clickedItem: Actor? = null
     private var dragItem: Boolean? = null
     private var itemClicked: Boolean? = null
+    // values for tab handling
+    private var hoveredTab: Actor? = null
+    private lateinit var activeTab: Actor
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0) return false
@@ -382,7 +399,7 @@ class UiStage(
             if (clickedInv.name == "playerEq")
                 originalInventory = Player.inventory
 
-            clickedItem = getInvCell(coord.x, coord.y, clickedInv)?.actor
+            clickedItem = getInventoryCell(coord.x, coord.y, clickedInv)?.actor
             if (clickedItem != null)
                 timeClicked = TimeUtils.millis()
         }
@@ -448,7 +465,7 @@ class UiStage(
             else {
                 val hoveredInv = getInvClicked(coord.x, coord.y)
                 if (hoveredInv != null) {
-                    val hoveredItem: Actor? = getInvCell(coord.x, coord.y, hoveredInv)?.actor
+                    val hoveredItem: Actor? = getInventoryCell(coord.x, coord.y, hoveredInv)?.actor
                     if (hoveredItem != null) {
                         contextPopup = createContextMenu((hoveredItem as EqActor).item, coord.x, coord.y)
                         if (contextPopup != null) {
@@ -461,6 +478,14 @@ class UiStage(
                 }
             }
         }
+
+        // New tab was clicked
+        if (hoveredTab != activeTab && hoveredTab != null && button == Input.Buttons.LEFT) {
+            activeTab.isVisible = false
+            activeTab = openTabsGroup.children.find { it.name == hoveredTab!!.name.replace("Closed", "Open") }!!
+            activeTab.isVisible = true
+        }
+
 
         clickedItem = null
         originalContainer = null
@@ -475,11 +500,21 @@ class UiStage(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
 
+        // move tabs
+        val tab = getTabByPosition(screenX.toFloat(), screenY.toFloat())
+
+        if (tab != null)
+            tab!!.moveTab(true)
+        if (hoveredTab != null)
+            hoveredTab!!.moveTab(false)
+
+        hoveredTab = tab
+
         // create new popup
         val hoveredInv = getInvClicked(coord.x, coord.y)
         var hoveredItem: Actor? = null
         if (hoveredInv != null && contextPopup == null) {
-            hoveredItem = getInvCell(coord.x, coord.y, hoveredInv)?.actor
+            hoveredItem = getInventoryCell(coord.x, coord.y, hoveredInv)?.actor
             if (hoveredItem != null && (hoveredItem as EqActor).item != displayedItem) {
                 if (detailsPopup != null)
                     this.actors.removeValue(detailsPopup, true)
@@ -528,7 +563,33 @@ class UiStage(
             return null
     }
 
-    private fun getInvCell(x: Float, y: Float, clickedEq: ScrollPane): Container<*>? {
+    /** Moves an actor by 14 pixels */
+    private fun Actor.moveTab(up: Boolean) { if (up) this.addAction(Actions.moveBy(0f, 14f, 0.15f))
+    else this.addAction(Actions.moveBy(0f, -14f, 0.15f)) }
+
+    private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.width) <= 0 &&
+            y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.height) <= 0)
+
+
+    /** Returns tab at coord position */
+    private fun getTabByPosition(x: Float, y: Float): Actor? {
+        val coord: Vector2 = this.screenToStageCoordinates(
+            Vector2(x, y)
+        )
+
+        return try {
+            tabsGroup.children.first { it.isIn(coord.x, coord.y) }
+        } catch (e: NoSuchElementException) {
+            null
+        }
+    }
+
+    private fun isIn(x1: Float, x: Float, width: Float, y1: Float, y: Float, height: Float): Boolean {
+        return (x1.compareDelta(x) >= 0 && x1.compareDelta(x + width) <= 0 &&
+            y1.compareDelta(y) >= 0 && y1.compareDelta(y + height) <= 0)
+    }
+
+    private fun getInventoryCell(x: Float, y: Float, clickedEq: ScrollPane): Container<*>? {
         val coord: Vector2 = clickedEq.stageToLocalCoordinates(
             Vector2(x, y)
         )
@@ -571,7 +632,7 @@ class UiStage(
         }
         clickedItem!!.setScale(1f, 1f)
         // if the area between cells was clicked, reset the item position
-        val container = getInvCell(x, y, clickedInv)
+        val container = getInventoryCell(x, y, clickedInv)
         if (container == null) {
             originalContainer!!.actor = clickedItem
             return
@@ -611,6 +672,10 @@ class UiStage(
         originalInventory = null
         itemClicked = null
         dragItem = null
+        if (hoveredTab != null) {
+            hoveredTab!!.moveBy(0f, -14f)
+            hoveredTab = null
+        }
         if (detailsPopup != null) {
             this.actors.removeValue(detailsPopup, true)
             detailsPopup = null

@@ -3,7 +3,7 @@ ui.png
 	repeat: none
 BottomBar
 	bounds: 0, 288, 860, 107
-EQClosed
+EqClosed
 	bounds: 1934, 811, 105, 52
 EqOpen
 	bounds: 1720, 631, 117, 56
@@ -22,7 +22,7 @@ MapOpen
 QuestsClosed
 	bounds: 1451, 343, 190, 52
 QuestsOpen
-	bounds: 860, 339, 216, 56
+	bounds: 862, 339, 214, 56
 SkillsClosed
 	bounds: 590, 236, 190, 52
 SkillsOpen

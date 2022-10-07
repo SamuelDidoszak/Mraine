@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.github.tommyettinger.textra.KnownFonts
@@ -83,13 +84,13 @@ class UiStage(
             "SortingClosedCentered" to uiAtlas.findRegion("SortingClosedCentered"),
         "SortingOpen" to uiAtlas.findRegion("SortingOpen"),
         "SortingCustom" to uiAtlas.findRegion("SortingCustom"),
-        "SortingCustomSelected" to uiAtlas.findRegion("SortingCustomSelected"),
+        "SortingCustomOpen" to uiAtlas.findRegion("SortingCustomOpen"),
         "SortingType" to uiAtlas.findRegion("SortingType"),
-        "SortingTypeSelected" to uiAtlas.findRegion("SortingTypeSelected"),
+        "SortingTypeOpen" to uiAtlas.findRegion("SortingTypeOpen"),
         "SortingValue" to uiAtlas.findRegion("SortingValue"),
-        "SortingValueSelected" to uiAtlas.findRegion("SortingValueSelected"),
+        "SortingValueOpen" to uiAtlas.findRegion("SortingValueOpen"),
         "SortingDate" to uiAtlas.findRegion("SortingDate"),
-        "SortingDateSelected" to uiAtlas.findRegion("SortingDateSelected"),
+        "SortingDateOpen" to uiAtlas.findRegion("SortingDateOpen"),
         "SortingAsc" to uiAtlas.findRegion("SortingAsc"),
         "SortingDesc" to uiAtlas.findRegion("SortingDesc"),
     )
@@ -202,6 +203,7 @@ class UiStage(
 
         addTabs()
         tabsGroup.zIndex = 0
+        sortingTabsGroup.zIndex = 1
     }
 
     /** Adds tabs of the UI */
@@ -259,6 +261,47 @@ class UiStage(
         sortingOpen.setPosition(xPos - 6, yPos + 10)
         sortingOpen.isVisible = false
 
+        // Sorting tabs
+        xPos = borderImage.x
+        val sortingCustom = Image(uiElements["SortingCustom"])
+        sortingCustom.name = "SortingCustom"
+        sortingCustom.setPosition(xPos, yPos)
+        val sortingCustomOpen = Image(uiElements["SortingCustomOpen"])
+        sortingCustomOpen.name = "SortingCustomOpen"
+        sortingCustomOpen.setPosition(xPos, yPos)
+        sortingCustomOpen.isVisible = false
+        xPos += 168f
+        val sortingType = Image(uiElements["SortingType"])
+        sortingType.name = "SortingType"
+        sortingType.setPosition(xPos, yPos)
+        val sortingTypeOpen = Image(uiElements["SortingTypeOpen"])
+        sortingTypeOpen.name = "SortingTypeOpen"
+        sortingTypeOpen.setPosition(xPos, yPos)
+        sortingTypeOpen.isVisible = false
+        xPos += 168f
+        val sortingValue = Image(uiElements["SortingValue"])
+        sortingValue.name = "SortingValue"
+        sortingValue.setPosition(xPos, yPos)
+        val sortingValueOpen = Image(uiElements["SortingValueOpen"])
+        sortingValueOpen.name = "SortingValueOpen"
+        sortingValueOpen.setPosition(xPos, yPos)
+        sortingValueOpen.isVisible = false
+        xPos += 168f
+        val sortingDate = Image(uiElements["SortingDate"])
+        sortingDate.name = "SortingDate"
+        sortingDate.setPosition(xPos, yPos)
+        val sortingDateOpen = Image(uiElements["SortingDateOpen"])
+        sortingDateOpen.name = "SortingDateOpen"
+        sortingDateOpen.setPosition(xPos, yPos)
+        sortingDateOpen.isVisible = false
+        xPos += 168f
+        val sortingAsc = Image(uiElements["SortingAsc"])
+        sortingAsc.name = "SortingAsc"
+        sortingAsc.setPosition(xPos, yPos)
+        val sortingDesc = Image(uiElements["SortingDesc"])
+        sortingDesc.name = "SortingDesc"
+        sortingDesc.setPosition(xPos, yPos)
+
         // Adding tabs
         tabsGroup.addActor(sortingClosed)
         tabsGroup.addActor(mapClosed)
@@ -275,10 +318,34 @@ class UiStage(
         openTabsGroup.addActor(inventoryOpen)
         openTabsGroup.addActor(eqOpen)
 
+        // Adding sorting tabs
+        sortingTabsGroup.addActor(sortingDesc)
+        sortingTabsGroup.addActor(sortingAsc)
+        sortingTabsGroup.addActor(sortingDate)
+        sortingTabsGroup.addActor(sortingValue)
+        sortingTabsGroup.addActor(sortingType)
+        sortingTabsGroup.addActor(sortingCustom)
+        sortingTabsGroup.addActor(sortingDateOpen)
+        sortingTabsGroup.addActor(sortingValueOpen)
+        sortingTabsGroup.addActor(sortingTypeOpen)
+        sortingTabsGroup.addActor(sortingCustomOpen)
+
         addActor(tabsGroup)
         addActor(openTabsGroup)
-        activeTab = eqOpen
+        activeTab = inventoryOpen
         activeTab.isVisible = true
+        addActor(sortingTabsGroup)
+        currentSorting = sortingDateOpen
+        currentSorting.isVisible = true
+        sortingDate.isVisible = false
+        sortingTabsGroup.isVisible = false
+        if (isSortAscending) {
+            sortingAsc.isVisible = true
+            sortingDesc.isVisible = false
+        } else {
+            sortingAsc.isVisible = false
+            sortingDesc.isVisible = true
+        }
     }
 
     private fun createContextMenu(item: Item, x: Float, y: Float): Table? {
@@ -379,6 +446,49 @@ class UiStage(
     // values for tab handling
     private var hoveredTab: Actor? = null
     private lateinit var activeTab: Actor
+    private lateinit var currentSorting: Actor
+    private var isSortAscending: Boolean = false
+
+    private fun activateTab() {
+        if (activeTab.name == "SortingOpen") {
+            if (hoveredTab!!.name == "SortingClosed") {
+                tabsGroup.isVisible = true
+                sortingTabsGroup.isVisible = false
+                activeTab.isVisible = false
+                activeTab = openTabsGroup.children.find { it.name == "InventoryOpen" }!!
+                activeTab.isVisible = true
+                return
+            }
+            if (hoveredTab!!.name == "SortingAsc" || hoveredTab!!.name == "SortingDesc") {
+                sortingTabsGroup.children.find { it.name == "Sorting" + if (isSortAscending) "Asc" else "Desc" }!!.isVisible = false
+                isSortAscending = !isSortAscending
+                val sortingTab = sortingTabsGroup.children.find { it.name == "Sorting" + if (isSortAscending) "Asc" else "Desc" }!!
+                sortingTab.zIndex = 0
+                sortingTab.moveBy(0f, 14f)
+                sortingTab.isVisible = true
+                sortingTab.moveTab(false)
+                return
+            }
+
+            sortingTabsGroup.children.find { it.name == currentSorting.name.replace("Open", "") }!!.isVisible = true
+            currentSorting.isVisible = false
+            currentSorting = sortingTabsGroup.children.find { it.name == hoveredTab!!.name + "Open" }!!
+            currentSorting.moveBy(0f, 14f)
+            currentSorting.isVisible = true
+            sortingTabsGroup.children.find { it.name == hoveredTab!!.name }!!.isVisible = false
+            currentSorting.moveTab(false)
+            return
+        }
+        activeTab.isVisible = false
+        activeTab = openTabsGroup.children.find { it.name == hoveredTab!!.name.replace("Closed", "Open") }!!
+        activeTab.isVisible = true
+
+        if (activeTab.name == "SortingOpen") {
+            tabsGroup.isVisible = false
+            sortingTabsGroup.isVisible = true
+            hoveredTab = null
+        }
+    }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0) return false
@@ -480,12 +590,12 @@ class UiStage(
         }
 
         // New tab was clicked
+        val actorAtPosition = actorAt(coord.x, coord.y)
+        if (actorAtPosition?.name == "SortingClosed")
+            hoveredTab = actorAtPosition
         if (hoveredTab != activeTab && hoveredTab != null && button == Input.Buttons.LEFT) {
-            activeTab.isVisible = false
-            activeTab = openTabsGroup.children.find { it.name == hoveredTab!!.name.replace("Closed", "Open") }!!
-            activeTab.isVisible = true
+            activateTab()
         }
-
 
         clickedItem = null
         originalContainer = null
@@ -570,6 +680,19 @@ class UiStage(
     private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.width) <= 0 &&
             y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.height) <= 0)
 
+    /** Returns tab at coord position */
+    private fun actorAt(x: Float, y: Float): Actor? {
+        for (actor in Array.ArrayIterator(actors)) {
+            if (actor is Group) {
+                for (child in actor.children) {
+                    if (child.isIn(x, y))
+                        return child
+                }
+            } else if (actor.isIn(x, y))
+                return actor
+        }
+        return null
+    }
 
     /** Returns tab at coord position */
     private fun getTabByPosition(x: Float, y: Float): Actor? {
@@ -578,15 +701,13 @@ class UiStage(
         )
 
         return try {
-            tabsGroup.children.first { it.isIn(coord.x, coord.y) }
+            if (activeTab.name == "SortingOpen")
+                sortingTabsGroup.children.first { it.isIn(coord.x, coord.y) }
+            else
+                tabsGroup.children.first { it.isIn(coord.x, coord.y) }
         } catch (e: NoSuchElementException) {
             null
         }
-    }
-
-    private fun isIn(x1: Float, x: Float, width: Float, y1: Float, y: Float, height: Float): Boolean {
-        return (x1.compareDelta(x) >= 0 && x1.compareDelta(x + width) <= 0 &&
-            y1.compareDelta(y) >= 0 && y1.compareDelta(y + height) <= 0)
     }
 
     private fun getInventoryCell(x: Float, y: Float, clickedEq: ScrollPane): Container<*>? {

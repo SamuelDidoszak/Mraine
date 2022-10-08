@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Pools
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
@@ -263,6 +264,20 @@ abstract class Character(
         }
         this.findActor<HpBar>("hpBar").update(currentHp)
         return damage
+    }
+
+    fun showItemUsed(item: Item) {
+        val itemActor = Image(item.texture)
+        itemActor.setSize(itemActor.width * 4, itemActor.height * 4)
+        itemActor.name = "itemUsed"
+
+        this.addActor(itemActor)
+        itemActor.setPosition(0f, this.height + 32f)
+        itemActor.addAction(Actions.moveBy(0f, -32f, 1f))
+        itemActor.addAction(
+            Actions.sequence(
+                Actions.fadeOut(1.25f),
+                Actions.removeActor()))
     }
 
     fun dropItems(): MutableList<Item> {

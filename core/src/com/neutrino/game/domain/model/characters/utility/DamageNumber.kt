@@ -18,7 +18,10 @@ class DamageNumber: TextraLabel("", KnownFonts.getStandardFamily()) {
     }
 
     fun init(color: String, damage: Float) {
-        setText("[$color][%150][*]${round(damage).toInt()}")
+        val damageDecimal = round((damage % 1) * 10).toInt()
+        setText("[$color][%150][*]${damage.toInt()}" +
+                if (damageDecimal != 0) ".$damageDecimal" else ""
+        )
         setPosition(Random.nextFloat() * parent.width * 0.8f, Random.nextFloat() * parent.height / 3 + parent.height / 4)
         addAction(moveAction)
         addAction(disappearAction)

@@ -17,7 +17,7 @@ object Player : Character(0, 0, 0.0) {
     override var hp: Float = 20f
     override var mp: Float = 10f
     override var attack: Float = 0f
-    override var strength: Float = 7f
+    override var strength: Float = 4.5f
     override var defence: Float = 2f
     override var agility: Float = 2f
     override var evasiveness: Float = 2f

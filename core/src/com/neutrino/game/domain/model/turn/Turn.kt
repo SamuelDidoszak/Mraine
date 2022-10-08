@@ -1,11 +1,13 @@
 package com.neutrino.game.domain.model.turn
 
+import com.badlogic.gdx.Gdx
 import com.neutrino.game.Constants.IsSeeded
 import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.Constants.RunSpeed
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.HpBar
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.map.Level
@@ -105,8 +107,8 @@ object Turn {
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                     }
                     is Action.ATTACK -> {
-                        val clickedCharacter = characterArray.get(action.x, action.y)
-                        clickedCharacter!!.getDamage(character)
+                        val clickedCharacter = characterArray.get(action.x, action.y)!!
+                        clickedCharacter.getDamage(character)
                         // Enemy is killed
                         if (clickedCharacter.currentHp <= 0) {
                             Player.experience += clickedCharacter.experience
@@ -127,6 +129,7 @@ object Turn {
                         }
                     }
                     is Action.ITEM -> {
+                        character.showItemUsed(action.item)
                         when(action.item) {
                             is ItemType.EDIBLE -> {
                                 val event = action.item.use(action.character, turn)
@@ -195,13 +198,24 @@ object Turn {
                             println("No character there")
                         } else {
                             attackedCharacter.getDamage(character)
-                            if (attackedCharacter.currentHp <= 0.0)
+                            if (attackedCharacter.currentHp <= 0.0) {
+                                /** Exiting the app **/
+                                if (attackedCharacter is Player) {
+                                    println("\n\n=======================================================================================================================================\n")
+                                    println("Current score is: ${Player.experience}")
+                                    println("\tGold collected: ${Player.inventory.get("Gold")?.amount}")
+                                    println("\n=======================================================================================================================================\n\n")
+                                    Gdx.app.exit()
+                                    System.exit(0)
+                                }
                                 characterArray.remove(attackedCharacter)
+                            }
                         }
                     }
                     is Action.SKILL -> {
                         println(character.name + " used a skill")}
                     is Action.ITEM -> {
+                        character.showItemUsed(action.item)
                         println(character.name + " used an item")
                     }
                     is Action.WAIT -> {
@@ -245,6 +259,7 @@ object Turn {
                     event.character.currentHp += event.power
                     if (event.character.currentHp > event.character.hp)
                         event.character.currentHp = event.character.hp
+                    event.character.findActor<HpBar>("hpBar").update(event.character.currentHp)
                     event.turn += event.speed
                     event.curRepeat++
                     if (event.curRepeat < event.repeats)

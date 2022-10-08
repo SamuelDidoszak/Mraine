@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Randomization {
     override var hp: Float = 10f
     override var mp: Float = 10f
-    override var attack: Float = 0f
+    override var attack: Float = 4f
     override var strength: Float = 2f
     override var defence: Float = 1f
     override var agility: Float = 2f
@@ -26,7 +26,7 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ran
     override var movementSpeed: Double = 1.0
     override var range: Int = 1
     override var rangeType: RangeType = RangeType.SQUARE
-    override var experience: Float = 0f
+    override var experience: Float = 5f
 
     override val randomizationProbability: Float = 1f
 

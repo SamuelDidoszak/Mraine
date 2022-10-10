@@ -15,9 +15,9 @@ class Meat: Item(), ItemType.EDIBLE {
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
     override val isFood: Boolean = true
-    override val powerOg: Float = 2f
-    override val speedOg: Double = 1.0
-    override val repeatsOg: Int = 5
+    override val powerOg: Float = 1f
+    override val speedOg: Double = 0.5
+    override val repeatsOg: Int = 20
     override var power: Float = powerOg
     override val speed: Double = speedOg
     override val repeats: Int = repeatsOg
@@ -27,15 +27,15 @@ class Meat: Item(), ItemType.EDIBLE {
         randomizedValue.let {
             when {
                 it < 0.2 -> {
-                    power = 1f
+                    power = 0.25f
                     name = "Rotten meat"
                 }
                 it < 0.4 -> {
-                    power = 3f
+                    power = 0.75f
                     name = "Tasty meat"
                 }
                 else -> {
-                    power = 2f
+                    power = 0.5f
                 }
             }
         }

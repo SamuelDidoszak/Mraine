@@ -28,6 +28,7 @@ import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
+import kotlin.math.abs
 
 class GameScreen: KtxScreen {
     private val initialize: Initialize = Initialize()
@@ -263,10 +264,14 @@ class GameScreen: KtxScreen {
                 val clickedCharacter = Turn.characterArray.get(x, y)
 
                 if(clickedCharacter == Player) {
+                    stage.focusPlayer = true
+                    stage.lookingAround = false
                     if (Turn.currentLevel.getTopItem(x, y) != null)
                         Player.ai.action = Action.PICKUP(x, y)
-                    else
+                    else {
+                        // TODO add defend action
                         Player.ai.action = Action.WAIT
+                    }
                 }
                 // Attack the enemy
                 else
@@ -278,8 +283,12 @@ class GameScreen: KtxScreen {
                     Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
                     val coord = Player.ai.getMove()
                     Player.ai.action = Action.MOVE(coord.x, coord.y)
-                    stage.focusPlayer = true
-                    stage.lookingAround = false
+                    // Focus player either if he's off screen or if he clicked near his current position
+                    if (!stage.isInCamera(Player.xPos, Player.yPos) ||
+                            abs(Player.xPos - x) <= 5 &&  abs(Player.yPos - y) <= 5) {
+                        stage.lookingAround = false
+                        stage.focusPlayer = true
+                    }
 
                     // If there was an item at the clickedTile, pick it up on arrival
                     if (Turn.currentLevel.getTopItem(x, y) != null)

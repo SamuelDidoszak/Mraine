@@ -3,6 +3,7 @@ package com.neutrino
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -42,6 +43,30 @@ class GameStage(
 
     fun setCameraPosition(xPos: Int, yPos: Int) {
         camera.position.lerp(Vector3(xPos * 64f, startYPosition - yPos * 64f, camera.position.z), 0.03f)
+    }
+
+    fun isInCamera(tileX: Int, tileY: Int): Boolean {
+        val gameCamera = camera as OrthographicCamera
+
+        var yBottom = MathUtils.ceil((level!!.height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 64) + 2
+        var yTop = MathUtils.floor((level!!.height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 64) + 1
+        var xLeft: Int =
+            MathUtils.floor((gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f) / 64)
+        var xRight =
+            MathUtils.ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f) / 64)
+
+        // Make sure that values are in range
+        yBottom = if (yBottom <= 0) 0 else if (yBottom > level!!.map.map.size) level!!.map.map.size else yBottom
+        yTop = if (yTop <= 0) 0 else if (yTop > level!!.map.map.size) level!!.map.map.size else yTop
+        xLeft = if (xLeft <= 0) 0 else if (xLeft > level!!.map.map[0].size) level!!.map.map[0].size else xLeft
+        xRight = if (xRight <= 0) 0 else if (xRight > level!!.map.map[0].size) level!!.map.map[0].size else xRight
+
+        println(yTop..yBottom)
+        println(yBottom..yTop)
+        println(tileY in yTop..yBottom)
+        println(tileY in yBottom..yTop)
+
+        return (tileX in xLeft..xRight) && (tileY in yTop..yBottom)
     }
 
 
@@ -167,7 +192,8 @@ class GameStage(
     }
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean {
-        val zoom = (camera as OrthographicCamera).zoom + (amountY / 10)
+        var zoom = (camera as OrthographicCamera).zoom
+        zoom += amountY * zoom / 10
         if (zoom <= 0.4)
             (camera as OrthographicCamera).zoom = 0.4f
         else if (zoom >= 12f)

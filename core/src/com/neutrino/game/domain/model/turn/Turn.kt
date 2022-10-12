@@ -110,7 +110,7 @@ object Turn {
                         val clickedCharacter = characterArray.get(action.x, action.y)!!
                         clickedCharacter.getDamage(character)
                         // Enemy is killed
-                        if (clickedCharacter.currentHp <= 0) {
+                        if (clickedCharacter.hp <= 0) {
                             Player.experience += clickedCharacter.experience
                             characterArray.remove(clickedCharacter)
                             // Drop its items
@@ -198,7 +198,7 @@ object Turn {
                             println("No character there")
                         } else {
                             attackedCharacter.getDamage(character)
-                            if (attackedCharacter.currentHp <= 0.0) {
+                            if (attackedCharacter.hp <= 0.0) {
                                 /** Exiting the app **/
                                 if (attackedCharacter is Player) {
                                     println("\n\n=======================================================================================================================================\n")
@@ -256,10 +256,10 @@ object Turn {
             val event = eventArray.get(turn)!!
             when (event) {
                 is Event.HEAL -> {
-                    event.character.currentHp += event.power
-                    if (event.character.currentHp > event.character.hp)
-                        event.character.currentHp = event.character.hp
-                    event.character.findActor<HpBar>("hpBar").update(event.character.currentHp)
+                    event.character.hp += event.power
+                    if (event.character.hp > event.character.hpMax)
+                        event.character.hp = event.character.hpMax
+                    event.character.findActor<HpBar>("hpBar").update(event.character.hp)
                     event.turn += event.speed
                     event.curRepeat++
                     if (event.curRepeat < event.repeats)
@@ -312,7 +312,7 @@ object Turn {
                 is Event.DAMAGE -> {
                     event.character.getDamage(event.power, event.damageType)
                     // Character is killed
-                    if (event.character.currentHp <= 0) {
+                    if (event.character.hp <= 0) {
                         Player.experience += event.character.experience
                         characterArray.remove(event.character)
                         // Drop its items

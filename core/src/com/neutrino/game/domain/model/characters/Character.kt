@@ -17,6 +17,7 @@ import com.neutrino.game.domain.model.turn.CooldownType
 import com.neutrino.game.domain.model.turn.Event
 import com.neutrino.game.domain.model.utility.ColorUtils
 import java.awt.Color
+import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
@@ -26,8 +27,14 @@ abstract class Character(
     var turn: Double
 ): Group(), TextureHaver, Animated, Stats, Randomization {
     // Stat initialization for character boilerplate reduction
-    override var currentHp: Float = 0f
-    override var currentMp: Float = 0f
+    override var hp: Float = 0f
+    override var mp: Float = 0f
+    override var dodging: Float = 0f
+    override var accuracy: Float = 1f
+    override var attackSpeed: Double = 1.0
+    override var movementSpeed: Double = 1.0
+    override var range: Int = 1
+    override var rangeType: RangeType = RangeType.SQUARE
     // environmental stats
     override var fireDamage: Float = 0f
     override var waterDamage: Float = 0f
@@ -62,11 +69,11 @@ abstract class Character(
      * Passing values here makes sure that they are initialized
      */
     fun initialize(name: String?) {
-        currentHp = hp
-        currentMp = mp
+        hp = hpMax
+        mp = mpMax
         super.setName(name)
         this.findActor<TextraLabel>("name").setText("[@Cozette][WHITE][%175]$name")
-        (this.getChild(0) as Group).addActor(HpBar(currentHp, hp))
+        (this.getChild(0) as Group).addActor(HpBar(hp, hpMax))
 
         val turnBar = TurnBar(this.turn + this.movementSpeed, Player.turn + Player.movementSpeed, this.movementSpeed)
         this.findActor<Group>("infoGroup").addActor(turnBar)
@@ -146,8 +153,7 @@ abstract class Character(
         val color: Color
         when (type) {
             "physical" -> {
-                finalDamage = damage - defence
-                finalDamage = if (finalDamage < 0) 0f else finalDamage
+                finalDamage = damage * damage / (damage + defence)
                 color = Color(255, 0, 0)
             }
             "bleeding" -> {
@@ -172,7 +178,7 @@ abstract class Character(
             }
             "poison" -> {
                 finalDamage = damage * (1 - poisonDefence)
-                finalDamage = if (currentHp - finalDamage <= 1) currentHp - 1f else finalDamage
+                finalDamage = if (hp - finalDamage <= 1) hp - 1f else finalDamage
                 color = Color(128, 255, 0)
             }
             else -> {
@@ -190,28 +196,28 @@ abstract class Character(
         damageNumber.init(colorUtils.toHexadecimal(damageColor), finalDamage)
 
 
-        this.currentHp -= damage
-        if (currentHp <= 0) {
+        this.hp -= damage
+        if (hp <= 0) {
             this.addAction(Actions.sequence(
                 Actions.fadeOut(1.25f),
                 Actions.removeActor()
             ))
-            currentHp = 0f
+            hp = 0f
         }
-        this.findActor<HpBar>("hpBar").update(currentHp)
+        this.findActor<HpBar>("hpBar").update(hp)
         return damage
     }
 
     fun getDamage(character: Character): Float {
         var damage: Float = 0f
-        var physicalDamage = character.attack - defence
-        physicalDamage = if (physicalDamage < 0) 0f else physicalDamage
+        val randomizedDamage = character.damage - character.damageVariation + Random.nextFloat() * character.damageVariation
+        val physicalDamage = randomizedDamage * randomizedDamage / (randomizedDamage + defence)
         val fireDamage = character.fireDamage * (1 - fireDefence)
         val waterDamage = character.waterDamage * (1 - waterDefence)
         val earthDamage = character.earthDamage * (1 - earthDefence)
         val airDamage = character.airDamage * (1 - airDefence)
         var poisonDamage = character.poisonDamage * (1 - poisonDefence)
-        poisonDamage = if (currentHp - poisonDamage <= 1) currentHp - 1f else poisonDamage
+        poisonDamage = if (hp - poisonDamage <= 1) hp - 1f else poisonDamage
 
         damage += physicalDamage
         damage += fireDamage
@@ -254,15 +260,15 @@ abstract class Character(
         damageNumber.init(colorUtils.toHexadecimal(damageColor), damage)
 
 
-        this.currentHp -= damage
-        if (currentHp <= 0) {
+        this.hp -= damage
+        if (hp <= 0) {
             this.addAction(Actions.sequence(
                 Actions.fadeOut(1.25f),
                 Actions.removeActor()
             ))
-            currentHp = 0f
+            hp = 0f
         }
-        this.findActor<HpBar>("hpBar").update(currentHp)
+        this.findActor<HpBar>("hpBar").update(hp)
         return damage
     }
 

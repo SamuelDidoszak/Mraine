@@ -61,11 +61,6 @@ class GameStage(
         xLeft = if (xLeft <= 0) 0 else if (xLeft > level!!.map.map[0].size) level!!.map.map[0].size else xLeft
         xRight = if (xRight <= 0) 0 else if (xRight > level!!.map.map[0].size) level!!.map.map[0].size else xRight
 
-        println(yTop..yBottom)
-        println(yBottom..yTop)
-        println(tileY in yTop..yBottom)
-        println(tileY in yBottom..yTop)
-
         return (tileX in xLeft..xRight) && (tileY in yTop..yBottom)
     }
 

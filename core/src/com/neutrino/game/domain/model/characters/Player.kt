@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.neutrino.game.Constants
-import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.equipment.utility.EqElement
@@ -14,25 +13,21 @@ import com.neutrino.game.domain.model.items.equipment.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
 
 object Player : Character(0, 0, 0.0) {
-    override var hp: Float = 20f
-    override var mp: Float = 10f
-    override var attack: Float = 0f
+    override var hpMax: Float = 200f
+    override var mpMax: Float = 10f
     override var strength: Float = 4.5f
-    override var defence: Float = 2f
-    override var agility: Float = 2f
-    override var evasiveness: Float = 2f
-    override var accuracy: Float = 2f
-    override var criticalChance: Float = 0.3f
+    override var dexterity: Float = 2f
+    override var intelligence: Float = 0f
     override var luck: Float = 2f
-    override var attackSpeed: Double = 1.0
-    override var movementSpeed: Double = 1.0
-    override var range: Int = 1
-    override var rangeType: RangeType = RangeType.SQUARE
+    override var damage: Float = 0f
+    override var damageVariation: Float = 1f
+    override var defence: Float = 2f
+    override var criticalChance: Float = 0.3f
     override var experience: Float = 0f
 
     init {
         initialize("Player")
-        attack = setAttack()
+        damage = setDamage()
     }
 
     // Inventory

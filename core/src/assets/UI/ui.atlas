@@ -33,11 +33,11 @@ SortingClosedCentered
 	bounds: 706, 136, 111, 52
 SortingCustom
 	bounds: 402, 180, 187, 56
-SortingCustomSelected
+SortingCustomOpen
 	bounds: 0, 52, 187, 56
 SortingDate
 	bounds: 0, 108, 188, 56
-SortingDateSelected
+SortingDateOpen
 	bounds: 214, 180, 188, 56
 SortingDesc
 	bounds: 594, 128, 112, 56
@@ -45,11 +45,11 @@ SortingOpen
 	bounds: 860, 923, 117, 56
 SortingType
 	bounds: 402, 236, 188, 56
-SortingTypeSelected
+SortingTypeOpen
 	bounds: 430, 292, 188, 56
 SortingValue
 	bounds: 618, 292, 188, 56
-SortingValueSelected
+SortingValueOpen
 	bounds: 214, 236, 188, 56
 cellBottom
 	bounds: 860, 447, 84, 84

@@ -32,6 +32,7 @@ import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.equipment.utility.EqActor
 import com.neutrino.game.domain.model.items.equipment.utility.Inventory
 import com.neutrino.game.domain.model.turn.CooldownType
+import com.neutrino.game.equalsDelta
 import com.neutrino.game.graphics.utility.BackgroundColor
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
 import ktx.actors.alpha
@@ -108,7 +109,8 @@ class UiStage(
         "cellUnavailable" to uiAtlas.findRegion("cellUnavailable"),
     )
 
-    private val tabsGroup = Group()
+    private val inventoryBorder = Image(uiElements["InventoryBorder"])
+    private val mainTabsGroup = Group()
     private val openTabsGroup = Group()
     private val sortingTabsGroup = Group()
 
@@ -118,15 +120,23 @@ class UiStage(
         addActor(darkenBackground)
         darkenBackground.alpha = 0.75f
         darkenBackground.setSize(width, height)
+        darkenBackground.name = "darkenBackground"
         darkenBackground.zIndex = 0
 
         addInventory()
+        addActor(inventoryBorder)
+        inventoryBorder.name = "border"
+        inventoryBorder.centerPosition()
+
         addTabs()
-        tabsGroup.zIndex = 1
+        mainTabsGroup.zIndex = 1
         sortingTabsGroup.zIndex = 2
         scrollFocus = invScreen
-    }
 
+        mainTabsGroup.name = "mainTabsGroup"
+        openTabsGroup.name = "openTabsGroup"
+        sortingTabsGroup.name = "sortingTabsGroup"
+    }
 
     fun addInventoryActorOld() {
         val borderWidth: Int = 12
@@ -230,14 +240,8 @@ class UiStage(
         invScreen.setOverscroll(false, false)
 //        invScreen.setScrollbarsVisible(false)
         invScreen.layout()
-//        invScreen.setDebug(true, true)
 
         addActor(invScreen)
-        val inventoryBorder = Image(uiElements["InventoryBorder"])
-        addActor(inventoryBorder)
-        inventoryBorder.name = "border"
-        inventoryBorder.centerPosition()
-
         invScreen.width = inventoryBorder.width - 2 * (borderWidth - 2)
         invScreen.height = inventoryBorder.height - 2 * borderHeight + 4
         invScreen.centerPosition()
@@ -280,7 +284,7 @@ class UiStage(
         questsClosed.setPosition(xPos, yPos)
         val questsOpen = Image(uiElements["QuestsOpen"])
         questsOpen.name = "QuestsOpen"
-        questsOpen.setPosition(xPos - 12, yPos + 10)
+        questsOpen.setPosition(xPos - 14, yPos + 10)
         questsOpen.isVisible = false
         xPos += 168f
         val mapClosed = Image(uiElements["MapClosed"])
@@ -341,12 +345,12 @@ class UiStage(
         sortingDesc.setPosition(xPos, yPos)
 
         // Adding tabs
-        tabsGroup.addActor(sortingClosed)
-        tabsGroup.addActor(mapClosed)
-        tabsGroup.addActor(questsClosed)
-        tabsGroup.addActor(skillsClosed)
-        tabsGroup.addActor(inventoryClosed)
-        tabsGroup.addActor(eqClosed)
+        mainTabsGroup.addActor(sortingClosed)
+        mainTabsGroup.addActor(mapClosed)
+        mainTabsGroup.addActor(questsClosed)
+        mainTabsGroup.addActor(skillsClosed)
+        mainTabsGroup.addActor(inventoryClosed)
+        mainTabsGroup.addActor(eqClosed)
 
         // Adding open tabs
         openTabsGroup.addActor(sortingOpen)
@@ -368,7 +372,7 @@ class UiStage(
         sortingTabsGroup.addActor(sortingTypeOpen)
         sortingTabsGroup.addActor(sortingCustomOpen)
 
-        addActor(tabsGroup)
+        addActor(mainTabsGroup)
         addActor(openTabsGroup)
         activeTab = inventoryOpen
         activeTab.isVisible = true
@@ -380,9 +384,11 @@ class UiStage(
         if (isSortAscending) {
             sortingAsc.isVisible = true
             sortingDesc.isVisible = false
+            sortingAsc.zIndex = 0
         } else {
             sortingAsc.isVisible = false
             sortingDesc.isVisible = true
+            sortingDesc.zIndex = 0
         }
     }
 
@@ -490,7 +496,14 @@ class UiStage(
     private fun activateTab() {
         if (activeTab.name == "SortingOpen") {
             if (hoveredTab!!.name == "SortingClosed") {
-                tabsGroup.isVisible = true
+                // force asc/desc tab to original position
+                val sortingTabActive = sortingTabsGroup.children.find { it.name == "Sorting" + if (isSortAscending) "Asc" else "Desc" }!!
+                val yPositionReference = sortingTabsGroup.children.find { it.name == "SortingCustom" }!!.y
+                if (!sortingTabActive.y.equalsDelta(yPositionReference)) {
+                    sortingTabActive.y = yPositionReference
+                }
+
+                mainTabsGroup.isVisible = true
                 sortingTabsGroup.isVisible = false
                 activeTab.isVisible = false
                 activeTab = openTabsGroup.children.find { it.name == "InventoryOpen" }!!
@@ -498,19 +511,30 @@ class UiStage(
                 return
             }
             if (hoveredTab!!.name == "SortingAsc" || hoveredTab!!.name == "SortingDesc") {
-                sortingTabsGroup.children.find { it.name == "Sorting" + if (isSortAscending) "Asc" else "Desc" }!!.isVisible = false
+                val sortingTabPrevious = sortingTabsGroup.children.find { it.name == "Sorting" + if (isSortAscending) "Asc" else "Desc" }!!
+                sortingTabPrevious.isVisible = false
+
                 isSortAscending = !isSortAscending
                 val sortingTab = sortingTabsGroup.children.find { it.name == "Sorting" + if (isSortAscending) "Asc" else "Desc" }!!
-                sortingTab.zIndex = 1
+                sortingTab.zIndex = 0
+
+                val yPositionReference = sortingTabsGroup.children.find { it.name == "SortingCustom" }!!.y
+                if (sortingTabPrevious.y.equalsDelta(yPositionReference)) {
+                    sortingTab.moveBy(0f, -14f)
+                    sortingTab.moveTab(true)
+                    sortingTab.isVisible = true
+                    return
+                }
                 sortingTab.moveBy(0f, 14f)
-                sortingTab.isVisible = true
                 sortingTab.moveTab(false)
+                sortingTab.isVisible = true
                 return
             }
 
             sortingTabsGroup.children.find { it.name == currentSorting.name.replace("Open", "") }!!.isVisible = true
             currentSorting.isVisible = false
             currentSorting = sortingTabsGroup.children.find { it.name == hoveredTab!!.name + "Open" }!!
+            // move tab without delay
             currentSorting.moveBy(0f, 14f)
             currentSorting.isVisible = true
             sortingTabsGroup.children.find { it.name == hoveredTab!!.name }!!.isVisible = false
@@ -522,7 +546,7 @@ class UiStage(
         activeTab.isVisible = true
 
         if (activeTab.name == "SortingOpen") {
-            tabsGroup.isVisible = false
+            mainTabsGroup.isVisible = false
             sortingTabsGroup.isVisible = true
             hoveredTab = null
         }
@@ -629,8 +653,8 @@ class UiStage(
 
         // New tab was clicked
         val actorAtPosition = actorAt(coord.x, coord.y)
-        if (actorAtPosition?.name == "SortingClosed")
-            hoveredTab = actorAtPosition
+        if (actorAtPosition?.name == "SortingOpen")
+            hoveredTab = mainTabsGroup.children.find { it.name == "SortingClosed" }
         if (hoveredTab != activeTab && hoveredTab != null && button == Input.Buttons.LEFT) {
             activateTab()
         }
@@ -649,7 +673,9 @@ class UiStage(
         )
 
         // move tabs
-        val tab = getTabByPosition(screenX.toFloat(), screenY.toFloat())
+        var tab = getTabByPosition(screenX.toFloat(), screenY.toFloat())
+        if (inventoryBorder.isIn(coord.x, coord.y))
+            tab = null
 
         if (tab != null)
             tab!!.moveTab(true)
@@ -720,7 +746,7 @@ class UiStage(
 
     /** Returns tab at coord position */
     private fun actorAt(x: Float, y: Float): Actor? {
-        for (actor in Array.ArrayIterator(actors)) {
+        for (actor in Array.ArrayIterator(actors).reversed()) {
             if (actor is Group) {
                 for (child in actor.children) {
                     if (child.isIn(x, y))
@@ -742,7 +768,7 @@ class UiStage(
             if (activeTab.name == "SortingOpen")
                 sortingTabsGroup.children.first { it.isIn(coord.x, coord.y) }
             else
-                tabsGroup.children.first { it.isIn(coord.x, coord.y) }
+                mainTabsGroup.children.first { it.isIn(coord.x, coord.y) }
         } catch (e: NoSuchElementException) {
             null
         }

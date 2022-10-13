@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -15,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.TimeUtils
@@ -31,6 +34,7 @@ import com.neutrino.game.domain.model.items.equipment.utility.Inventory
 import com.neutrino.game.domain.model.turn.CooldownType
 import com.neutrino.game.graphics.utility.BackgroundColor
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
+import ktx.actors.alpha
 import ktx.actors.centerPosition
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.container
@@ -69,7 +73,6 @@ class UiStage(
     private val uiElements: Map<String, TextureAtlas.AtlasRegion> = mapOf(
         "BottomBar" to uiAtlas.findRegion("BottomBar"),
         "InventoryBorder" to uiAtlas.findRegion("InventoryBorder"),
-        "InventoryBackground" to uiAtlas.findRegion("InventoryBackground"),
         "EqClosed" to uiAtlas.findRegion("EqClosed"),
         "EqOpen" to uiAtlas.findRegion("EqOpen"),
         "InventoryClosed" to uiAtlas.findRegion("InventoryClosed"),
@@ -93,11 +96,36 @@ class UiStage(
         "SortingDateOpen" to uiAtlas.findRegion("SortingDateOpen"),
         "SortingAsc" to uiAtlas.findRegion("SortingAsc"),
         "SortingDesc" to uiAtlas.findRegion("SortingDesc"),
+        "cellTopLeft" to uiAtlas.findRegion("cellTopLeft"),
+        "cellTop" to uiAtlas.findRegion("cellTop"),
+        "cellTopRight" to uiAtlas.findRegion("cellTopRight"),
+        "cellLeft" to uiAtlas.findRegion("cellLeft"),
+        "cellMiddle" to uiAtlas.findRegion("cellMiddle"),
+        "cellRight" to uiAtlas.findRegion("cellRight"),
+        "cellBottomLeft" to uiAtlas.findRegion("cellBottomLeft"),
+        "cellBottom" to uiAtlas.findRegion("cellBottom"),
+        "cellBottomRight" to uiAtlas.findRegion("cellBottomRight"),
+        "cellUnavailable" to uiAtlas.findRegion("cellUnavailable"),
     )
 
     private val tabsGroup = Group()
     private val openTabsGroup = Group()
     private val sortingTabsGroup = Group()
+
+    fun initialize() {
+        // Darken the background
+        val darkenBackground = Image(TextureRegion(Texture("UI/blackBg.png")))
+        addActor(darkenBackground)
+        darkenBackground.alpha = 0.75f
+        darkenBackground.setSize(width, height)
+        darkenBackground.zIndex = 0
+
+        addInventory()
+        addTabs()
+        tabsGroup.zIndex = 1
+        sortingTabsGroup.zIndex = 2
+        scrollFocus = invScreen
+    }
 
 
     fun addInventoryActorOld() {
@@ -149,27 +177,48 @@ class UiStage(
         backgroundImage.centerPosition()
         invScreen.centerPosition()
     }
-    fun addInventoryActor() {
+
+    private fun getCellDrawable(cellNumber: Int, rows: Int): Drawable {
+        if (cellNumber >= Player.inventorySize)
+            return TextureRegionDrawable(uiElements["cellUnavailable"])
+        if (cellNumber == 0)
+            return TextureRegionDrawable(uiElements["cellTopLeft"])
+        if (cellNumber < 9)
+            return TextureRegionDrawable(uiElements["cellTop"])
+        if (cellNumber == 9)
+            return TextureRegionDrawable(uiElements["cellTopRight"])
+        val bottomRowNumber = cellNumber - (rows - 1) * 10
+        if (bottomRowNumber == 0 )
+            return TextureRegionDrawable(uiElements["cellBottomLeft"])
+        if (bottomRowNumber in 1..8 )
+            return TextureRegionDrawable(uiElements["cellBottom"])
+        if (bottomRowNumber == 9 )
+            return TextureRegionDrawable(uiElements["cellBottomRight"])
+        if (cellNumber % 10 == 0)
+            return TextureRegionDrawable(uiElements["cellLeft"])
+        if (cellNumber % 10 == 9)
+            return TextureRegionDrawable(uiElements["cellRight"])
+        return TextureRegionDrawable(uiElements["cellMiddle"])
+    }
+
+    private fun addInventory() {
         val borderWidth: Int = 12
         val borderHeight: Int = 12
-
-        val color = Color(238f, 195f, 154f, 1f)
 
         var rows = Player.inventorySize / 10 + if (Player.inventorySize % 10 != 0) 1 else 0
         rows = if (rows < 6) 6 else rows
         val table = scene2d.table {
-                pad(0f)
                 this.setFillParent(false)
                 clip(true)
                 for (n in 0 until rows) {
-                    for (i in 0 until 10)
+                    for (i in 0 until 10) {
                         add(container {
                             val cellNumber = n * 10 + i
                             name = (cellNumber).toString()
+                            background = getCellDrawable(cellNumber, rows)
                             align(Align.bottomLeft)
-                            if (cellNumber < Player.inventory.itemList.size)
-                                actor = EqActor(Player.inventory.itemList[cellNumber].item)
-                        }).size(84f, 84f).left().top().space(0f)
+                        }).size(84f, 84f).space(0f)
+                    }
                     row().space(0f)
                 }
         }
@@ -179,35 +228,24 @@ class UiStage(
         // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
         invScreen.setScrollingDisabled(true, false)
         invScreen.setOverscroll(false, false)
-        invScreen.setScrollbarsVisible(false)
+//        invScreen.setScrollbarsVisible(false)
         invScreen.layout()
 //        invScreen.setDebug(true, true)
 
-        val inventoryBackground = Image(uiElements["InventoryBackground"])
-        addActor(inventoryBackground)
-        inventoryBackground.name = "background"
-        inventoryBackground.centerPosition()
-
         addActor(invScreen)
-        invScreen.width = inventoryBackground.width - 2 * (borderWidth - 2)
-        invScreen.height = inventoryBackground.height - 2 * borderHeight
-        invScreen.centerPosition()
-
         val inventoryBorder = Image(uiElements["InventoryBorder"])
         addActor(inventoryBorder)
         inventoryBorder.name = "border"
         inventoryBorder.centerPosition()
 
-        inventoryBackground.centerPosition()
+        invScreen.width = inventoryBorder.width - 2 * (borderWidth - 2)
+        invScreen.height = inventoryBorder.height - 2 * borderHeight + 4
         invScreen.centerPosition()
-
-        addTabs()
-        tabsGroup.zIndex = 0
-        sortingTabsGroup.zIndex = 1
+        invScreen.setPosition(invScreen.x + 2, invScreen.y + 2)
     }
 
     /** Adds tabs of the UI */
-    fun addTabs() {
+    private fun addTabs() {
         val borderImage = actors.find {it.name == "border"}!!
         var xPos = borderImage.x
         val yPos = borderImage.y + borderImage.height - 14
@@ -463,7 +501,7 @@ class UiStage(
                 sortingTabsGroup.children.find { it.name == "Sorting" + if (isSortAscending) "Asc" else "Desc" }!!.isVisible = false
                 isSortAscending = !isSortAscending
                 val sortingTab = sortingTabsGroup.children.find { it.name == "Sorting" + if (isSortAscending) "Asc" else "Desc" }!!
-                sortingTab.zIndex = 0
+                sortingTab.zIndex = 1
                 sortingTab.moveBy(0f, 14f)
                 sortingTab.isVisible = true
                 sortingTab.moveTab(false)
@@ -754,7 +792,7 @@ class UiStage(
         clickedItem!!.setScale(1f, 1f)
         // if the area between cells was clicked, reset the item position
         val container = getInventoryCell(x, y, clickedInv)
-        if (container == null) {
+        if (container == null || container.name?.toInt()!! >= Player.inventorySize) {
             originalContainer!!.actor = clickedItem
             return
         }
@@ -812,7 +850,7 @@ class UiStage(
         if (Player.inventorySizeChanged) {
             Player.inventorySizeChanged = false
             actors.removeValue(invScreen, true)
-            addInventoryActor()
+            addInventory()
         }
         super.draw()
     }

@@ -13,7 +13,7 @@ import com.neutrino.game.domain.model.items.equipment.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
 
 object Player : Character(0, 0, 0.0) {
-    override var hpMax: Float = 200f
+    override var hpMax: Float = 20f
     override var mpMax: Float = 10f
     override var strength: Float = 4.5f
     override var dexterity: Float = 2f
@@ -57,16 +57,20 @@ object Player : Character(0, 0, 0.0) {
         }
     var inventorySizeChanged: Boolean = false
 
-    fun addToInventory(item: Item) {
+    fun addToInventory(item: Item): Boolean {
         // add to stack
         if (item.stackable) {
             val stackableItem = inventory.itemList.find { it.item.name == item.name }
-            if (stackableItem != null)
+            if (stackableItem != null) {
                 stackableItem.item.amount = stackableItem.item.amount!!.plus(item.amount!!)
-            else
-                inventory.itemList.add(EqElement(item, Turn.turn))
-        } else
+                return true
+            }
+        }
+        if (inventory.itemList.size < inventorySize) {
             inventory.itemList.add(EqElement(item, Turn.turn))
+            return true
+        }
+        return false
     }
 
     fun showPickedUpItem(item: Item) {

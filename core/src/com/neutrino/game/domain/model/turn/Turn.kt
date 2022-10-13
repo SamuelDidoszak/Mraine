@@ -123,9 +123,12 @@ object Turn {
                         val topmostItem = currentLevel.getTopItem(action.x, action.y)
                         // TODO temporary solution
                         if (topmostItem != null) {
-                            Player.addToInventory(topmostItem)
-                            Player.showPickedUpItem(topmostItem)
-                            currentLevel.map.map[action.y][action.x].removeLast()
+                            if (Player.addToInventory(topmostItem)) {
+                                Player.showPickedUpItem(topmostItem)
+                                currentLevel.map.map[action.y][action.x].removeLast()
+                            } else {
+                                println("Inventory is full!")
+                            }
                         }
                     }
                     is Action.ITEM -> {

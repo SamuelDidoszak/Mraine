@@ -60,7 +60,7 @@ class GameScreen: KtxScreen {
         println(Gdx.app.graphics.height)
 
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
-        uiStage.addInventoryActor()
+        uiStage.initialize()
         selectInput(false)
 
         initialize.initialize()

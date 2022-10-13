@@ -21,18 +21,22 @@ class SmallHealingPotion: Item(), ItemType.EDIBLE {
     override var power: Float = powerOg
     override val speed: Double = speedOg
     override val repeats: Int = repeatsOg
+    override var goldValueOg: Int = 25
 
     init {
+        goldValue = goldValueOg
         val randomizedValue = Constants.RandomGenerator.nextDouble()
         randomizedValue.let {
             when {
                 it < 0.6 -> {
                     power = 15f
                     name = "Diluted small healing potion"
+                    goldValue -= 10
                 }
                 it < 0.7 -> {
                     power = 25f
                     name = "Concentrated small healing potion"
+                    goldValue += 10
                 }
             }
         }

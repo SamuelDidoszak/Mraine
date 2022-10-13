@@ -1,0 +1,9 @@
+icons.png
+	size: 64, 16
+	repeat: none
+itemBetter
+	bounds: 16, 0, 16, 16
+itemBetter2
+	bounds: 0, 0, 16, 16
+itemWorse
+	bounds: 32, 0, 16, 16

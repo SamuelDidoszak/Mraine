@@ -13,6 +13,9 @@ abstract class Item: TextureHaver {
     /** Specifies if the item causes cooldown. -1 means no, 0 means player and 1 means every use type */
     open val causesCooldown: Int = -1
 
+    open var goldValueOg: Int = 0
+    open var goldValue: Int = 0
+
     override fun getTexture(name: String): TextureAtlas.AtlasRegion {
         return Constants.DefaultItemTexture.findRegion(name)
     }

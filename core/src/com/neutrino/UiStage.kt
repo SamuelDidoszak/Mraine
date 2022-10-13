@@ -604,8 +604,14 @@ class UiStage(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
         // Stop contextMenu click from propagating
-        if (contextPopup != null && button == Input.Buttons.LEFT)
-            return super.touchUp(screenX, screenY, pointer, button)
+        if (contextPopup != null && button == Input.Buttons.LEFT) {
+            val clickedInMenu = super.touchUp(screenX, screenY, pointer, button)
+            if (!clickedInMenu) {
+                this.actors.removeValue(contextPopup, true)
+                contextPopup = null
+            }
+            return clickedInMenu
+        }
 
         if (button == Input.Buttons.LEFT) {
             if (detailsPopup != null)
@@ -624,8 +630,8 @@ class UiStage(
             if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 pickUpItem()
                 itemClicked = true
-                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f * 1.2f) / 2,
-                    coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f * 1.2f) / 2)
+                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f) / 2 - 6,
+                    coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f) / 2 - 9)
                 return super.touchUp(screenX, screenY, pointer, button)
             }
         }
@@ -711,8 +717,8 @@ class UiStage(
         }
 
         if (itemClicked == true)
-            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f * 1.2f) / 2,
-                coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f * 1.2f) / 2)
+            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f) / 2 - 6,
+                coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f) / 2 - 9)
         return super.mouseMoved(screenX, screenY)
     }
 
@@ -723,7 +729,7 @@ class UiStage(
         addActor(clickedItem)
         clickedItem = actors.find { it.name == "movedItem" }!!
         clickedItem!!.name = null
-        clickedItem!!.setScale(1.2f, 1.2f)
+        clickedItem!!.setScale(1.25f, 1.25f)
     }
 
     /** Returns the eq ui and sets the originalEq */
@@ -786,7 +792,6 @@ class UiStage(
             return null
 
         while (clickedChild !is Container<*>) {
-            println(clickedChild.javaClass)
             clickedChild = clickedChild.parent
         }
         return clickedChild
@@ -808,6 +813,7 @@ class UiStage(
                 )
 
                 clickedItem!!.addAction(Actions.scaleTo(0f, 0f, 0.35f))
+                clickedItem!!.addAction(Actions.moveBy(32f, 32f, 0.35f))
                 clickedItem!!.addAction(Actions.sequence(
                     Actions.fadeOut(0.35f),
                     Actions.removeActor()

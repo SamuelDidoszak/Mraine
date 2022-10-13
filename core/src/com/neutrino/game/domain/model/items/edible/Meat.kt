@@ -21,18 +21,22 @@ class Meat: Item(), ItemType.EDIBLE {
     override var power: Float = powerOg
     override val speed: Double = speedOg
     override val repeats: Int = repeatsOg
+    override var goldValueOg: Int = 10
 
     init {
+        goldValue = goldValueOg
         val randomizedValue = Constants.RandomGenerator.nextDouble()
         randomizedValue.let {
             when {
                 it < 0.2 -> {
                     power = 0.25f
                     name = "Rotten meat"
+                    goldValue -= 5
                 }
                 it < 0.4 -> {
                     power = 0.75f
                     name = "Tasty meat"
+                    goldValue += 5
                 }
                 else -> {
                     power = 0.5f

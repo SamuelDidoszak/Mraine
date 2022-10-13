@@ -21,6 +21,7 @@ object Constants {
 
     val DefaultItemTexture: TextureAtlas = TextureAtlas("textures/items.atlas")
     val DefaultEntityTexture: TextureAtlas = TextureAtlas("textures/entities.atlas")
+    val DefaultIconTexture: TextureAtlas = TextureAtlas("textures/icons.atlas")
 
     // Level constants
     val LevelChunkSize: Int = 100

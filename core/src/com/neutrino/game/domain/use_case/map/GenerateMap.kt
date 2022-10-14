@@ -42,7 +42,7 @@ class GenerateMap(
         val blockedTilesPercentage: Float = getBlockedTilesPercentage()
         addItems(Gold::class as KClass<Item>, 50f)
         addItems(Knife::class as KClass<Item>, 5f)
-        addItems(SmallHealingPotion::class as KClass<Item>, 7f, blockedTilesPercentage)
+        addItems(SmallHealingPotion::class as KClass<Item>, 5f, blockedTilesPercentage)
         addItems(ScrollOfDefence::class as KClass<Item>, 0.3f)
 
         return map

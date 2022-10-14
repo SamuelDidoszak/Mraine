@@ -4,7 +4,9 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -14,6 +16,7 @@ import com.badlogic.gdx.utils.Pool
 import com.badlogic.gdx.utils.Pools
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants.LevelChunkSize
@@ -24,6 +27,7 @@ import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
+import ktx.actors.alpha
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.scene2d
@@ -46,11 +50,18 @@ class GameScreen: KtxScreen {
     private val uiStage: UiStage = UiStage(uiViewport)
     private var isEqVisible: Boolean = true // force input setup
 
+    /** Viewport for the HUD */
+    private val hudViewport = ScreenViewport()
+    private val hudStage: HudStage = HudStage(hudViewport)
+
     // debug stuff
     private val renderLabel = TextraLabel("[%300]RENDER", KnownFonts.getStandardFamily())
     private val fpsLabel = TextraLabel("[%300]FPS", KnownFonts.getStandardFamily())
     private val memoryLabel = TextraLabel("[%300]MEMORY", KnownFonts.getStandardFamily())
     private var totalRenderTime: Long = 0
+
+
+    private val inputMultiplexer: InputMultiplexer = InputMultiplexer()
 
     init {
         extendViewport.camera.position.set(800f, 400f, 0.5f)
@@ -62,6 +73,9 @@ class GameScreen: KtxScreen {
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
         uiStage.initialize()
         selectInput(false)
+        // Set up HUD
+        hudStage.initialize()
+        hudStage.addStatusIcon()
 
         initialize.initialize()
         stage.level = initialize.level
@@ -103,20 +117,48 @@ class GameScreen: KtxScreen {
         if (showEq == isEqVisible)
             return
         if (!showEq) {
-            if (Gdx.app.type == Application.ApplicationType.Android) {
-                val multiplexer: InputMultiplexer = InputMultiplexer()
-                val gestureDetector: GestureDetector = GestureDetector(GestureHandler(extendViewport))
-                multiplexer.addProcessor(gestureDetector)
-                multiplexer.addProcessor(stage)
-                Gdx.input.inputProcessor = multiplexer
-            } else
-                Gdx.input.inputProcessor = stage
+            println("Input processors size: " + inputMultiplexer.processors.size)
+//            if (inputMultiplexer.processors.size != 0 && inputMultiplexer.processors[0] == uiStage) {
+//                inputMultiplexer.removeProcessor(0)
+//            }
+
+            // Remove the background darkening
+            val darkenBg = stage.actors.find { it.name == "darkenBackground" }
+            if (darkenBg != null)
+                stage.actors.removeValue(darkenBg, true)
+
+            if (inputMultiplexer.processors.size == 0) {
+                if (Gdx.app.type == Application.ApplicationType.Android) {
+                    val gestureDetector: GestureDetector =
+                        GestureDetector(GestureHandler(extendViewport))
+                    inputMultiplexer.addProcessor(gestureDetector)
+                    inputMultiplexer.addProcessor(stage)
+                } else {
+                    inputMultiplexer.addProcessor(hudStage)
+                    inputMultiplexer.addProcessor(stage)
+                }
+            }
+            Gdx.input.inputProcessor = inputMultiplexer
             isEqVisible = false
             // add dropped items here
             while (uiStage.itemDropList.isNotEmpty())
                 stage.level!!.map.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
         } else {
-            Gdx.input.inputProcessor = uiStage
+            // Darken the background
+            val darkenBackground = Image(TextureRegion(Texture("UI/blackBg.png")))
+//            stage.addActor(darkenBackground)
+            darkenBackground.alpha = 0.75f
+            darkenBackground.setSize(extendViewport.screenWidth.toFloat(), extendViewport.screenHeight.toFloat())
+            darkenBackground.setPosition(0f, 0f)
+            darkenBackground.name = "darkenBackground"
+            darkenBackground.zIndex = 0
+
+            val uiInputMultiplexer = InputMultiplexer()
+            uiInputMultiplexer.addProcessor(hudStage)
+            uiInputMultiplexer.addProcessor(uiStage)
+
+//            inputMultiplexer.addProcessor(0, uiStage)
+            Gdx.input.inputProcessor = uiInputMultiplexer
             isEqVisible = true
             // refresh inventory
             uiStage.refreshInventory = true
@@ -136,6 +178,11 @@ class GameScreen: KtxScreen {
         render.addAnimations()
         stage.act(delta)
         stage.draw()
+
+        // Draw HUD
+        hudViewport.apply()
+        hudStage.act()
+        hudStage.draw()
 
         if (stage.showEq) {
             // show eq
@@ -180,6 +227,8 @@ class GameScreen: KtxScreen {
         extendViewport.update(width, height)
         uiViewport.update(width, height)
         uiStage.updateRatio()
+        hudViewport.update(width, height, true)
+        hudStage.update(width, height)
     }
 
     /** Indicates, if there is an item to be picked up at the end of movelist */

@@ -92,6 +92,7 @@ class GameStage(
 
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        println("called")
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT || button != Input.Buttons.FORWARD) || pointer > 0) return false
         if (level == null) return false
         if (dragging) {

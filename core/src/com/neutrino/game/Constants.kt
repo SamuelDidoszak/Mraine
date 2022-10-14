@@ -9,6 +9,7 @@ fun Double.lessThanDelta(other: Double) = (this - other) < -0.0000001
 fun Float.equalsDelta(other: Float) = abs(this - other) <= 0.005f
 fun Float.lessThanDelta(other: Float) = (this - other) < -0.0000001
 
+/** Returns 0 if the values are the same. Returns -1 if the value is smaller than other and 1 if it's bigger */
 fun Float.compareDelta(other: Float) = if (this.equalsDelta(other)) 0
     else if (this.lessThanDelta(other)) -1 else 1
 

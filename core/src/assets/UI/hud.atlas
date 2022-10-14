@@ -1,0 +1,7 @@
+hud.png
+	size: 1024, 128
+	repeat: none
+cellHotBar
+	bounds: 860, 20, 84, 84
+hotBar
+	bounds: 0, 0, 860, 104

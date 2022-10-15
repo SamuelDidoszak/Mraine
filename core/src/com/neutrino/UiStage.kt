@@ -4,7 +4,6 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -35,7 +34,6 @@ import com.neutrino.game.domain.model.turn.CooldownType
 import com.neutrino.game.equalsDelta
 import com.neutrino.game.graphics.utility.BackgroundColor
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
-import ktx.actors.alpha
 import ktx.actors.centerPosition
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.container
@@ -115,14 +113,6 @@ class UiStage(
     private val sortingTabsGroup = Group()
 
     fun initialize() {
-        // Darken the background
-        val darkenBackground = Image(TextureRegion(Texture("UI/blackBg.png")))
-        addActor(darkenBackground)
-        darkenBackground.alpha = 0.75f
-        darkenBackground.setSize(width, height)
-        darkenBackground.name = "darkenBackground"
-        darkenBackground.zIndex = 0
-
         addInventory()
         addActor(inventoryBorder)
         inventoryBorder.name = "border"

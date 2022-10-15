@@ -1,6 +1,11 @@
 package com.neutrino
 
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -14,6 +19,8 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.Constants
 import com.neutrino.game.compareDelta
+import com.neutrino.game.domain.model.utility.Diagnostics
+import ktx.actors.alpha
 import ktx.scene2d.container
 import ktx.scene2d.horizontalGroup
 import ktx.scene2d.scene2d
@@ -30,6 +37,9 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     private val hotBarBorder = Image(hudElements["hotBar"])
 
     lateinit var statusIcons: VerticalGroup
+
+    private val darkenBackground = Image(TextureRegion(Texture("UI/blackBg.png")))
+    val diagnostics = Diagnostics()
 
     fun initialize() {
         hotBarBorder.setPosition(width / 2 - hotBarBorder.width / 2, 0f)
@@ -59,6 +69,24 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         addActor(statusIcons)
         statusIcons.setPosition(width - statusIcons.width - 80, height - 80)
         statusIcons.setDebug(true, true)
+
+        // Darken the background
+        addActor(darkenBackground)
+        darkenBackground.alpha = 0.75f
+        darkenBackground.setSize(width, height)
+        darkenBackground.setPosition(0f, 0f)
+        darkenBackground.name = "darkenBackground"
+        darkenBackground.zIndex = 0
+        darkenScreen(false)
+
+        // Initialize diagnostics
+        addActor(diagnostics)
+        diagnostics.setPosition(0f, height - diagnostics.height)
+        diagnostics.isVisible = Gdx.app.type != Application.ApplicationType.Desktop
+    }
+
+    fun darkenScreen(visible: Boolean) {
+        darkenBackground.isVisible = visible
     }
 
     fun update(width: Int, height: Int) {
@@ -66,6 +94,8 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         hotBarBorder.setPosition(this.width / 2 - hotBarBorder.width / 2, 0f)
         hotBar.setPosition(this.width / 2 - hotBarBorder.width / 2 + 12, 12f)
         statusIcons.setPosition(this.width - statusIcons.width - 80, this.height - 80)
+        darkenBackground.setSize(width.toFloat(), height.toFloat())
+        diagnostics.setPosition(0f, height - diagnostics.height)
     }
 
     fun addStatusIcon() {
@@ -94,32 +124,13 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.width) <= 0 &&
             y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.height) <= 0)
 
-    /** Returns tab at coord position */
-    private fun actorAt(x: Float, y: Float): Actor? {
-        for (actor in Array.ArrayIterator(actors)) {
-            if (actor.isIn(x, y)) {
-                // TODO This method does not support nested groups. To support it, add recursively checking groups
-                if (actor is Group) {
-                    val groupX = x - actor.x
-                    val groupY = y - actor.y
-                    if (actor == statusIcons)
-                        println("$groupX, $groupY")
-                    for (child in actor.children) {
-                        if (child.isIn(groupX, groupY))
-                            return child
-                    }
-                } else
-                    return actor
-            }
-        }
-        return null
-    }
-
-    /** Returns tab at coord position */
+    /** Returns tab at coord position. Supports nested groups */
     private fun actorAtGroup(x: Float, y: Float): Actor? {
         var actor: Actor
         for (stageActor in Array.ArrayIterator(actors)) {
             actor = stageActor
+            if (actor == darkenBackground)
+                continue
             if (actor.isIn(x, y)) {
                 while (actor is Group) {
                     val groupX = x - actor.x
@@ -145,5 +156,14 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             }
         }
         return null
+    }
+
+    override fun keyDown(keyCode: Int): Boolean {
+        when (keyCode) {
+            Input.Keys.NUM_1 -> {
+                diagnostics.isVisible = !diagnostics.isVisible
+            }
+        }
+        return super.keyDown(keyCode)
     }
 }

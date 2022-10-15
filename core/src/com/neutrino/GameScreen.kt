@@ -4,20 +4,14 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Pool
 import com.badlogic.gdx.utils.Pools
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
-import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
@@ -27,138 +21,81 @@ import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
-import ktx.actors.alpha
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
-import ktx.scene2d.scene2d
-import ktx.scene2d.table
 import kotlin.math.abs
 
 class GameScreen: KtxScreen {
     private val initialize: Initialize = Initialize()
-    val render: Render = Render(initialize.level)
-    private val extendViewport: ExtendViewport = ExtendViewport(1600f, 900f)
+    private val render: Render = Render(initialize.level)
     private val startXPosition = 0f
     private val startYPosition = LevelChunkSize * 64f
-    val player: Player = Player
 
-    private val stage = GameStage(extendViewport)
-    val batch: Batch = stage.batch
+    /** Viewport for the game */
+    private val extendViewport: ExtendViewport = ExtendViewport(1600f, 900f)
+    private val gameStage = GameStage(extendViewport)
 
     /** Viewport for UI and equipment */
     private val uiViewport: ExtendViewport = ExtendViewport(1920f, 1080f)
     private val uiStage: UiStage = UiStage(uiViewport)
-    private var isEqVisible: Boolean = true // force input setup
+    private var isEqVisible: Boolean = false
 
     /** Viewport for the HUD */
     private val hudViewport = ScreenViewport()
     private val hudStage: HudStage = HudStage(hudViewport)
 
-    // debug stuff
-    private val renderLabel = TextraLabel("[%300]RENDER", KnownFonts.getStandardFamily())
-    private val fpsLabel = TextraLabel("[%300]FPS", KnownFonts.getStandardFamily())
-    private val memoryLabel = TextraLabel("[%300]MEMORY", KnownFonts.getStandardFamily())
-    private var totalRenderTime: Long = 0
-
-
-    private val inputMultiplexer: InputMultiplexer = InputMultiplexer()
+    // Input multiplexers
+    private val gameInputMultiplexer: InputMultiplexer = InputMultiplexer()
+    private val uiInputMultiplexer: InputMultiplexer = InputMultiplexer()
 
     init {
-        extendViewport.camera.position.set(800f, 400f, 0.5f)
-
-        println("screen dimensions:")
-        println(Gdx.app.graphics.width)
-        println(Gdx.app.graphics.height)
-
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
+        // Initialize stages
         uiStage.initialize()
-        selectInput(false)
-        // Set up HUD
         hudStage.initialize()
         hudStage.addStatusIcon()
 
-        initialize.initialize()
-        stage.level = initialize.level
-        stage.startXPosition = startXPosition
-        stage.startYPosition = startYPosition
+        // setup input multiplexers
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            val gestureDetector = GestureDetector(GestureHandler(extendViewport))
+            gameInputMultiplexer.addProcessor(gestureDetector)
+            gameInputMultiplexer.addProcessor(gameStage)
+        } else {
+            gameInputMultiplexer.addProcessor(hudStage)
+            gameInputMultiplexer.addProcessor(gameStage)
+        }
+        uiInputMultiplexer.addProcessor(hudStage)
+        uiInputMultiplexer.addProcessor(uiStage)
+        Gdx.input.inputProcessor = gameInputMultiplexer
 
-        extendViewport.camera.position.set((startXPosition + initialize.level.sizeX) * 8,
-            (startYPosition + initialize.level.sizeY.toFloat()) * 2/3f, 0f)
+        // level initialization
+        initialize.initialize()
+        gameStage.level = initialize.level
+        gameStage.startXPosition = startXPosition
+        gameStage.startYPosition = startYPosition
 
         Turn.setLevel(initialize.level)
-        stage.addActor(initialize.level)
-        stage.camera.position.set(Player.x, player.y, stage.camera.position.z)
+        gameStage.addActor(initialize.level)
+        gameStage.camera.position.set(Player.x, Player.y, gameStage.camera.position.z)
 
+        // Initiate pools
         val damagePool: Pool<DamageNumber> = Pools.get(DamageNumber::class.java)
         damagePool.fill(50)
-
-        // debug
-        renderLabel.name = "renderLabel"
-        fpsLabel.name = "fpsLabel"
-        renderLabel.alignment = Align.left
-        fpsLabel.alignment = Align.left
-        val debugInfo: Table = scene2d.table {
-            align(Align.left)
-            pad(16f)
-            add(renderLabel).left()
-            row().pad(4f)
-            add(fpsLabel).left()
-            row().pad(4f)
-            add(memoryLabel).left()
-        }
-        debugInfo.name = "debugInfo"
-        debugInfo.pack()
-        stage.addActor(debugInfo)
-        debugInfo.setPosition(0f, stage.startYPosition)
-        debugInfo.isVisible = Gdx.app.type != Application.ApplicationType.Desktop
     }
 
     private fun selectInput(showEq: Boolean) {
         if (showEq == isEqVisible)
             return
         if (!showEq) {
-            println("Input processors size: " + inputMultiplexer.processors.size)
-//            if (inputMultiplexer.processors.size != 0 && inputMultiplexer.processors[0] == uiStage) {
-//                inputMultiplexer.removeProcessor(0)
-//            }
-
-            // Remove the background darkening
-            val darkenBg = stage.actors.find { it.name == "darkenBackground" }
-            if (darkenBg != null)
-                stage.actors.removeValue(darkenBg, true)
-
-            if (inputMultiplexer.processors.size == 0) {
-                if (Gdx.app.type == Application.ApplicationType.Android) {
-                    val gestureDetector: GestureDetector =
-                        GestureDetector(GestureHandler(extendViewport))
-                    inputMultiplexer.addProcessor(gestureDetector)
-                    inputMultiplexer.addProcessor(stage)
-                } else {
-                    inputMultiplexer.addProcessor(hudStage)
-                    inputMultiplexer.addProcessor(stage)
-                }
-            }
-            Gdx.input.inputProcessor = inputMultiplexer
+            Gdx.input.inputProcessor = gameInputMultiplexer
+            hudStage.darkenScreen(false)
             isEqVisible = false
             // add dropped items here
             while (uiStage.itemDropList.isNotEmpty())
-                stage.level!!.map.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
+                gameStage.level!!.map.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
         } else {
-            // Darken the background
-            val darkenBackground = Image(TextureRegion(Texture("UI/blackBg.png")))
-//            stage.addActor(darkenBackground)
-            darkenBackground.alpha = 0.75f
-            darkenBackground.setSize(extendViewport.screenWidth.toFloat(), extendViewport.screenHeight.toFloat())
-            darkenBackground.setPosition(0f, 0f)
-            darkenBackground.name = "darkenBackground"
-            darkenBackground.zIndex = 0
-
-            val uiInputMultiplexer = InputMultiplexer()
-            uiInputMultiplexer.addProcessor(hudStage)
-            uiInputMultiplexer.addProcessor(uiStage)
-
-//            inputMultiplexer.addProcessor(0, uiStage)
             Gdx.input.inputProcessor = uiInputMultiplexer
+            hudStage.darkenScreen(true)
             isEqVisible = true
             // refresh inventory
             uiStage.refreshInventory = true
@@ -169,22 +106,21 @@ class GameScreen: KtxScreen {
         val startNano = System.nanoTime()
         ScreenUtils.clear(0f, 0f, 0f, 0f)
         extendViewport.apply()
-        batch.projectionMatrix = extendViewport.camera.combined
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         // game events such as player input and ai
-        gameEvents()
+        gameLoop()
 
         render.addAnimations()
-        stage.act(delta)
-        stage.draw()
+        gameStage.act(delta)
+        gameStage.draw()
 
         // Draw HUD
         hudViewport.apply()
         hudStage.act()
         hudStage.draw()
 
-        if (stage.showEq) {
+        if (gameStage.showEq) {
             // show eq
             //TODO force the refresh to execute only once, currently, the "uiStage.clickedItem == null" check resets the item positions of those changed while pickup icon is still visible
             if (Player.findActor<Image>("item") != null && uiStage.clickedItem == null)
@@ -197,25 +133,17 @@ class GameScreen: KtxScreen {
                 // show normal stuff
                 selectInput(showEq = false)
                 // cleanup
-                stage.showEq = false
+                gameStage.showEq = false
                 uiStage.showInventory = true
             }
         }
 
-        // showing fps
-        val timeDiff = System.nanoTime() - startNano
-        totalRenderTime += timeDiff
-        if (totalRenderTime >= 1000000000) {
-            renderLabel.setText("[%300]$timeDiff")
-            fpsLabel.setText("[%300]${1000000000 / timeDiff}fps  |  ${Gdx.graphics.framesPerSecond}fps")
-            memoryLabel.setText("[%300]${(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576}MB")
-            totalRenderTime = 0
-        }
+        hudStage.diagnostics.updateValues(startNano)
     }
 
     override fun dispose() {
         /** Here, dispose of every static state and every thread, because they can survive restarting the application */
-        batch.dispose()
+        gameStage.batch.dispose()
     }
 
     override fun resume() {
@@ -232,22 +160,22 @@ class GameScreen: KtxScreen {
     }
 
     /** Indicates, if there is an item to be picked up at the end of movelist */
-    var pickupItem: Boolean = false
+    private var pickupItem: Boolean = false
 
-    fun gameEvents() {
-        if ((Player.hasActions() || stage.focusPlayer) && !stage.lookingAround) {
-            stage.setCameraToPlayer()
-            stage.focusPlayer = !stage.isPlayerFocused()
+    private fun gameLoop() {
+        if ((Player.hasActions() || gameStage.focusPlayer) && !gameStage.lookingAround) {
+            gameStage.setCameraToPlayer()
+            gameStage.focusPlayer = !gameStage.isPlayerFocused()
         }
 
         // decide on the player action. They are executed in the Turn.makeTurn method along with ai actions
         if (Turn.playerAction) {
-            stage.waitForPlayerInput = true
+            gameStage.waitForPlayerInput = true
 
             // If an item was used in eq, make an adequate use action
             if (uiStage.usedItemList.isNotEmpty() && !Player.hasActions()) {
                 // If user clicked, stop using items
-                if (stage.clickedCoordinates != null) {
+                if (gameStage.clickedCoordinates != null) {
                     // Remove all items from the list
                     while (uiStage.usedItemList.isNotEmpty()) {
                         uiStage.usedItemList.removeFirst()
@@ -266,11 +194,11 @@ class GameScreen: KtxScreen {
 
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
             // Add the move action if the movement animation has ended
-            if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && stage.clickedCoordinates == null && Player.ai.action is Action.NOTHING) {
+            if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && gameStage.clickedCoordinates == null && Player.ai.action is Action.NOTHING) {
                 // check if the player wasn't attacked
                 if (Player.findActor<TextraLabel>("damage") != null) {
-                    stage.focusPlayer = true
-                    stage.lookingAround = false
+                    gameStage.focusPlayer = true
+                    gameStage.lookingAround = false
                     // TODO instead of removing player's planned moves, add a GUI button that resumes movement
 
                     // TODO check if setting targets is necessary, it causes PICKUP bug
@@ -284,37 +212,37 @@ class GameScreen: KtxScreen {
                     Player.ai.setMoveList(Player.ai.xTarget, Player.ai.yTarget, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable(), true)
                 val tile = Player.ai.getMove()
                 Player.ai.action = Action.MOVE(tile.x, tile.y)
-                if (!stage.lookingAround)
-                    stage.focusPlayer = true
+                if (!gameStage.lookingAround)
+                    gameStage.focusPlayer = true
             }
 
             // If an item was at the end of movelist, set the action to PICKUP
-            if (pickupItem && !Player.hasActions() && stage.clickedCoordinates == null && Player.xPos == Player.ai.xTarget && Player.yPos == Player.ai.yTarget) {
+            if (pickupItem && !Player.hasActions() && gameStage.clickedCoordinates == null && Player.xPos == Player.ai.xTarget && Player.yPos == Player.ai.yTarget) {
                 Player.ai.action = Action.PICKUP(Player.xPos, Player.yPos)
                 pickupItem = false
             }
 
             if (Player.ai.action is Action.NOTHING) {
                 // calls this method until a tile is clicked
-                if (stage.clickedCoordinates == null) return
+                if (gameStage.clickedCoordinates == null) return
                 // player clicked during movement
                 if (Player.ai.moveList.isNotEmpty() || Player.hasActions()) {
                     Player.ai.moveList = ArrayDeque()
                     Player.ai.xTarget = Player.xPos
                     Player.ai.yTarget = Player.yPos
-                    stage.clickedCoordinates = null
+                    gameStage.clickedCoordinates = null
                     return
                 }
 
                 // get coordinates
-                val x = stage.clickedCoordinates!!.x
-                val y = stage.clickedCoordinates!!.y
+                val x = gameStage.clickedCoordinates!!.x
+                val y = gameStage.clickedCoordinates!!.y
 
                 val clickedCharacter = Turn.characterArray.get(x, y)
 
                 if(clickedCharacter == Player) {
-                    stage.focusPlayer = true
-                    stage.lookingAround = false
+                    gameStage.focusPlayer = true
+                    gameStage.lookingAround = false
                     if (Turn.currentLevel.getTopItem(x, y) != null)
                         Player.ai.action = Action.PICKUP(x, y)
                     else {
@@ -333,10 +261,10 @@ class GameScreen: KtxScreen {
                     val coord = Player.ai.getMove()
                     Player.ai.action = Action.MOVE(coord.x, coord.y)
                     // Focus player either if he's off screen or if he clicked near his current position
-                    if (!stage.isInCamera(Player.xPos, Player.yPos) ||
+                    if (!gameStage.isInCamera(Player.xPos, Player.yPos) ||
                             abs(Player.xPos - x) <= 5 &&  abs(Player.yPos - y) <= 5) {
-                        stage.lookingAround = false
-                        stage.focusPlayer = true
+                        gameStage.lookingAround = false
+                        gameStage.focusPlayer = true
                     }
 
                     // If there was an item at the clickedTile, pick it up on arrival
@@ -346,8 +274,8 @@ class GameScreen: KtxScreen {
             }
 
             // reset stage to wait for input
-            stage.waitForPlayerInput = false
-            stage.clickedCoordinates = null
+            gameStage.waitForPlayerInput = false
+            gameStage.clickedCoordinates = null
             Turn.playerAction = false
         }
         while (!Turn.playerAction)

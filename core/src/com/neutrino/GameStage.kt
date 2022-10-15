@@ -162,11 +162,6 @@ class GameStage(
             Input.Keys.TAB -> {
                 showEq = true
             }
-            Input.Keys.NUM_1 -> {
-                val debugInfo = actors.find { it.name == "debugInfo" }
-                if (debugInfo != null)
-                    debugInfo.isVisible = !debugInfo.isVisible
-            }
             Input.Keys.LEFT -> {
                 Player.move(Player.xPos - 1, Player.yPos)
                 camera.position.set(camera.position.x - 64, camera.position.y, 0f)

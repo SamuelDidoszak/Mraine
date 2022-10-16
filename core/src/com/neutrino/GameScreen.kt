@@ -35,14 +35,14 @@ class GameScreen: KtxScreen {
     private val extendViewport: ExtendViewport = ExtendViewport(1600f, 900f)
     private val gameStage = GameStage(extendViewport)
 
-    /** Viewport for UI and equipment */
-    private val uiViewport: ExtendViewport = ExtendViewport(1920f, 1080f)
-    private val uiStage: UiStage = UiStage(uiViewport)
-    private var isEqVisible: Boolean = false
-
     /** Viewport for the HUD */
     private val hudViewport = ScreenViewport()
     private val hudStage: HudStage = HudStage(hudViewport)
+
+    /** Viewport for UI and equipment */
+    private val uiViewport: ExtendViewport = ExtendViewport(1920f, 1080f)
+    private val uiStage: UiStage = UiStage(uiViewport, hudStage)
+    private var isEqVisible: Boolean = false
 
     // Input multiplexers
     private val gameInputMultiplexer: InputMultiplexer = InputMultiplexer()
@@ -52,7 +52,7 @@ class GameScreen: KtxScreen {
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
         // Initialize stages
         uiStage.initialize()
-        hudStage.initialize()
+        hudStage.initialize(uiStage)
         hudStage.addStatusIcon()
 
         // setup input multiplexers
@@ -93,12 +93,14 @@ class GameScreen: KtxScreen {
             // add dropped items here
             while (uiStage.itemDropList.isNotEmpty())
                 gameStage.level!!.map.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
+            hudStage.refreshHotBar()
         } else {
             Gdx.input.inputProcessor = uiInputMultiplexer
             hudStage.darkenScreen(true)
             isEqVisible = true
             // refresh inventory
             uiStage.refreshInventory = true
+            hudStage.refreshHotBar()
         }
     }
 
@@ -117,7 +119,7 @@ class GameScreen: KtxScreen {
 
         // Draw HUD
         hudViewport.apply()
-        hudStage.act()
+        hudStage.act(delta)
         hudStage.draw()
 
         if (gameStage.showEq) {
@@ -168,21 +170,27 @@ class GameScreen: KtxScreen {
             gameStage.focusPlayer = !gameStage.isPlayerFocused()
         }
 
+        // TODO add items to the hotbar more efficiently
+        if (Player.findActor<Image>("item") != null && uiStage.clickedItem == null) {
+            hudStage.refreshHotBar()
+        }
+
         // decide on the player action. They are executed in the Turn.makeTurn method along with ai actions
         if (Turn.playerAction) {
             gameStage.waitForPlayerInput = true
 
             // If an item was used in eq, make an adequate use action
-            if (uiStage.usedItemList.isNotEmpty() && !Player.hasActions()) {
+            val usedItemList = hudStage.usedItemList.ifEmpty { uiStage.usedItemList }
+            if (usedItemList.isNotEmpty() && !Player.hasActions()) {
                 // If user clicked, stop using items
                 if (gameStage.clickedCoordinates != null) {
-                    // Remove all items from the list
-                    while (uiStage.usedItemList.isNotEmpty()) {
-                        uiStage.usedItemList.removeFirst()
+                    // Remove all items from the list, stopping them from being used
+                    while (usedItemList.isNotEmpty()) {
+                        usedItemList.removeFirst()
                     }
                 }
                 // Use the item
-                val item = uiStage.usedItemList.removeFirst()
+                val item = usedItemList.removeFirst()
                 Player.ai.action = Action.ITEM(item, Player)
                 // removing item from eq or decreasing its amount
                 val itemInEq = Player.inventory.itemList.find { it.item == item }!!
@@ -190,6 +198,8 @@ class GameScreen: KtxScreen {
                     itemInEq.item.amount = itemInEq.item.amount!! - 1
                 else
                     Player.inventory.itemList.remove(itemInEq)
+
+                hudStage.refreshHotBar()
             }
 
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement

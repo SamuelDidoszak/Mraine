@@ -7,43 +7,33 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
-import com.github.tommyettinger.textra.KnownFonts
-import com.github.tommyettinger.textra.TextraButton
-import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.equipment.utility.EqActor
 import com.neutrino.game.domain.model.items.equipment.utility.Inventory
-import com.neutrino.game.domain.model.turn.CooldownType
 import com.neutrino.game.equalsDelta
-import com.neutrino.game.graphics.utility.BackgroundColor
+import com.neutrino.game.graphics.utility.ItemContextPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
 import ktx.actors.centerPosition
-import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
 
 
-class UiStage(
-    viewport: Viewport
-): Stage(viewport) {
+class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
     lateinit var invScreen: ScrollPane
 
     /** FIFO of dropped items */
@@ -111,6 +101,11 @@ class UiStage(
     private val mainTabsGroup = Group()
     private val openTabsGroup = Group()
     private val sortingTabsGroup = Group()
+
+    private val itemContextPopup = ItemContextPopup(usedItemList) {
+        showInventory = false
+        nullifyAllValues()
+    }
 
     fun initialize() {
         addInventory()
@@ -382,80 +377,6 @@ class UiStage(
         }
     }
 
-    private fun createContextMenu(item: Item, x: Float, y: Float): Table? {
-        val table = scene2d.table {
-            align(Align.center)
-            pad(8f)
-            when (item) {
-                is ItemType.EDIBLE -> {
-                    val eatButton = TextraButton("[%150][@Cozette]Eat", Scene2DSkin.defaultSkin)
-                    eatButton.addListener(object: ClickListener() {
-                        override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                            if (event?.button != Input.Buttons.LEFT)
-                                return
-                            super.clicked(event, x, y)
-                            if (Player.hasCooldown(CooldownType.FOOD)) {
-                                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Food is on cooldown", KnownFonts.getStandardFamily())
-                                cooldownLabel.name = "cooldown"
-                                addActor(cooldownLabel)
-                                cooldownLabel.setPosition(x, y + 8f)
-                                cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
-                                cooldownLabel.addAction(Actions.sequence(
-                                    Actions.fadeOut(1.25f),
-                                    Actions.removeActor()))
-                                return
-                            }
-                            usedItemList.add(item)
-                            showInventory = false
-                            nullifyAllValues()
-                        }
-                    })
-                    add(eatButton).prefWidth(90f).prefHeight(40f)
-                }
-                is ItemType.MISC -> return null
-                is ItemType.KEY -> return null
-                is ItemType.EQUIPMENT -> {
-                    add(TextraButton("[%150][@Cozette]Equip", Scene2DSkin.defaultSkin)).prefWidth(90f).prefHeight(40f)
-                }
-                is ItemType.WEAPON -> {
-                    add(TextraButton("[%150][@Cozette]Equip", Scene2DSkin.defaultSkin)).prefWidth(90f).prefHeight(40f)
-                }
-                is ItemType.SCROLL -> {
-                    val useButton = TextraButton("[%150][@Cozette]Use", Scene2DSkin.defaultSkin)
-                    useButton.addListener(object: ClickListener() {
-                        override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                            if (event?.button != Input.Buttons.LEFT)
-                                return
-                            super.clicked(event, x, y)
-                            if (Player.hasCooldown(CooldownType.ITEM(item.name))) {
-                                val cooldownLabel = TextraLabel("[@Cozette][%600][*]This scroll is on cooldown", KnownFonts.getStandardFamily())
-                                cooldownLabel.name = "cooldown"
-                                addActor(cooldownLabel)
-                                cooldownLabel.setPosition(x, y + 8f)
-                                cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
-                                cooldownLabel.addAction(Actions.sequence(
-                                    Actions.fadeOut(1.25f),
-                                    Actions.removeActor()))
-                                return
-                            }
-                            usedItemList.add(item)
-                            showInventory = false
-                            nullifyAllValues()
-                        }
-                    })
-                    add(useButton).prefWidth(90f).prefHeight(40f)
-                }
-            }
-            pack()
-        }
-
-        val bgColor: BackgroundColor = BackgroundColor("UI/whiteColorTexture.png", x, y, table.width, table.height)
-        bgColor.setColor(0, 0, 0, 160)
-        table.background = bgColor
-
-        return table
-    }
-
     private fun refreshInventory() {
         (invScreen.actor as Table).children.forEach {
             (it as Container<*>).actor = null
@@ -476,7 +397,6 @@ class UiStage(
     // possibly change to EqActor
     var clickedItem: Actor? = null
     private var dragItem: Boolean? = null
-    private var itemClicked: Boolean? = null
     // values for tab handling
     private var hoveredTab: Actor? = null
     private lateinit var activeTab: Actor
@@ -547,7 +467,8 @@ class UiStage(
         if (button == Input.Buttons.RIGHT)
             return super.touchDown(screenX, screenY, pointer, button)
 
-        if (itemClicked == true) {
+        // Sets the click behavior for the item drop
+        if (clickedItem != null) {
             timeClicked = TimeUtils.millis()
             return super.touchDown(screenX, screenY, pointer, button)
         }
@@ -560,7 +481,7 @@ class UiStage(
         if (clickedInv != null) {
             if (clickedInv.name == "playerEq")
                 originalInventory = Player.inventory
-
+            // Sets the clicked item for drag handling
             clickedItem = getInventoryCell(coord.x, coord.y, clickedInv)?.actor
             if (clickedItem != null)
                 timeClicked = TimeUtils.millis()
@@ -572,18 +493,28 @@ class UiStage(
         if (clickedItem == null)
             return false
 
-        if (dragItem == null) {
+        if (dragItem == null && originalContainer == null) {
             dragItem = TimeUtils.millis() - timeClicked >= 650
             if (dragItem!!)
                 pickUpItem()
         }
 
-        if (dragItem!!) {
+        if (dragItem == true) {
             val coord: Vector2 = screenToStageCoordinates(
                 Vector2(screenX.toFloat(), screenY.toFloat())
             )
             clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * 2, coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * 2)
             return true
+        }
+
+        // TODO change this behavior to manage amount sizes
+        //      dragItem false means that click-hold was quick. Null means that an item was previously picked up
+        if (dragItem != true) {
+            if (originalContainer != null) {
+                clickedItem!!.setScale(1f, 1f)
+                originalContainer!!.actor = clickedItem
+                itemPassedToHud()
+            }
         }
 
         return super.touchDragged(screenX, screenY, pointer)
@@ -611,7 +542,7 @@ class UiStage(
                 parseItemDrop(coord.x, coord.y)
 
             // Dropping the clicked item
-            if (itemClicked == true && TimeUtils.millis() - timeClicked <= 200) {
+            if (originalContainer != null && clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 parseItemDrop(coord.x, coord.y)
                 clickedItem = null
             }
@@ -619,7 +550,6 @@ class UiStage(
             // The item was clicked
             if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 pickUpItem()
-                itemClicked = true
                 clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f) / 2 - 6,
                     coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f) / 2 - 9)
                 return super.touchUp(screenX, screenY, pointer, button)
@@ -635,7 +565,7 @@ class UiStage(
                 if (hoveredInv != null) {
                     val hoveredItem: Actor? = getInventoryCell(coord.x, coord.y, hoveredInv)?.actor
                     if (hoveredItem != null) {
-                        contextPopup = createContextMenu((hoveredItem as EqActor).item, coord.x, coord.y)
+                        contextPopup = itemContextPopup.createContextMenu((hoveredItem as EqActor).item, coord.x, coord.y)
                         if (contextPopup != null) {
                             if (detailsPopup != null)
                                 this.actors.removeValue(detailsPopup, true)
@@ -649,6 +579,7 @@ class UiStage(
 
         // New tab was clicked
         val actorAtPosition = actorAt(coord.x, coord.y)
+//        println("Actor here: $actorAtPosition")
         if (actorAtPosition?.name == "SortingOpen")
             hoveredTab = mainTabsGroup.children.find { it.name == "SortingClosed" }
         if (hoveredTab != activeTab && hoveredTab != null && button == Input.Buttons.LEFT) {
@@ -658,7 +589,6 @@ class UiStage(
         clickedItem = null
         originalContainer = null
         originalInventory = null
-        itemClicked = null
         dragItem = null
         return super.touchUp(screenX, screenY, pointer, button)
     }
@@ -706,7 +636,7 @@ class UiStage(
             detailsPopup!!.setPosition(coord.x, coord.y)
         }
 
-        if (itemClicked == true)
+        if (clickedItem != null)
             clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f) / 2 - 6,
                 coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f) / 2 - 9)
         return super.mouseMoved(screenX, screenY)
@@ -793,7 +723,7 @@ class UiStage(
 
         val clickedInv = getInvClicked(x, y)
         if (clickedInv == null) {
-            // DROPPING THE ITEM
+            // Dropping the item
             if (clickedItem != null) {
                 itemDropList.add((clickedItem as EqActor).item)
                 // TODO change the remove implementation to this after adding the sorting and user defined positions
@@ -845,13 +775,21 @@ class UiStage(
         return true
     }
 
+    fun itemPassedToHud() {
+        originalContainer?.actor = clickedItem
+        clickedItem = null
+        originalContainer = null
+        originalInventory = null
+        dragItem = null
+        timeClicked = 0 // TODO delete after making touchDragged working as intended
+    }
+
     /** Sets all values to null */
     private fun nullifyAllValues() {
         clickedItem?.addAction(Actions.removeActor())
         clickedItem = null
         originalContainer = null
         originalInventory = null
-        itemClicked = null
         dragItem = null
         if (hoveredTab != null) {
             hoveredTab!!.moveBy(0f, -14f)

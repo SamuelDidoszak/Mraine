@@ -99,7 +99,7 @@ class GameScreen: KtxScreen {
             hudStage.darkenScreen(true)
             isEqVisible = true
             // refresh inventory
-            uiStage.refreshInventory = true
+            uiStage.refreshInventory()
             hudStage.refreshHotBar()
         }
     }
@@ -126,7 +126,7 @@ class GameScreen: KtxScreen {
             // show eq
             //TODO force the refresh to execute only once, currently, the "uiStage.clickedItem == null" check resets the item positions of those changed while pickup icon is still visible
             if (Player.findActor<Image>("item") != null && uiStage.clickedItem == null)
-                uiStage.refreshInventory = true
+                uiStage.refreshInventory()
             selectInput(showEq = true)
             uiStage.viewport.apply()
             uiStage.act(delta)
@@ -156,9 +156,8 @@ class GameScreen: KtxScreen {
     override fun resize(width: Int, height: Int) {
         extendViewport.update(width, height)
         uiViewport.update(width, height)
-        uiStage.updateRatio()
         hudViewport.update(width, height, true)
-        hudStage.update(width, height)
+        hudStage.updateSize(width, height)
     }
 
     /** Indicates, if there is an item to be picked up at the end of movelist */

@@ -34,8 +34,6 @@ import ktx.scene2d.table
 
 
 class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
-    lateinit var invScreen: ScrollPane
-
     /** FIFO of dropped items */
     val itemDropList: ArrayDeque<Item> = ArrayDeque()
 
@@ -43,19 +41,6 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
     val usedItemList: ArrayDeque<Item> = ArrayDeque()
 
     var showInventory: Boolean = true
-    var refreshInventory = false
-        set(value) {
-            if (value)
-                refreshInventory()
-            field = false
-        }
-
-    var screenRatio: Float = width / height
-    var zoomLevel: Float = 1.25f
-
-    fun updateRatio() {
-        screenRatio = viewport.screenWidth / viewport.screenHeight.toFloat()
-    }
 
     // UI elements
     private val uiAtlas = TextureAtlas("UI/ui.atlas")
@@ -97,6 +82,11 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         "cellUnavailable" to uiAtlas.findRegion("cellUnavailable"),
     )
 
+    /** ======================================================================================================================================================
+                                                                    Inventory related variables
+     */
+
+    private lateinit var invScreen: ScrollPane
     private val inventoryBorder = Image(uiElements["InventoryBorder"])
     private val mainTabsGroup = Group()
     private val openTabsGroup = Group()
@@ -106,6 +96,10 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         showInventory = false
         nullifyAllValues()
     }
+
+    /** ======================================================================================================================================================
+                                                                    Initializations
+     */
 
     fun initialize() {
         addInventory()
@@ -123,10 +117,9 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         sortingTabsGroup.name = "sortingTabsGroup"
     }
 
-    fun addInventoryActorOld() {
+    private fun addInventoryActorOld() {
         val borderWidth: Int = 12
         val borderHeight: Int = 12
-//        val padding: Int = 4
 
         val color = Color(238f, 195f, 154f, 1f)
 
@@ -143,7 +136,7 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
                             align(Align.bottomLeft)
                             if (cellNumber < Player.inventory.itemList.size)
                                 actor = EqActor(Player.inventory.itemList[cellNumber].item)
-                        }).size(64f * zoomLevel, 64f * zoomLevel).left().bottom().padRight(if (i != 8) 4f else 0f).space(0f)
+                        }).size(84f, 84f).left().bottom().padRight(if (i != 8) 4f else 0f).space(0f)
                     row().padTop(if (n != 12) 4f else 0f).space(0f)
                 }
         }
@@ -167,8 +160,8 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         invScreen.height = backgroundImage.height - 2 * borderHeight
         invScreen.centerPosition()
 
-        backgroundImage.setSize(backgroundImage.width * zoomLevel, backgroundImage.height * zoomLevel)
-        invScreen.setSize(invScreen.width * zoomLevel, invScreen.height * zoomLevel)
+        backgroundImage.setSize(backgroundImage.width, backgroundImage.height)
+        invScreen.setSize(invScreen.width, invScreen.height)
         backgroundImage.centerPosition()
         invScreen.centerPosition()
     }
@@ -223,7 +216,7 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
         invScreen.setScrollingDisabled(true, false)
         invScreen.setOverscroll(false, false)
-//        invScreen.setScrollbarsVisible(false)
+        invScreen.setScrollbarsVisible(false)
         invScreen.layout()
 
         addActor(invScreen)
@@ -377,7 +370,7 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         }
     }
 
-    private fun refreshInventory() {
+    fun refreshInventory() {
         (invScreen.actor as Table).children.forEach {
             (it as Container<*>).actor = null
             val cellNumber = it.name.toInt()
@@ -385,6 +378,10 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
                 it.actor = EqActor(Player.inventory.itemList[cellNumber].item)
         }
     }
+
+    /** ======================================================================================================================================================
+                                                                    Item related variables
+     */
 
     private var detailsPopup: Table? = null
     private var displayedItem: Item? = null
@@ -461,6 +458,10 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
             hoveredTab = null
         }
     }
+
+    /** ======================================================================================================================================================
+                                                                    Input processor
+     */
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0) return false
@@ -642,13 +643,24 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         return super.mouseMoved(screenX, screenY)
     }
 
+    override fun keyDown(keycode: Int): Boolean {
+        when (keycode) {
+            Input.Keys.TAB -> {
+                showInventory = false
+                nullifyAllValues()
+            }
+        }
+        return true
+    }
+
+    /** ======================================================================================================================================================
+                                                                    Item related methods
+     */
+
     private fun pickUpItem() {
-        clickedItem!!.name = "movedItem"
         originalContainer = clickedItem!!.parent as Container<*>
         originalContainer!!.removeActor(clickedItem)
         addActor(clickedItem)
-        clickedItem = actors.find { it.name == "movedItem" }!!
-        clickedItem!!.name = null
         clickedItem!!.setScale(1.25f, 1.25f)
     }
 
@@ -662,6 +674,10 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         else
             return null
     }
+
+    /** ======================================================================================================================================================
+                                                                    Actor related methods
+     */
 
     /** Moves an actor by 14 pixels */
     private fun Actor.moveTab(up: Boolean) { if (up) this.addAction(Actions.moveBy(0f, 14f, 0.15f))
@@ -699,6 +715,10 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
             null
         }
     }
+
+    /** ======================================================================================================================================================
+                                                                    Item related methods
+    */
 
     private fun getInventoryCell(x: Float, y: Float, clickedEq: ScrollPane): Container<*>? {
         val coord: Vector2 = clickedEq.stageToLocalCoordinates(
@@ -765,16 +785,6 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         container.actor = (clickedItem)
     }
 
-    override fun keyDown(keycode: Int): Boolean {
-        when (keycode) {
-            Input.Keys.TAB -> {
-                showInventory = false
-                nullifyAllValues()
-            }
-        }
-        return true
-    }
-
     fun itemPassedToHud() {
         originalContainer?.actor = clickedItem
         clickedItem = null
@@ -805,6 +815,10 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
             contextPopup = null
         }
     }
+
+    /** ======================================================================================================================================================
+                                                                    Stage related methods
+    */
 
     override fun draw() {
         if (Player.inventorySizeChanged) {

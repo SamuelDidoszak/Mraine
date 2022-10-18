@@ -7,7 +7,6 @@ import com.neutrino.game.domain.model.items.ItemType
 class ScrollOfDefence: Item(), ItemType.SCROLL.STAT {
     override val name: String = "Scroll of defence"
     override val description: String = "Makes your skin harder and more resistant to physical attacks"
-    override val stackable: Boolean = true
     override var amount: Int? = 1
     override val causesCooldown: Int = 1
 

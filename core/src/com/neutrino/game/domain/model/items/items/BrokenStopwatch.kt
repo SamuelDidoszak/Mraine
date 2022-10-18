@@ -9,7 +9,6 @@ import com.neutrino.game.domain.model.turn.Event
 class BrokenStopwatch: Item(), ItemType.CAUSESEVENT {
     override val name: String = "Broken stopwatch"
     override val description: String = "This weird stopwatch looks broken yet powerful at the same time"
-    override val stackable: Boolean = false
     override val textureNames: List<String> = listOf("brokenStopwatch")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 

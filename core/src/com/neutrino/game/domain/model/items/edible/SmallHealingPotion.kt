@@ -8,7 +8,6 @@ import com.neutrino.game.domain.model.items.ItemType
 class SmallHealingPotion: Item(), ItemType.EDIBLE {
     override var name: String = "Small healing potion"
     override val description: String = "It's gonna heal you instantly"
-    override val stackable: Boolean = true
     override var amount: Int? = 1
 
     override val textureNames: List<String> = listOf("smallHealingPotion")

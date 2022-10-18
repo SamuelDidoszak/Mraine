@@ -23,7 +23,9 @@ import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.equipment.utility.EqActor
+import com.neutrino.game.domain.model.items.equipment.utility.EqElement
 import com.neutrino.game.domain.model.items.equipment.utility.Inventory
+import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.equalsDelta
 import com.neutrino.game.graphics.utility.ItemContextPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
@@ -31,6 +33,8 @@ import ktx.actors.centerPosition
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
+import kotlin.math.ceil
+import kotlin.math.sign
 
 
 class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
@@ -108,8 +112,8 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         inventoryBorder.centerPosition()
 
         addTabs()
-        mainTabsGroup.zIndex = 1
-        sortingTabsGroup.zIndex = 2
+        mainTabsGroup.zIndex = 0
+        sortingTabsGroup.zIndex = 1
         scrollFocus = invScreen
 
         mainTabsGroup.name = "mainTabsGroup"
@@ -490,6 +494,11 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         return super.touchDown(screenX, screenY, pointer, button)
     }
 
+    /** Value decreases when dragging upwards and decreases when dragging downwards */
+    var previousDragPosition: Int = -2137
+    /** Original item split into a stack. Null signifies that no stack was taken */
+    private var originalStackItem: EqActor? = null
+
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         if (clickedItem == null)
             return false
@@ -510,6 +519,23 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
 
         // TODO change this behavior to manage amount sizes
         //      dragItem false means that click-hold was quick. Null means that an item was previously picked up
+
+        // An item was previously picked up. Adjust its stack size
+        if (dragItem == null) {
+            // Initialize the value
+            if (previousDragPosition == -2137) {
+                previousDragPosition = screenY
+                return super.touchDragged(screenX, screenY, pointer)
+            }
+            // Negative values mean upwards drag, positive downwards
+            val dragStrength = previousDragPosition - screenY
+
+            if ((clickedItem as EqActor).item.amount != null) {
+                println((clickedItem as EqActor).item.amount!! - dragStrength.sign)
+            }
+        }
+
+
         if (dragItem != true) {
             if (originalContainer != null) {
                 clickedItem!!.setScale(1f, 1f)
@@ -591,6 +617,7 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         originalContainer = null
         originalInventory = null
         dragItem = null
+        originalStackItem = null
         return super.touchUp(screenX, screenY, pointer, button)
     }
 
@@ -654,28 +681,6 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
     }
 
     /** ======================================================================================================================================================
-                                                                    Item related methods
-     */
-
-    private fun pickUpItem() {
-        originalContainer = clickedItem!!.parent as Container<*>
-        originalContainer!!.removeActor(clickedItem)
-        addActor(clickedItem)
-        clickedItem!!.setScale(1.25f, 1.25f)
-    }
-
-    /** Returns the eq ui and sets the originalEq */
-    private fun getInvClicked(x: Float, y: Float): ScrollPane? {
-        val inPlayerEq = (x in invScreen.x .. invScreen.x + invScreen.width - 1 &&
-                y in invScreen.y .. invScreen.y + invScreen.height - 1)
-        if (inPlayerEq) {
-            return invScreen
-        }
-        else
-            return null
-    }
-
-    /** ======================================================================================================================================================
                                                                     Actor related methods
      */
 
@@ -720,6 +725,48 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
                                                                     Item related methods
     */
 
+    private fun changeStackAmount(value: Int) {
+        if (originalStackItem == null)
+            return
+        (clickedItem as EqActor).item.amount = (clickedItem as EqActor).item.amount!!.plus(value)
+        originalStackItem!!.item.amount = originalStackItem!!.item.amount!!.minus(value)
+        (clickedItem as EqActor).refreshAmount()
+        originalStackItem!!.refreshAmount()
+        if (originalStackItem!!.item.amount == 0)
+            originalContainer!!.actor = null
+    }
+
+    private fun pickUpItem() {
+        // Create a new stack of the item
+        if (dragItem == true && (clickedItem as EqActor).item.amount != null) {
+            originalContainer = clickedItem!!.parent as Container<*>
+            val item = (clickedItem as EqActor).item.clone() as Item
+            originalStackItem = clickedItem as EqActor
+            item.amount = 0
+            clickedItem = EqActor(item)
+            changeStackAmount(ceil(originalStackItem!!.item.amount!! / 2f).toInt())
+            addActor(clickedItem)
+            clickedItem!!.setScale(1.25f, 1.25f)
+            return
+        }
+
+        originalContainer = clickedItem!!.parent as Container<*>
+        originalContainer!!.removeActor(clickedItem)
+        addActor(clickedItem)
+        clickedItem!!.setScale(1.25f, 1.25f)
+    }
+
+    /** Returns the eq ui and sets the originalEq */
+    private fun getInvClicked(x: Float, y: Float): ScrollPane? {
+        val inPlayerEq = (x in invScreen.x .. invScreen.x + invScreen.width - 1 &&
+                y in invScreen.y .. invScreen.y + invScreen.height - 1)
+        if (inPlayerEq) {
+            return invScreen
+        }
+        else
+            return null
+    }
+
     private fun getInventoryCell(x: Float, y: Float, clickedEq: ScrollPane): Container<*>? {
         val coord: Vector2 = clickedEq.stageToLocalCoordinates(
             Vector2(x, y)
@@ -740,6 +787,15 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
     private fun parseItemDrop(x: Float, y: Float) {
         if (clickedItem == null)
             return
+
+        var stackedItemDate: Double = Turn.turn
+        if (originalStackItem != null) {
+            val stackedItem = originalInventory!!.itemList.find { it.item == originalStackItem!!.item }
+            stackedItemDate = stackedItem!!.dateAdded
+            if (stackedItem.item.amount == 0)
+                originalInventory!!.itemList.remove(stackedItem)
+        }
+
 
         val clickedInv = getInvClicked(x, y)
         if (clickedInv == null) {
@@ -764,7 +820,14 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         clickedItem!!.setScale(1f, 1f)
         // if the area between cells was clicked, reset the item position
         val container = getInventoryCell(x, y, clickedInv)
+        // TODO checking the Player inventorySize here can cause bugs when other inventories will be displayed
         if (container == null || container.name?.toInt()!! >= Player.inventorySize) {
+            if (originalStackItem != null) {
+                originalStackItem!!.item.amount = originalStackItem!!.item.amount?.plus((clickedItem as EqActor).item.amount!!)
+                originalStackItem!!.refreshAmount()
+                this.actors.removeValue(clickedItem, true)
+                return
+            }
             originalContainer!!.actor = clickedItem
             return
         }
@@ -773,16 +836,20 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         // check if the cell is ocupied and act accordingly
         if (container.hasChildren()) {
             // sum item amounts
-            if ((clickedItem as EqActor).item.name == (container.actor as EqActor).item.name
-                && (container.actor as EqActor).item.stackable) {
+            if ((container.actor as EqActor).item.amount != null &&
+                (clickedItem as EqActor).item.equalsIdentical((container.actor as EqActor).item)) {
                     (container.actor as EqActor).item.amount =
-                        (container.actor as EqActor).item.amount?.plus((clickedItem as EqActor).item.amount!!
-                    )
+                        (container.actor as EqActor).item.amount?.plus((clickedItem as EqActor).item.amount!!)
+                originalInventory!!.itemList.remove(
+                    originalInventory!!.itemList.find { it.item == (clickedItem as EqActor).item })
+                (container.actor as EqActor).refreshAmount()
                 return
             } else
                 originalContainer!!.actor = container.actor as EqActor
         }
         container.actor = (clickedItem)
+        if (originalStackItem != null)
+            originalInventory!!.itemList.add(EqElement((clickedItem as EqActor).item, stackedItemDate))
     }
 
     fun itemPassedToHud() {
@@ -801,6 +868,7 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         originalContainer = null
         originalInventory = null
         dragItem = null
+        originalStackItem = null
         if (hoveredTab != null) {
             hoveredTab!!.moveBy(0f, -14f)
             hoveredTab = null

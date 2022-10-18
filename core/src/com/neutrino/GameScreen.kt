@@ -91,6 +91,7 @@ class GameScreen: KtxScreen {
             hudStage.darkenScreen(false)
             isEqVisible = false
             // add dropped items here
+            // TODO stack dropped items
             while (uiStage.itemDropList.isNotEmpty())
                 gameStage.level!!.map.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
             hudStage.refreshHotBar()

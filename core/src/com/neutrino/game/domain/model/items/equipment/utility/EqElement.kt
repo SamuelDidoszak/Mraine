@@ -6,5 +6,5 @@ data class EqElement(
     val item: Item,
     /** Turn at which the item was added to the inventory */
     val dateAdded: Double,
-    var playerSortNumber: Int? = null
+    var customPosition: Int? = 0
 )

@@ -368,7 +368,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         if (clickedActor.hasChildren()) {
             // sum item amounts
             if ((clickedItem as EqActor).item.name == (clickedActor.actor as EqActor).item.name
-                && (clickedActor.actor as EqActor).item.stackable) {
+                && (clickedActor.actor as EqActor).item.amount != null) {
                 (clickedActor.actor as EqActor).item.amount =
                     (clickedActor.actor as EqActor).item.amount?.plus((clickedItem as EqActor).item.amount!!
                     )

@@ -59,7 +59,7 @@ object Player : Character(0, 0, 0.0) {
 
     fun addToInventory(item: Item): Boolean {
         // add to stack
-        if (item.stackable) {
+        if (item.amount != null) {
             val stackableItem = inventory.itemList.find { it.item.name == item.name }
             if (stackableItem != null) {
                 stackableItem.item.amount = stackableItem.item.amount!!.plus(item.amount!!)

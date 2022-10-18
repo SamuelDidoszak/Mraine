@@ -16,6 +16,8 @@ class EqActor(val item: Item): Group() {
     private var actorWidth: Float = ogWidth
     private var actorHeight: Float = ogHeight
 
+    private lateinit var numberText: TextraLabel
+
     init {
         if (item.goldValueOg != 0 && item.goldValueOg != item.goldValue) {
             val qualityImage =
@@ -30,7 +32,7 @@ class EqActor(val item: Item): Group() {
         }
 
         if (item.amount != null) {
-            val numberText = TextraLabel("[#121212ff][@Cozette][%600][*]" +item.amount.toString(), KnownFonts.getStandardFamily())
+            numberText = TextraLabel("[#121212ff][@Cozette][%600][*]" + item.amount.toString(), KnownFonts.getStandardFamily())
             numberText.name = "amount"
             numberText.setBounds(0f, 0f, 72f, 24f)
             numberText.align = Align.right
@@ -57,5 +59,9 @@ class EqActor(val item: Item): Group() {
         super.setScale(scaleX, scaleY)
         actorWidth = ogWidth * scaleX
         actorHeight = ogHeight * scaleY
+    }
+
+    fun refreshAmount() {
+        numberText.setText("[#121212ff][@Cozette][%600][*]" + item.amount.toString())
     }
 }

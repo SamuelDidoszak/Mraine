@@ -13,7 +13,6 @@ class Gold(amount: Int = RandomGenerator.nextInt(120)): Item(), ItemType.MISC {
             field = value
             texture = pickTexture()
         }
-    override val stackable: Boolean = true
 
     override val textureNames: List<String> = listOf(
         "gold1", "gold2", "gold3", "gold4", "gold5", "gold6", "gold7", "gold8"

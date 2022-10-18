@@ -8,7 +8,6 @@ import com.neutrino.game.domain.model.items.ItemType
 class Meat: Item(), ItemType.EDIBLE {
     override var name: String = "Meat"
     override val description: String = "A piece of raw meat. What's the worst that could happen?"
-    override val stackable: Boolean = true
     override var amount: Int? = 1
 
     override val textureNames: List<String> = listOf("meat")

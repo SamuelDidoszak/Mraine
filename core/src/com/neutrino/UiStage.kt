@@ -37,7 +37,7 @@ import kotlin.math.ceil
 import kotlin.math.sign
 
 
-class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
+class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewport) {
     /** FIFO of dropped items */
     val itemDropList: ArrayDeque<Item> = ArrayDeque()
 
@@ -510,6 +510,9 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
         }
 
         if (dragItem == true) {
+            if (detailsPopup != null)
+                this.actors.removeValue(detailsPopup, true)
+
             val coord: Vector2 = screenToStageCoordinates(
                 Vector2(screenX.toFloat(), screenY.toFloat())
             )
@@ -565,13 +568,24 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
             if (detailsPopup != null)
                 this.actors.removeValue(detailsPopup, true)
 
-            if (dragItem == true)
+            if (dragItem == true) {
                 parseItemDrop(coord.x, coord.y)
+                clickedItem = null
+                originalContainer = null
+                dragItem = null
+                originalStackItem = null
+            }
+            // TODO potential bugs i guess
+            else if (dragItem == false) {
+                clickedItem = null
+                dragItem = null
+            }
 
             // Dropping the clicked item
             if (originalContainer != null && clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 parseItemDrop(coord.x, coord.y)
                 clickedItem = null
+                originalContainer = null
             }
 
             // The item was clicked
@@ -612,11 +626,6 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
             activateTab()
         }
 
-        clickedItem = null
-        originalContainer = null
-        originalInventory = null
-        dragItem = null
-        originalStackItem = null
         return super.touchUp(screenX, screenY, pointer, button)
     }
 
@@ -837,11 +846,16 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
             // sum item amounts
             if ((container.actor as EqActor).item.amount != null &&
                 (clickedItem as EqActor).item.equalsIdentical((container.actor as EqActor).item)) {
-                    (container.actor as EqActor).item.amount =
-                        (container.actor as EqActor).item.amount?.plus((clickedItem as EqActor).item.amount!!)
+                (container.actor as EqActor).item.amount =
+                    (container.actor as EqActor).item.amount?.plus((clickedItem as EqActor).item.amount!!)
                 originalInventory!!.itemList.remove(
                     originalInventory!!.itemList.find { it.item == (clickedItem as EqActor).item })
                 (container.actor as EqActor).refreshAmount()
+                return
+            } else if (originalStackItem != null) {
+                originalStackItem!!.item.amount = originalStackItem!!.item.amount?.plus((clickedItem as EqActor).item.amount!!)
+                originalStackItem!!.refreshAmount()
+                this.actors.removeValue(clickedItem, true)
                 return
             } else
                 originalContainer!!.actor = container.actor as EqActor
@@ -858,6 +872,7 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
             clickedItem = originalStackItem
             originalStackItem = null
         }
+        actors.removeValue(clickedItem, true)
         originalContainer?.actor = clickedItem
         clickedItem = null
         originalContainer = null
@@ -868,6 +883,12 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
 
     /** Sets all values to null */
     private fun nullifyAllValues() {
+        if (originalStackItem != null) {
+            changeStackAmount((clickedItem as EqActor).item.amount!! * -1)
+            actors.removeValue(clickedItem, true)
+            clickedItem = originalStackItem
+            originalStackItem = null
+        }
         clickedItem?.addAction(Actions.removeActor())
         clickedItem = null
         originalContainer = null

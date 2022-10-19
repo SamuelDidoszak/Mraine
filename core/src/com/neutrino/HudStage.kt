@@ -128,7 +128,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     private var dragItem: Boolean? = false
     private var itemClicked: Boolean? = false
     private var timeClicked: Long = 0
-    private var clickedItem: Actor? = null
+    var clickedItem: Actor? = null
     private var contextPopup: Table? = null
 
     private var originalContainer: Container<*>? = null

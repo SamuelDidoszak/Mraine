@@ -497,7 +497,7 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
     /** Value decreases when dragging upwards and decreases when dragging downwards */
     var previousDragPosition: Int = -2137
     /** Original item split into a stack. Null signifies that no stack was taken */
-    private var originalStackItem: EqActor? = null
+    var originalStackItem: EqActor? = null
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         if (clickedItem == null)
@@ -606,7 +606,6 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
 
         // New tab was clicked
         val actorAtPosition = actorAt(coord.x, coord.y)
-//        println("Actor here: $actorAtPosition")
         if (actorAtPosition?.name == "SortingOpen")
             hoveredTab = mainTabsGroup.children.find { it.name == "SortingClosed" }
         if (hoveredTab != activeTab && hoveredTab != null && button == Input.Buttons.LEFT) {
@@ -853,6 +852,12 @@ class UiStage(viewport: Viewport, hudStage: HudStage): Stage(viewport) {
     }
 
     fun itemPassedToHud() {
+        if (originalStackItem != null) {
+            changeStackAmount((clickedItem as EqActor).item.amount!! * -1)
+            actors.removeValue(clickedItem, true)
+            clickedItem = originalStackItem
+            originalStackItem = null
+        }
         originalContainer?.actor = clickedItem
         clickedItem = null
         originalContainer = null

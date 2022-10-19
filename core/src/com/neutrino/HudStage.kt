@@ -244,18 +244,26 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                 parseItemDrop(coord.x, coord.y)
 
             // Handle the item pass from uiStage
-            val itemFromUi: Actor? = uiStage.clickedItem
+            val itemFromUi: Actor? = uiStage.originalStackItem?:uiStage.clickedItem
             if (itemFromUi != null) {
                 val clickedActor = actorAtGroup(coord.x, coord.y)
                 if (clickedActor != null && clickedActor is Container<*>) {
                     (itemFromUi as EqActor).setScale(1f, 1f)
+                    var previousPosition: Int? = null
                     for (i in 0 .. 9) {
                         if (hotBarItemList[i] == itemFromUi.item) {
                             setItemToPosition(i, null)
+                            previousPosition = i
                         }
                     }
-                    setItemToPosition(clickedActor.name.toInt(), itemFromUi.item)
                     uiStage.itemPassedToHud()
+                    // Swaps items
+                    if (previousPosition != null && hotBarItemList[clickedActor.name.toInt()] != null)
+                        setItemToPosition(previousPosition, hotBarItemList[clickedActor.name.toInt()])
+                    setItemToPosition(clickedActor.name.toInt(), itemFromUi.item)
+
+                    clickedItem = null
+                    itemClicked = null
                 }
             }
 

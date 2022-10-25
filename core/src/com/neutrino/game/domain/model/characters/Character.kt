@@ -29,10 +29,11 @@ abstract class Character(
     // Stat initialization for character boilerplate reduction
     override var hp: Float = 0f
     override var mp: Float = 0f
-    override var dodging: Float = 0f
+    override var evasion: Float = 0f
     override var accuracy: Float = 1f
     override var attackSpeed: Double = 1.0
     override var movementSpeed: Double = 1.0
+    override var criticalDamage: Float = 2f
     override var range: Int = 1
     override var rangeType: RangeType = RangeType.SQUARE
     // environmental stats
@@ -209,6 +210,12 @@ abstract class Character(
     }
 
     fun getDamage(character: Character): Float {
+        val evaded = Random.nextFloat() * (1 - character.accuracy + evasion)
+        if (evaded != 0f && evaded in 0f .. evasion) {
+            println("Evaded the attack")
+            return 0f
+        }
+
         var damage: Float = 0f
         val randomizedDamage = character.damage - character.damageVariation + Random.nextFloat() * character.damageVariation
         val physicalDamage = randomizedDamage * randomizedDamage / (randomizedDamage + defence)

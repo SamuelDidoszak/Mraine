@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.items.equipment.utility
+package com.neutrino.game.domain.model.items.utility
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -63,5 +63,7 @@ class EqActor(val item: Item): Group() {
 
     fun refreshAmount() {
         numberText.setText("[#121212ff][@Cozette][%600][*]" + item.amount.toString())
+        numberText.setBounds(0f, 0f, 72f, 24f)
+        numberText.align = Align.right
     }
 }

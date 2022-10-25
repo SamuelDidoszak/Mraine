@@ -22,9 +22,9 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.equipment.utility.EqActor
-import com.neutrino.game.domain.model.items.equipment.utility.EqElement
-import com.neutrino.game.domain.model.items.equipment.utility.Inventory
+import com.neutrino.game.domain.model.items.utility.EqActor
+import com.neutrino.game.domain.model.items.utility.EqElement
+import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.equalsDelta
 import com.neutrino.game.graphics.utility.ItemContextPopup
@@ -671,6 +671,14 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         } else {
             detailsPopup!!.setPosition(coord.x, coord.y)
         }
+
+        // TODO pass item from hud
+//        // check if there is an item in hud
+//        if (hudStage.clickedItem != null) {
+//            clickedItem = hudStage.clickedItem
+//            actors.add(clickedItem)
+//            hudStage.passedItemToUi()
+//        }
 
         if (clickedItem != null)
             clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f) / 2 - 6,

@@ -1,13 +1,27 @@
 package com.neutrino.game.domain.model.items.equipment
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.ModifyStat
+import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.domain.model.items.EquipmentItem
+import com.neutrino.game.domain.model.items.HandedItemType
 import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.turn.Event
+import com.neutrino.game.domain.model.turn.Turn
 
-class Knife: Item(), ItemType.WEAPON {
+class Knife: EquipmentItem(), ItemType.EQUIPMENT.INHAND.ONEHANDED {
+    override val handedItemType: HandedItemType = HandedItemType.DAGGER
     override val name: String = "Knife"
     override val description: String = "Stabby stab stab"
 
     override val textureNames: List<String> = listOf("knife")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
+
+    override val modifierList: ArrayList<Any> = arrayListOf(
+        ModifyStat(StatsEnum.DAMAGE, 3f),
+        // TODO DYNAMIC PLAYER
+        // example
+        Event.HEAL(Player, false, 0f, Turn.turn, 1.0, Int.MAX_VALUE)
+    )
 }

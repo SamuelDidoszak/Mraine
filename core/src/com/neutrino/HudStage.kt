@@ -21,7 +21,7 @@ import com.neutrino.game.Constants
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.equipment.utility.EqActor
+import com.neutrino.game.domain.model.items.utility.EqActor
 import com.neutrino.game.domain.model.utility.Diagnostics
 import com.neutrino.game.graphics.utility.ItemContextPopup
 import ktx.actors.alpha
@@ -341,6 +341,11 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     /** ======================================================================================================================================================
                                                                     Item related methods
     */
+
+    fun passedItemToUi() {
+        actors.removeValue(clickedItem, true)
+        clickedItem = null
+    }
 
     private fun pickUpItem() {
         originalContainer = clickedItem!!.parent as Container<*>

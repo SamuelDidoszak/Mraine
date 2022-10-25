@@ -1,0 +1,33 @@
+package com.neutrino.game.domain.model.characters.utility
+
+enum class StatsEnum {
+    HPMAX,
+    MPMAX,
+    STRENGTH,
+    DEXTERITY,
+    INTELLIGENCE,
+    LUCK,
+    DAMAGE,
+    DAMAGEVARIATION,
+    DEFENCE,
+    EVASION,
+    ACCURACY,
+    CRITICALCHANCE,
+    CRITICALDAMAGE,
+    ATTACKSPEED,
+    MOVEMENTSPEED,
+    RANGE,
+    RANGETYPE,
+
+    FIREDAMAGE,
+    WATERDAMAGE,
+    EARTHDAMAGE,
+    AIRDAMAGE,
+    POISONDAMAGE,
+
+    FIREDEFENCE,
+    WATERDEFENCE,
+    EARTHDEFENCE,
+    AIRDEFENCE,
+    POISONDEFENCE
+}

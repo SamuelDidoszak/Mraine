@@ -255,6 +255,7 @@ object Turn {
 
     /** Executes the event happening at current turn */
     private fun executeEvent() {
+        println()
         try {
             val event = eventArray.get(turn)!!
             when (event) {

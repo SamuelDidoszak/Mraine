@@ -6,13 +6,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.neutrino.game.Constants
+import com.neutrino.game.domain.model.characters.utility.HasInventory
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import com.neutrino.game.domain.model.items.Equipment
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.equipment.utility.EqElement
-import com.neutrino.game.domain.model.items.equipment.utility.Inventory
+import com.neutrino.game.domain.model.items.utility.EqElement
+import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
 
-object Player : Character(0, 0, 0.0) {
+object Player : Character(0, 0, 0.0), HasInventory {
     override var hpMax: Float = 20f
     override var mpMax: Float = 10f
     override var strength: Float = 4.5f
@@ -24,6 +26,8 @@ object Player : Character(0, 0, 0.0) {
     override var defence: Float = 2f
     override var criticalChance: Float = 0.3f
     override var experience: Float = 0f
+    /** Determines the maximum number of concurrently used skills that do not use mana */
+    var maxSkills: Int = 3
 
     init {
         initialize("Player")
@@ -32,8 +36,8 @@ object Player : Character(0, 0, 0.0) {
 
     // Inventory
     /** Player inventory */
-    val inventory: Inventory = Inventory()
-    val equipped: Inventory = Inventory()
+    override val inventory: Inventory = Inventory()
+    val equipment: Equipment = Equipment(this)
 
     override val description: String
         get() = TODO("Not yet implemented")

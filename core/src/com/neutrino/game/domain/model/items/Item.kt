@@ -4,10 +4,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
-abstract class Item: TextureHaver, Cloneable {
+abstract class Item: ItemType, TextureHaver, Cloneable {
     abstract val name: String
     abstract val description: String
-    open val subType: ItemSubType? = null
     /** Amount of items in stack. Null means that it's not stackable */
     open var amount: Int? = null
     /** Specifies if the item causes cooldown. -1 means no, 0 means player and 1 means every use type */

@@ -10,6 +10,7 @@ import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraButton
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.turn.CooldownType
@@ -54,10 +55,17 @@ class ItemContextPopup(
                 is ItemType.MISC -> return null
                 is ItemType.KEY -> return null
                 is ItemType.EQUIPMENT -> {
-                    add(TextraButton("[%150][@Cozette]Equip", Scene2DSkin.defaultSkin)).prefWidth(90f).prefHeight(40f)
-                }
-                is ItemType.WEAPON -> {
-                    add(TextraButton("[%150][@Cozette]Equip", Scene2DSkin.defaultSkin)).prefWidth(90f).prefHeight(40f)
+                    val equipButton = TextraButton("[%150][@Cozette]Equip", Scene2DSkin.defaultSkin)
+                    equipButton.addListener(object: ClickListener() {
+                        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                            if (event?.button != Input.Buttons.LEFT)
+                                return
+                            super.clicked(event, x, y)
+                            Player.equipment.setItem(item as EquipmentItem)
+                        }
+                    })
+
+                    add(equipButton).prefWidth(90f).prefHeight(40f)
                 }
                 is ItemType.SCROLL -> {
                     val useButton = TextraButton("[%150][@Cozette]Use", Scene2DSkin.defaultSkin)

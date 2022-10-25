@@ -13,10 +13,12 @@ interface Stats {
     var damageVariation: Float
     var defence: Float
     /** Range is 0 - 1 which tells the probability of dodging */
-    var dodging: Float
+    var evasion: Float
     /** Range is 0 - 2 which tells the probability of hitting the enemy */
     var accuracy: Float
     var criticalChance: Float
+    /** Damage multiplier applied on critical hit */
+    var criticalDamage: Float
     var attackSpeed: Double
     var movementSpeed: Double
     var range: Int

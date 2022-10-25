@@ -4,8 +4,6 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.turn.Event
 
 sealed interface ItemType {
-    interface WEAPON: ItemType
-    interface EQUIPMENT: ItemType
     interface CAUSESEVENT: ItemType {
         fun use(character: Character, turn: Double): Event
     }
@@ -52,4 +50,39 @@ sealed interface ItemType {
     }
     interface KEY: ItemType
     interface MISC: ItemType
+
+    sealed interface EQUIPMENT: ItemType {
+        interface HELMET: EQUIPMENT
+        interface ARMOR: EQUIPMENT
+        interface LEGGINGS: EQUIPMENT
+        interface BOOTS: EQUIPMENT
+        interface AMULET: EQUIPMENT
+        interface LRING: EQUIPMENT
+        interface RRING: EQUIPMENT
+        interface BAG: EQUIPMENT
+        sealed interface INHAND: EQUIPMENT {
+            interface ONEHANDED: INHAND
+            interface TWOHANDED: INHAND
+            val handedItemType: HandedItemType
+        }
+    }
+} enum class HandedItemType {
+    SHIELD,
+
+    // Weapon types
+    // melee
+    DAGGER,
+    SWORD,
+    AXE,
+    LANCE,
+
+    // ranged
+    BOW,
+    CROSSBOW,
+    ARROW,
+
+    // magic
+    WAND,
+    STAFF,
+    PARCHMENT
 }

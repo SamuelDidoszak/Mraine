@@ -1,6 +1,7 @@
 package com.neutrino.game
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.scenes.scene2d.Actor
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -8,6 +9,9 @@ fun Double.equalsDelta(other: Double) = abs(this - other) <= 0.005
 fun Double.lessThanDelta(other: Double) = (this - other) < -0.0000001
 fun Float.equalsDelta(other: Float) = abs(this - other) <= 0.005f
 fun Float.lessThanDelta(other: Float) = (this - other) < -0.0000001
+
+fun Actor.widthScaled() = this.width * this.scaleX
+fun Actor.heightScaled() = this.height * this.scaleY
 
 /** Returns 0 if the values are the same. Returns -1 if the value is smaller than other and 1 if it's bigger */
 fun Float.compareDelta(other: Float) = if (this.equalsDelta(other)) 0

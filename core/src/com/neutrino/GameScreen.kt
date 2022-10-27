@@ -158,6 +158,7 @@ class GameScreen: KtxScreen {
         extendViewport.update(width, height)
         uiViewport.update(width, height)
         hudViewport.update(width, height, true)
+        uiStage.updateSize(width, height)
         hudStage.updateSize(width, height)
     }
 

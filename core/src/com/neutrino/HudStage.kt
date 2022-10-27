@@ -24,11 +24,14 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqActor
 import com.neutrino.game.domain.model.utility.Diagnostics
 import com.neutrino.game.graphics.utility.ItemContextPopup
+import com.neutrino.game.heightScaled
+import com.neutrino.game.widthScaled
 import ktx.actors.alpha
 import ktx.scene2d.container
 import ktx.scene2d.horizontalGroup
 import ktx.scene2d.scene2d
 import ktx.scene2d.verticalGroup
+import kotlin.math.roundToInt
 
 class HudStage(viewport: Viewport): Stage(viewport) {
     private val hudAtlas = TextureAtlas("UI/hud.atlas")
@@ -96,13 +99,21 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         darkenBackground.isVisible = visible
     }
 
+
+    var currentScale: Float = 1f
     fun updateSize(width: Int, height: Int) {
-        // TODO scale drawables 0.75, 0.5, 0.25 for pixel perfection
-        hotBarBorder.setPosition(this.width / 2 - hotBarBorder.width / 2, 0f)
-        hotBar.setPosition(this.width / 2 - hotBarBorder.width / 2 + 12, 12f)
-        statusIcons.setPosition(this.width - statusIcons.width - 80, this.height - 80)
+        currentScale = uiStage.currentScale
+        actors.forEach {it.setScale(currentScale)}
+        hotBarBorder.setPosition(this.width / 2 - hotBarBorder.widthScaled() / 2, 0f)
+        hotBar.setPosition(this.width / 2 - hotBarBorder.widthScaled() / 2 + 12 * currentScale, 12f * currentScale)
+        statusIcons.setPosition(this.width - statusIcons.widthScaled() - 80 * currentScale, this.height - 80 * currentScale)
         darkenBackground.setSize(width.toFloat(), height.toFloat())
-        diagnostics.setPosition(0f, height - diagnostics.height)
+        diagnostics.setPosition(0f, height - diagnostics.heightScaled())
+
+        // Rounding the position to get rid of the floating point precision error
+        // TODO find better way to fight off floating point precision errors when rendering
+        hotBarBorder.setPosition(hotBarBorder.x.roundToInt().toFloat(), hotBarBorder.y.roundToInt().toFloat())
+        hotBar.setPosition(hotBar.x.roundToInt().toFloat(), hotBar.y.roundToInt().toFloat())
     }
 
     /** ======================================================================================================================================================
@@ -307,7 +318,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         itemClicked = null
         dragItem = null
 
-        if (passClickToGame) {
+        if (passClickToGame && actorAtGroup(coord.x, coord.y) == null) {
             return super.touchUp(screenX, screenY, pointer, button)
         } else {
 //            println("Clicked an actor: ${clickedActor.name}")
@@ -410,8 +421,16 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                                                                     Actor related methods
     */
 
-    private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.width) <= 0 &&
-            y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.height) <= 0)
+    private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.widthScaled()) <= 0 &&
+            y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.heightScaled()) <= 0)
+
+    private fun Actor.isInUnscaled(x: Float, y: Float) = (x.compareDelta(this.x * currentScale) >= 0 && x.compareDelta(this.x * currentScale + this.width * currentScale) <= 0 &&
+            y.compareDelta(this.y * currentScale) >= 0 && y.compareDelta(this.y * currentScale + this.height * currentScale) <= 0)
+
+    override fun addActor(actor: Actor?) {
+        actor?.setScale(currentScale)
+        super.addActor(actor)
+    }
 
     /** Returns tab at coord position. Supports nested groups */
     private fun actorAtGroup(x: Float, y: Float): Actor? {
@@ -428,7 +447,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                         println("$groupX, $groupY")
                     var changedActor: Boolean = false
                     for (child in (actor as Group).children) {
-                        if (child.isIn(groupX, groupY)) {
+                        if (child.isInUnscaled(groupX, groupY)) {
                             if (child is Group) {
                                 actor = child
                                 changedActor = true

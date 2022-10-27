@@ -383,6 +383,18 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         }
     }
 
+    var currentScale: Float = 1f
+
+    fun updateSize(width: Int, height: Int) {
+        while(true) {
+            if (width < 2 * (inventoryBorder.width - 8) * currentScale) {
+                currentScale -= 0.25f
+            } else if (width > 2 * (inventoryBorder.width - 8) * (currentScale + 0.25f)) {
+                currentScale += 0.25f
+            } else break
+        }
+    }
+
     /** ======================================================================================================================================================
                                                                     Item related variables
      */
@@ -701,8 +713,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
      */
 
     /** Moves an actor by 14 pixels */
-    private fun Actor.moveTab(up: Boolean) { if (up) this.addAction(Actions.moveBy(0f, 14f, 0.15f))
-    else this.addAction(Actions.moveBy(0f, -14f, 0.15f)) }
+    private fun Actor.moveTab(up: Boolean) { if (up) this.addAction(Actions.moveBy(0f, 14f * currentScale, 0.15f))
+    else this.addAction(Actions.moveBy(0f, -14f * currentScale, 0.15f)) }
 
     private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.width) <= 0 &&
             y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.height) <= 0)

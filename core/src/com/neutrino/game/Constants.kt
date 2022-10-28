@@ -3,6 +3,7 @@ package com.neutrino.game
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Actor
 import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 fun Double.equalsDelta(other: Double) = abs(this - other) <= 0.005
@@ -10,6 +11,11 @@ fun Double.lessThanDelta(other: Double) = (this - other) < -0.0000001
 fun Float.equalsDelta(other: Float) = abs(this - other) <= 0.005f
 fun Float.lessThanDelta(other: Float) = (this - other) < -0.0000001
 
+/** Cuts off the decimal value of a floating point number. Mostly used to fix the floating point precision issue with rendering */
+fun Float.round() = this.roundToInt().toFloat()
+
+/** Cuts off the decimal value of the actor's position */
+fun Actor.roundPosition() = this.setPosition(this.x.round(), this.y.round())
 fun Actor.widthScaled() = this.width * this.scaleX
 fun Actor.heightScaled() = this.height * this.scaleY
 

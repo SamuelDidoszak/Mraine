@@ -19,14 +19,13 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
-import com.neutrino.game.compareDelta
+import com.neutrino.game.*
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqActor
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.equalsDelta
 import com.neutrino.game.graphics.utility.ItemContextPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
 import ktx.actors.centerPosition
@@ -233,8 +232,13 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     /** Adds tabs of the UI */
     private fun addTabs() {
         val borderImage = actors.find {it.name == "border"}!!
-        var xPos = borderImage.x
-        val yPos = borderImage.y + borderImage.height - 14
+        var xPos = 0f
+        val yPos = - 14f
+
+        mainTabsGroup.setPosition(borderImage.x, borderImage.y + borderImage.height)
+        openTabsGroup.setPosition(borderImage.x, borderImage.y + borderImage.height)
+        sortingTabsGroup.setPosition(borderImage.x, borderImage.y + borderImage.height)
+
 
         // Main tabs
         val eqClosed = Image(uiElements["EqClosed"])
@@ -286,7 +290,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         sortingOpen.isVisible = false
 
         // Sorting tabs
-        xPos = borderImage.x
+        xPos = 0f
         val sortingCustom = Image(uiElements["SortingCustom"])
         sortingCustom.name = "SortingCustom"
         sortingCustom.setPosition(xPos, yPos)
@@ -386,6 +390,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     var currentScale: Float = 1f
 
     fun updateSize(width: Int, height: Int) {
+        // Update scale
         while(true) {
             if (width < 2 * (inventoryBorder.width - 8) * currentScale) {
                 currentScale -= 0.25f
@@ -393,6 +398,22 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 currentScale += 0.25f
             } else break
         }
+
+//        currentScale = 1f
+        actors.forEach { it.setScale(currentScale) }
+        inventoryBorder.setPosition((width - inventoryBorder.widthScaled()) / 2f, (height - inventoryBorder.heightScaled()) / 2f)
+        invScreen.setPosition((this.width - invScreen.widthScaled()) / 2f, (this.height - invScreen.heightScaled()) / 2f)
+        invScreen.setPosition(invScreen.x + 2 * currentScale, invScreen.y + 2 * currentScale)
+        mainTabsGroup.setPosition(inventoryBorder.x, inventoryBorder.y + inventoryBorder.heightScaled())
+        openTabsGroup.setPosition(inventoryBorder.x, inventoryBorder.y + inventoryBorder.heightScaled())
+        sortingTabsGroup.setPosition(inventoryBorder.x, inventoryBorder.y + inventoryBorder.heightScaled())
+
+
+        inventoryBorder.roundPosition()
+        invScreen.roundPosition()
+        mainTabsGroup.roundPosition()
+        openTabsGroup.roundPosition()
+        sortingTabsGroup.roundPosition()
     }
 
     /** ======================================================================================================================================================
@@ -443,12 +464,12 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
                 val yPositionReference = sortingTabsGroup.children.find { it.name == "SortingCustom" }!!.y
                 if (sortingTabPrevious.y.equalsDelta(yPositionReference)) {
-                    sortingTab.moveBy(0f, -14f)
+                    sortingTab.moveBy(0f, -14f * currentScale)
                     sortingTab.moveTab(true)
                     sortingTab.isVisible = true
                     return
                 }
-                sortingTab.moveBy(0f, 14f)
+                sortingTab.moveBy(0f, 14f * currentScale)
                 sortingTab.moveTab(false)
                 sortingTab.isVisible = true
                 return
@@ -458,7 +479,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             currentSorting.isVisible = false
             currentSorting = sortingTabsGroup.children.find { it.name == hoveredTab!!.name + "Open" }!!
             // move tab without delay
-            currentSorting.moveBy(0f, 14f)
+            currentSorting.moveBy(0f, 14f * currentScale)
             currentSorting.isVisible = true
             sortingTabsGroup.children.find { it.name == hoveredTab!!.name }!!.isVisible = false
             currentSorting.moveTab(false)
@@ -603,8 +624,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             // The item was clicked
             if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 pickUpItem()
-                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f) / 2 - 6,
-                    coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f) / 2 - 9)
+                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * currentScale * 1.25f) / 2 - 6 * currentScale,
+                    coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * currentScale * 1.25f) / 2 - 9 * currentScale)
                 return super.touchUp(screenX, screenY, pointer, button)
             }
         }
@@ -631,8 +652,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         }
 
         // New tab was clicked
-        val actorAtPosition = actorAt(coord.x, coord.y)
-        if (actorAtPosition?.name == "SortingOpen")
+        if (openTabsGroup.children.find { it.name == "SortingOpen" }?.isInUnscaled(coord.x - openTabsGroup.x, coord.y - openTabsGroup.y) == true)
             hoveredTab = mainTabsGroup.children.find { it.name == "SortingClosed" }
         if (hoveredTab != activeTab && hoveredTab != null && button == Input.Buttons.LEFT) {
             activateTab()
@@ -648,7 +668,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
         // move tabs
         var tab = getTabByPosition(screenX.toFloat(), screenY.toFloat())
-        if (inventoryBorder.isIn(coord.x, coord.y))
+        if (inventoryBorder.isIn(screenX.toFloat(), screenY.toFloat()))
             tab = null
 
         if (tab != null)
@@ -693,8 +713,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 //        }
 
         if (clickedItem != null)
-            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f) / 2 - 6,
-                coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f) / 2 - 9)
+            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * currentScale * 1.25f) / 2 - 6 * currentScale,
+                coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * currentScale * 1.25f) / 2 - 9 * currentScale)
         return super.mouseMoved(screenX, screenY)
     }
 
@@ -719,6 +739,9 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.width) <= 0 &&
             y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.height) <= 0)
 
+    private fun Actor.isInUnscaled(x: Float, y: Float) = (x.compareDelta(this.x * currentScale) >= 0 && x.compareDelta(this.x * currentScale + this.width * currentScale) <= 0 &&
+            y.compareDelta(this.y * currentScale) >= 0 && y.compareDelta(this.y * currentScale + this.height * currentScale) <= 0)
+
     /** Returns tab at coord position */
     private fun actorAt(x: Float, y: Float): Actor? {
         for (actor in Array.ArrayIterator(actors).reversed()) {
@@ -741,9 +764,9 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
         return try {
             if (activeTab.name == "SortingOpen")
-                sortingTabsGroup.children.first { it.isIn(coord.x, coord.y) }
+                sortingTabsGroup.children.first { it.isInUnscaled(coord.x - sortingTabsGroup.x, coord.y - sortingTabsGroup.y) }
             else
-                mainTabsGroup.children.first { it.isIn(coord.x, coord.y) }
+                mainTabsGroup.children.first { it.isInUnscaled(coord.x - mainTabsGroup.x, coord.y - mainTabsGroup.y) }
         } catch (e: NoSuchElementException) {
             null
         }
@@ -774,20 +797,20 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             clickedItem = EqActor(item)
             changeStackAmount(ceil(originalStackItem!!.item.amount!! / 2f).toInt())
             addActor(clickedItem)
-            clickedItem!!.setScale(1.25f, 1.25f)
+            clickedItem!!.setScale(currentScale * 1.25f, currentScale * 1.25f)
             return
         }
 
         originalContainer = clickedItem!!.parent as Container<*>
         originalContainer!!.removeActor(clickedItem)
         addActor(clickedItem)
-        clickedItem!!.setScale(1.25f, 1.25f)
+        clickedItem!!.setScale(currentScale * 1.25f, currentScale * 1.25f)
     }
 
     /** Returns the eq ui and sets the originalEq */
     private fun getInvClicked(x: Float, y: Float): ScrollPane? {
-        val inPlayerEq = (x in invScreen.x .. invScreen.x + invScreen.width - 1 &&
-                y in invScreen.y .. invScreen.y + invScreen.height - 1)
+        val inPlayerEq = (x in invScreen.x .. invScreen.x + invScreen.width * currentScale - 1 &&
+                y in invScreen.y .. invScreen.y + invScreen.height * currentScale - 1)
         if (inPlayerEq) {
             return invScreen
         }
@@ -837,7 +860,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 )
 
                 clickedItem!!.addAction(Actions.scaleTo(0f, 0f, 0.35f))
-                clickedItem!!.addAction(Actions.moveBy(32f, 32f, 0.35f))
+                clickedItem!!.addAction(Actions.moveBy(32f * currentScale, 32f * currentScale, 0.35f))
                 clickedItem!!.addAction(Actions.sequence(
                     Actions.fadeOut(0.35f),
                     Actions.removeActor()

@@ -40,7 +40,7 @@ class GameScreen: KtxScreen {
     private val hudStage: HudStage = HudStage(hudViewport)
 
     /** Viewport for UI and equipment */
-    private val uiViewport: ExtendViewport = ExtendViewport(1920f, 1080f)
+    private val uiViewport: ScreenViewport = ScreenViewport()
     private val uiStage: UiStage = UiStage(uiViewport, hudStage)
     private var isEqVisible: Boolean = false
 
@@ -156,7 +156,7 @@ class GameScreen: KtxScreen {
 
     override fun resize(width: Int, height: Int) {
         extendViewport.update(width, height)
-        uiViewport.update(width, height)
+        uiViewport.update(width, height, true)
         hudViewport.update(width, height, true)
         uiStage.updateSize(width, height)
         hudStage.updateSize(width, height)

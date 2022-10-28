@@ -17,21 +17,17 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
-import com.neutrino.game.Constants
-import com.neutrino.game.compareDelta
+import com.neutrino.game.*
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqActor
 import com.neutrino.game.domain.model.utility.Diagnostics
 import com.neutrino.game.graphics.utility.ItemContextPopup
-import com.neutrino.game.heightScaled
-import com.neutrino.game.widthScaled
 import ktx.actors.alpha
 import ktx.scene2d.container
 import ktx.scene2d.horizontalGroup
 import ktx.scene2d.scene2d
 import ktx.scene2d.verticalGroup
-import kotlin.math.roundToInt
 
 class HudStage(viewport: Viewport): Stage(viewport) {
     private val hudAtlas = TextureAtlas("UI/hud.atlas")
@@ -108,12 +104,13 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         hotBar.setPosition(this.width / 2 - hotBarBorder.widthScaled() / 2 + 12 * currentScale, 12f * currentScale)
         statusIcons.setPosition(this.width - statusIcons.widthScaled() - 80 * currentScale, this.height - 80 * currentScale)
         darkenBackground.setSize(width.toFloat(), height.toFloat())
+        darkenBackground.setScale(1f)
         diagnostics.setPosition(0f, height - diagnostics.heightScaled())
 
         // Rounding the position to get rid of the floating point precision error
         // TODO find better way to fight off floating point precision errors when rendering
-        hotBarBorder.setPosition(hotBarBorder.x.roundToInt().toFloat(), hotBarBorder.y.roundToInt().toFloat())
-        hotBar.setPosition(hotBar.x.roundToInt().toFloat(), hotBar.y.roundToInt().toFloat())
+        hotBarBorder.roundPosition()
+        hotBar.roundPosition()
     }
 
     /** ======================================================================================================================================================

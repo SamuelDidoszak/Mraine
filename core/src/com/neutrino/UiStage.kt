@@ -2,7 +2,6 @@ package com.neutrino
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -108,7 +107,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         addInventory()
         addActor(inventoryBorder)
         inventoryBorder.name = "border"
-        inventoryBorder.centerPosition()
 
         addTabs()
         mainTabsGroup.zIndex = 0
@@ -152,20 +150,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         invScreen.setScrollbarsVisible(false)
         invScreen.layout()
 
-
-        val backgroundImage = Image(Texture("UI/equipmentSmaller.png"))
-        addActor(backgroundImage)
-        backgroundImage.name = "background"
-        backgroundImage.centerPosition()
-
         addActor(invScreen)
-        invScreen.width = backgroundImage.width - 2 * borderWidth
-        invScreen.height = backgroundImage.height - 2 * borderHeight
-        invScreen.centerPosition()
-
-        backgroundImage.setSize(backgroundImage.width, backgroundImage.height)
         invScreen.setSize(invScreen.width, invScreen.height)
-        backgroundImage.centerPosition()
         invScreen.centerPosition()
     }
 
@@ -225,20 +211,13 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         addActor(invScreen)
         invScreen.width = inventoryBorder.width - 2 * (borderWidth - 2)
         invScreen.height = inventoryBorder.height - 2 * borderHeight + 4
-        invScreen.centerPosition()
         invScreen.setPosition(invScreen.x + 2, invScreen.y + 2)
     }
 
     /** Adds tabs of the UI */
     private fun addTabs() {
-        val borderImage = actors.find {it.name == "border"}!!
         var xPos = 0f
         val yPos = - 14f
-
-        mainTabsGroup.setPosition(borderImage.x, borderImage.y + borderImage.height)
-        openTabsGroup.setPosition(borderImage.x, borderImage.y + borderImage.height)
-        sortingTabsGroup.setPosition(borderImage.x, borderImage.y + borderImage.height)
-
 
         // Main tabs
         val eqClosed = Image(uiElements["EqClosed"])
@@ -248,13 +227,13 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         eqOpen.name = "EqOpen"
         eqOpen.setPosition(xPos, yPos + 10)
         eqOpen.isVisible = false
-        xPos += 83f
+        xPos += 82f
         val inventoryClosed = Image(uiElements["InventoryClosed"])
         inventoryClosed.name = "InventoryClosed"
         inventoryClosed.setPosition(xPos, yPos)
         val inventoryOpen = Image(uiElements["InventoryOpen"])
         inventoryOpen.name = "InventoryOpen"
-        inventoryOpen.setPosition(xPos - 12, yPos + 10 - 8)
+        inventoryOpen.setPosition(xPos - 10, yPos + 10 - 8)
         inventoryOpen.isVisible = false
         xPos += 168f
         val skillsClosed = Image(uiElements["SkillsClosed"])
@@ -262,7 +241,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         skillsClosed.setPosition(xPos, yPos)
         val skillsOpen = Image(uiElements["SkillsOpen"])
         skillsOpen.name = "SkillsOpen"
-        skillsOpen.setPosition(xPos - 12, yPos + 10)
+        skillsOpen.setPosition(xPos - 10, yPos + 10)
         skillsOpen.isVisible = false
         xPos += 168f
         val questsClosed = Image(uiElements["QuestsClosed"])
@@ -270,7 +249,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         questsClosed.setPosition(xPos, yPos)
         val questsOpen = Image(uiElements["QuestsOpen"])
         questsOpen.name = "QuestsOpen"
-        questsOpen.setPosition(xPos - 14, yPos + 10)
+        questsOpen.setPosition(xPos - 10, yPos + 10)
         questsOpen.isVisible = false
         xPos += 168f
         val mapClosed = Image(uiElements["MapClosed"])
@@ -278,15 +257,15 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         mapClosed.setPosition(xPos, yPos)
         val mapOpen = Image(uiElements["MapOpen"])
         mapOpen.name = "MapOpen"
-        mapOpen.setPosition(xPos - 12, yPos + 10 - 8)
+        mapOpen.setPosition(xPos - 10, yPos + 10 - 8)
         mapOpen.isVisible = false
-        xPos += 162f
+        xPos += 170f
         val sortingClosed = Image(uiElements["SortingClosed"])
         sortingClosed.name = "SortingClosed"
         sortingClosed.setPosition(xPos, yPos)
         val sortingOpen = Image(uiElements["SortingOpen"])
         sortingOpen.name = "SortingOpen"
-        sortingOpen.setPosition(xPos - 6, yPos + 10)
+        sortingOpen.setPosition(xPos - 12, yPos + 10)
         sortingOpen.isVisible = false
 
         // Sorting tabs
@@ -399,7 +378,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             } else break
         }
 
-//        currentScale = 1f
         actors.forEach { it.setScale(currentScale) }
         inventoryBorder.setPosition((width - inventoryBorder.widthScaled()) / 2f, (height - inventoryBorder.heightScaled()) / 2f)
         invScreen.setPosition((this.width - invScreen.widthScaled()) / 2f, (this.height - invScreen.heightScaled()) / 2f)
@@ -407,7 +385,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         mainTabsGroup.setPosition(inventoryBorder.x, inventoryBorder.y + inventoryBorder.heightScaled())
         openTabsGroup.setPosition(inventoryBorder.x, inventoryBorder.y + inventoryBorder.heightScaled())
         sortingTabsGroup.setPosition(inventoryBorder.x, inventoryBorder.y + inventoryBorder.heightScaled())
-
 
         inventoryBorder.roundPosition()
         invScreen.roundPosition()

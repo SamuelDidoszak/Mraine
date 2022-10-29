@@ -162,19 +162,19 @@ class GameStage(
                 showEq = true
             }
             Input.Keys.LEFT -> {
-                Player.move(Player.xPos - 1, Player.yPos)
+//                Player.move(Player.xPos - 1, Player.yPos)
                 camera.position.set(camera.position.x - 64, camera.position.y, 0f)
             }
             Input.Keys.RIGHT -> {
-                Player.move(Player.xPos + 1, Player.yPos)
+//                Player.move(Player.xPos + 1, Player.yPos)
                 camera.position.set(camera.position.x + 64, camera.position.y, 0f)
             }
             Input.Keys.UP -> {
-                Player.move(Player.xPos, Player.yPos - 1)
+//                Player.move(Player.xPos, Player.yPos - 1)
                 camera.position.set(camera.position.x, camera.position.y + 64, 0f)
             }
             Input.Keys.DOWN -> {
-                Player.move(Player.xPos, Player.yPos + 1)
+//                Player.move(Player.xPos, Player.yPos + 1)
                 camera.position.set(camera.position.x, camera.position.y - 64, 0f)
             }
         }

@@ -274,7 +274,7 @@ object Turn {
                 }
                 is Event.COOLDOWN -> {
                     eventArray.removeAt(0)
-                    event.character.eventArray.remove(event)
+                    event.character.characterEventArray.remove(event)
                 }
                 is Event.MODIFYSTAT -> {
                     val field = event.character.javaClass.declaredFields.first {it.name == event.statName}

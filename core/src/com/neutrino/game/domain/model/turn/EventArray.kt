@@ -6,13 +6,13 @@ import com.neutrino.game.lessThanDelta
 class EventArray: ArrayList<Event>() {
     /** Adds the event both to this list and the character arrayList */
     fun startEvent(event: Event): Boolean {
-        event.character.eventArray.add(event)
+        event.character.characterEventArray.add(event)
         return this.add(event)
     }
 
     /** Removes the event both from this list and the character arrayList */
     fun stopEvent(event: Event): Boolean {
-        event.character.eventArray.remove(event)
+        event.character.characterEventArray.remove(event)
         return this.remove(event)
     }
 

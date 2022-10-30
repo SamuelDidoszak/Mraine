@@ -3,7 +3,9 @@ package com.neutrino
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
@@ -21,6 +23,7 @@ import com.neutrino.game.*
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqActor
+import com.neutrino.game.domain.model.utility.ColorUtils
 import com.neutrino.game.domain.model.utility.Diagnostics
 import com.neutrino.game.graphics.utility.ItemContextPopup
 import ktx.actors.alpha
@@ -28,6 +31,7 @@ import ktx.scene2d.container
 import ktx.scene2d.horizontalGroup
 import ktx.scene2d.scene2d
 import ktx.scene2d.verticalGroup
+import space.earlygrey.shapedrawer.ShapeDrawer
 
 class HudStage(viewport: Viewport): Stage(viewport) {
     private val hudAtlas = TextureAtlas("UI/hud.atlas")
@@ -40,6 +44,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     private val hotBarBorder = Image(hudElements["hotBar"])
 
     private lateinit var statusIcons: VerticalGroup
+    private val hpMpBarGroup: VerticalGroup = VerticalGroup()
 
     private val darkenBackground = Image(TextureRegion(Texture("UI/blackBg.png")))
     val diagnostics = Diagnostics()
@@ -89,12 +94,21 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         addActor(diagnostics)
         diagnostics.setPosition(0f, height - diagnostics.height)
         diagnostics.isVisible = Gdx.app.type != Application.ApplicationType.Desktop
+
+        // Initialize hp and mp bars
+        val barHeight = 16f
+        hpMpBarGroup.addActor(HudHpBar(hotBarBorder.width, barHeight))
+        hpMpBarGroup.addActor(HudMpBar(hotBarBorder.width, barHeight))
+        hpMpBarGroup.pack()
+        hpMpBarGroup.height = barHeight * 2
+        hpMpBarGroup.name = "hpMpBarGroup"
+        addActor(hpMpBarGroup)
+        hpMpBarGroup.zIndex = 1
     }
 
     fun darkenScreen(visible: Boolean) {
         darkenBackground.isVisible = visible
     }
-
 
     var currentScale: Float = 1f
     fun updateSize(width: Int, height: Int) {
@@ -106,11 +120,22 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         darkenBackground.setSize(width.toFloat(), height.toFloat())
         darkenBackground.setScale(1f)
         diagnostics.setPosition(0f, height - diagnostics.heightScaled())
+        // hpMpBar position can be offset via an action too!
+        hpMpBarGroup.setPosition(hotBarBorder.x, hotBarBorder.y + hotBarBorder.heightScaled() + (hpMpBarStatus * hpMpBarGroup.heightScaled() / 2 - hpMpBarGroup.heightScaled()))
 
         // Rounding the position to get rid of the floating point precision error
-        // TODO find better way to fight off floating point precision errors when rendering
         hotBarBorder.roundPosition()
         hotBar.roundPosition()
+        hpMpBarGroup.roundPosition()
+    }
+
+    private var hpMpBarStatus: Int = 1
+    /** Updates the bar position.
+     * @param barStatus Value 0 - 2, where 0 is hidden, 1 shows only Hp, 2 shows Hp and Mp */
+    fun updateHpMpBarPosition(barStatus: Int) {
+        val difference = barStatus - hpMpBarStatus
+        hpMpBarGroup.addAction(Actions.moveBy(0f, difference.toFloat() * 16f * currentScale, 0.5f))
+        hpMpBarStatus = barStatus
     }
 
     /** ======================================================================================================================================================
@@ -460,5 +485,66 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             }
         }
         return null
+    }
+}
+
+class HudHpBar(private val initialWidth: Float, private val initialHeight: Float): Actor() {
+    private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
+    private var drawer: ShapeDrawer? = null
+    private val colorUtils = ColorUtils()
+    init {
+        name = "hpBar"
+        height = initialHeight
+    }
+
+    var previousHp = Player.hp
+
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        if (drawer == null) {
+            drawer = ShapeDrawer(batch, textureRegion)
+            drawer!!.setColor(color())
+        }
+        if (!Player.hp.equalsDelta(previousHp)) {
+            previousHp = Player.hp
+            drawer?.setColor(color())
+        }
+
+        drawer!!.filledRectangle(0f, initialHeight, initialWidth * (Player.hp / Player.hpMax), initialHeight)
+    }
+
+    private fun color(): Color {
+        val red = if (Player.hp / Player.hpMax >= 0.5f) 1 - (Player.hp / Player.hpMax) else 1f
+        val green = if (Player.hp / Player.hpMax >= 0.5f) 1f else 2 * (Player.hp / Player.hpMax)
+
+        return colorUtils.applySaturation(Color(red, green, 0f, 1f), 0.8f)
+    }
+
+    override fun remove(): Boolean {
+        textureRegion.texture.dispose()
+        return super.remove()
+    }
+}
+
+class HudMpBar(private val initialWidth: Float, private val initialHeight: Float): Actor() {
+    private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
+    private var drawer: ShapeDrawer? = null
+    private val colorUtils = ColorUtils()
+    init {
+        name = "hpBar"
+        height = initialHeight
+    }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        if (drawer == null) {
+            drawer = ShapeDrawer(batch, textureRegion)
+            drawer!!.setColor(colorUtils.applySaturation(Color(0f, 0f, 1f, 1f), 0.6f))
+        }
+
+        drawer!!.filledRectangle(0f, 0f, initialWidth * (Player.mp / Player.mpMax), initialHeight)
+    }
+
+    override fun remove(): Boolean {
+        textureRegion.texture.dispose()
+        return super.remove()
     }
 }

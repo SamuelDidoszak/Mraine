@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.equalsDelta
 import com.neutrino.game.lessThanDelta
@@ -12,7 +13,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer
 import kotlin.math.sign
 
 class TurnBar(
-    private var currentTurn: Double,
+    private var characterTurn: Double,
     private var playerTurn: Double,
     private var movement: Double
 ): Actor() {
@@ -23,7 +24,7 @@ class TurnBar(
             -1.0 -> Color.BLACK
             0.0 -> Color.CLEAR
             1.0 -> Color.WHITE
-            else -> {Color.CYAN}
+            else -> {Color.BROWN}
         }
 
     private var size = 60f
@@ -45,8 +46,8 @@ class TurnBar(
         drawer!!.filledRectangle(2f, -26f, size, 2f)
     }
 
-    fun update(currentTurn: Double, playerTurn: Double, movement: Double, forceBaseColorChange: Boolean = false) {
-        this.currentTurn = currentTurn
+    fun update(characterTurn: Double, playerTurn: Double, movement: Double, forceBaseColorChange: Boolean = false) {
+        this.characterTurn = characterTurn
         this.playerTurn = playerTurn
         if (!this.movement.equalsDelta(movement) || forceBaseColorChange) {
             baseColor =
@@ -55,7 +56,7 @@ class TurnBar(
                     0.0 -> Color.CLEAR
                     1.0 -> Color.WHITE
                     else -> {
-                        Color.CYAN
+                        Color.BROWN
                     }
                 }
         }
@@ -63,10 +64,11 @@ class TurnBar(
     }
 
     private fun pickColor(a: Float = 1f): Color {
-        if (currentTurn + movement <= playerTurn + Player.movementSpeed)
-            return Color(240f, 113f, 120f, a)
-        if (currentTurn > playerTurn + Player.movementSpeed)
+        if ((characterTurn + movement).compareDelta(playerTurn + Player.movementSpeed) == -1)
+            return Color.FIREBRICK
+        if (characterTurn.compareDelta(playerTurn + Player.movementSpeed) == 1)
             return Color.SKY
+
         baseColor.a = a
         return baseColor
     }

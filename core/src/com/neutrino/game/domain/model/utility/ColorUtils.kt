@@ -1,27 +1,26 @@
 package com.neutrino.game.domain.model.utility
 
-import java.awt.Color
+import com.badlogic.gdx.graphics.Color
 import kotlin.math.max
 import kotlin.math.min
 
 class ColorUtils {
     fun colorInterpolation(colorA: Color, colorB: Color, t: Int): Color {
-        val r = colorA.red + (colorB.red - colorA.red) * t
-        val g = colorA.green + (colorB.green - colorA.green) * t
-        val b = colorA.blue + (colorB.blue - colorA.blue) * t
-        return Color(r, g, b)
+        val r = colorA.r + (colorB.r - colorA.r) * t
+        val g = colorA.g + (colorB.g - colorA.g) * t
+        val b = colorA.b + (colorB.b - colorA.b) * t
+        return Color(r, g, b, (colorA.a + colorB.a) / 2)
     }
 
     fun applySaturation(color: Color, saturation: Float): Color {
-        val saturated = com.badlogic.gdx.graphics.Color().fromHsv(rgbToHue(color.red, color.green, color.blue), saturation, 1f)
-        return Color(saturated.r, saturated.g, saturated.b)
+        return color.fromHsv(rgbToHue(color.r, color.g, color.b), saturation, 1f)
     }
 
-    fun rgbToHue(r: Int, g: Int, b: Int): Float {
+    fun rgbToHue(r: Float, g: Float, b: Float): Float {
         var h: Float = 0f
-        var r = r / 255f
-        var g = g / 255f
-        var b = b / 255f
+        val r = r / 255f
+        val g = g / 255f
+        val b = b / 255f
         val max: Float = max(r, max(g, b))
         val min: Float = min(r, min(g, b))
 
@@ -46,6 +45,6 @@ class ColorUtils {
     }
 
     fun toHexadecimal(color: Color): String {
-        return String.format("#%02x%02x%02x", color.red, color.green, color.blue)
+        return String.format("#%02x%02x%02x", (color.r * 255).toInt(), (color.g * 255).toInt(), (color.b * 255).toInt())
     }
 }

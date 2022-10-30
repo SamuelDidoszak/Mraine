@@ -3,6 +3,7 @@ package com.neutrino.game.domain.model.characters
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.neutrino.game.Constants
@@ -32,6 +33,15 @@ object Player : Character(0, 0, 0.0), HasInventory {
     init {
         initialize("Player")
         damage = setDamage()
+        // TODO maybe delete it entirely. Each character would have to check if infogroup != null tho
+        val infoGroup = findActor<Group>("infoGroup")
+        infoGroup.isVisible = false
+    }
+
+    override fun setTexture(name: String) {
+        texture = getTexture(name)
+        setBounds(xPos * 64f, parent.height - yPos * 64f, textureHaver.texture.regionWidth.toFloat() * 4, textureHaver.texture.regionHeight.toFloat() * 4)
+        height = textureHaver.texture.regionHeight.toFloat() * 4
     }
 
     // Inventory

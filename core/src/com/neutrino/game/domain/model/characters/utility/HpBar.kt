@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.neutrino.game.domain.model.utility.ColorUtils
 import space.earlygrey.shapedrawer.ShapeDrawer
 
 class HpBar(
@@ -13,6 +14,7 @@ class HpBar(
 ): Actor() {
     private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
     private var drawer: ShapeDrawer? = null
+    private val colorUtils = ColorUtils()
     init {
         name = "hpBar"
     }
@@ -36,7 +38,7 @@ class HpBar(
         val red = if (currentHp / maxHp >= 0.5f) 1 - (currentHp / maxHp) else 1f
         val green = if (currentHp / maxHp >= 0.5f) 1f else 2 * (currentHp / maxHp)
 
-        return Color(red, green, 0f, 1f)
+        return colorUtils.applySaturation(Color(red, green, 0f, 1f), 0.8f)
     }
 
     override fun remove(): Boolean {

@@ -268,9 +268,17 @@ class GameScreen: KtxScreen {
                 // No character is there
                 // Calculate move list and move to the tile
                 else {
-                    Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
-                    val coord = Player.ai.getMove()
-                    Player.ai.action = Action.MOVE(coord.x, coord.y)
+                    // If there was an item at the clickedTile, pick it up on arrival
+                    if (Turn.currentLevel.getTopItem(x, y) != null)
+                        pickupItem = true
+
+                    if (!Turn.currentLevel.doesAllowCharacter(x, y))
+                        Player.ai.action = Action.NOTHING
+                    else {
+                        Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
+                        val coord = Player.ai.getMove()
+                        Player.ai.action = Action.MOVE(coord.x, coord.y)
+                    }
                     // Focus player either if he's off screen or if he clicked near his current position
                     if (!gameStage.isInCamera(Player.xPos, Player.yPos) ||
                             abs(Player.xPos - x) <= 5 &&  abs(Player.yPos - y) <= 5) {
@@ -278,9 +286,6 @@ class GameScreen: KtxScreen {
                         gameStage.focusPlayer = true
                     }
 
-                    // If there was an item at the clickedTile, pick it up on arrival
-                    if (Turn.currentLevel.getTopItem(x, y) != null)
-                        pickupItem = true
                 }
             }
 

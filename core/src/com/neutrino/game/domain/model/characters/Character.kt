@@ -1,5 +1,6 @@
 package com.neutrino.game.domain.model.characters
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -16,7 +17,7 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CooldownType
 import com.neutrino.game.domain.model.turn.Event
 import com.neutrino.game.domain.model.utility.ColorUtils
-import java.awt.Color
+import com.neutrino.game.round
 import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -93,9 +94,9 @@ abstract class Character(
     override val textureHaver: TextureHaver = this
 
     val ai: Ai = Ai(this)
-    val eventArray: MutableList<com.neutrino.game.domain.model.turn.Event> = ArrayList()
+    val characterEventArray: MutableList<Event> = ArrayList()
     fun hasCooldown(cooldownType: CooldownType): Boolean {
-        return eventArray.find { it is Event.COOLDOWN && it.cooldownType == cooldownType } != null
+        return characterEventArray.find { it is Event.COOLDOWN && it.cooldownType == cooldownType } != null
     }
 
     override var textureList:  List<TextureAtlas.AtlasRegion> = listOf()
@@ -113,27 +114,24 @@ abstract class Character(
     override fun setTexture(name: String) {
         texture = getTexture(name)
         setBounds(xPos * 64f, parent.height - yPos * 64f, textureHaver.texture.regionWidth.toFloat() * 4, textureHaver.texture.regionHeight.toFloat() * 4)
+        // Has to be positioned after the initial drawing, so the label knows its size
         val nameLabel = (this.getChild(0) as Group).getChild(0)
         nameLabel.setPosition(nameLabel.x + 32 - nameLabel.width / 2, nameLabel.y)
     }
 
     fun updateTurnBar(forceUpdateMovementColor: Boolean = false) {
         val turnBar =  this.findActor<TurnBar>("turnBar")
-        turnBar.update(this.turn, Player.turn, this.movementSpeed, forceUpdateMovementColor)
+        turnBar?.update(this.turn, Player.turn, this.movementSpeed, forceUpdateMovementColor)
 
-        val size: Float = ((this.turn - Player.turn)/ this.movementSpeed).toFloat()
-        turnBar.addAction(Actions.sizeTo(size * 60f, 2f, MoveSpeed))
+        val size: Float = ((this.turn - Player.turn) / this.movementSpeed).toFloat()
+        turnBar.addAction(Actions.sizeTo((size * 60f).round(), 2f, MoveSpeed))
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         // required for fading
         batch?.setColor(color.r, color.g, color.b, color.a * parentAlpha)
 
-        if (batch != null) {
-            batch.draw(textureHaver.texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
-        } else {
-            // TODO add a default character texture
-        }
+        batch?.draw(textureHaver.texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
         super.draw(batch, parentAlpha)
 
         color.a = 1f
@@ -150,40 +148,40 @@ abstract class Character(
         var finalDamage: Float
         // for optimization, instead of creating Colors, pure rgb values can be passed
         val colorUtils = ColorUtils()
-        var damageColor: Color = Color(0, 0, 0)
+        var damageColor: Color = Color(0f, 0f, 0f, 1f)
         val color: Color
         when (type) {
             "physical" -> {
                 finalDamage = damage * damage / (damage + defence)
-                color = Color(255, 0, 0)
+                color = Color(255f, 0f, 0f, 1f)
             }
             "bleeding" -> {
                 finalDamage = damage
-                color = Color(255, 0, 0)
+                color = Color(255f, 0f, 0f, 1f)
             }
             "fire" -> {
                 finalDamage = damage * (1 - fireDefence)
-                color = Color(255, 128, 0)
+                color = Color(255f, 128f, 0f, 1f)
             }
             "water" -> {
                 finalDamage = damage * (1 - waterDefence)
-                color = Color(0, 0, 255)
+                color = Color(0f, 0f, 255f, 1f)
             }
             "earth" -> {
                 finalDamage = damage * (1 - earthDefence)
-                color = Color(0, 255, 0)
+                color = Color(0f, 255f, 0f, 1f)
             }
             "air" -> {
                 finalDamage = damage * (1 - airDefence)
-                color = Color(0, 255, 255)
+                color = Color(0f, 255f, 255f, 1f)
             }
             "poison" -> {
                 finalDamage = damage * (1 - poisonDefence)
                 finalDamage = if (hp - finalDamage <= 1) hp - 1f else finalDamage
-                color = Color(128, 255, 0)
+                color = Color(128f, 255f, 0f, 1f)
             }
             else -> {
-                color = Color(255, 0, 0)
+                color = Color(255f, 0f, 0f, 1f)
                 println("Damage type \"$type\" does not exist!")
                 return 0f
             }
@@ -191,11 +189,9 @@ abstract class Character(
         damageColor = colorUtils.colorInterpolation(damageColor, color, 1)
         damageColor = colorUtils.applySaturation(damageColor, 0.8f)
 
-
         val damageNumber = Pools.get(DamageNumber::class.java).obtain()
         this.addActor(damageNumber)
         damageNumber.init(colorUtils.toHexadecimal(damageColor), finalDamage)
-
 
         this.hp -= damage
         if (hp <= 0) {
@@ -205,7 +201,7 @@ abstract class Character(
             ))
             hp = 0f
         }
-        this.findActor<HpBar>("hpBar").update(hp)
+        this.findActor<HpBar>("hpBar")?.update(hp)
         return damage
     }
 
@@ -237,13 +233,13 @@ abstract class Character(
         val colorUtils = ColorUtils()
 
         // get damage color from interpolation
-        var damageColor: Color = Color(0, 0, 0)
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(255, 0, 0), (physicalDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(255, 128, 0), (fireDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(0, 0, 255), (waterDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(0, 255, 0), (earthDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(0, 255, 255), (airDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(128, 255, 0), (poisonDamage / damage).toInt())
+        var damageColor: Color = Color(0f, 0f, 0f, 1f)
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(255f, 0f, 0f, 1f), (physicalDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(255f, 128f, 0f, 1f), (fireDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(0f, 0f, 255f, 1f), (waterDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(0f, 255f, 0f, 1f), (earthDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(0f, 255f, 255f, 1f), (airDamage / damage).toInt())
+        damageColor = colorUtils.colorInterpolation(damageColor, Color(128f, 255f, 0f, 1f), (poisonDamage / damage).toInt())
 
         damageColor = colorUtils.applySaturation(damageColor, 0.8f)
 

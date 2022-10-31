@@ -17,7 +17,6 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CooldownType
 import com.neutrino.game.domain.model.turn.Event
 import com.neutrino.game.domain.model.utility.ColorUtils
-import com.neutrino.game.round
 import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -77,7 +76,7 @@ abstract class Character(
         this.findActor<TextraLabel>("name").setText("[@Cozette][WHITE][%175]$name")
         (this.getChild(0) as Group).addActor(HpBar(hp, hpMax))
 
-        val turnBar = TurnBar(this.turn + this.movementSpeed, Player.turn + Player.movementSpeed, this.movementSpeed)
+        val turnBar = TurnBar(turn, movementSpeed)
         this.findActor<Group>("infoGroup").addActor(turnBar)
 
         // TODO if unkillable characters will be added, add this::class check
@@ -121,10 +120,7 @@ abstract class Character(
 
     fun updateTurnBar(forceUpdateMovementColor: Boolean = false) {
         val turnBar =  this.findActor<TurnBar>("turnBar")
-        turnBar?.update(this.turn, Player.turn, this.movementSpeed, forceUpdateMovementColor)
-
-        val size: Float = ((this.turn - Player.turn) / this.movementSpeed).toFloat()
-        turnBar.addAction(Actions.sizeTo((size * 60f).round(), 2f, MoveSpeed))
+        turnBar?.update(this.turn, this.movementSpeed, forceUpdateMovementColor)
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {

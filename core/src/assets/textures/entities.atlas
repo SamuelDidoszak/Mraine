@@ -1,105 +1,115 @@
 entities.png
 	size: 128, 128
 	repeat: none
-basicFloor
+dungeonFloorBasic$1
+	bounds: 16, 20, 16, 16
+dungeonFloorBasic$10
 	bounds: 80, 48, 16, 16
-basicFloor2
-	bounds: 80, 64, 16, 16
-basicFloorDirty
-	bounds: 48, 49, 16, 16
-basicFloorDirty2
-	bounds: 16, 16, 16, 16
-basicFloorGrass
-	bounds: 80, 96, 16, 16
-basicFloorGrass2
-	bounds: 32, 24, 16, 16
-basicFloorGrassBurnt
-	bounds: 32, 40, 16, 16
-basicFloorGrassBurnt2
-	bounds: 80, 0, 16, 16
-crossRoadFloor
-	bounds: 64, 9, 16, 16
-door
-	bounds: 112, 96, 16, 16
-doorOpen
-	bounds: 96, 48, 16, 16
-sewerHole
-	bounds: 48, 17, 16, 16
-sewerHole2
-	bounds: 48, 65, 16, 16
-sewerHoleLight
-	bounds: 64, 73, 16, 16
-sewerHoleLight2
-	bounds: 112, 32, 16, 16
-sewerHoleVariation
-	bounds: 32, 8, 16, 16
-sewerHoleVariation2
-	bounds: 96, 64, 16, 16
-singleWall
-	bounds: 0, 32, 16, 24
-tallGrass
-	bounds: 64, 25, 16, 16
-tallGrass2
-	bounds: 80, 112, 16, 16
-tallGrassHigh
-	bounds: 48, 81, 16, 23
-tallGrassHigh2
-	bounds: 64, 105, 16, 23
-wall
-	bounds: 80, 80, 16, 16
-wall2
-	bounds: 112, 48, 16, 16
-wallHorizontalMiddle
-	bounds: 0, 80, 16, 24
-wallHorizontalMiddleLeft
-	bounds: 0, 8, 16, 24
-wallHorizontalMiddleRight
-	bounds: 48, 104, 16, 24
-wallInBetween
-	bounds: 48, 1, 16, 16
-wallLight
-	bounds: 64, 41, 16, 16
-wallLight2
+dungeonFloorBasic$11
 	bounds: 96, 112, 16, 16
-wallPillar
-	bounds: 48, 33, 16, 16
-wallPillar2
-	bounds: 96, 32, 16, 16
-wallPillarVariation
-	bounds: 16, 0, 16, 16
-wallPillarVariation2
-	bounds: 112, 64, 16, 16
-wallTSection
-	bounds: 16, 104, 16, 24
-wallVariation
-	bounds: 80, 32, 16, 16
-wallVariation2
-	bounds: 80, 16, 16, 16
-wallVertical
-	bounds: 64, 89, 16, 16
-wallVerticalClosed
-	bounds: 16, 32, 16, 24
-wallVerticalEdgeUpLeft
-	bounds: 0, 104, 16, 24
-wallVerticalEdgeUpRight
-	bounds: 0, 56, 16, 24
-wallVerticalEmptyLeft
-	bounds: 112, 112, 16, 16
-wallVerticalEmptyLeftClosed
-	bounds: 32, 104, 16, 24
-wallVerticalEmptyLeftRight
-	bounds: 96, 80, 16, 16
-wallVerticalEmptyLeftRightClosed
-	bounds: 32, 80, 16, 24
-wallVerticalEmptyRight
-	bounds: 64, 57, 16, 16
-wallVerticalEmptyRightClosed
-	bounds: 16, 56, 16, 24
-wallVerticalEndDown
-	bounds: 16, 80, 16, 24
-wallVerticalEndUp
-	bounds: 32, 56, 16, 24
-woodenFloor
+dungeonFloorBasic$12
+	bounds: 64, 16, 16, 16
+dungeonFloorBasic$13
+	bounds: 64, 48, 16, 16
+dungeonFloorBasic$14
+	bounds: 80, 112, 16, 16
+dungeonFloorBasic$15
+	bounds: 96, 48, 16, 16
+dungeonFloorBasic$17
+	bounds: 48, 93, 16, 16
+dungeonFloorBasic$2
+	bounds: 112, 48, 16, 16
+dungeonFloorBasic$3
+	bounds: 48, 45, 16, 16
+dungeonFloorBasic$4
+	bounds: 64, 112, 16, 16
+dungeonFloorBasic$16
+	bounds: 64, 112, 16, 16
+dungeonFloorBasic$18
+	bounds: 64, 112, 16, 16
+dungeonFloorBasic$6
+	bounds: 64, 112, 16, 16
+dungeonFloorBasic$5
 	bounds: 112, 80, 16, 16
-woodenFloor2
+dungeonFloorBasic$7
+	bounds: 48, 13, 16, 16
+dungeonFloorBasic$8
+	bounds: 48, 29, 16, 16
+dungeonFloorBasic$9
+	bounds: 48, 77, 16, 16
+dungeonFloorCracked$1
+	bounds: 64, 80, 16, 16
+dungeonFloorCracked$2
+	bounds: 32, 7, 16, 16
+dungeonFloorCracked$3
+	bounds: 112, 96, 16, 16
+dungeonFloorCracked$4
+	bounds: 32, 55, 16, 16
+dungeonFloorLights$1
+	bounds: 64, 0, 16, 16
+dungeonFloorLights$2
+	bounds: 96, 80, 16, 16
+dungeonFloorLights$3
+	bounds: 32, 39, 16, 16
+dungeonFloorLights$4
+	bounds: 96, 32, 16, 16
+dungeonFloorLights$5
+	bounds: 64, 64, 16, 16
+dungeonFloorSmaller$1
+	bounds: 48, 61, 16, 16
+dungeonFloorSmaller$2
+	bounds: 112, 32, 16, 16
+dungeonFloorSmaller$3
+	bounds: 80, 80, 16, 16
+dungeonFloorSmaller$4
+	bounds: 0, 9, 16, 16
+dungeonFloorSmaller$5
+	bounds: 64, 32, 16, 16
+dungeonFloorSmaller$6
+	bounds: 80, 96, 16, 16
+dungeonWall$1
+	bounds: 0, 25, 16, 19
+dungeonWall$2
+	bounds: 16, 90, 16, 19
+dungeonWall$3
+	bounds: 32, 71, 16, 19
+dungeonWall$4
+	bounds: 48, 109, 16, 19
+dungeonWall$5
+	bounds: 16, 109, 16, 19
+dungeonWallInside
+	bounds: 16, 4, 16, 16
+dungeonWallInsideEdgeLeft
+	bounds: 0, 44, 16, 19
+dungeonWallInsideEdgeRight
+	bounds: 16, 52, 16, 19
+dungeonWallInsideMiddle
+	bounds: 112, 64, 16, 16
+dungeonWallInsideMiddleTop
+	bounds: 32, 109, 16, 19
+dungeonWallInsideTop
+	bounds: 32, 90, 16, 19
+dungeonWallLeft$1
+	bounds: 80, 64, 16, 16
+dungeonWallLeft$2
+	bounds: 64, 96, 16, 16
+dungeonWallLeft$3
+	bounds: 80, 32, 16, 16
+dungeonWallLeft$4
+	bounds: 32, 23, 16, 16
+dungeonWallLeftTop
+	bounds: 16, 71, 16, 19
+dungeonWallRight$1
 	bounds: 96, 96, 16, 16
+dungeonWallRight$2
+	bounds: 16, 36, 16, 16
+dungeonWallRight$3
+	bounds: 96, 64, 16, 16
+dungeonWallRight$4
+	bounds: 112, 112, 16, 16
+dungeonWallRightTop
+	bounds: 0, 63, 16, 19
+dungeonWallSingle
+	bounds: 0, 105, 16, 23
+dungeonWallSingleHorizontal
+	bounds: 0, 82, 16, 23

@@ -2,8 +2,6 @@ package com.neutrino.game.domain.use_case.map
 
 import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.DungeonFloor
-import com.neutrino.game.domain.model.entities.DungeonGrass
-import com.neutrino.game.domain.model.entities.Grass
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.Item
@@ -36,8 +34,6 @@ class GenerateMap(
         squidGeneration.generateDungeon()
         squidGeneration.setDungeonWalls(map)
         addEntities(DungeonFloor::class as KClass<Entity>, 1f)
-        addEntities(DungeonGrass::class as KClass<Entity>, 0.3f)
-        addEntities(Grass::class as KClass<Entity>, 0.3f, listOf(DungeonGrass::class as KClass<Entity>))
 
         val blockedTilesPercentage: Float = getBlockedTilesPercentage()
         addItems(Gold::class as KClass<Item>, 50f)

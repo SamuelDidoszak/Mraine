@@ -12,14 +12,20 @@ abstract class Entity: TextureHaver {
     abstract fun pickTexture(onMapPosition: OnMapPosition)
 
     override fun getTexture(name: String): TextureAtlas.AtlasRegion {
-        return Constants.DefaultEntityTexture.findRegion(name)
+        try {
+            return Constants.DefaultEntityTexture.findRegion(name)
+        } catch (e: NullPointerException) {
+            println("TextureName:\t$name\tdoesn't exist")
+            // Default texture
+            return Constants.DefaultEntityTexture.findRegion(textureNames[0])
+        }
     }
 
     /**
      * Picks one texture name from provided with and equal probability
      * Returns null if $to value was higher than value
      */
-    fun getTextureFromEqualRange(randomValue: Float, from: Float = 0f, until: Float, textures: List<String>, weights: List<Float> = listOf()): String? {
+    fun getTextureFromEqualRange(randomValue: Float, from: Float = 0f, until: Float = 100f, textures: List<String>, weights: List<Float> = listOf()): String? {
         val increment = (until - from) / textures.size
         var max = from + increment
         for (texture in textures) {

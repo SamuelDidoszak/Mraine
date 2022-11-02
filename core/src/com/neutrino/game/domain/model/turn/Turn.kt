@@ -173,7 +173,9 @@ object Turn {
                     }
                 }
                 playerAction = false
-                charactersUseCases.updateTurnBars()
+//                charactersUseCases.updateTurnBars()
+//                characterArray.forEach { println("${it.name}, ${it.turn}") }
+//                println()
             } else {
                 // initialize the ai if it's 10 tiles or less from the player
 

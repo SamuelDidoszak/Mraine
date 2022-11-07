@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.use_case.map
 
 import com.neutrino.game.Constants.RandomGenerator
-import com.neutrino.game.domain.model.entities.DungeonFloor
+import com.neutrino.game.domain.model.entities.*
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.Item
@@ -10,6 +10,7 @@ import com.neutrino.game.domain.model.items.equipment.Knife
 import com.neutrino.game.domain.model.items.items.Gold
 import com.neutrino.game.domain.model.items.scrolls.ScrollOfDefence
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.lessThanDelta
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
@@ -34,6 +35,9 @@ class GenerateMap(
         squidGeneration.generateDungeon()
         squidGeneration.setDungeonWalls(map)
         addEntities(DungeonFloor::class as KClass<Entity>, 1f)
+        addEntitiesNearWall(Barrel::class as KClass<Entity>, 0.01f)
+        addEntitiesNearWall(CrateSmall::class as KClass<Entity>, 0.0075f)
+        addEntitiesNearWall(CrateBigger::class as KClass<Entity>, 0.005f)
 
         val blockedTilesPercentage: Float = getBlockedTilesPercentage()
         addItems(Gold::class as KClass<Item>, 50f)
@@ -42,6 +46,134 @@ class GenerateMap(
         addItems(ScrollOfDefence::class as KClass<Item>, 0.3f)
 
         return map
+    }
+
+    private fun addEntitiesNearWall(entity: KClass<Entity>, amount: Float, canBlockPassage: Boolean = true) {
+        addEntities(entity, listOf(
+            listOf(Pair(2, DungeonWall::class as KClass<Entity>)),
+            listOf(Pair(4, DungeonWall::class as KClass<Entity>)),
+            listOf(Pair(6, DungeonWall::class as KClass<Entity>)),
+            listOf(Pair(8, DungeonWall::class as KClass<Entity>))
+        ), amount)
+    }
+
+    private fun addEntities(entity: KClass<Entity>, listOfRequirementList: List<List<Pair<Int, KClass<Entity>>>>, amount: Float, allOfRequirements: Boolean = false, replaceUnderneath: Boolean = false, assertAmount: Boolean = false) {
+        val fulfillingTileList: MutableList<Pair<Int, Int>> = ArrayList()
+
+        if (allOfRequirements) {
+            for (requirementList in listOfRequirementList) {
+                val previousTileList = ArrayList<Pair<Int, Int>>()
+                previousTileList.addAll(fulfillingTileList)
+                fulfillingTileList.removeAll { true }
+
+                for (pair in addEntities(entity, requirementList, amount, saveToList = true)) {
+                    for (existingPair in previousTileList) {
+                        if (existingPair == pair) {
+                            fulfillingTileList.add(pair)
+                            continue
+                        }
+                    }
+                }
+            }
+        } else {
+            for (requirementList in listOfRequirementList) {
+                addEntities(entity, requirementList, amount, replaceUnderneath, saveToList = false)
+            }
+        }
+    }
+
+    private fun addEntities(entity: KClass<Entity>, requirementList: List<Pair<Int, KClass<Entity>>>, amount: Float,
+                            replaceUnderneath: Boolean = false, saveToList: Boolean = false, assertAmount: Boolean = false): MutableList<Pair<Int, Int>> {
+        val fulfillingTileList: MutableList<Pair<Int, Int>> = ArrayList()
+        for (y in 0 until level.sizeY) {
+            for (x in 0 until level.sizeX) {
+                var allowGeneration = true
+                for (mapEntity in map[y][x]) {
+                    if (!mapEntity.allowOnTop) {
+                        allowGeneration = false
+                        break
+                    }
+                }
+                if (!allowGeneration)
+                    continue
+                for (pair in requirementList) {
+                    when (pair.first) {
+                        1 -> {
+                            if (x == 0 || y == level.sizeY - 1)
+                                break
+                            if (!checkMapForEntity(y + 1, x - 1, pair.second))
+                                allowGeneration = false
+                        }
+                        2 -> {
+                            if (y == level.sizeY - 1)
+                                break
+                            if (!checkMapForEntity(y + 1, x, pair.second))
+                                allowGeneration = false
+                        }
+                        3 -> {
+                            if (x == level.sizeY - 1 || y == level.sizeY - 1)
+                                break
+                            if (!checkMapForEntity(y + 1, x + 1, pair.second))
+                                allowGeneration = false
+                        }
+                        4 -> {
+                            if (x == 0)
+                                break
+                            if (!checkMapForEntity(y, x - 1, pair.second))
+                                allowGeneration = false
+                        }
+                        5 -> {
+                            if (!checkMapForEntity(y, x, pair.second))
+                                allowGeneration = false
+                        }
+                        6 -> {
+                            if (x == level.sizeX - 1)
+                                break
+                            if (!checkMapForEntity(y, x + 1, pair.second))
+                                allowGeneration = false
+                        }
+                        7 -> {
+                            if (x == 0 || y == 0)
+                                break
+                            if (!checkMapForEntity(y - 1, x - 1, pair.second))
+                                allowGeneration = false
+                        }
+                        8 -> {
+                            if (y == 0)
+                                break
+                            if (!checkMapForEntity(y - 1, x, pair.second))
+                                allowGeneration = false
+                        }
+                        9 -> {
+                            if (x == level.sizeX - 1 || y == 0)
+                                break
+                            if (!checkMapForEntity(y - 1, x + 1, pair.second))
+                                allowGeneration = false
+                        }
+                    }
+                }
+                if (allowGeneration && RandomGenerator.nextFloat().lessThanDelta(amount)) {
+                    if (saveToList) {
+                        fulfillingTileList.add(Pair(x, y))
+                        continue
+                    }
+                    if (replaceUnderneath)
+                        map[y][x].removeAll { true }
+                    // Assert that the entity wasn't added already
+                    if (!checkMapForEntity(y, x, entity))
+                        map[y][x].add(entity.createInstance())
+                }
+            }
+        }
+        return fulfillingTileList
+    }
+
+    private fun checkMapForEntity(y: Int, x: Int, requiredEntity: KClass<Entity>): Boolean {
+        for (mapEntity in map[y][x]) {
+            if (mapEntity::class == requiredEntity)
+                return true
+        }
+        return false
     }
 
     /**

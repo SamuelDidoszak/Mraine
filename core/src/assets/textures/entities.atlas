@@ -1,503 +1,151 @@
-
 entities.png
-size: 1024, 32
-format: RGBA8888
-filter: Nearest, Nearest
-repeat: none
+	size: 1024, 32
+	repeat: none
+barrel
+	bounds: 832, 0, 16, 16
+crateBiggerDark
+	bounds: 640, 0, 16, 16
+crateSmall
+	bounds: 768, 16, 16, 16
 dungeonFloorBasic$1
-  rotate: false
-  xy: 640, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 640, 16, 16, 16
 dungeonFloorBasic$10
-  rotate: false
-  xy: 752, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 768, 0, 16, 16
 dungeonFloorBasic$11
-  rotate: false
-  xy: 672, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 688, 16, 16, 16
 dungeonFloorBasic$12
-  rotate: false
-  xy: 816, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 848, 16, 16, 16
 dungeonFloorBasic$13
-  rotate: false
-  xy: 720, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 736, 16, 16, 16
 dungeonFloorBasic$14
-  rotate: false
-  xy: 624, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 624, 0, 16, 16
 dungeonFloorBasic$15
-  rotate: false
-  xy: 768, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 784, 16, 16, 16
 dungeonFloorBasic$17
-  rotate: false
-  xy: 592, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 592, 16, 16, 16
 dungeonFloorBasic$2
-  rotate: false
-  xy: 768, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 784, 0, 16, 16
 dungeonFloorBasic$3
-  rotate: false
-  xy: 688, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 688, 0, 16, 16
 dungeonFloorBasic$4
-  rotate: false
-  xy: 592, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 592, 0, 16, 16
 dungeonFloorBasic$16
-  rotate: false
-  xy: 592, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 592, 0, 16, 16
 dungeonFloorBasic$18
-  rotate: false
-  xy: 592, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 592, 0, 16, 16
 dungeonFloorBasic$6
-  rotate: false
-  xy: 592, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 592, 0, 16, 16
 dungeonFloorBasic$5
-  rotate: false
-  xy: 736, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 752, 16, 16, 16
 dungeonFloorBasic$7
-  rotate: false
-  xy: 816, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 832, 16, 16, 16
 dungeonFloorBasic$8
-  rotate: false
-  xy: 720, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 720, 0, 16, 16
 dungeonFloorBasic$9
-  rotate: false
-  xy: 624, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 624, 16, 16, 16
 dungeonFloorCracked$1
-  rotate: false
-  xy: 656, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 672, 16, 16, 16
 dungeonFloorCracked$2
-  rotate: false
-  xy: 800, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 816, 0, 16, 16
 dungeonFloorCracked$3
-  rotate: false
-  xy: 704, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 720, 16, 16, 16
 dungeonFloorCracked$4
-  rotate: false
-  xy: 608, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 608, 0, 16, 16
 dungeonFloorLights$1
-  rotate: false
-  xy: 832, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 848, 0, 16, 16
 dungeonFloorLights$2
-  rotate: false
-  xy: 736, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 736, 0, 16, 16
 dungeonFloorLights$3
-  rotate: false
-  xy: 640, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 656, 16, 16, 16
 dungeonFloorLights$4
-  rotate: false
-  xy: 784, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 800, 16, 16, 16
 dungeonFloorLights$5
-  rotate: false
-  xy: 688, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 704, 16, 16, 16
 dungeonFloorSmaller$1
-  rotate: false
-  xy: 656, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 656, 0, 16, 16
 dungeonFloorSmaller$2
-  rotate: false
-  xy: 784, 0
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 800, 0, 16, 16
 dungeonFloorSmaller$3
-  rotate: false
-  xy: 704, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 704, 0, 16, 16
 dungeonFloorSmaller$4
-  rotate: false
-  xy: 608, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 608, 16, 16, 16
 dungeonFloorSmaller$5
-  rotate: false
-  xy: 752, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 752, 0, 16, 16
 dungeonFloorSmaller$6
-  rotate: false
-  xy: 672, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 672, 0, 16, 16
 dungeonWall$1
-  rotate: false
-  xy: 416, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 416, 11, 16, 21
 dungeonWall$2
-  rotate: false
-  xy: 224, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 224, 11, 16, 21
 dungeonWall$3
-  rotate: false
-  xy: 512, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 512, 11, 16, 21
 dungeonWall$4
-  rotate: false
-  xy: 336, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 336, 11, 16, 21
 dungeonWall$5
-  rotate: false
-  xy: 160, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 160, 11, 16, 21
 dungeonWallInside
-  rotate: false
-  xy: 800, 16
-  size: 16, 16
-  orig: 16, 16
-  offset: 0, 0
-  index: -1
+	bounds: 816, 16, 16, 16
 dungeonWallInsideEdgeLeft$1
-  rotate: false
-  xy: 128, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 128, 11, 16, 21
 dungeonWallInsideEdgeLeft$2
-  rotate: false
-  xy: 432, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 432, 11, 16, 21
 dungeonWallInsideEdgeRight$1
-  rotate: false
-  xy: 544, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 544, 11, 16, 21
 dungeonWallInsideEdgeRight$2
-  rotate: false
-  xy: 368, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 368, 11, 16, 21
 dungeonWallInsideMiddle$1
-  rotate: false
-  xy: 528, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 528, 11, 16, 21
 dungeonWallInsideMiddle$2
-  rotate: false
-  xy: 352, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 352, 11, 16, 21
 dungeonWallInsideMiddle$3
-  rotate: false
-  xy: 176, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 176, 11, 16, 21
 dungeonWallInsideMiddle$4
-  rotate: false
-  xy: 464, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 464, 11, 16, 21
 dungeonWallInsideMiddle$5
-  rotate: false
-  xy: 272, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 272, 11, 16, 21
 dungeonWallInsideMiddleTop
-  rotate: false
-  xy: 240, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 240, 11, 16, 21
 dungeonWallInsideTop$1
-  rotate: false
-  xy: 560, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 560, 11, 16, 21
 dungeonWallInsideTop$2
-  rotate: false
-  xy: 384, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 384, 11, 16, 21
 dungeonWallInsideTop$3
-  rotate: false
-  xy: 208, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 208, 11, 16, 21
 dungeonWallInsideTop$4
-  rotate: false
-  xy: 496, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 496, 11, 16, 21
 dungeonWallInsideTop$5
-  rotate: false
-  xy: 304, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 304, 11, 16, 21
 dungeonWallLeft$1
-  rotate: false
-  xy: 400, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 400, 11, 16, 21
 dungeonWallLeft$2
-  rotate: false
-  xy: 192, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 192, 11, 16, 21
 dungeonWallLeft$3
-  rotate: false
-  xy: 480, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 480, 11, 16, 21
 dungeonWallLeft$4
-  rotate: false
-  xy: 288, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 288, 11, 16, 21
 dungeonWallLeft$5
-  rotate: false
-  xy: 112, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 112, 11, 16, 21
 dungeonWallRight$1
-  rotate: false
-  xy: 320, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 320, 11, 16, 21
 dungeonWallRight$2
-  rotate: false
-  xy: 144, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 144, 11, 16, 21
 dungeonWallRight$3
-  rotate: false
-  xy: 448, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 448, 11, 16, 21
 dungeonWallRight$4
-  rotate: false
-  xy: 256, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 256, 11, 16, 21
 dungeonWallRight$5
-  rotate: false
-  xy: 576, 11
-  size: 16, 21
-  orig: 16, 21
-  offset: 0, 0
-  index: -1
+	bounds: 576, 11, 16, 21
 dungeonWallSingle$1
-  rotate: false
-  xy: 80, 6
-  size: 16, 26
-  orig: 16, 26
-  offset: 0, 0
-  index: -1
+	bounds: 80, 6, 16, 26
 dungeonWallSingle$2
-  rotate: false
-  xy: 32, 6
-  size: 16, 26
-  orig: 16, 26
-  offset: 0, 0
-  index: -1
+	bounds: 16, 6, 16, 26
 dungeonWallSingleHorizontal$1
-  rotate: false
-  xy: 64, 6
-  size: 16, 26
-  orig: 16, 26
-  offset: 0, 0
-  index: -1
+	bounds: 64, 6, 16, 26
 dungeonWallSingleHorizontal$2
-  rotate: false
-  xy: 16, 6
-  size: 16, 26
-  orig: 16, 26
-  offset: 0, 0
-  index: -1
+	bounds: 32, 6, 16, 26
 dungeonWallSingleHorizontal$3
-  rotate: false
-  xy: 96, 6
-  size: 16, 26
-  orig: 16, 26
-  offset: 0, 0
-  index: -1
+	bounds: 96, 6, 16, 26
 dungeonWallSingleHorizontal$4
-  rotate: false
-  xy: 48, 6
-  size: 16, 26
-  orig: 16, 26
-  offset: 0, 0
-  index: -1
+	bounds: 48, 6, 16, 26
 dungeonWallSingleHorizontal$5
-  rotate: false
-  xy: 0, 6
-  size: 16, 26
-  orig: 16, 26
-  offset: 0, 0
-  index: -1
+	bounds: 0, 6, 16, 26

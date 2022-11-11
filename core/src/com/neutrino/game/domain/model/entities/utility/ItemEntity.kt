@@ -5,8 +5,8 @@ import com.neutrino.game.domain.model.items.Item
 
 class ItemEntity(val item: Item): Entity() {
     override val name: String = item.name
-    override val allowOnTop: Boolean = true
-    override val allowCharacterOnTop: Boolean = true
+    override var allowOnTop: Boolean = true
+    override var allowCharacterOnTop: Boolean = true
 
     override val textureNames: List<String> = item.textureNames
     override var texture: TextureAtlas.AtlasRegion = item.texture

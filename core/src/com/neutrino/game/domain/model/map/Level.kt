@@ -34,7 +34,7 @@ class Level(
     val id: Int = "$xPosition-$yPosition-$zPosition".hashCode()
     val textureList: ArrayList<TextureAtlas> = ArrayList()
 
-    private val tagList: List<MapTags> = listOf(MapTags.STARTING_AREA)
+    val tagList: List<MapTags> = listOf(MapTags.STARTING_AREA)
 
     private val mapUsecases = MapUseCases(this)
 

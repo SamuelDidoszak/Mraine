@@ -17,4 +17,8 @@ class ScrollOfDefence: Item(), ItemType.SCROLL.STAT {
     override val power: Float = 15f
     override val repeats: Int = 1
     override val speed: Double = 20.0
+
+    override var goldValueOg: Int = 30
+    override var goldValue: Int = goldValueOg
+    override var realValue: Int = goldValue
 }

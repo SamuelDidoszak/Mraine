@@ -1,15 +1,13 @@
 package com.neutrino.game.domain.use_case.map
 
 import com.neutrino.game.Constants.RandomGenerator
-import com.neutrino.game.domain.model.entities.*
+import com.neutrino.game.domain.model.entities.Barrel
+import com.neutrino.game.domain.model.entities.CrateBigger
+import com.neutrino.game.domain.model.entities.CrateSmall
+import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.utility.Entity
-import com.neutrino.game.domain.model.entities.utility.ItemEntity
-import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.edible.SmallHealingPotion
-import com.neutrino.game.domain.model.items.equipment.Knife
-import com.neutrino.game.domain.model.items.items.Gold
-import com.neutrino.game.domain.model.items.scrolls.ScrollOfDefence
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.domain.use_case.map.utility.EntityPositionRequirement
 import com.neutrino.game.domain.use_case.map.utility.EntityPositionRequirementType
 import com.neutrino.game.lessThanDelta
@@ -34,9 +32,13 @@ class GenerateMap(
      * Generates the map
      */
     operator fun invoke(): List<List<MutableList<Entity>>> {
+        val interpretedTags = TagInterpretation(level.tagList)
+        val difficultyModifier = kotlin.math.abs(level.zPosition)
+        interpretedTags.generationParams.difficulty += difficultyModifier / 4
+
         squidGeneration.generateDungeon()
-        squidGeneration.setDungeonWalls(map)
-        addEntities(DungeonFloor::class as KClass<Entity>, 1f)
+        squidGeneration.setWalls(map, interpretedTags.entityParams.wall)
+        addEntities(interpretedTags.entityParams.floor, 1f)
         addEntitiesNearWall(Barrel::class as KClass<Entity>, 0.01f, false)
         addEntitiesNearWall(CrateSmall::class as KClass<Entity>, 0.0075f)
 
@@ -44,13 +46,9 @@ class GenerateMap(
             EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
             EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, DungeonWall::class as KClass<Entity>, listOf(4, 6)),
             EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, CrateBigger::class as KClass<Entity>, listOf(4)),
-        ), 0.05f)
+        ), 0.01f)
 
-        val blockedTilesPercentage: Float = getBlockedTilesPercentage()
-        addItems(Gold::class as KClass<Item>, 50f)
-        addItems(Knife::class as KClass<Item>, 5f)
-        addItems(SmallHealingPotion::class as KClass<Item>, 5f, blockedTilesPercentage)
-        addItems(ScrollOfDefence::class as KClass<Item>, 0.3f)
+        GenerateItems(map, interpretedTags.itemList, interpretedTags.generationParams)()
 
         return map
     }
@@ -236,64 +234,6 @@ class GenerateMap(
 
                 if(allowGeneration && RandomGenerator.nextFloat() < probability)
                     map[y][x].add(entity.createInstance())
-            }
-        }
-    }
-
-    /**
-     * Returns the percentage of tiles with .allowOnTop set to false
-     * Useful for making sure, that a certain amount of items will appear in chunk
-     */
-    private fun getBlockedTilesPercentage(): Float {
-        var blockedAmount = 0
-        for (y in 0 until level.sizeY) {
-            for (x in 0 until level.sizeX) {
-                for (mapEntity in map[y][x]) {
-                    if (!mapEntity.allowOnTop) {
-                        blockedAmount++
-                        break
-                    }
-                }
-            }
-        }
-        return blockedAmount / (level.sizeY * level.sizeX).toFloat()
-    }
-
-    /** Returns the amount of certain items spawned */
-    private fun checkSpawnedItemAmount(item: KClass<Item>): Int {
-        var amount = 0
-        for (y in 0 until level.sizeY) {
-            for (x in 0 until level.sizeX) {
-                for (mapEntity in map[y][x]) {
-                    if (mapEntity is ItemEntity && mapEntity.item::class == item) {
-                        amount++
-                        break
-                    }
-                }
-            }
-        }
-        return amount
-    }
-
-    /**
-     * Adds items to the map with a certain probability
-     * @param amount how many items per 100x100 chunk
-     * @param includeBlocked if the value is set, percentage increases to account for blocked tiles. Pass value calculated from getBlockedTilesPercentage()
-     * TODO add a richness value to some tiles and generate items based on that
-     */
-    private fun addItems(item: KClass<Item>, amount: Float, includeBlocked: Float? = null) {
-        var probability = amount * 0.0001
-        if (includeBlocked != null)
-            probability += probability * includeBlocked
-
-        for (y in 0 until level.sizeY) {
-            for (x in 0 until level.sizeX) {
-                var allowGeneration = true
-                if (map[y][x].isNotEmpty() && !map[y][x][0].allowOnTop)
-                    allowGeneration = false
-
-                if(allowGeneration && RandomGenerator.nextFloat() < probability)
-                    map[y][x].add(ItemEntity(item.createInstance()) as Entity)
             }
         }
     }

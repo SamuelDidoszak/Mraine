@@ -6,8 +6,8 @@ import com.neutrino.game.Constants
 abstract class Entity: TextureHaver {
     abstract val name: String
     open val description: String? = ""
-    abstract val allowOnTop: Boolean
-    abstract val allowCharacterOnTop: Boolean
+    abstract var allowOnTop: Boolean
+    abstract var allowCharacterOnTop: Boolean
 
     abstract fun pickTexture(onMapPosition: OnMapPosition)
 

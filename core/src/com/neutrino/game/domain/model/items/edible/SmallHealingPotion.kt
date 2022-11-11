@@ -20,7 +20,7 @@ class SmallHealingPotion: Item(), ItemType.EDIBLE {
     override var power: Float = powerOg
     override val speed: Double = speedOg
     override val repeats: Int = repeatsOg
-    override var goldValueOg: Int = 25
+    override var goldValueOg: Int = 15
 
     init {
         goldValue = goldValueOg
@@ -30,14 +30,15 @@ class SmallHealingPotion: Item(), ItemType.EDIBLE {
                 it < 0.6 -> {
                     power = 15f
                     name = "Diluted small healing potion"
-                    goldValue -= 10
+                    goldValue -= 5
                 }
                 it < 0.7 -> {
                     power = 25f
                     name = "Concentrated small healing potion"
-                    goldValue += 10
+                    goldValue += 5
                 }
             }
         }
+        realValue = goldValue + 5
     }
 }

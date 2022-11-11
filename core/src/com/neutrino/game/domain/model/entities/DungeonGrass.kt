@@ -9,8 +9,8 @@ import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 class DungeonGrass(
     override val isBurnt: Boolean = false
 ) : Entity(), Flammable {
-    override val allowOnTop = true
-    override val allowCharacterOnTop = true
+    override var allowOnTop = true
+    override var allowCharacterOnTop = true
     override val name = "Dungeon grass"
     override val description = "A short grass finding it's way to grow on the pavement"
 

@@ -1,23 +1,37 @@
 package com.neutrino.game.domain.model.items.items
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants.RandomGenerator
+import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
+import kotlin.math.roundToInt
 
-class Gold(amount: Int = RandomGenerator.nextInt(120)): Item(), ItemType.MISC {
+class Gold: Item(), ItemType.MISC {
     override val name: String = "Gold"
     override val description: String = "Money"
-    override var amount: Int? = amount
+    override var amount: Int? = 1
         set(value) {
             field = value
             texture = pickTexture()
+            goldValueOg = amount!!
+            goldValue = amount!!
+            realValue = amount!!
         }
 
     override val textureNames: List<String> = listOf(
         "gold1", "gold2", "gold3", "gold4", "gold5", "gold6", "gold7", "gold8"
     )
     override var texture: TextureAtlas.AtlasRegion = pickTexture()
+
+    override fun randomize(quality: Float, difficulty: Float): Item {
+        val randomAmount =
+            Constants.RandomGenerator.nextFloat() * (difficulty * 5) * quality
+        amount = randomAmount.roundToInt()
+        if (amount == 0)
+            amount = 1
+
+        return this
+    }
 
     private fun pickTexture(): TextureAtlas.AtlasRegion {
         val textureName =

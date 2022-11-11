@@ -6,8 +6,8 @@ import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 
 class DungeonFloor: Entity() {
-    override val allowOnTop = true
-    override val allowCharacterOnTop = true
+    override var allowOnTop = true
+    override var allowCharacterOnTop = true
     override val name = "Dungeon floor"
     override val description = "The floor of a dungeon. You can walk on it and stuff"
 

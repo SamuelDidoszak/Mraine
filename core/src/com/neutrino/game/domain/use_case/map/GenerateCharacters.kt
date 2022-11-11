@@ -5,17 +5,24 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.Rat
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.domain.use_case.characters.GetImpassable
 import squidpony.squidmath.Coord
+import kotlin.math.roundToInt
 
 class GenerateCharacters(
     private val level: Level
 ) {
     val characterArray = CharacterArray()
 
+    private val interpretedTags = TagInterpretation(level.tagList)
+
     operator fun invoke(): CharacterArray {
+        val difficultyModifier = kotlin.math.abs(level.zPosition)
+        interpretedTags.generationParams.difficulty += difficultyModifier / 4
+
         if (level.zPosition != 0)
             // TODO Spawn player on the stairs
             println("level is a dungeon")
@@ -32,8 +39,7 @@ class GenerateCharacters(
 
 
     private fun spawnEnemies() {
-        // TODO Amount and the type of enemies should be dependant on level difficulty and enemy difficulty
-        for (i in 0 until 25) {
+        for (i in 0 until (15 * interpretedTags.generationParams.enemyMultiplier * (2f - interpretedTags.generationParams.enemyQuality)).roundToInt()) {
             try {
                 characterArray.add(getCharacter())
             } catch (e: Exception) {

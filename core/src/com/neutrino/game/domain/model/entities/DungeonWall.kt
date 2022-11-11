@@ -7,8 +7,8 @@ import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 
 class DungeonWall: Entity() {
-    override val allowOnTop = false
-    override val allowCharacterOnTop = false
+    override var allowOnTop = false
+    override var allowCharacterOnTop = false
     override val name = "Dungeon wall"
     override val description = "The wall of a dungeon. It wouldn't be fun if it suddenly collapsed"
 
@@ -78,6 +78,7 @@ class DungeonWall: Entity() {
             if (entityChecker.checkAllTiles(listOf(2, 6, 7, 8))) dungeonWallInsideMiddle else
             if (entityChecker.checkAllTiles(listOf(1, 2, 8))) dungeonWallInsideMiddle else
             if (entityChecker.checkAllTiles(listOf(2, 8, 4))) dungeonWallInsideMiddle else
+            if (entityChecker.checkAllTiles(listOf(2, 8, 6))) dungeonWallInsideMiddle else
 
             if (entityChecker.checkAllTiles(listOf(1, 2, 3))) "dungeonWallInsideMiddleTop" else
             if (entityChecker.checkAllTiles(listOf(2, 3, 4, 7))) "dungeonWallInsideMiddleTop" else
@@ -104,6 +105,7 @@ class DungeonWall: Entity() {
             if (entityChecker.checkAllTiles(listOf(2, 3, 8))) dungeonWallInsideMiddle else
             if (entityChecker.checkAllTiles(listOf(1, 2, 6, 8, 9))) dungeonWallInsideMiddle else
             if (entityChecker.checkAllTiles(listOf(2, 3, 4, 6, 8))) dungeonWallLeft else
+            if (entityChecker.checkAllTiles(listOf(2, 4))) dungeonWallInsideTop else
 
             if (entityChecker.checkAllTiles(listOf(4, 6))) dungeonWallSingleHorizontal else
             if (entityChecker.checkAllTiles(listOf(6, 9))) dungeonWallSingle else

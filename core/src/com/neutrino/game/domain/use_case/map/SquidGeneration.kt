@@ -3,12 +3,13 @@ package com.neutrino.game.domain.use_case.map
 import com.neutrino.game.Constants.IsSeeded
 import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.Constants.Seed
-import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.utility.Entity
 import squidpony.squidgrid.mapping.DungeonGenerator
 import squidpony.squidgrid.mapping.styled.TilesetType
 import squidpony.squidmath.GWTRNG
 import squidpony.squidmath.IRNG
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 
 class SquidGeneration (
@@ -39,11 +40,11 @@ class SquidGeneration (
         dungeonGenerator.stairsDown
     }
 
-    fun setDungeonWalls(map: List<List<MutableList<Entity>>>) {
+    fun setWalls(map: List<List<MutableList<Entity>>>, wall: KClass<Entity>) {
         for (y in 0 until mapY) {
             for (x in 0 until mapX) {
                 if (dungeonLayout[y][x] == '#')
-                    map[y][x].add(DungeonWall())
+                    map[y][x].add(wall.createInstance())
                 else if(dungeonLayout[y][x] == '/' || dungeonLayout[y][x] == '+')
                     continue
                     // TODO add doors here

@@ -6,6 +6,7 @@ import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.HandedItemType
 import com.neutrino.game.domain.model.items.ItemType
+import kotlin.math.roundToInt
 
 class Knife: EquipmentItem(), ItemType.EQUIPMENT.INHAND.ONEHANDED {
     override val handedItemType: HandedItemType = HandedItemType.DAGGER
@@ -15,6 +16,8 @@ class Knife: EquipmentItem(), ItemType.EQUIPMENT.INHAND.ONEHANDED {
     override val textureNames: List<String> = listOf("knife")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
+    override var goldValueOg: Int = 15
+
     override val modifierList: ArrayList<Any> = arrayListOf(
         ModifyStat(StatsEnum.DAMAGE, 3f),
         // TODO DYNAMIC PLAYER
@@ -23,5 +26,8 @@ class Knife: EquipmentItem(), ItemType.EQUIPMENT.INHAND.ONEHANDED {
     )
     init {
         statRandomization(1f)
+
+        goldValue = goldValueOg
+        realValue = (goldValue * 1.2).roundToInt()
     }
 }

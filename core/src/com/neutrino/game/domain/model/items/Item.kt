@@ -11,9 +11,12 @@ abstract class Item: ItemType, TextureHaver, Cloneable {
     open var amount: Int? = null
     /** Specifies if the item causes cooldown. -1 means no, 0 means player and 1 means every use type */
     open val causesCooldown: Int = -1
+    open val itemTier: Int = -1
 
     open var goldValueOg: Int = 0
     open var goldValue: Int = 0
+
+    open var realValue: Int = 0
 
     override fun getTexture(name: String): TextureAtlas.AtlasRegion {
         return Constants.DefaultItemTexture.findRegion(name)
@@ -21,6 +24,12 @@ abstract class Item: ItemType, TextureHaver, Cloneable {
 
     public override fun clone(): Any {
         return super.clone()
+    }
+
+    /** Randomize item parameters
+     * @return this for chaining */
+    open fun randomize(quality: Float, difficulty: Float): Item {
+        return this
     }
 
     /** Checks if two items are the same by iterating over their method values and comparing them */

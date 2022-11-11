@@ -9,6 +9,7 @@ class ScrollOfDefence: Item(), ItemType.SCROLL.STAT {
     override val description: String = "Makes your skin harder and more resistant to physical attacks"
     override var amount: Int? = 1
     override val causesCooldown: Int = 1
+    override val itemTier: Int = 2
 
     override val textureNames: List<String> = listOf("scrollOfDefence")
     override var texture: TextureAtlas.AtlasRegion = setTexture()

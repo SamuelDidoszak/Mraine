@@ -11,6 +11,7 @@ abstract class EquipmentItem: Item(), ItemType.EQUIPMENT {
     override val causesCooldown: Int = -1
     /** Parses only ModifyStat, ModifyStatPercent and Event */
     abstract val modifierList: ArrayList<Any>
+    override val itemTier: Int = 3
 
     fun statRandomization(energy: Float, variationSkew: Float = 0.5f, energyCanIncrease: Boolean = false, randomizationType: RandomizationTypes? = null) {
         modifierList.sortBy { (it as ModifyStat).value as Float }

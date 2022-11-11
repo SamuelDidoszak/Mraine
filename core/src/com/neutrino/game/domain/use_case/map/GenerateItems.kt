@@ -20,7 +20,7 @@ class GenerateItems(
      * Generates items
      */
 
-    private val itemPool = ArrayList<Item>()
+    private val itemPool = List(Constants.maxItemTier){ArrayList<Item>()}
     private val blockedTilesPercentage: Float = getBlockedTilesPercentage()
     private val containerList = getContainerList()
 
@@ -33,6 +33,7 @@ class GenerateItems(
             itemList.add(Pair(item.first, sum))
         }
 
+        // Generate items and add them to the pool
         var valuePool = generationParams.getTotalItemValue()
         while (valuePool > 0) {
             var random = Constants.RandomGenerator.nextFloat() * sum / generationParams.itemRarityMultiplier
@@ -42,49 +43,76 @@ class GenerateItems(
                 if (random < item.second) {
                     val generatedItem = item.first.createInstance()
                     generatedItem.randomize(generationParams.itemQuality, generationParams.difficulty)
-                    itemPool.add(generatedItem)
+                    itemPool[generatedItem.itemTier].add(generatedItem)
                     valuePool -= generatedItem.realValue
                     break
                 }
             }
         }
 
-        // variables for lookup
+        printGeneratedItems()
+
+        // Add items to containers
+
+        // Current approach is problematic for two reasons:
+        // First, it fills containers from the upper left corner meaning, that they have more probability to be filled
+        // Second, each container will be filled max once per item tier
+        // There can be added capacity
+        for (i in 0 until Constants.maxItemTier) {
+            if (itemPool[i].isEmpty())
+                continue
+            for (container in containerList[i]) {
+                val generationProbability = Constants.RandomGenerator.nextFloat()
+                if (generationProbability < container.itemTiers.find { it.first == i }!!.second) {
+                    val index = Constants.RandomGenerator.nextInt(itemPool[i].size)
+                    container.itemList.add(itemPool[i][index])
+                    itemPool[i].removeAt(index)
+                    if (itemPool[i].isEmpty())
+                        break
+                }
+            }
+        }
+
+        // Add remaining items onto the floor
+        if (generationParams.canGenerateOnTheFloor) {
+            for (item in itemPool) {
+                for (tier in itemPool) {
+                    for (item in tier) {
+                        addItem(item)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun printGeneratedItems() {
         var totalValue = 0
         var totalGold = 0
-
-        for (item in itemPool) {
-            addItem(item)
-            if (item is Gold)
-                totalGold += item.realValue
-            else
-                println("${item.name} value: ${item.realValue}")
-            totalValue += item.realValue
+        for (tier in itemPool) {
+            for (item in tier) {
+                if (item is Gold)
+                    totalGold += item.realValue
+                else
+                    println("${item.name} value: ${item.realValue}")
+                totalValue += item.realValue
+            }
         }
         println("Total value: $totalValue")
         println("Total gold: $totalGold")
 
-
-
-//        addItems(Gold::class as KClass<Item>, 50f)
-//        addItems(Knife::class as KClass<Item>, 5f)
-//        addItems(SmallHealingPotion::class as KClass<Item>, 5f, blockedTilesPercentage)
-//        addItems(ScrollOfDefence::class as KClass<Item>, 0.3f)
     }
 
     /**
-     * Returns the position of containers on the map as a Triple list, where
-     * first -> y
-     * second -> x
-     * third -> z
+     * Returns the list of containers divided into lists having a particular item tier
      */
-    private fun getContainerList(): List<Triple<Int, Int, Int>> {
-        val containerList = ArrayList<Triple<Int, Int, Int>>()
+    private fun getContainerList(): List<List<Container>> {
+        val containerList = List(Constants.maxItemTier) {ArrayList<Container>()}
         for (y in 0 until map.size) {
             for (x in 0 until map[y].size) {
-                for (z in 0 until map[y][x].size) {
-                    if (map[y][x][z] is Container) {
-                        containerList.add(Triple(y, x, z))
+                for (entity in map[y][x]) {
+                    if (entity is Container) {
+                        for (tier in entity.itemTiers)
+                            containerList[tier.first].add(entity)
                     }
                 }
             }

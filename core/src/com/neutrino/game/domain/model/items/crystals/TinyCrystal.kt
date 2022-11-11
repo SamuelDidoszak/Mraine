@@ -10,4 +10,5 @@ class TinyCrystal: Crystal() {
     override var texture: TextureAtlas.AtlasRegion
         get() = TODO("Not yet implemented")
         set(value) {}
+    override val itemTier: Int = 2
 }

@@ -13,6 +13,8 @@ class Meat: Item(), ItemType.EDIBLE {
     override val textureNames: List<String> = listOf("meat")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
+    override val itemTier: Int = 1
+
     override val isFood: Boolean = true
     override val powerOg: Float = 0.5f
     override val speedOg: Double = 0.5

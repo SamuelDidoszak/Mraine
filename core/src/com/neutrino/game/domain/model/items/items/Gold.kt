@@ -22,6 +22,7 @@ class Gold: Item(), ItemType.MISC {
         "gold1", "gold2", "gold3", "gold4", "gold5", "gold6", "gold7", "gold8"
     )
     override var texture: TextureAtlas.AtlasRegion = pickTexture()
+    override val itemTier: Int = 1
 
     override fun randomize(quality: Float, difficulty: Float): Item {
         val randomAmount =

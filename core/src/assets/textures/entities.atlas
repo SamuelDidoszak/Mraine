@@ -2,7 +2,7 @@ entities.png
 	size: 1024, 32
 	repeat: none
 barrel
-	bounds: 864, 16, 16, 16
+	bounds: 864, 0, 16, 16
 barrelDestroyed
 	bounds: 608, 0, 16, 16
 crateBiggerDark
@@ -20,17 +20,17 @@ dungeonFloorBasic$10
 dungeonFloorBasic$11
 	bounds: 688, 0, 16, 16
 dungeonFloorBasic$12
-	bounds: 864, 0, 16, 16
+	bounds: 880, 16, 16, 16
 dungeonFloorBasic$13
 	bounds: 752, 0, 16, 16
 dungeonFloorBasic$14
 	bounds: 640, 16, 16, 16
 dungeonFloorBasic$15
-	bounds: 800, 0, 16, 16
+	bounds: 816, 16, 16, 16
 dungeonFloorBasic$17
 	bounds: 592, 16, 16, 16
 dungeonFloorBasic$2
-	bounds: 816, 16, 16, 16
+	bounds: 816, 0, 16, 16
 dungeonFloorBasic$3
 	bounds: 704, 0, 16, 16
 dungeonFloorBasic$4
@@ -44,7 +44,7 @@ dungeonFloorBasic$6
 dungeonFloorBasic$5
 	bounds: 768, 0, 16, 16
 dungeonFloorBasic$7
-	bounds: 848, 0, 16, 16
+	bounds: 864, 16, 16, 16
 dungeonFloorBasic$8
 	bounds: 752, 16, 16, 16
 dungeonFloorBasic$9
@@ -52,25 +52,25 @@ dungeonFloorBasic$9
 dungeonFloorCracked$1
 	bounds: 672, 0, 16, 16
 dungeonFloorCracked$2
-	bounds: 848, 16, 16, 16
+	bounds: 848, 0, 16, 16
 dungeonFloorCracked$3
 	bounds: 736, 0, 16, 16
 dungeonFloorCracked$4
 	bounds: 624, 16, 16, 16
 dungeonFloorLights$1
-	bounds: 880, 16, 16, 16
+	bounds: 880, 0, 16, 16
 dungeonFloorLights$2
 	bounds: 768, 16, 16, 16
 dungeonFloorLights$3
 	bounds: 656, 0, 16, 16
 dungeonFloorLights$4
-	bounds: 816, 0, 16, 16
+	bounds: 832, 16, 16, 16
 dungeonFloorLights$5
 	bounds: 720, 0, 16, 16
 dungeonFloorSmaller$1
 	bounds: 672, 16, 16, 16
 dungeonFloorSmaller$2
-	bounds: 832, 16, 16, 16
+	bounds: 832, 0, 16, 16
 dungeonFloorSmaller$3
 	bounds: 736, 16, 16, 16
 dungeonFloorSmaller$4
@@ -90,7 +90,7 @@ dungeonWall$4
 dungeonWall$5
 	bounds: 160, 11, 16, 21
 dungeonWallInside
-	bounds: 832, 0, 16, 16
+	bounds: 848, 16, 16, 16
 dungeonWallInsideEdgeLeft$1
 	bounds: 128, 11, 16, 21
 dungeonWallInsideEdgeLeft$2
@@ -155,3 +155,5 @@ dungeonWallSingleHorizontal$4
 	bounds: 48, 6, 16, 26
 dungeonWallSingleHorizontal$5
 	bounds: 0, 6, 16, 26
+woodenChest
+	bounds: 800, 0, 16, 16

@@ -13,6 +13,8 @@ class SmallHealingPotion: Item(), ItemType.EDIBLE {
     override val textureNames: List<String> = listOf("smallHealingPotion")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
+    override val itemTier: Int = 2
+
     override val isFood: Boolean = false
     override val powerOg: Float = 20f
     override val speedOg: Double = 1.0

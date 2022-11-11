@@ -12,6 +12,8 @@ class BrokenStopwatch: Item(), ItemType.CAUSESEVENT {
     override val textureNames: List<String> = listOf("brokenStopwatch")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
+    override val itemTier: Int = 4
+
     val effectLength: Double = 10.0
 
     override fun use(character: Character, turn: Double): Event {

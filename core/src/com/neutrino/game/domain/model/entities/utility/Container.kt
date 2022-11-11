@@ -4,8 +4,9 @@ import com.neutrino.game.domain.model.items.Item
 
 interface Container {
     val itemList: MutableList<Item>
-    val itemTiers: List<Int>
-    val generationProbability: Float
+    /** @param first: item tier
+     * @param second: probability of being filled */
+    val itemTiers: List<Pair<Int, Float>>
     fun dropItems(): MutableList<Item> {
         return itemList
     }

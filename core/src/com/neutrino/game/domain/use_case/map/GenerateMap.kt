@@ -2,6 +2,8 @@ package com.neutrino.game.domain.use_case.map
 
 import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.DungeonWall
+import com.neutrino.game.domain.model.entities.WoodenDoor
+import com.neutrino.game.domain.model.entities.WoodenDoorArched
 import com.neutrino.game.domain.model.entities.containers.Barrel
 import com.neutrino.game.domain.model.entities.containers.CrateBigger
 import com.neutrino.game.domain.model.entities.containers.CrateSmall
@@ -40,12 +42,44 @@ class GenerateMap(
 
         squidGeneration.generateDungeon()
         squidGeneration.setWalls(map, interpretedTags.entityParams.wall)
-        addEntities(interpretedTags.entityParams.floor, 1f)
+        addEntities(interpretedTags.entityParams.floor, listOf(),1f)
+
+        addEntities(WoodenDoor::class as KClass<Entity>, listOf(
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(2, 8)),
+            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(4, 9, 6, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(2, 8)),
+            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(6, 1, 4, 7)),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9)),
+        ), 15f, assertAmount = true)
+
+        addEntities(
+            WoodenDoorArched::class as KClass<Entity>, listOf(
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(2, 8)),
+            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(4, 9, 6, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(2, 8)),
+            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(6, 1, 4, 7)),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9)),
+        ), 10f, assertAmount = true)
+
+
         addEntitiesNearWall(Barrel::class as KClass<Entity>, 0.005f, false)
         addEntitiesNearWall(CrateSmall::class as KClass<Entity>, 0.003f)
 
-        addEntities(
-            CrateBigger::class as KClass<Entity>, listOf(
+        addEntities(CrateBigger::class as KClass<Entity>, listOf(
             EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
             EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, DungeonWall::class as KClass<Entity>, listOf(4, 6)),
             EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, CrateBigger::class as KClass<Entity>, listOf(4)),
@@ -182,11 +216,11 @@ class GenerateMap(
                                 }
                             }
                             EntityPositionRequirementType.FORBIDDEN -> {
-                                if (!requirementFulfilled) {
-                                    generationAllowed = true
+                                if (requirementFulfilled) {
+                                    generationAllowed = false
                                     break
                                 } else
-                                    generationAllowed = false
+                                    generationAllowed = true
                             }
                             EntityPositionRequirementType.OPTIONAL -> {
                                 if (requirementFulfilled) {
@@ -269,47 +303,5 @@ class GenerateMap(
                 return true
         }
         return false
-    }
-
-    /**
-     * Adds entities to the map with a certain probability
-     * Supports restrictions, that allow generation only if one of required entities exists underneath
-     */
-    private fun addEntities(entity: KClass<Entity>, probability: Float, requiredUnderneath: List<KClass<Entity>> = listOf(), excludedUnderneath: List<KClass<Entity>> = listOf()) {
-        for (y in 0 until level.sizeY) {
-            for (x in 0 until level.sizeX) {
-                var allowGeneration = true
-                if (map[y][x].isNotEmpty() && !map[y][x][0].allowOnTop)
-                    allowGeneration = false
-
-                if (requiredUnderneath.isNotEmpty()) {
-                    allowGeneration = false
-                    for (mapEntity in map[y][x]) {
-                        if (!mapEntity.allowOnTop) {
-                            allowGeneration = false
-                            break
-                        }
-                        var excluded = false
-                        for (excludedEntity in excludedUnderneath) {
-                            if (mapEntity::class == excludedEntity) {
-                                excluded = true
-                                break
-                            }
-                        }
-                        if (excluded)
-                            break
-                        for (requiredEntity in requiredUnderneath) {
-                            if (mapEntity::class == requiredEntity) {
-                                allowGeneration = true
-                                break
-                            }
-                        }
-                    }
-                }
-
-                if(allowGeneration && RandomGenerator.nextFloat() < probability)
-                    map[y][x].add(entity.createInstance())
-            }
-        }
     }
 }

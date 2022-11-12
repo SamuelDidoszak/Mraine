@@ -18,6 +18,7 @@ import com.neutrino.game.Initialize
 import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
+import com.neutrino.game.domain.model.entities.utility.HasAction
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
@@ -233,6 +234,7 @@ class GameScreen: KtxScreen {
                 pickupItem = false
             }
 
+            // Set the player action if there was no previous one
             if (Player.ai.action is Action.NOTHING) {
                 // calls this method until a tile is clicked
                 if (gameStage.clickedCoordinates == null) return
@@ -264,13 +266,27 @@ class GameScreen: KtxScreen {
                 // Attack the enemy
                 else
                     if (clickedCharacter != null && Player.ai.canAttack(x, y))
-                    Player.ai.action = Action.ATTACK(x, y) // can pass a character
+                        Player.ai.action = Action.ATTACK(x, y) // can pass a character
                 // No character is there
                 // Calculate move list and move to the tile
                 else {
                     // If there was an item at the clickedTile, pick it up on arrival
                     if (Turn.currentLevel.getTopItem(x, y) != null)
                         pickupItem = true
+
+                    if (Turn.currentLevel.getEntityWithAction(x, y) != null)
+                        Player.ai.entityTargetCoords = Pair(x, y)
+                    else
+                        Player.ai.entityTargetCoords = null
+
+                    if (Player.ai.entityTargetCoords != null) {
+                        val entityCoords = Player.ai.entityTargetCoords!!
+                        val entity = Turn.currentLevel.getEntityWithAction(entityCoords.first, entityCoords.second) as HasAction
+                        if ((entityCoords.first in Player.xPos - entity.action.requiredDistance .. Player.xPos + entity.action.requiredDistance) &&
+                                (entityCoords.second in Player.yPos - entity.action.requiredDistance .. Player.yPos + entity.action.requiredDistance)) {
+                            entity.action.act()
+                        }
+                    }
 
                     if (!Turn.currentLevel.doesAllowCharacter(x, y))
                         Player.ai.action = Action.NOTHING

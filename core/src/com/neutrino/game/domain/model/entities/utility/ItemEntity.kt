@@ -3,7 +3,7 @@ package com.neutrino.game.domain.model.entities.utility
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.items.Item
 
-class ItemEntity(val item: Item): Entity() {
+class ItemEntity(val item: Item): Entity(), HasAction {
     override val name: String = item.name
     override var allowOnTop: Boolean = true
     override var allowCharacterOnTop: Boolean = true
@@ -13,4 +13,8 @@ class ItemEntity(val item: Item): Entity() {
     // Unnecessarily required for entity
 
     override fun pickTexture(onMapPosition: OnMapPosition) { }
+
+    override val action: Action = Action("Pick up", 0) {
+
+    }
 }

@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.entities.utility.HasAction
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.model.items.Item
@@ -128,6 +130,16 @@ class Level(
         else
             return null
     }
+
+    /** Returns topmost entity that has an action associated with it */
+    fun getEntityWithAction(xPos: Int, yPos: Int): Entity? {
+        for (entity in map.map[yPos][xPos].reversed()) {
+            if (entity is HasAction)
+                return entity
+        }
+        return null
+    }
+
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val gameCamera = parent.stage.camera as OrthographicCamera

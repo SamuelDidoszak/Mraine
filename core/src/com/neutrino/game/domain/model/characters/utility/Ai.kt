@@ -8,6 +8,7 @@ import squidpony.squidmath.Coord
 class Ai (private val character: Character) {
     var xTarget: Int = -1
     var yTarget: Int = -1
+    var entityTargetCoords: Pair<Int, Int>? = null
 
     /**
      * FIFO list with planned moves

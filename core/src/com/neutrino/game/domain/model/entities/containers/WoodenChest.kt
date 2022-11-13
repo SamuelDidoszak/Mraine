@@ -1,13 +1,10 @@
 package com.neutrino.game.domain.model.entities.containers
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.domain.model.entities.utility.ChangesImpassable
-import com.neutrino.game.domain.model.entities.utility.Container
-import com.neutrino.game.domain.model.entities.utility.Entity
-import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
 
-class WoodenChest: Entity(), ChangesImpassable, Container {
+class WoodenChest: Entity(), ChangesImpassable, Container, Interactable {
     override val name: String = "Wooden chest"
     override var allowOnTop: Boolean = false
     override var allowCharacterOnTop: Boolean = false
@@ -23,6 +20,10 @@ class WoodenChest: Entity(), ChangesImpassable, Container {
     )
     override fun pickTexture(onMapPosition: OnMapPosition) {
         texture = getTexture(textureNames[0])
+    }
+
+    override val interactionList: List<Interaction> = List(1) {
+        Interaction.OPEN()
     }
 
 

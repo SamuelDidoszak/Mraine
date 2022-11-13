@@ -14,5 +14,9 @@ sealed class Interaction(var requiredDistance: Int, var isPrimary: Boolean, var 
         }
     }
 
-    class ITEM(): Interaction(0, true, "", turnCost = 1.0)
+    class ITEM: Interaction(0, true, "", turnCost = 1.0)
+
+    class DESTROY(val entity: Entity): Interaction(1, true, "", 1.0)
+
+    class OPEN: Interaction(1, true, "", 1.0)
 }

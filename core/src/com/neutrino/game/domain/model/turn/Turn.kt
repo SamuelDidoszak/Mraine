@@ -8,11 +8,14 @@ import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HpBar
+import com.neutrino.game.domain.model.entities.utility.Container
+import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
+import com.neutrino.game.lessThanDelta
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord
@@ -131,6 +134,24 @@ object Turn {
                                     currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].removeLast()
                                 } else {
                                     println("Inventory is full!")
+                                }
+                            }
+                            is Interaction.DESTROY -> {
+                                val entity = (action.entity as Destructable)
+                                entity.entityHp -= character.damage
+                                if (entity.entityHp.lessThanDelta(0f)) {
+                                    val items = entity.destroy()
+                                    if (items != null) {
+                                        for (item in items) {
+                                            currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
+                                        }
+                                    }
+                                }
+                            }
+                            is Interaction.OPEN -> {
+                                currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].remove(action.entity)
+                                for (item in (action.entity as Container).itemList) {
+                                    currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
                                 }
                             }
                             else -> {

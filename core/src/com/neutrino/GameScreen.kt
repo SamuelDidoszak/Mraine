@@ -20,6 +20,7 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.Interactable
+import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
@@ -212,6 +213,8 @@ class GameScreen: KtxScreen {
                 else {
                     val action = entity.getPrimaryAction()
                     if (action != null) {
+                        if (action is Interaction.DESTROY)
+                            action.requiredDistance = Player.range
                         // check the distance and act if close enough
                         if ((entityCoords.first in Player.xPos - action.requiredDistance .. Player.xPos + action.requiredDistance) &&
                             (entityCoords.second in Player.yPos - action.requiredDistance .. Player.yPos + action.requiredDistance)) {

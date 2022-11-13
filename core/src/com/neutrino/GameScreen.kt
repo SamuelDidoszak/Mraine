@@ -18,7 +18,8 @@ import com.neutrino.game.Initialize
 import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
-import com.neutrino.game.domain.model.entities.utility.HasAction
+import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.entities.utility.Interactable
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
@@ -163,9 +164,6 @@ class GameScreen: KtxScreen {
         hudStage.updateSize(width, height)
     }
 
-    /** Indicates, if there is an item to be picked up at the end of movelist */
-    private var pickupItem: Boolean = false
-
     private fun gameLoop() {
         if ((Player.hasActions() || gameStage.focusPlayer) && !gameStage.lookingAround) {
             gameStage.setCameraToPlayer()
@@ -204,6 +202,27 @@ class GameScreen: KtxScreen {
                 hudStage.refreshHotBar()
             }
 
+            // interact with an entity
+            if (Player.ai.action is Action.NOTHING && !Player.hasActions() && Player.ai.entityTargetCoords != null) {
+                val entityCoords = Player.ai.entityTargetCoords!!
+                val entity = Turn.currentLevel.getEntityWithAction(entityCoords.first, entityCoords.second) as Interactable?
+                // Entity has disappeared in the meantime
+                if (entity == null)
+                    Player.ai.entityTargetCoords = null
+                else {
+                    val action = entity.getPrimaryAction()
+                    if (action != null) {
+                        // check the distance and act if close enough
+                        if ((entityCoords.first in Player.xPos - action.requiredDistance .. Player.xPos + action.requiredDistance) &&
+                            (entityCoords.second in Player.yPos - action.requiredDistance .. Player.yPos + action.requiredDistance)) {
+                            Player.ai.action = Action.INTERACTION(entity as Entity, action)
+                            // Stop moving
+                            Player.ai.moveList = ArrayDeque()
+                        }
+                    }
+                }
+            }
+
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
             // Add the move action if the movement animation has ended
             if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && gameStage.clickedCoordinates == null && Player.ai.action is Action.NOTHING) {
@@ -211,27 +230,18 @@ class GameScreen: KtxScreen {
                 if (Player.findActor<TextraLabel>("damage") != null) {
                     gameStage.focusPlayer = true
                     gameStage.lookingAround = false
-                    // TODO instead of removing player's planned moves, add a GUI button that resumes movement
 
-                    // TODO check if setting targets is necessary, it causes PICKUP bug
                     Player.ai.moveList = ArrayDeque()
-                    Player.ai.xTarget = Player.xPos
-                    Player.ai.yTarget = Player.yPos
+                    Player.ai.entityTargetCoords = null
                     return
                 }
 
                 if (Turn.updateBatch.firstOrNull() is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
-                    Player.ai.setMoveList(Player.ai.xTarget, Player.ai.yTarget, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable(), true)
+                    Player.ai.setMoveList(Player.ai.moveList.last().x, Player.ai.moveList.last().y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable(), true)
                 val tile = Player.ai.getMove()
                 Player.ai.action = Action.MOVE(tile.x, tile.y)
                 if (!gameStage.lookingAround)
                     gameStage.focusPlayer = true
-            }
-
-            // If an item was at the end of movelist, set the action to PICKUP
-            if (pickupItem && !Player.hasActions() && gameStage.clickedCoordinates == null && Player.xPos == Player.ai.xTarget && Player.yPos == Player.ai.yTarget) {
-                Player.ai.action = Action.PICKUP(Player.xPos, Player.yPos)
-                pickupItem = false
             }
 
             // Set the player action if there was no previous one
@@ -241,8 +251,7 @@ class GameScreen: KtxScreen {
                 // player clicked during movement
                 if (Player.ai.moveList.isNotEmpty() || Player.hasActions()) {
                     Player.ai.moveList = ArrayDeque()
-                    Player.ai.xTarget = Player.xPos
-                    Player.ai.yTarget = Player.yPos
+                    Player.ai.entityTargetCoords = null
                     gameStage.clickedCoordinates = null
                     return
                 }
@@ -257,51 +266,36 @@ class GameScreen: KtxScreen {
                     gameStage.focusPlayer = true
                     gameStage.lookingAround = false
                     if (Turn.currentLevel.getTopItem(x, y) != null)
-                        Player.ai.action = Action.PICKUP(x, y)
+                        Player.ai.action = Action.NOTHING
                     else {
                         // TODO add defend action
                         Player.ai.action = Action.WAIT
                     }
                 }
                 // Attack the enemy
-                else
-                    if (clickedCharacter != null && Player.ai.canAttack(x, y))
+                else if (clickedCharacter != null && Player.ai.canAttack(x, y))
                         Player.ai.action = Action.ATTACK(x, y) // can pass a character
-                // No character is there
-                // Calculate move list and move to the tile
-                else {
-                    // If there was an item at the clickedTile, pick it up on arrival
-                    if (Turn.currentLevel.getTopItem(x, y) != null)
-                        pickupItem = true
 
+                // Calculate move list
+                if (Player.ai.action is Action.NOTHING) {
+                    // Add the interactable entity as the target
                     if (Turn.currentLevel.getEntityWithAction(x, y) != null)
                         Player.ai.entityTargetCoords = Pair(x, y)
                     else
                         Player.ai.entityTargetCoords = null
 
-                    if (Player.ai.entityTargetCoords != null) {
-                        val entityCoords = Player.ai.entityTargetCoords!!
-                        val entity = Turn.currentLevel.getEntityWithAction(entityCoords.first, entityCoords.second) as HasAction
-                        if ((entityCoords.first in Player.xPos - entity.action.requiredDistance .. Player.xPos + entity.action.requiredDistance) &&
-                                (entityCoords.second in Player.yPos - entity.action.requiredDistance .. Player.yPos + entity.action.requiredDistance)) {
-                            entity.action.act()
-                        }
-                    }
-
-                    if (!Turn.currentLevel.doesAllowCharacter(x, y))
+                    // Add player movement list
+                    if (!Turn.currentLevel.allowsCharacterChangesImpassable(x, y))
                         Player.ai.action = Action.NOTHING
-                    else {
+                    else
                         Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
-                        val coord = Player.ai.getMove()
-                        Player.ai.action = Action.MOVE(coord.x, coord.y)
-                    }
+
                     // Focus player either if he's off screen or if he clicked near his current position
                     if (!gameStage.isInCamera(Player.xPos, Player.yPos) ||
                             abs(Player.xPos - x) <= 5 &&  abs(Player.yPos - y) <= 5) {
                         gameStage.lookingAround = false
                         gameStage.focusPlayer = true
                     }
-
                 }
             }
 

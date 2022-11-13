@@ -8,12 +8,14 @@ import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HpBar
+import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
+import squidpony.squidmath.Coord
 import squidpony.squidmath.GWTRNG
 import kotlin.math.abs
 
@@ -119,17 +121,23 @@ object Turn {
                             }
                         }
                     }
-                    is Action.PICKUP -> {
-                        val topmostItem = currentLevel.getTopItem(action.x, action.y)
-                        // TODO temporary solution
-                        if (topmostItem != null) {
-                            if (Player.addToInventory(topmostItem)) {
-                                Player.showPickedUpItem(topmostItem)
-                                currentLevel.map.map[action.y][action.x].removeLast()
-                            } else {
-                                println("Inventory is full!")
+                    is Action.INTERACTION -> {
+                        // Entity position(x, y) can be derived from ai.entityTargetCoords
+                        when (action.interaction) {
+                            is Interaction.ITEM -> {
+                                val item = (action.entity as ItemEntity).item
+                                if (Player.addToInventory(item)) {
+                                    Player.showPickedUpItem(item)
+                                    currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].removeLast()
+                                } else {
+                                    println("Inventory is full!")
+                                }
+                            }
+                            else -> {
+                                action.interaction.act()
                             }
                         }
+                        Player.ai.entityTargetCoords = null
                     }
                     is Action.ITEM -> {
                         character.showItemUsed(action.item)
@@ -178,7 +186,6 @@ object Turn {
 //                println()
             } else {
                 // initialize the ai if it's 10 tiles or less from the player
-
                 if (abs(character.xPos - Player.xPos) <= 10 && abs(character.yPos - Player.yPos) <= 10)
                     character.ai.decide(Player.xPos, Player.yPos, dijkstraMap, charactersUseCases.getImpassable())
                 else
@@ -188,7 +195,8 @@ object Turn {
                 when (action) {
                     is Action.MOVE -> {
                         if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
-                            character.ai.setMoveList(character.ai.xTarget, character.ai.yTarget, dijkstraMap, charactersUseCases.getImpassable(), true)
+                            val prevCoord = character.ai.moveList.lastOrNull() ?: Coord.get(action.x, action.y)
+                            character.ai.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, charactersUseCases.getImpassable(), true)
                             val coord = character.ai.getMove()
                             action = Action.MOVE(coord.x, coord.y)
                         }
@@ -219,6 +227,9 @@ object Turn {
                     }
                     is Action.SKILL -> {
                         println(character.name + " used a skill")}
+                    is Action.INTERACTION -> {
+                        println(character.name + " interacted with ${action.entity.name}")
+                    }
                     is Action.ITEM -> {
                         character.showItemUsed(action.item)
                         println(character.name + " used an item")
@@ -229,7 +240,6 @@ object Turn {
                     is Action.NOTHING -> {
                         println(character.name + " did nothing")
                     }
-                    is Action.PICKUP -> {}
                     is Action.EVENT -> {
                         println("caused an event")
                     }

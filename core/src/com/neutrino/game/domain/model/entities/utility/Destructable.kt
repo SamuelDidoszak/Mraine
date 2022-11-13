@@ -9,7 +9,7 @@ interface Destructable {
         destroyed = true
         if (this is Entity) {
             allowOnTop = true
-            allowCharacterOnTop = true
+//            allowCharacterOnTop = true
             texture = getTexture(texture.name + "Destroyed")
         }
         if (this is Container) {

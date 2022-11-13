@@ -164,9 +164,9 @@ woodenDoorArched
 woodenDoorArchedClosed
 	bounds: 80, 14, 16, 24
 woodenDoorArchedVertical
-	bounds: 48, 33, 16, 31
-woodenDoorArchedVerticalClosed
 	bounds: 0, 29, 16, 35
+woodenDoorArchedVerticalClosed
+	bounds: 48, 33, 16, 31
 woodenDoorClosed
 	bounds: 112, 40, 16, 24
 woodenDoorVertical

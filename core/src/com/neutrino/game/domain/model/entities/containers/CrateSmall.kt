@@ -1,13 +1,10 @@
 package com.neutrino.game.domain.model.entities.containers
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.domain.model.entities.utility.Container
-import com.neutrino.game.domain.model.entities.utility.Destructable
-import com.neutrino.game.domain.model.entities.utility.Entity
-import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
 
-class CrateSmall: Entity(), Destructable, Container {
+class CrateSmall: Entity(), ChangesImpassable, Destructable, Container {
     override var allowOnTop = false
     override var allowCharacterOnTop = false
     override val name = "CrateSmall"

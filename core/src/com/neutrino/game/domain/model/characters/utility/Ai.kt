@@ -6,8 +6,6 @@ import squidpony.squidai.DijkstraMap
 import squidpony.squidmath.Coord
 
 class Ai (private val character: Character) {
-    var xTarget: Int = -1
-    var yTarget: Int = -1
     var entityTargetCoords: Pair<Int, Int>? = null
 
     /**
@@ -29,7 +27,7 @@ class Ai (private val character: Character) {
                 is Action.MOVE -> character.movementSpeed
                 is Action.ATTACK -> character.attackSpeed
                 is Action.SKILL -> 1.0
-                is Action.PICKUP -> 1.0
+                is Action.INTERACTION -> thisAction.interaction.turnCost
                 is Action.WAIT -> character.movementSpeed
                 is Action.NOTHING -> 0.0
                 is Action.ITEM -> 1.0
@@ -66,13 +64,12 @@ class Ai (private val character: Character) {
      * Finds the path to target if it isn't already set
      */
     fun setMoveList(xPos: Int, yPos: Int, dijkstraMap: DijkstraMap, impassable: Collection<Coord>, forceUpdate: Boolean = false) {
-        if (xPos == xTarget && yPos == yTarget && !forceUpdate)
+        if (xPos == moveList.lastOrNull()?.x && yPos == moveList.lastOrNull()?.y && !forceUpdate) {
             return
+        }
         moveList = ArrayDeque()
         val map = dijkstraMap.findPath(30, 30,  impassable, null, Coord.get(character.xPos, character.yPos), Coord.get(xPos, yPos))
         moveList.addAll(map)
-        xTarget = xPos
-        yTarget = yPos
         dijkstraMap.reset()
     }
 

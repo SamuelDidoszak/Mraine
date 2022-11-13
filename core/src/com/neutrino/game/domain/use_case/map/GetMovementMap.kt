@@ -1,7 +1,6 @@
 package com.neutrino.game.domain.use_case.map
 
-import com.neutrino.game.domain.model.entities.WoodenDoor
-import com.neutrino.game.domain.model.entities.WoodenDoorArched
+import com.neutrino.game.domain.model.entities.utility.ChangesImpassable
 import com.neutrino.game.domain.model.map.Level
 
 class GetMovementMap(
@@ -18,10 +17,12 @@ class GetMovementMap(
         val movementMap: Array<out CharArray> = Array(level.map.yMax) {CharArray(level.map.xMax) {'.'} }
         for (y in 0 until level.map.yMax) {
             for (x in 0 until level.map.xMax) {
-                val doors = level.getEntityWithAction(x, y)
-                val isDoors = doors != null && (doors is WoodenDoor || doors is WoodenDoorArched)
-                if (!level.doesAllowCharacter(x, y) && !isDoors)
-                    movementMap[x][y] = '#'
+                for (entity in level.map.map[y][x]) {
+                    if (!entity.allowCharacterOnTop && entity !is ChangesImpassable) {
+                        movementMap[x][y] = '#'
+                        break
+                    }
+                }
             }
         }
         return movementMap

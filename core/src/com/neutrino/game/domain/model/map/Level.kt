@@ -9,10 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.entities.utility.Entity
-import com.neutrino.game.domain.model.entities.utility.HasAction
-import com.neutrino.game.domain.model.entities.utility.ItemEntity
-import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
@@ -111,10 +108,21 @@ class Level(
         }
     }
 
-    fun doesAllowCharacter(xPos: Int, yPos: Int): Boolean {
+    fun allowsCharacter(xPos: Int, yPos: Int): Boolean {
         var allow = true
         for (entity in map.map[yPos][xPos]) {
             if (!entity.allowCharacterOnTop) {
+                allow = false
+                break
+            }
+        }
+        return allow
+    }
+
+    fun allowsCharacterChangesImpassable(xPos: Int, yPos: Int): Boolean {
+        var allow = true
+        for (entity in map.map[yPos][xPos]) {
+            if (!entity.allowCharacterOnTop && entity !is ChangesImpassable) {
                 allow = false
                 break
             }
@@ -134,7 +142,7 @@ class Level(
     /** Returns topmost entity that has an action associated with it */
     fun getEntityWithAction(xPos: Int, yPos: Int): Entity? {
         for (entity in map.map[yPos][xPos].reversed()) {
-            if (entity is HasAction)
+            if (entity is Interactable)
                 return entity
         }
         return null

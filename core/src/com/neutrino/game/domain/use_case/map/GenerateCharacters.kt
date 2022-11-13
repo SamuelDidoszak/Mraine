@@ -71,7 +71,7 @@ class GenerateCharacters(
                 if (tries++ == 50)
                     throw Exception("Couldn't find more positions")
                 // possibly change it to movementMap for efficiency. It has inverted xPos and yPos
-            } while (!level.doesAllowCharacter(xPos, yPos) && !GetImpassable(characterArray)().contains(Coord.get(xPos, yPos)))
+            } while (!level.allowsCharacter(xPos, yPos) && !GetImpassable(characterArray)().contains(Coord.get(xPos, yPos)))
 
             return Coord.get(xPos, yPos)
         } catch (e: Exception) {e.toString()}

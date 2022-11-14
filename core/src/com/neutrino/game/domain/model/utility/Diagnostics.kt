@@ -5,36 +5,70 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataObserver
+import com.neutrino.GlobalDataType
 
 class Diagnostics: Table() {
     private var time = System.nanoTime()
     private var totalTime: Long = 0
 
+    private val dungeonTypeLabel = TextraLabel("Current dungeon", KnownFonts.getStandardFamily())
     private val fpsLabel = TextraLabel("fps", KnownFonts.getStandardFamily())
     private val memoryLabel = TextraLabel("memory", KnownFonts.getStandardFamily())
     private val renderLabel = TextraLabel("render time", KnownFonts.getStandardFamily())
+    private val maxRenderTimeLabel = TextraLabel("max render time", KnownFonts.getStandardFamily())
 
     init {
+        dungeonTypeLabel.align = Align.left
         fpsLabel.align = Align.left
         memoryLabel.align = Align.left
         renderLabel.align = Align.left
+        maxRenderTimeLabel.align = Align.left
+        dungeonTypeLabel.wrap = true
         fpsLabel.wrap = true
         memoryLabel.wrap = true
         renderLabel.wrap = true
+        maxRenderTimeLabel.wrap = true
+        dungeonTypeLabel.name = "dungeonTypeLabel"
         fpsLabel.name = "fpsLabel"
         memoryLabel.name = "memoryLabel"
         renderLabel.name = "renderLabel"
+        maxRenderTimeLabel.name = "maxRenderLabel"
 
         clip(true)
         align(Align.left)
         row().pad(4f)
-        add(fpsLabel).left().width(168f)
+        add(dungeonTypeLabel).left().width(190f)
         row().pad(4f)
-        add(memoryLabel).left().width(168f)
+        add(fpsLabel).left().width(190f)
         row().pad(4f)
-        add(renderLabel).left().width(168f)
+        add(memoryLabel).left().width(190f)
+        row().pad(4f)
+        add(renderLabel).left().width(190f)
+        row().pad(4f)
+        add(maxRenderTimeLabel).left().width(190f)
         name = "diagnostics"
         pack()
+
+        GlobalData.registerObserverGetData(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.CHANGELEVEL
+            override fun update(data: Any?): Boolean {
+                if (data != null) {
+                    setDungeonType(data as String)
+                    return true
+                }
+                return false
+            }
+        })
+
+    }
+    private var maxRenderTime: Long = 0
+    fun resetMaxTimes() {
+        maxRenderTime = 0
+    }
+    fun setDungeonType(type: String) {
+        dungeonTypeLabel.setText("[%75]$type")
     }
 
     fun updateValues(renderStartTime: Long?) {
@@ -43,6 +77,12 @@ class Diagnostics: Table() {
         val timeDiff = System.nanoTime() - time
         totalTime += timeDiff
         time = System.nanoTime()
+        if (renderStartTime != null) {
+            if (System.nanoTime() - renderStartTime > maxRenderTime) {
+                maxRenderTime = System.nanoTime() - renderStartTime
+                maxRenderTimeLabel.setText("[%75]max render: ${maxRenderTime / 1000000f} ms")
+            }
+        }
         if (totalTime < 1000000000)
             return
         fpsLabel.setText("[%75]${Gdx.graphics.framesPerSecond} fps")

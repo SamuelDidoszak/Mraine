@@ -366,6 +366,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         when (keyCode) {
             Input.Keys.NUM_1 -> {
                 diagnostics.isVisible = !diagnostics.isVisible
+                diagnostics.resetMaxTimes()
             }
         }
         return super.keyDown(keyCode)

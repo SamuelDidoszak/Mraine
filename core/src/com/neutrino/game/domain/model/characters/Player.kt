@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.utility.HasInventory
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
@@ -27,6 +29,7 @@ object Player : Character(0, 0, 0.0), HasInventory {
     override var defence: Float = 2f
     override var criticalChance: Float = 0.3f
     override var experience: Float = 0f
+    override var movementSpeed: Double = 1.0
     /** Determines the maximum number of concurrently used skills that do not use mana */
     var maxSkills: Int = 3
 
@@ -99,5 +102,11 @@ object Player : Character(0, 0, 0.0), HasInventory {
             Actions.sequence(
             Actions.fadeOut(1.25f),
             Actions.removeActor()))
+        GlobalData.notifyObservers(GlobalDataType.PICKUP)
+    }
+
+    override fun getDamage(character: Character): Float {
+        GlobalData.notifyObservers(GlobalDataType.PLAYERHP)
+        return super.getDamage(character)
     }
 }

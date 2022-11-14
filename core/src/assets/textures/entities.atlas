@@ -7,7 +7,7 @@ barrelDestroyed
 	bounds: 352, 27, 16, 16
 crateBiggerDark
 	bounds: 160, 6, 16, 16
-crateBiggerDestroyed
+crateBiggerDarkDestroyed
 	bounds: 432, 48, 16, 16
 crateSmall
 	bounds: 480, 48, 16, 16

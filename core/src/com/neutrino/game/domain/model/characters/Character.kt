@@ -201,7 +201,7 @@ abstract class Character(
         return damage
     }
 
-    fun getDamage(character: Character): Float {
+    open fun getDamage(character: Character): Float {
         val evaded = Random.nextFloat() * (1 - character.accuracy + evasion)
         if (evaded != 0f && evaded in 0f .. evasion) {
             println("Evaded the attack")

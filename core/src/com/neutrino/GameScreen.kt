@@ -12,16 +12,12 @@ import com.badlogic.gdx.utils.Pools
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
-import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
 import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
-import com.neutrino.game.domain.model.entities.utility.Entity
-import com.neutrino.game.domain.model.entities.utility.Interactable
-import com.neutrino.game.domain.model.entities.utility.Interaction
-import com.neutrino.game.domain.model.entities.utility.ItemEntity
+import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
 import ktx.app.KtxScreen
@@ -84,6 +80,9 @@ class GameScreen: KtxScreen {
         // Initiate pools
         val damagePool: Pool<DamageNumber> = Pools.get(DamageNumber::class.java)
         damagePool.fill(50)
+
+        // Player related methods
+        registerPlayerObservers()
     }
 
     private fun selectInput(showEq: Boolean) {
@@ -128,9 +127,6 @@ class GameScreen: KtxScreen {
 
         if (gameStage.showEq) {
             // show eq
-            //TODO force the refresh to execute only once, currently, the "uiStage.clickedItem == null" check resets the item positions of those changed while pickup icon is still visible
-            if (Player.findActor<Image>("item") != null && uiStage.clickedItem == null)
-                uiStage.refreshInventory()
             selectInput(showEq = true)
             uiStage.viewport.apply()
             uiStage.act(delta)
@@ -214,7 +210,7 @@ class GameScreen: KtxScreen {
                     val action = entity.getPrimaryAction()
                     if (action != null) {
                         if (action is Interaction.DESTROY)
-                            action.requiredDistance = Player.range
+                            action.requiredDistance = if ((entity as Destructable).destroyed) -1 else Player.range
                         // check the distance and act if close enough
                         if ((entityCoords.first in Player.xPos - action.requiredDistance .. Player.xPos + action.requiredDistance) &&
                             (entityCoords.second in Player.yPos - action.requiredDistance .. Player.yPos + action.requiredDistance)) {
@@ -229,16 +225,6 @@ class GameScreen: KtxScreen {
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
             // Add the move action if the movement animation has ended
             if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && gameStage.clickedCoordinates == null && Player.ai.action is Action.NOTHING) {
-                // check if the player wasn't attacked
-                if (Player.findActor<TextraLabel>("damage") != null) {
-                    gameStage.focusPlayer = true
-                    gameStage.lookingAround = false
-
-                    Player.ai.moveList = ArrayDeque()
-                    Player.ai.entityTargetCoords = null
-                    return
-                }
-
                 if (Turn.updateBatch.firstOrNull() is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
                     Player.ai.setMoveList(Player.ai.moveList.last().x, Player.ai.moveList.last().y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable(), true)
                 val tile = Player.ai.getMove()
@@ -309,6 +295,30 @@ class GameScreen: KtxScreen {
         }
         while (!Turn.playerAction)
             Turn.makeTurn()
+    }
+
+    private fun registerPlayerObservers() {
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.PLAYERHP
+            // stops the player movement and focuses him on the screen
+            override fun update(data: Any?): Boolean {
+                gameStage.focusPlayer = true
+                gameStage.lookingAround = false
+
+                Player.ai.moveList = ArrayDeque()
+                Player.ai.entityTargetCoords = null
+                return true
+            }
+        })
+
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.PICKUP
+            override fun update(data: Any?): Boolean {
+                if (gameStage.showEq)
+                    uiStage.refreshInventory()
+                return true
+            }
+        })
     }
 
 }

@@ -24,11 +24,16 @@ class SquidGeneration (
 
     private val tilesetTypes: List<TilesetType> = listOf(
         TilesetType.DEFAULT_DUNGEON, TilesetType.CAVES_LIMIT_CONNECTIVITY, TilesetType.CORNER_CAVES,
-        TilesetType.HORIZONTAL_CORRIDORS_B, TilesetType.HORIZONTAL_CORRIDORS_C,
-        TilesetType.OPEN_AREAS, TilesetType.REFERENCE_CAVES,
+        // Boss rooms, mines, rocky maps
+//        TilesetType.HORIZONTAL_CORRIDORS_B, TilesetType.HORIZONTAL_CORRIDORS_C,
+//        TilesetType.OPEN_AREAS,
+        TilesetType.REFERENCE_CAVES,
         TilesetType.MAZE_A, TilesetType.MAZE_B,
-        TilesetType.ROOMS_AND_CORRIDORS_A, TilesetType.ROOMS_AND_CORRIDORS_B,
-        TilesetType.ROUND_ROOMS_DIAGONAL_CORRIDORS, TilesetType.SIMPLE_CAVES
+//        TilesetType.ROOMS_AND_CORRIDORS_A,
+        TilesetType.ROOMS_AND_CORRIDORS_B,
+        // Caves
+//        TilesetType.ROUND_ROOMS_DIAGONAL_CORRIDORS,
+        TilesetType.SIMPLE_CAVES
     )
 
     fun generateDungeon() {

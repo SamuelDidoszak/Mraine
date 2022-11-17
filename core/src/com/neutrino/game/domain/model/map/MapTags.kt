@@ -25,7 +25,7 @@ enum class MapTags(val entityParams: EntityParams, val characterList: List<KClas
             Rat::class as KClass<Character>
         ),
         itemList = listOf(
-            Pair(Gold::class as KClass<Item>, 50f),
+            Pair(Gold::class as KClass<Item>, 40f),
             Pair(SmallHealingPotion::class as KClass<Item>, 5f),
             Pair(ScrollOfDefence::class as KClass<Item>, 0.3f),
             Pair(Knife::class as KClass<Item>, 5f)

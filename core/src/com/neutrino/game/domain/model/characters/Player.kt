@@ -18,15 +18,15 @@ import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
 
 object Player : Character(0, 0, 0.0), HasInventory {
-    override var hpMax: Float = 20f
+    override var hpMax: Float = 30f
     override var mpMax: Float = 10f
-    override var strength: Float = 4.5f
+    override var strength: Float = 3f
     override var dexterity: Float = 2f
     override var intelligence: Float = 0f
     override var luck: Float = 2f
     override var damage: Float = 0f
     override var damageVariation: Float = 1f
-    override var defence: Float = 2f
+    override var defence: Float = 0f
     override var criticalChance: Float = 0.3f
     override var experience: Float = 0f
     override var movementSpeed: Double = 1.0

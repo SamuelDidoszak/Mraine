@@ -75,11 +75,9 @@ class GenerateItems(
 
         // Add remaining items onto the floor
         if (generationParams.canGenerateOnTheFloor) {
-            for (item in itemPool) {
-                for (tier in itemPool) {
-                    for (item in tier) {
-                        addItem(item)
-                    }
+            for (tier in itemPool) {
+                for (item in tier) {
+                    addItem(item)
                 }
             }
         }

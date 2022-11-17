@@ -13,11 +13,12 @@ class Diagnostics: Table() {
     private var time = System.nanoTime()
     private var totalTime: Long = 0
 
-    private val dungeonTypeLabel = TextraLabel("Current dungeon", KnownFonts.getStandardFamily())
+    private val dungeonTypeLabel = TextraLabel("current dungeon", KnownFonts.getStandardFamily())
     private val fpsLabel = TextraLabel("fps", KnownFonts.getStandardFamily())
     private val memoryLabel = TextraLabel("memory", KnownFonts.getStandardFamily())
     private val renderLabel = TextraLabel("render time", KnownFonts.getStandardFamily())
     private val maxRenderTimeLabel = TextraLabel("max render time", KnownFonts.getStandardFamily())
+    private val cameraPositionLabel = TextraLabel("current position", KnownFonts.getStandardFamily())
 
     init {
         dungeonTypeLabel.align = Align.left
@@ -25,16 +26,19 @@ class Diagnostics: Table() {
         memoryLabel.align = Align.left
         renderLabel.align = Align.left
         maxRenderTimeLabel.align = Align.left
+        cameraPositionLabel.align = Align.left
         dungeonTypeLabel.wrap = true
         fpsLabel.wrap = true
         memoryLabel.wrap = true
         renderLabel.wrap = true
         maxRenderTimeLabel.wrap = true
+        cameraPositionLabel.wrap = true
         dungeonTypeLabel.name = "dungeonTypeLabel"
         fpsLabel.name = "fpsLabel"
         memoryLabel.name = "memoryLabel"
         renderLabel.name = "renderLabel"
         maxRenderTimeLabel.name = "maxRenderLabel"
+        cameraPositionLabel.name = "cameraPositionLabel"
 
         clip(true)
         align(Align.left)
@@ -48,6 +52,8 @@ class Diagnostics: Table() {
         add(renderLabel).left().width(190f)
         row().pad(4f)
         add(maxRenderTimeLabel).left().width(190f)
+        row().pad(4f)
+        add(cameraPositionLabel).left().width(190f)
         name = "diagnostics"
         pack()
 
@@ -70,6 +76,10 @@ class Diagnostics: Table() {
     fun setDungeonType(type: String) {
         dungeonTypeLabel.setText("[%75]$type")
     }
+    private var cameraPositionText = ""
+    fun updatePosition(x: Int, y: Int) {
+        cameraPositionText = "[%75]Camera position: x: $x y: $y"
+    }
 
     fun updateValues(renderStartTime: Long?) {
         if (!isVisible)
@@ -87,6 +97,7 @@ class Diagnostics: Table() {
             return
         fpsLabel.setText("[%75]${Gdx.graphics.framesPerSecond} fps")
         memoryLabel.setText("[%75]${(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576} MB")
+        cameraPositionLabel.setText(cameraPositionText)
         if (renderStartTime != null)
             renderLabel.setText("[%75]render: ${(System.nanoTime() - renderStartTime) / 1000000f} ms")
         totalTime = 0

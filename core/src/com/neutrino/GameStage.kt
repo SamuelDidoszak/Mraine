@@ -15,10 +15,10 @@ import com.neutrino.game.graphics.utility.ItemDetailsPopup
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 class GameStage(
-    viewport: Viewport,
-//    batch: SpriteBatch
+    viewport: Viewport
 ): Stage(viewport) {
     var level: Level? = null
     var startXPosition: Float = 0f
@@ -43,6 +43,14 @@ class GameStage(
 
     fun setCameraPosition(xPos: Int, yPos: Int) {
         camera.position.lerp(Vector3(xPos * 64f, startYPosition - yPos * 64f, camera.position.z), 0.03f)
+    }
+
+    fun getCameraPosition(): Pair<Int, Int> {
+        val gameCamera = camera as OrthographicCamera
+        val yPos = (level!!.height - gameCamera.position.y) / 64
+        val xPos = (gameCamera.position.x / 64)
+
+        return Pair(xPos.roundToInt(), yPos.roundToInt())
     }
 
     fun isInCamera(tileX: Int, tileY: Int): Boolean {

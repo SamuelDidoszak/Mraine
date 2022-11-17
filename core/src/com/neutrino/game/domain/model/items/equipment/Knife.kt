@@ -19,7 +19,7 @@ class Knife: EquipmentItem(), ItemType.EQUIPMENT.INHAND.ONEHANDED {
     override var goldValueOg: Int = 15
 
     override val modifierList: ArrayList<Any> = arrayListOf(
-        ModifyStat(StatsEnum.DAMAGE, 3f),
+        ModifyStat(StatsEnum.DAMAGE, 1f),
         // TODO DYNAMIC PLAYER
         // example
 //        Event.HEAL(Player, false, 0f, Turn.turn, 1.0, Int.MAX_VALUE)

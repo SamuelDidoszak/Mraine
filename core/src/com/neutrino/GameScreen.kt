@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.input.GestureDetector
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Pool
 import com.badlogic.gdx.utils.Pools
@@ -92,8 +91,7 @@ class GameScreen: KtxScreen {
             Gdx.input.inputProcessor = gameInputMultiplexer
             hudStage.darkenScreen(false)
             isEqVisible = false
-            // add dropped items here
-            // TODO stack dropped items
+            // drops items
             while (uiStage.itemDropList.isNotEmpty())
                 gameStage.level!!.map.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
             hudStage.refreshHotBar()
@@ -102,8 +100,11 @@ class GameScreen: KtxScreen {
             hudStage.darkenScreen(true)
             isEqVisible = true
             // refresh inventory
-            uiStage.refreshInventory()
-            hudStage.refreshHotBar()
+            if (uiStage.forceRefreshInventory) {
+                uiStage.refreshInventory()
+                hudStage.refreshHotBar()
+                uiStage.forceRefreshInventory = false
+            }
         }
     }
 
@@ -140,7 +141,10 @@ class GameScreen: KtxScreen {
             }
         }
 
+        // Diagnostics and debug information
         hudStage.diagnostics.updateValues(startNano)
+        val cameraPosition = gameStage.getCameraPosition()
+        hudStage.diagnostics.updatePosition(cameraPosition.first, cameraPosition.second)
     }
 
     override fun dispose() {
@@ -165,11 +169,6 @@ class GameScreen: KtxScreen {
         if ((Player.hasActions() || gameStage.focusPlayer) && !gameStage.lookingAround) {
             gameStage.setCameraToPlayer()
             gameStage.focusPlayer = !gameStage.isPlayerFocused()
-        }
-
-        // TODO add items to the hotbar more efficiently
-        if (Player.findActor<Image>("item") != null && uiStage.clickedItem == null) {
-            hudStage.refreshHotBar()
         }
 
         // decide on the player action. They are executed in the Turn.makeTurn method along with ai actions
@@ -314,8 +313,13 @@ class GameScreen: KtxScreen {
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PICKUP
             override fun update(data: Any?): Boolean {
-                if (gameStage.showEq)
+                if (gameStage.showEq && uiStage.clickedItem == null)
                     uiStage.refreshInventory()
+                else
+                    uiStage.forceRefreshInventory = true
+
+                if (uiStage.clickedItem == null)
+                    hudStage.refreshHotBar()
                 return true
             }
         })

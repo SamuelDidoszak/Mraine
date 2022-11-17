@@ -357,6 +357,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         }
     }
 
+    var forceRefreshInventory: Boolean = false
     fun refreshInventory() {
         (invScreen.actor as Table).children.forEach {
             (it as Container<*>).actor = null

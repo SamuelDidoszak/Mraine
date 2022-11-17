@@ -11,13 +11,13 @@ import com.neutrino.game.domain.model.items.edible.Meat
 import kotlin.reflect.KClass
 
 class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Randomization {
-    override var hpMax: Float = 15f
+    override var hpMax: Float = 13f
     override var mpMax: Float = 10f
     override var strength: Float = 2f
     override var dexterity: Float = 2f
     override var intelligence: Float = 0f
     override var luck: Float = 2f
-    override var damage: Float = 1.75f
+    override var damage: Float = 1.5f
     override var damageVariation: Float = 0.5f
     override var defence: Float = 0.5f
     override var criticalChance: Float = 0.05f
@@ -53,7 +53,7 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ran
 
     private fun randomizeStats() {
 //        movementSpeed = movementSpeed.randomizeByValue(0.3).roundToDecimalPlaces(10)
-        hpMax = hpMax.randomizeByPercent(0.2f).roundToDecimalPlaces(10)
+//        hpMax = hpMax.randomizeByPercent(0.2f).roundToDecimalPlaces(10)
     }
 
 }

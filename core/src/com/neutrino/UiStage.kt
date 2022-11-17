@@ -49,8 +49,10 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     private val uiElements: Map<String, TextureAtlas.AtlasRegion> = mapOf(
         "BottomBar" to uiAtlas.findRegion("BottomBar"),
         "InventoryBorder" to uiAtlas.findRegion("InventoryBorder"),
-        "EqClosed" to uiAtlas.findRegion("EqClosed"),
-        "EqOpen" to uiAtlas.findRegion("EqOpen"),
+        "EquipmentScreen" to uiAtlas.findRegion("EquipmentScreen"),
+        "Background" to uiAtlas.findRegion("Background"),
+        "EquipmentClosed" to uiAtlas.findRegion("EquipmentClosed"),
+        "EquipmentOpen" to uiAtlas.findRegion("EquipmentOpen"),
         "InventoryClosed" to uiAtlas.findRegion("InventoryClosed"),
         "InventoryOpen" to uiAtlas.findRegion("InventoryOpen"),
         "SkillsClosed" to uiAtlas.findRegion("SkillsClosed"),
@@ -88,8 +90,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                                                                     Inventory related variables
      */
 
-    private lateinit var invScreen: ScrollPane
-    private val inventoryBorder = Image(uiElements["InventoryBorder"])
+    private lateinit var inventory: ScrollPane
+    private val border = Image(uiElements["InventoryBorder"])
     private val mainTabsGroup = Group()
     private val openTabsGroup = Group()
     private val sortingTabsGroup = Group()
@@ -100,22 +102,104 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     }
 
     /** ======================================================================================================================================================
+                                                                    Equipment related variables
+    */
+
+    private val equipment: Group = Group()
+    private val equipmentScreen = Image(uiElements["EquipmentScreen"])
+    private val stats: Group = Group()
+    private lateinit var equipmentTable: Table
+
+    /** ======================================================================================================================================================
+                                                                    Other pages
+    */
+
+    private val skills = Group()
+    private val skillsScreen = Image(uiElements["Background"])
+    private val quests = Group()
+    private val questsScreen = Image(uiElements["Background"])
+    private val map = Group()
+    private val mapScreen = Image(uiElements["Background"])
+
+
+    /** ======================================================================================================================================================
                                                                     Initializations
      */
 
     fun initialize() {
         addInventory()
-        addActor(inventoryBorder)
-        inventoryBorder.name = "border"
+        addEquipment()
+        addScreensTemp()
+        equipment.isVisible = false
+        addActor(border)
+        border.name = "border"
 
         addTabs()
         mainTabsGroup.zIndex = 0
         sortingTabsGroup.zIndex = 1
-        scrollFocus = invScreen
+        scrollFocus = inventory
+        currentScreen = inventory
 
         mainTabsGroup.name = "mainTabsGroup"
         openTabsGroup.name = "openTabsGroup"
         sortingTabsGroup.name = "sortingTabsGroup"
+    }
+
+    private fun addScreensTemp() {
+        skills.name = "skills"
+        skills.addActor(skillsScreen)
+        quests.name = "quests"
+        quests.addActor(questsScreen)
+        map.name = "map"
+        map.addActor(mapScreen)
+
+        addActor(skills)
+        skills.isVisible = false
+        addActor(quests)
+        quests.isVisible = false
+        addActor(map)
+        map.isVisible = false
+    }
+
+    private fun addEquipment() {
+        equipment.name = "equipment"
+        equipment.addActor(equipmentScreen)
+
+        stats.name = "stats"
+
+
+
+        equipment.addActor(stats)
+
+        val namesList = listOf(
+            "gloves", "head", "amulet",
+            "lHand", "torso", "rHand",
+            "lRing", "legs", "rRing",
+            "money", "feet", "bag"
+        )
+
+        equipmentTable = scene2d.table {
+            pad(0f)
+            this.setFillParent(false)
+            clip(true)
+            for (x in 0 until 4) {
+                for (y in 0 until 3) {
+                    add(container {
+                        name = namesList[x * 3 + y]
+                        align(Align.bottomLeft)
+                    }).size(96f, 96f).pad(8f)
+                }
+                row().pad(0f).space(0f)
+            }
+        }
+        equipmentTable.pack()
+        equipmentTable.name = "equipmentTable"
+        equipmentTable.layout()
+        equipmentTable.setDebug(true, true)
+        equipment.addActor(equipmentTable)
+        equipmentTable.setPosition(border.width - equipmentTable.width - 12 - 8, 38f)
+
+        addActor(equipment)
     }
 
     private fun addInventoryActorOld() {
@@ -142,17 +226,17 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 }
         }
         table.pack()
-        invScreen = ScrollPane(table)
-        invScreen.name = "playerEq"
+        inventory = ScrollPane(table)
+        inventory.name = "playerEq"
         // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
-        invScreen.setScrollingDisabled(true, false)
-        invScreen.setOverscroll(false, false)
-        invScreen.setScrollbarsVisible(false)
-        invScreen.layout()
+        inventory.setScrollingDisabled(true, false)
+        inventory.setOverscroll(false, false)
+        inventory.setScrollbarsVisible(false)
+        inventory.layout()
 
-        addActor(invScreen)
-        invScreen.setSize(invScreen.width, invScreen.height)
-        invScreen.centerPosition()
+        addActor(inventory)
+        inventory.setSize(inventory.width, inventory.height)
+        inventory.centerPosition()
     }
 
     private fun getCellDrawable(cellNumber: Int, rows: Int): Drawable {
@@ -200,18 +284,18 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 }
         }
         table.pack()
-        invScreen = ScrollPane(table)
-        invScreen.name = "playerEq"
+        inventory = ScrollPane(table)
+        inventory.name = "inventory"
         // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
-        invScreen.setScrollingDisabled(true, false)
-        invScreen.setOverscroll(false, false)
-        invScreen.setScrollbarsVisible(false)
-        invScreen.layout()
+        inventory.setScrollingDisabled(true, false)
+        inventory.setOverscroll(false, false)
+        inventory.setScrollbarsVisible(false)
+        inventory.layout()
 
-        addActor(invScreen)
-        invScreen.width = inventoryBorder.width - 2 * (borderWidth - 2)
-        invScreen.height = inventoryBorder.height - 2 * borderHeight + 4
-        invScreen.setPosition(invScreen.x + 2, invScreen.y + 2)
+        addActor(inventory)
+        inventory.width = border.width - 2 * (borderWidth - 2)
+        inventory.height = border.height - 2 * borderHeight + 4
+        inventory.setPosition(inventory.x + 2, inventory.y + 2)
     }
 
     /** Adds tabs of the UI */
@@ -220,13 +304,13 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         val yPos = - 14f
 
         // Main tabs
-        val eqClosed = Image(uiElements["EqClosed"])
-        eqClosed.name = "EqClosed"
-        eqClosed.setPosition(xPos, yPos)
-        val eqOpen = Image(uiElements["EqOpen"])
-        eqOpen.name = "EqOpen"
-        eqOpen.setPosition(xPos, yPos + 10)
-        eqOpen.isVisible = false
+        val equipmentClosed = Image(uiElements["EquipmentClosed"])
+        equipmentClosed.name = "EquipmentClosed"
+        equipmentClosed.setPosition(xPos, yPos)
+        val equipmentOpen = Image(uiElements["EquipmentOpen"])
+        equipmentOpen.name = "EquipmentOpen"
+        equipmentOpen.setPosition(xPos, yPos + 10)
+        equipmentOpen.isVisible = false
         xPos += 82f
         val inventoryClosed = Image(uiElements["InventoryClosed"])
         inventoryClosed.name = "InventoryClosed"
@@ -315,7 +399,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         mainTabsGroup.addActor(questsClosed)
         mainTabsGroup.addActor(skillsClosed)
         mainTabsGroup.addActor(inventoryClosed)
-        mainTabsGroup.addActor(eqClosed)
+        mainTabsGroup.addActor(equipmentClosed)
 
         // Adding open tabs
         openTabsGroup.addActor(sortingOpen)
@@ -323,7 +407,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         openTabsGroup.addActor(questsOpen)
         openTabsGroup.addActor(skillsOpen)
         openTabsGroup.addActor(inventoryOpen)
-        openTabsGroup.addActor(eqOpen)
+        openTabsGroup.addActor(equipmentOpen)
 
         // Adding sorting tabs
         sortingTabsGroup.addActor(sortingDesc)
@@ -359,7 +443,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
     var forceRefreshInventory: Boolean = false
     fun refreshInventory() {
-        (invScreen.actor as Table).children.forEach {
+        (inventory.actor as Table).children.forEach {
             (it as Container<*>).actor = null
             val cellNumber = it.name.toInt()
             if (cellNumber < Player.inventory.itemList.size)
@@ -372,23 +456,31 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     fun updateSize(width: Int, height: Int) {
         // Update scale
         while(true) {
-            if (width < 2 * (inventoryBorder.width - 8) * currentScale) {
+            if (width < 2 * (border.width - 8) * currentScale) {
                 currentScale -= 0.25f
-            } else if (width > 2 * (inventoryBorder.width - 8) * (currentScale + 0.25f)) {
+            } else if (width > 2 * (border.width - 8) * (currentScale + 0.25f)) {
                 currentScale += 0.25f
             } else break
         }
 
         actors.forEach { it.setScale(currentScale) }
-        inventoryBorder.setPosition((width - inventoryBorder.widthScaled()) / 2f, (height - inventoryBorder.heightScaled()) / 2f)
-        invScreen.setPosition((this.width - invScreen.widthScaled()) / 2f, (this.height - invScreen.heightScaled()) / 2f)
-        invScreen.setPosition(invScreen.x + 2 * currentScale, invScreen.y + 2 * currentScale)
-        mainTabsGroup.setPosition(inventoryBorder.x, inventoryBorder.y + inventoryBorder.heightScaled())
-        openTabsGroup.setPosition(inventoryBorder.x, inventoryBorder.y + inventoryBorder.heightScaled())
-        sortingTabsGroup.setPosition(inventoryBorder.x, inventoryBorder.y + inventoryBorder.heightScaled())
+        border.setPosition((width - border.widthScaled()) / 2f, (height - border.heightScaled()) / 2f)
+        inventory.setPosition((this.width - inventory.widthScaled()) / 2f, (this.height - inventory.heightScaled()) / 2f)
+        inventory.setPosition(inventory.x + 2 * currentScale, inventory.y + 2 * currentScale)
+        equipment.setPosition(border.x, border.y)
+        skills.setPosition(border.x, border.y)
+        quests.setPosition(border.x, border.y)
+        map.setPosition(border.x, border.y)
+        mainTabsGroup.setPosition(border.x, border.y + border.heightScaled())
+        openTabsGroup.setPosition(border.x, border.y + border.heightScaled())
+        sortingTabsGroup.setPosition(border.x, border.y + border.heightScaled())
 
-        inventoryBorder.roundPosition()
-        invScreen.roundPosition()
+        border.roundPosition()
+        inventory.roundPosition()
+        equipment.roundPosition()
+        skills.roundPosition()
+        quests.roundPosition()
+        map.roundPosition()
         mainTabsGroup.roundPosition()
         openTabsGroup.roundPosition()
         sortingTabsGroup.roundPosition()
@@ -415,7 +507,47 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     private lateinit var currentSorting: Actor
     private var isSortAscending: Boolean = false
 
+    private var currentScreen: Group = Group()
+
     private fun activateTab() {
+        // Don't change the screen if sorting was clicked
+        if (!hoveredTab!!.name.startsWith("Sorting")) {
+            when (activeTab.name) {
+                "InventoryOpen" -> inventory.isVisible = false
+                "EquipmentOpen" -> equipment.isVisible = false
+                "SkillsOpen" -> skills.isVisible = false
+                "QuestsOpen" -> quests.isVisible = false
+                "MapOpen" -> map.isVisible = false
+            }
+
+            when (hoveredTab!!.name) {
+                "InventoryClosed" -> {
+                    inventory.isVisible = true
+                    currentScreen = inventory
+                }
+                "EquipmentClosed" -> {
+                    equipment.isVisible = true
+                    currentScreen = equipment
+                }
+                "SkillsClosed" -> {
+                    skills.isVisible = true
+                    currentScreen = skills
+                }
+                "QuestsClosed" -> {
+                    quests.isVisible = true
+                    currentScreen = quests
+                }
+                "MapClosed" -> {
+                    map.isVisible = true
+                    currentScreen = map
+                }
+            }
+        }
+
+        /** ======================================================================================================================================================
+                                                                        Sorting and tabs
+        */
+
         if (activeTab.name == "SortingOpen") {
             if (hoveredTab!!.name == "SortingClosed") {
                 // force asc/desc tab to original position
@@ -428,7 +560,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 mainTabsGroup.isVisible = true
                 sortingTabsGroup.isVisible = false
                 activeTab.isVisible = false
-                activeTab = openTabsGroup.children.find { it.name == "InventoryOpen" }!!
+                activeTab = openTabsGroup.children.find { it.name == currentScreen.name.replaceFirstChar { it.uppercaseChar() }.plus("Open") }!!
                 activeTab.isVisible = true
                 return
             }
@@ -483,25 +615,30 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         if (button == Input.Buttons.RIGHT)
             return super.touchDown(screenX, screenY, pointer, button)
 
-        // Sets the click behavior for the item drop
-        if (clickedItem != null) {
-            timeClicked = TimeUtils.millis()
-            return super.touchDown(screenX, screenY, pointer, button)
+        when (currentScreen) {
+            inventory -> {
+                // Sets the click behavior for the item drop
+                if (clickedItem != null) {
+                    timeClicked = TimeUtils.millis()
+                    return super.touchDown(screenX, screenY, pointer, button)
+                }
+
+                val coord: Vector2 = screenToStageCoordinates(
+                    Vector2(screenX.toFloat(), screenY.toFloat())
+                )
+                // gets the eq ui and sets the originalEq
+                val clickedInv = getInvClicked(coord.x, coord.y)
+                if (clickedInv != null) {
+                    if (clickedInv.name == "inventory")
+                        originalInventory = Player.inventory
+                    // Sets the clicked item for drag handling
+                    clickedItem = getInventoryCell(coord.x, coord.y, clickedInv)?.actor
+                    if (clickedItem != null)
+                        timeClicked = TimeUtils.millis()
+                }
+            }
         }
 
-        val coord: Vector2 = screenToStageCoordinates(
-            Vector2(screenX.toFloat(), screenY.toFloat())
-        )
-        // gets the eq ui and sets the originalEq
-        val clickedInv = getInvClicked(coord.x, coord.y)
-        if (clickedInv != null) {
-            if (clickedInv.name == "playerEq")
-                originalInventory = Player.inventory
-            // Sets the clicked item for drag handling
-            clickedItem = getInventoryCell(coord.x, coord.y, clickedInv)?.actor
-            if (clickedItem != null)
-                timeClicked = TimeUtils.millis()
-        }
         return super.touchDown(screenX, screenY, pointer, button)
     }
 
@@ -511,50 +648,54 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     var originalStackItem: EqActor? = null
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
-        if (clickedItem == null)
-            return false
+        when (currentScreen) {
+            inventory -> {
+                if (clickedItem == null)
+                    return false
 
-        if (dragItem == null && originalContainer == null) {
-            dragItem = TimeUtils.millis() - timeClicked >= 650
-            if (dragItem!!)
-                pickUpItem()
-        }
+                if (dragItem == null && originalContainer == null) {
+                    dragItem = TimeUtils.millis() - timeClicked >= 650
+                    if (dragItem!!)
+                        pickUpItem()
+                }
 
-        if (dragItem == true) {
-            if (detailsPopup != null)
-                this.actors.removeValue(detailsPopup, true)
+                if (dragItem == true) {
+                    if (detailsPopup != null)
+                        this.actors.removeValue(detailsPopup, true)
 
-            val coord: Vector2 = screenToStageCoordinates(
-                Vector2(screenX.toFloat(), screenY.toFloat())
-            )
-            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * 2, coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * 2)
-            return true
-        }
+                    val coord: Vector2 = screenToStageCoordinates(
+                        Vector2(screenX.toFloat(), screenY.toFloat())
+                    )
+                    clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * 2, coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * 2)
+                    return true
+                }
 
-        // TODO change this behavior to manage amount sizes
-        //      dragItem false means that click-hold was quick. Null means that an item was previously picked up
+                // TODO change this behavior to manage amount sizes
+                //      dragItem false means that click-hold was quick. Null means that an item was previously picked up
 
-        // An item was previously picked up. Adjust its stack size
-        if (dragItem == null) {
-            // Initialize the value
-            if (previousDragPosition == -2137) {
-                previousDragPosition = screenY
-                return super.touchDragged(screenX, screenY, pointer)
-            }
-            // Negative values mean upwards drag, positive downwards
-            val dragStrength = previousDragPosition - screenY
+                // An item was previously picked up. Adjust its stack size
+                if (dragItem == null) {
+                    // Initialize the value
+                    if (previousDragPosition == -2137) {
+                        previousDragPosition = screenY
+                        return super.touchDragged(screenX, screenY, pointer)
+                    }
+                    // Negative values mean upwards drag, positive downwards
+                    val dragStrength = previousDragPosition - screenY
 
-            if ((clickedItem as EqActor).item.amount != null) {
-                println((clickedItem as EqActor).item.amount!! - dragStrength.sign)
-            }
-        }
+                    if ((clickedItem as EqActor).item.amount != null) {
+                        println((clickedItem as EqActor).item.amount!! - dragStrength.sign)
+                    }
+                }
 
 
-        if (dragItem != true) {
-            if (originalContainer != null) {
-                clickedItem!!.setScale(1f, 1f)
-                originalContainer!!.actor = clickedItem
-                itemPassedToHud()
+                if (dragItem != true) {
+                    if (originalContainer != null) {
+                        clickedItem!!.setScale(1f, 1f)
+                        originalContainer!!.actor = clickedItem
+                        itemPassedToHud()
+                    }
+                }
             }
         }
 
@@ -575,54 +716,58 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             return clickedInMenu
         }
 
-        if (button == Input.Buttons.LEFT) {
-            if (detailsPopup != null)
-                this.actors.removeValue(detailsPopup, true)
+        when (currentScreen) {
+            inventory -> {
+                if (button == Input.Buttons.LEFT) {
+                    if (detailsPopup != null)
+                        this.actors.removeValue(detailsPopup, true)
 
-            if (dragItem == true) {
-                parseItemDrop(coord.x, coord.y)
-                clickedItem = null
-                originalContainer = null
-                dragItem = null
-                originalStackItem = null
-            }
-            // TODO potential bugs i guess
-            else if (dragItem == false) {
-                clickedItem = null
-                dragItem = null
-            }
+                    if (dragItem == true) {
+                        parseItemDrop(coord.x, coord.y)
+                        clickedItem = null
+                        originalContainer = null
+                        dragItem = null
+                        originalStackItem = null
+                    }
+                    // TODO potential bugs i guess
+                    else if (dragItem == false) {
+                        clickedItem = null
+                        dragItem = null
+                    }
 
-            // Dropping the clicked item
-            if (originalContainer != null && clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
-                parseItemDrop(coord.x, coord.y)
-                clickedItem = null
-                originalContainer = null
-            }
+                    // Dropping the clicked item
+                    if (originalContainer != null && clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
+                        parseItemDrop(coord.x, coord.y)
+                        clickedItem = null
+                        originalContainer = null
+                    }
 
-            // The item was clicked
-            if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
-                pickUpItem()
-                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * currentScale * 1.25f) / 2 - 6 * currentScale,
-                    coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * currentScale * 1.25f) / 2 - 9 * currentScale)
-                return super.touchUp(screenX, screenY, pointer, button)
-            }
-        }
-        else if (button == Input.Buttons.RIGHT && clickedItem == null) {
-            if (contextPopup != null) {
-                this.actors.removeValue(contextPopup, true)
-                contextPopup = null
-            }
-            else {
-                val hoveredInv = getInvClicked(coord.x, coord.y)
-                if (hoveredInv != null) {
-                    val hoveredItem: Actor? = getInventoryCell(coord.x, coord.y, hoveredInv)?.actor
-                    if (hoveredItem != null) {
-                        contextPopup = itemContextPopup.createContextMenu((hoveredItem as EqActor).item, coord.x, coord.y)
-                        if (contextPopup != null) {
-                            if (detailsPopup != null)
-                                this.actors.removeValue(detailsPopup, true)
-                            addActor(contextPopup)
-                            contextPopup?.setPosition(coord.x, coord.y)
+                    // The item was clicked
+                    if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
+                        pickUpItem()
+                        clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * currentScale * 1.25f) / 2 - 6 * currentScale,
+                            coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * currentScale * 1.25f) / 2 - 9 * currentScale)
+                        return super.touchUp(screenX, screenY, pointer, button)
+                    }
+                }
+                else if (button == Input.Buttons.RIGHT && clickedItem == null) {
+                    if (contextPopup != null) {
+                        this.actors.removeValue(contextPopup, true)
+                        contextPopup = null
+                    }
+                    else {
+                        val hoveredInv = getInvClicked(coord.x, coord.y)
+                        if (hoveredInv != null) {
+                            val hoveredItem: Actor? = getInventoryCell(coord.x, coord.y, hoveredInv)?.actor
+                            if (hoveredItem != null) {
+                                contextPopup = itemContextPopup.createContextMenu((hoveredItem as EqActor).item, coord.x, coord.y)
+                                if (contextPopup != null) {
+                                    if (detailsPopup != null)
+                                        this.actors.removeValue(detailsPopup, true)
+                                    addActor(contextPopup)
+                                    contextPopup?.setPosition(coord.x, coord.y)
+                                }
+                            }
                         }
                     }
                 }
@@ -646,7 +791,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
         // move tabs
         var tab = getTabByPosition(screenX.toFloat(), screenY.toFloat())
-        if (inventoryBorder.isIn(screenX.toFloat(), screenY.toFloat()))
+        if (border.isIn(screenX.toFloat(), screenY.toFloat()))
             tab = null
 
         if (tab != null)
@@ -656,43 +801,48 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
         hoveredTab = tab
 
-        // create new popup
-        val hoveredInv = getInvClicked(coord.x, coord.y)
-        var hoveredItem: Actor? = null
-        if (hoveredInv != null && contextPopup == null) {
-            hoveredItem = getInventoryCell(coord.x, coord.y, hoveredInv)?.actor
-            if (hoveredItem != null && (hoveredItem as EqActor).item != displayedItem) {
-                if (detailsPopup != null)
+        when (currentScreen) {
+            inventory -> {
+                // create new popup
+                val hoveredInv = getInvClicked(coord.x, coord.y)
+                var hoveredItem: Actor? = null
+                if (hoveredInv != null && contextPopup == null) {
+                    hoveredItem = getInventoryCell(coord.x, coord.y, hoveredInv)?.actor
+                    if (hoveredItem != null && (hoveredItem as EqActor).item != displayedItem) {
+                        if (detailsPopup != null)
+                            this.actors.removeValue(detailsPopup, true)
+                        detailsPopup = ItemDetailsPopup(hoveredItem.item, true)
+                        detailsPopup!!.setPosition(coord.x, coord.y)
+                        displayedItem = hoveredItem.item
+                        addActor(detailsPopup)
+                        detailsPopup!!.setPosition(coord.x, coord.y)
+                        (detailsPopup!! as ItemDetailsPopup).assignBg(coord.x, coord.y)
+                    }
+                }
+
+                // delete or move the popup
+                if (hoveredInv == null || hoveredItem == null) {
+                    displayedItem = null
                     this.actors.removeValue(detailsPopup, true)
-                detailsPopup = ItemDetailsPopup(hoveredItem.item, true)
-                detailsPopup!!.setPosition(coord.x, coord.y)
-                displayedItem = hoveredItem.item
-                addActor(detailsPopup)
-                detailsPopup!!.setPosition(coord.x, coord.y)
-                (detailsPopup!! as ItemDetailsPopup).assignBg(coord.x, coord.y)
+                    detailsPopup = null
+                } else {
+                    detailsPopup!!.setPosition(coord.x, coord.y)
+                }
+
+                // TODO pass item from hud
+//              // check if there is an item in hud
+//              if (hudStage.clickedItem != null) {
+//                  clickedItem = hudStage.clickedItem
+//                  actors.add(clickedItem)
+//                  hudStage.passedItemToUi()
+//              }
+
+                if (clickedItem != null)
+                    clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * currentScale * 1.25f) / 2 - 6 * currentScale,
+                        coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * currentScale * 1.25f) / 2 - 9 * currentScale)
             }
         }
 
-        // delete or move the popup
-        if (hoveredInv == null || hoveredItem == null) {
-            displayedItem = null
-            this.actors.removeValue(detailsPopup, true)
-            detailsPopup = null
-        } else {
-            detailsPopup!!.setPosition(coord.x, coord.y)
-        }
-
-        // TODO pass item from hud
-//        // check if there is an item in hud
-//        if (hudStage.clickedItem != null) {
-//            clickedItem = hudStage.clickedItem
-//            actors.add(clickedItem)
-//            hudStage.passedItemToUi()
-//        }
-
-        if (clickedItem != null)
-            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * currentScale * 1.25f) / 2 - 6 * currentScale,
-                coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * currentScale * 1.25f) / 2 - 9 * currentScale)
         return super.mouseMoved(screenX, screenY)
     }
 
@@ -787,10 +937,10 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
     /** Returns the eq ui and sets the originalEq */
     private fun getInvClicked(x: Float, y: Float): ScrollPane? {
-        val inPlayerEq = (x in invScreen.x .. invScreen.x + invScreen.width * currentScale - 1 &&
-                y in invScreen.y .. invScreen.y + invScreen.height * currentScale - 1)
-        if (inPlayerEq) {
-            return invScreen
+        val inPlayerInventory = (x in inventory.x .. inventory.x + inventory.width * currentScale - 1 &&
+                y in inventory.y .. inventory.y + inventory.height * currentScale - 1)
+        if (inPlayerInventory) {
+            return inventory
         }
         else
             return null
@@ -938,7 +1088,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     override fun draw() {
         if (Player.inventorySizeChanged) {
             Player.inventorySizeChanged = false
-            actors.removeValue(invScreen, true)
+            actors.removeValue(inventory, true)
             addInventory()
         }
         super.draw()

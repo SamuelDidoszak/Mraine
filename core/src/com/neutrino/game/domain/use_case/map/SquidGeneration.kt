@@ -27,7 +27,7 @@ class SquidGeneration (
         // Boss rooms, mines, rocky maps
 //        TilesetType.HORIZONTAL_CORRIDORS_B, TilesetType.HORIZONTAL_CORRIDORS_C,
 //        TilesetType.OPEN_AREAS,
-        TilesetType.REFERENCE_CAVES,
+//        TilesetType.REFERENCE_CAVES,
         TilesetType.MAZE_A, TilesetType.MAZE_B,
 //        TilesetType.ROOMS_AND_CORRIDORS_A,
         TilesetType.ROOMS_AND_CORRIDORS_B,

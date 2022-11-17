@@ -26,19 +26,19 @@ class Equipment(val character: Character) {
     fun setItem(item: EquipmentItem) {
         var previousItem: EquipmentItem? = null
         when (item) {
-            is ItemType.EQUIPMENT.HELMET -> {
+            is ItemType.EQUIPMENT.HEAD -> {
                 previousItem = equipmentMap[EquipmentType.HELMET]
                 equipmentMap[EquipmentType.HELMET] = item
             }
-            is ItemType.EQUIPMENT.ARMOR -> {
+            is ItemType.EQUIPMENT.TORSO -> {
                 previousItem = equipmentMap[EquipmentType.ARMOR]
                 equipmentMap[EquipmentType.ARMOR] = item
             }
-            is ItemType.EQUIPMENT.LEGGINGS -> {
+            is ItemType.EQUIPMENT.LEGS -> {
                 previousItem = equipmentMap[EquipmentType.LEGGINGS]
                 equipmentMap[EquipmentType.LEGGINGS] = item
             }
-            is ItemType.EQUIPMENT.BOOTS -> {
+            is ItemType.EQUIPMENT.FEET -> {
                 previousItem = equipmentMap[EquipmentType.BOOTS]
                 equipmentMap[EquipmentType.BOOTS] = item
             }

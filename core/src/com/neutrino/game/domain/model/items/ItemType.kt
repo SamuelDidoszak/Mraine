@@ -52,10 +52,10 @@ sealed interface ItemType {
     interface MISC: ItemType
 
     sealed interface EQUIPMENT: ItemType {
-        interface HELMET: EQUIPMENT
-        interface ARMOR: EQUIPMENT
-        interface LEGGINGS: EQUIPMENT
-        interface BOOTS: EQUIPMENT
+        interface HEAD: EQUIPMENT
+        interface TORSO: EQUIPMENT
+        interface LEGS: EQUIPMENT
+        interface FEET: EQUIPMENT
         interface AMULET: EQUIPMENT
         interface LRING: EQUIPMENT
         interface RRING: EQUIPMENT

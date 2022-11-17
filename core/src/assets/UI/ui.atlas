@@ -1,34 +1,38 @@
 ui.png
-	size: 1024, 1024
+	size: 1024, 2048
 	repeat: none
-EqClosed
-	bounds: 860, 456, 104, 52
-EqOpen
-	bounds: 400, 244, 116, 56
+Background
+	bounds: 0, 988, 860, 524
+EquipmentClosed
+	bounds: 404, 196, 104, 52
+EquipmentOpen
+	bounds: 860, 1924, 116, 56
+EquipmentScreen
+	bounds: 0, 1512, 860, 524
 InventoryBorder
-	bounds: 0, 460, 860, 524
+	bounds: 0, 464, 860, 524
 InventoryClosed
-	bounds: 400, 300, 192, 52
+	bounds: 212, 244, 192, 52
 InventoryOpen
-	bounds: 0, 396, 212, 64
+	bounds: 0, 400, 212, 64
 MapClosed
-	bounds: 612, 408, 192, 52
+	bounds: 400, 304, 192, 52
 MapOpen
-	bounds: 0, 332, 212, 64
+	bounds: 0, 336, 212, 64
 QuestsClosed
-	bounds: 400, 352, 192, 52
+	bounds: 612, 412, 192, 52
 QuestsOpen
-	bounds: 0, 276, 212, 56
+	bounds: 0, 280, 212, 56
 SkillsClosed
-	bounds: 0, 224, 192, 52
+	bounds: 400, 356, 192, 52
 SkillsOpen
-	bounds: 212, 404, 212, 56
+	bounds: 212, 408, 212, 56
 SortingAsc
-	bounds: 400, 188, 112, 56
+	bounds: 404, 248, 112, 56
 SortingClosed
-	bounds: 512, 164, 104, 52
+	bounds: 300, 192, 104, 52
 SortingClosedOld
-	bounds: 592, 300, 111, 52
+	bounds: 188, 136, 111, 52
 SortingCustom
 	bounds: 0, 56, 188, 56
 SortingCustomOpen
@@ -36,36 +40,36 @@ SortingCustomOpen
 SortingDate
 	bounds: 0, 112, 188, 56
 SortingDateOpen
-	bounds: 212, 292, 188, 56
+	bounds: 212, 296, 188, 56
 SortingDesc
-	bounds: 612, 352, 112, 56
+	bounds: 188, 188, 112, 56
 SortingOpen
-	bounds: 860, 928, 116, 56
+	bounds: 860, 1980, 116, 56
 SortingType
-	bounds: 212, 236, 188, 56
+	bounds: 212, 352, 188, 56
 SortingTypeOpen
-	bounds: 212, 348, 188, 56
+	bounds: 424, 408, 188, 56
 SortingValue
-	bounds: 424, 404, 188, 56
+	bounds: 0, 224, 188, 56
 SortingValueOpen
 	bounds: 0, 168, 188, 56
 cellBottom
-	bounds: 860, 508, 84, 84
+	bounds: 860, 1504, 84, 84
 cellBottomLeft
-	bounds: 600, 216, 84, 84
+	bounds: 860, 1336, 84, 84
 cellBottomRight
-	bounds: 860, 676, 84, 84
+	bounds: 860, 1672, 84, 84
 cellLeft
-	bounds: 616, 132, 84, 84
+	bounds: 860, 1168, 84, 84
 cellMiddle
-	bounds: 724, 324, 84, 84
+	bounds: 860, 1252, 84, 84
 cellRight
-	bounds: 684, 216, 84, 84
+	bounds: 860, 1084, 84, 84
 cellTop
-	bounds: 860, 760, 84, 84
+	bounds: 860, 1756, 84, 84
 cellTopLeft
-	bounds: 860, 592, 84, 84
+	bounds: 860, 1588, 84, 84
 cellTopRight
-	bounds: 860, 844, 84, 84
+	bounds: 860, 1840, 84, 84
 cellUnavailable
-	bounds: 516, 216, 84, 84
+	bounds: 860, 1420, 84, 84

@@ -225,7 +225,7 @@ class GameScreen: KtxScreen {
             // Add the move action if the movement animation has ended
             if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && gameStage.clickedCoordinates == null && Player.ai.action is Action.NOTHING) {
                 if (Turn.updateBatch.firstOrNull() is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
-                    Player.ai.setMoveList(Player.ai.moveList.last().x, Player.ai.moveList.last().y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable(), true)
+                    Player.ai.setMoveList(Player.ai.moveList.last().x, Player.ai.moveList.last().y, Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()), true)
                 val tile = Player.ai.getMove()
                 Player.ai.action = Action.MOVE(tile.x, tile.y)
                 if (!gameStage.lookingAround)
@@ -276,7 +276,7 @@ class GameScreen: KtxScreen {
                     if (!Turn.currentLevel.allowsCharacterChangesImpassable(x, y))
                         Player.ai.action = Action.NOTHING
                     else
-                        Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
+                        Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
 
                     // Focus player either if he's off screen or if he clicked near his current position
                     if (!gameStage.isInCamera(Player.xPos, Player.yPos) ||

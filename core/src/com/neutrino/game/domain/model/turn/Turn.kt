@@ -15,6 +15,7 @@ import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
+import com.neutrino.game.domain.use_case.level.LevelUseCases
 import com.neutrino.game.lessThanDelta
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
@@ -72,16 +73,20 @@ object Turn {
      */
     val globalEventArray: EventArray = EventArray()
 
-
+    lateinit var levelUseCases: LevelUseCases
     var charactersUseCases: CharactersUseCases = CharactersUseCases(characterArray)
 
     private val seed = if (IsSeeded) GWTRNG(Seed) else GWTRNG()
     var dijkstraMap: DijkstraMap = DijkstraMap(seed)
 
+    var mapImpassableList: ArrayList<Coord> = ArrayList()
+
     fun setLevel(level: Level) {
         characterArray = level.characterArray
         characterMap = level.characterMap
         currentLevel = level
+        levelUseCases = LevelUseCases(level)
+        mapImpassableList = levelUseCases.getImpassable() as ArrayList<Coord>
         // terrain cost can be easily added by calling the initializeCost method.
         dijkstraMap.measurement = Measurement.EUCLIDEAN
 
@@ -146,6 +151,7 @@ object Turn {
                                             currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
                                         }
                                     }
+                                    mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
                                 }
                             }
                             is Interaction.OPEN -> {
@@ -153,6 +159,15 @@ object Turn {
                                 for (item in (action.entity as Container).itemList) {
                                     currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
                                 }
+                                mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
+                            }
+                            is Interaction.DOOR -> {
+                                action.interaction.act()
+                                if (action.entity.allowCharacterOnTop)
+                                    mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
+                                else
+                                    mapImpassableList.add(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
+
                             }
                             else -> {
                                 action.interaction.act()
@@ -208,7 +223,7 @@ object Turn {
             } else {
                 // initialize the ai if it's 10 tiles or less from the player
                 if (abs(character.xPos - Player.xPos) <= 10 && abs(character.yPos - Player.yPos) <= 10)
-                    character.ai.decide(Player.xPos, Player.yPos, dijkstraMap, charactersUseCases.getImpassable())
+                    character.ai.decide(Player.xPos, Player.yPos, dijkstraMap, mapImpassableList.plus(charactersUseCases.getImpassable()))
                 else
                     character.ai.action = Action.WAIT
 
@@ -217,7 +232,7 @@ object Turn {
                     is Action.MOVE -> {
                         if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
                             val prevCoord = character.ai.moveList.lastOrNull() ?: Coord.get(action.x, action.y)
-                            character.ai.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, charactersUseCases.getImpassable(), true)
+                            character.ai.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, mapImpassableList.plus(charactersUseCases.getImpassable()), true)
                             val coord = character.ai.getMove()
                             action = Action.MOVE(coord.x, coord.y)
                         }

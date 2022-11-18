@@ -9,6 +9,8 @@ import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraButton
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
@@ -61,7 +63,10 @@ class ItemContextPopup(
                             if (event?.button != Input.Buttons.LEFT)
                                 return
                             super.clicked(event, x, y)
-                            Player.equipment.setItem(item as EquipmentItem)
+
+                            val itemType = Player.equipment.setItem(item as EquipmentItem)
+                            GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, itemType)
+                            GlobalData.notifyObservers(GlobalDataType.PICKUP, item)
                         }
                     })
 

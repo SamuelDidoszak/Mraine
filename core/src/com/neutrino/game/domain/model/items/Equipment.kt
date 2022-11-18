@@ -8,77 +8,113 @@ import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.turn.Event
 import com.neutrino.game.domain.model.turn.Turn
+import java.util.*
 
 class Equipment(val character: Character) {
-    private val equipmentMap: MutableMap<EquipmentType, EquipmentItem?> = mutableMapOf(
-        EquipmentType.HELMET to null,
-        EquipmentType.ARMOR to null,
-        EquipmentType.LEGGINGS to null,
-        EquipmentType.BOOTS to null,
-        EquipmentType.AMULET to null,
-        EquipmentType.LRING to null,
-        EquipmentType.RRING to null,
-        EquipmentType.BAG to null,
-        EquipmentType.LHAND to null,
-        EquipmentType.RHAND to null
-    )
+    private val equipmentMap: EnumMap<EquipmentType, EquipmentItem?> = EnumMap(EquipmentType::class.java)
 
-    fun setItem(item: EquipmentItem) {
+    fun getEquipped(type: EquipmentType): EquipmentItem? {
+        return equipmentMap[type]
+    }
+
+    /** Unequips an item from a certain slot
+     * @param type Equipment slot from which an item should be unequipped
+     * */
+    fun setItem(type: EquipmentType): EquipmentType? {
+        val equippedItem = equipmentMap[type] ?: return null
+        unsetItem(equippedItem)
+        return type
+    }
+
+    /** Equips an item
+     * @return EquipmentType of the item for updates
+     * @null when an item was taken off */
+    fun setItem(item: EquipmentItem): EquipmentType? {
         var previousItem: EquipmentItem? = null
+        var equipmentType: EquipmentType? = null
+
         when (item) {
             is ItemType.EQUIPMENT.HEAD -> {
-                previousItem = equipmentMap[EquipmentType.HELMET]
-                equipmentMap[EquipmentType.HELMET] = item
+                previousItem = equipmentMap[EquipmentType.HEAD]
+                equipmentMap[EquipmentType.HEAD] = item
+                equipmentType = EquipmentType.HEAD
             }
             is ItemType.EQUIPMENT.TORSO -> {
-                previousItem = equipmentMap[EquipmentType.ARMOR]
-                equipmentMap[EquipmentType.ARMOR] = item
+                previousItem = equipmentMap[EquipmentType.TORSO]
+                equipmentMap[EquipmentType.TORSO] = item
+                equipmentType = EquipmentType.TORSO
             }
             is ItemType.EQUIPMENT.LEGS -> {
-                previousItem = equipmentMap[EquipmentType.LEGGINGS]
-                equipmentMap[EquipmentType.LEGGINGS] = item
+                previousItem = equipmentMap[EquipmentType.LEGS]
+                equipmentMap[EquipmentType.LEGS] = item
+                equipmentType = EquipmentType.LEGS
             }
             is ItemType.EQUIPMENT.FEET -> {
-                previousItem = equipmentMap[EquipmentType.BOOTS]
-                equipmentMap[EquipmentType.BOOTS] = item
+                previousItem = equipmentMap[EquipmentType.FEET]
+                equipmentMap[EquipmentType.FEET] = item
+                equipmentType = EquipmentType.FEET
+            }
+            is ItemType.EQUIPMENT.HANDS -> {
+                previousItem = equipmentMap[EquipmentType.HANDS]
+                equipmentMap[EquipmentType.HANDS] = item
+                equipmentType = EquipmentType.HANDS
             }
             is ItemType.EQUIPMENT.AMULET -> {
                 previousItem = equipmentMap[EquipmentType.AMULET]
                 equipmentMap[EquipmentType.AMULET] = item
+                equipmentType = EquipmentType.AMULET
             }
             is ItemType.EQUIPMENT.LRING -> {
                 previousItem = equipmentMap[EquipmentType.LRING]
                 equipmentMap[EquipmentType.LRING] = item
+                equipmentType = EquipmentType.LRING
             }
             is ItemType.EQUIPMENT.RRING -> {
                 previousItem = equipmentMap[EquipmentType.RRING]
                 equipmentMap[EquipmentType.RRING] = item
+                equipmentType = EquipmentType.RRING
             }
             is ItemType.EQUIPMENT.BAG -> {
                 previousItem = equipmentMap[EquipmentType.BAG]
                 equipmentMap[EquipmentType.BAG] = item
+                equipmentType = EquipmentType.BAG
             }
-            is ItemType.EQUIPMENT.INHAND -> {
-                if (item is ItemType.EQUIPMENT.INHAND.ONEHANDED) {
-                    previousItem = equipmentMap[EquipmentType.LHAND]
-                    equipmentMap[EquipmentType.LHAND] = item
-                }
-                else if (item is ItemType.EQUIPMENT.INHAND.TWOHANDED) {
-                    // TODO TWOHANDED unequip both hands
-                    equipmentMap[EquipmentType.LHAND] = item
-                    equipmentMap[EquipmentType.RHAND] = item
-                }
+            is ItemType.EQUIPMENT.LHAND -> {
+                previousItem = equipmentMap[EquipmentType.LHAND]
+                equipmentMap[EquipmentType.LHAND] = item
+                equipmentType = EquipmentType.LHAND
+            }
+            is ItemType.EQUIPMENT.RHAND -> {
+                previousItem = equipmentMap[EquipmentType.RHAND]
+                equipmentMap[EquipmentType.RHAND] = item
+                equipmentType = EquipmentType.RHAND
+            }
+            is ItemType.EQUIPMENT.TWOHAND -> {
+                val lHandItem = equipmentMap[EquipmentType.LHAND]
+                if (lHandItem != null)
+                    unsetItem(lHandItem)
+                previousItem = equipmentMap[EquipmentType.RHAND]
+
+                equipmentMap[EquipmentType.LHAND] = item
+                equipmentMap[EquipmentType.RHAND] = item
+                equipmentType = EquipmentType.RHAND
             }
         }
-        if (previousItem != null)
-            unsetItemModifiers(previousItem)
-        applyItemModifiers(item)
-
-        if (character is HasInventory) {
+        if (character is HasInventory)
             character.inventory.itemList.remove(
                 character.inventory.itemList.find { it.item == item })
-            if (previousItem != null)
-                character.inventory.itemList.add(EqElement(previousItem as Item, Turn.turn))
+
+        if (previousItem != null)
+            unsetItem(previousItem)
+        applyItemModifiers(item)
+
+        return equipmentType
+    }
+
+    private fun unsetItem(item: EquipmentItem) {
+        unsetItemModifiers(item)
+        if (character is HasInventory) {
+            character.inventory.itemList.add(EqElement(item as Item, Turn.turn))
         } else {
             // TODO drop item onto the ground or add to dropItemList
         }
@@ -172,15 +208,19 @@ class Equipment(val character: Character) {
             }
         }
     }
-} enum class EquipmentType {
-    HELMET,
-    ARMOR,
-    LEGGINGS,
-    BOOTS,
+}
+
+enum class EquipmentType {
+    HEAD,
+    TORSO,
+    LEGS,
+    FEET,
     AMULET,
     LRING,
     RRING,
     BAG,
+    HANDS,
     LHAND,
-    RHAND
+    RHAND,
+    MONEY
 }

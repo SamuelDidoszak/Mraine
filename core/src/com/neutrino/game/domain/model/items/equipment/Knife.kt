@@ -8,7 +8,7 @@ import com.neutrino.game.domain.model.items.HandedItemType
 import com.neutrino.game.domain.model.items.ItemType
 import kotlin.math.roundToInt
 
-class Knife: EquipmentItem(), ItemType.EQUIPMENT.INHAND.ONEHANDED {
+class Knife: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
     override val handedItemType: HandedItemType = HandedItemType.DAGGER
     override val name: String = "Knife"
     override val description: String = "Stabby stab stab"

@@ -55,18 +55,22 @@ sealed interface ItemType {
         interface HEAD: EQUIPMENT
         interface TORSO: EQUIPMENT
         interface LEGS: EQUIPMENT
+        interface HANDS: EQUIPMENT
         interface FEET: EQUIPMENT
         interface AMULET: EQUIPMENT
         interface LRING: EQUIPMENT
         interface RRING: EQUIPMENT
         interface BAG: EQUIPMENT
-        sealed interface INHAND: EQUIPMENT {
-            interface ONEHANDED: INHAND
-            interface TWOHANDED: INHAND
-            val handedItemType: HandedItemType
-        }
+        interface LHAND: EQUIPMENT, INHAND
+        interface RHAND: EQUIPMENT, INHAND
+        interface TWOHAND: EQUIPMENT, INHAND
     }
-} enum class HandedItemType {
+}
+interface INHAND {
+    val handedItemType: HandedItemType
+}
+
+enum class HandedItemType {
     SHIELD,
 
     // Weapon types

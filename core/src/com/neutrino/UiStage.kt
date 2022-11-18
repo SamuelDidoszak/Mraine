@@ -20,7 +20,9 @@ import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.*
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.items.items.Gold
 import com.neutrino.game.domain.model.items.utility.EqActor
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
@@ -31,6 +33,8 @@ import ktx.actors.centerPosition
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
+import java.util.*
+import kotlin.collections.ArrayDeque
 import kotlin.math.ceil
 import kotlin.math.sign
 
@@ -106,20 +110,17 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     */
 
     private val equipment: Group = Group()
-    private val equipmentScreen = Image(uiElements["EquipmentScreen"])
     private val stats: Group = Group()
     private lateinit var equipmentTable: Table
+    private var equipmentMap: EnumMap<EquipmentType, Container<Actor>> = EnumMap(EquipmentType::class.java)
 
     /** ======================================================================================================================================================
                                                                     Other pages
     */
 
     private val skills = Group()
-    private val skillsScreen = Image(uiElements["Background"])
     private val quests = Group()
-    private val questsScreen = Image(uiElements["Background"])
     private val map = Group()
-    private val mapScreen = Image(uiElements["Background"])
 
 
     /** ======================================================================================================================================================
@@ -147,11 +148,11 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
     private fun addScreensTemp() {
         skills.name = "skills"
-        skills.addActor(skillsScreen)
+        skills.addActor(Image(uiElements["Background"]))
         quests.name = "quests"
-        quests.addActor(questsScreen)
+        quests.addActor(Image(uiElements["Background"]))
         map.name = "map"
-        map.addActor(mapScreen)
+        map.addActor(Image(uiElements["Background"]))
 
         addActor(skills)
         skills.isVisible = false
@@ -163,7 +164,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
     private fun addEquipment() {
         equipment.name = "equipment"
-        equipment.addActor(equipmentScreen)
+        equipment.addActor(Image(uiElements["EquipmentScreen"]))
 
         stats.name = "stats"
 
@@ -171,11 +172,11 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
         equipment.addActor(stats)
 
-        val namesList = listOf(
-            "gloves", "head", "amulet",
-            "lHand", "torso", "rHand",
-            "lRing", "legs", "rRing",
-            "money", "feet", "bag"
+        val namesList: List<Pair<String, EquipmentType>> = listOf(
+            Pair("hands", EquipmentType.HANDS), Pair("head", EquipmentType.HEAD), Pair("amulet", EquipmentType.AMULET),
+            Pair("lHand", EquipmentType.LHAND), Pair("torso", EquipmentType.TORSO), Pair("rHand", EquipmentType.RHAND),
+            Pair("lRing", EquipmentType.LRING), Pair("legs", EquipmentType.LEGS), Pair("rRing", EquipmentType.RRING),
+            Pair("money", EquipmentType.MONEY), Pair("feet", EquipmentType.FEET), Pair("bag", EquipmentType.BAG)
         )
 
         equipmentTable = scene2d.table {
@@ -185,8 +186,10 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             for (x in 0 until 4) {
                 for (y in 0 until 3) {
                     add(container {
-                        name = namesList[x * 3 + y]
+                        val list = namesList[x * 3 + y]
+                        name = list.first
                         align(Align.bottomLeft)
+                        equipmentMap[list.second] = this
                     }).size(96f, 96f).pad(8f)
                 }
                 row().pad(0f).space(0f)
@@ -198,6 +201,12 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         equipmentTable.setDebug(true, true)
         equipment.addActor(equipmentTable)
         equipmentTable.setPosition(border.width - equipmentTable.width - 12 - 8, 38f)
+
+
+        // Initialize Gold actor
+        equipmentMap[EquipmentType.MONEY]!!.actor = EqActor(Gold())
+        (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).item.amount = 0
+        (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).refreshAmount()
 
         addActor(equipment)
     }
@@ -487,6 +496,29 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     }
 
     /** ======================================================================================================================================================
+                                                                    Equipment
+    */
+
+    fun refreshGoldInEquipment() {
+        val goldActor = equipmentMap[EquipmentType.MONEY]!!.actor as EqActor
+        val prevAmount = goldActor.item.amount!!
+        var goldAmount = 0
+        Player.inventory.itemList.forEach { if (it.item is Gold) goldAmount += it.item.amount!! }
+        goldActor.item.amount = goldAmount
+        if (prevAmount != goldAmount)
+            goldActor.refreshAmount()
+    }
+
+    fun refreshEquipment(type: EquipmentType) {
+        val item: Item? = Player.equipment.getEquipped(type)
+
+        if (item != null)
+            equipmentMap[type]!!.actor = EqActor(item)
+        else if (equipmentMap[type]!!.hasChildren())
+            equipmentMap[type]!!.removeActorAt(0, false)
+    }
+
+    /** ======================================================================================================================================================
                                                                     Item related variables
      */
 
@@ -528,6 +560,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 "EquipmentClosed" -> {
                     equipment.isVisible = true
                     currentScreen = equipment
+                    refreshGoldInEquipment()
                 }
                 "SkillsClosed" -> {
                     skills.isVisible = true
@@ -709,10 +742,17 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         // Stop contextMenu click from propagating
         if (contextPopup != null && button == Input.Buttons.LEFT) {
             val clickedInMenu = super.touchUp(screenX, screenY, pointer, button)
-            if (!clickedInMenu) {
-                this.actors.removeValue(contextPopup, true)
-                contextPopup = null
+
+            if (clickedItem != null) {
+                clickedItem = null
+                originalInventory = null
             }
+            if (forceRefreshInventory) {
+                refreshInventory()
+                forceRefreshInventory = false
+            }
+            this.actors.removeValue(contextPopup, true)
+            contextPopup = null
             return clickedInMenu
         }
 
@@ -779,6 +819,11 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             hoveredTab = mainTabsGroup.children.find { it.name == "SortingClosed" }
         if (hoveredTab != activeTab && hoveredTab != null && button == Input.Buttons.LEFT) {
             activateTab()
+        }
+
+        if (forceRefreshInventory) {
+            refreshInventory()
+            forceRefreshInventory = false
         }
 
         return super.touchUp(screenX, screenY, pointer, button)
@@ -1074,6 +1119,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             this.actors.removeValue(detailsPopup, true)
             detailsPopup = null
         }
+
         displayedItem = null
         if (contextPopup != null) {
             this.actors.removeValue(contextPopup, true)

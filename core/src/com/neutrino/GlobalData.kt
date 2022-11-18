@@ -26,10 +26,14 @@ object GlobalData {
         observerList.remove(globalDataObserver)
     }
     fun registerData(dataType: GlobalDataType, data: Any?) {
-        dataList[dataType]!!.add(data)
+        try {
+            dataList[dataType]!!.add(data)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
     private fun unregisterData(dataType: GlobalDataType, data: Any?) {
-        dataList[dataType]!!.add(data)
+        dataList[dataType]?.remove(data)
     }
     private fun getData(dataType: GlobalDataType): ArrayList<Any?> {
         return dataList[dataType]!!
@@ -50,5 +54,6 @@ enum class GlobalDataType {
     PLAYERHP,
     PLAYERMANA,
     PICKUP,
+    EQUIPMENT,
     CHANGELEVEL
 }

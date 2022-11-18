@@ -17,6 +17,7 @@ import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.entities.utility.*
+import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
 import ktx.app.KtxScreen
@@ -195,6 +196,7 @@ class GameScreen: KtxScreen {
                 else
                     Player.inventory.itemList.remove(itemInEq)
 
+                uiStage.forceRefreshInventory = true
                 hudStage.refreshHotBar()
             }
 
@@ -320,6 +322,16 @@ class GameScreen: KtxScreen {
 
                 if (uiStage.clickedItem == null)
                     hudStage.refreshHotBar()
+
+                return true
+            }
+        })
+
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.EQUIPMENT
+            override fun update(data: Any?): Boolean {
+                if (data is EquipmentType || data == null)
+                    uiStage.refreshEquipment(data as EquipmentType)
                 return true
             }
         })

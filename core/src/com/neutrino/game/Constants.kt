@@ -1,7 +1,10 @@
 package com.neutrino.game
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.github.tommyettinger.textra.Font
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -45,4 +48,30 @@ object Constants {
     const val IsSeeded: Boolean = false
     const val Seed: Long = 2137213721372137
     val RandomGenerator: Random = if (IsSeeded) Random(Seed) else Random.Default
+
+    val fonts = ConstInits().getFontFamily()
+}
+
+class ConstInits {
+    fun getFontFamily(): Font.FontFamily {
+        return Font.FontFamily(
+            arrayOf(
+                getFont("equipment").scale(2f, 2f),
+                getFont("matchup").scale(2.2f, 2.2f),
+                getFont("munro").scale(1.6f, 1.6f),
+                getFont("schmal").scale(1.25f, 1.25f),
+                getFont("outline"),
+                getFont("gothic")
+            )
+        )
+    }
+
+    private fun getFont(name: String): Font {
+        val font = Font(
+            FreeTypeFontGenerator(Gdx.files.internal("fonts/$name.ttf"))
+                .generateFont(FreeTypeFontGenerator.FreeTypeFontParameter())
+        )
+        font.name = name
+        return font
+    }
 }

@@ -30,7 +30,6 @@ import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.graphics.utility.ItemContextPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
-import ktx.actors.centerPosition
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
@@ -90,6 +89,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         "cellBottom" to uiAtlas.findRegion("cellBottom"),
         "cellBottomRight" to uiAtlas.findRegion("cellBottomRight"),
         "cellUnavailable" to uiAtlas.findRegion("cellUnavailable"),
+        "equipmentDefault" to uiAtlas.findRegion("equipmentDefault"),
     )
 
     /** ======================================================================================================================================================
@@ -132,6 +132,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     fun initialize() {
         addInventory()
         addEquipment()
+        addSkills()
         addScreensTemp()
         equipment.isVisible = false
         addActor(border)
@@ -149,15 +150,11 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     }
 
     private fun addScreensTemp() {
-        skills.name = "skills"
-        skills.addActor(Image(uiElements["Background"]))
         quests.name = "quests"
         quests.addActor(Image(uiElements["Background"]))
         map.name = "map"
         map.addActor(Image(uiElements["Background"]))
 
-        addActor(skills)
-        skills.isVisible = false
         addActor(quests)
         quests.isVisible = false
         addActor(map)
@@ -176,9 +173,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         )
 
         equipmentTable = scene2d.table {
-            pad(0f)
-            this.setFillParent(false)
-            clip(true)
             for (x in 0 until 4) {
                 for (y in 0 until 3) {
                     add(container {
@@ -186,6 +180,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                         name = list.first
                         align(Align.bottomLeft)
                         equipmentMap[list.second] = this
+                        setEquipmentDrawable(list.second)
                     }).size(96f, 96f).pad(8f)
                 }
                 row().pad(0f).space(0f)
@@ -194,10 +189,11 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         equipmentTable.pack()
         equipmentTable.name = "equipmentTable"
         equipmentTable.layout()
-        equipmentTable.setDebug(true, true)
         equipment.addActor(equipmentTable)
-        equipmentTable.setPosition(border.width - equipmentTable.width - 12 - 8, 38f)
 
+        equipmentTable.width = 336f
+        equipmentTable.height = 448f
+        equipmentTable.setPosition(border.width - equipmentTable.width - 12 - 8, 38f)
 
         // Initialize Gold actor
         equipmentMap[EquipmentType.MONEY]!!.actor = EqActor(Gold())
@@ -210,6 +206,15 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         stats.setPosition(24f, 24f)
 
         addActor(equipment)
+    }
+
+    private fun setEquipmentDrawable(type: EquipmentType) {
+        val item: Item? = Player.equipment.getEquipped(type)
+
+        if (item != null)
+            equipmentMap[type]!!.background = TextureRegionDrawable(uiElements["equipmentDefault"])
+        else
+            equipmentMap[type]!!.background = TextureRegionDrawable(uiElements["equipmentDefault"])
     }
 
     private fun addStatsTable() {
@@ -466,43 +471,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         stats.pack()
     }
 
-    private fun addInventoryActorOld() {
-        val borderWidth: Int = 12
-        val borderHeight: Int = 12
-
-        val color = Color(238f, 195f, 154f, 1f)
-
-        val rows = Player.inventorySize / 10 + if (Player.inventorySize % 10 != 0) 1 else 0
-        val table = scene2d.table {
-                pad(0f)
-                this.setFillParent(false)
-                clip(true)
-                for (n in 0 until rows) {
-                    for (i in 0 until 10)
-                        add(container {
-                            val cellNumber = n * 9 + i
-                            name = (cellNumber).toString()
-                            align(Align.bottomLeft)
-                            if (cellNumber < Player.inventory.itemList.size)
-                                actor = EqActor(Player.inventory.itemList[cellNumber].item)
-                        }).size(84f, 84f).left().bottom().padRight(if (i != 8) 4f else 0f).space(0f)
-                    row().padTop(if (n != 12) 4f else 0f).space(0f)
-                }
-        }
-        table.pack()
-        inventory = ScrollPane(table)
-        inventory.name = "playerEq"
-        // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
-        inventory.setScrollingDisabled(true, false)
-        inventory.setOverscroll(false, false)
-        inventory.setScrollbarsVisible(false)
-        inventory.layout()
-
-        addActor(inventory)
-        inventory.setSize(inventory.width, inventory.height)
-        inventory.centerPosition()
-    }
-
     private fun getCellDrawable(cellNumber: Int, rows: Int): Drawable {
         if (cellNumber >= Player.inventorySize)
             return TextureRegionDrawable(uiElements["cellUnavailable"])
@@ -526,6 +494,21 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         return TextureRegionDrawable(uiElements["cellMiddle"])
     }
 
+    private fun getSkillsCellDrawable(cellNumber: Int, rows: Int): Drawable {
+        if (cellNumber == 0)
+            return TextureRegionDrawable(uiElements["cellTopLeft"])
+        if (cellNumber < 5)
+            return TextureRegionDrawable(uiElements["cellTop"])
+        val bottomRowNumber = cellNumber - (rows - 1) * 5
+        if (bottomRowNumber == 0 )
+            return TextureRegionDrawable(uiElements["cellBottomLeft"])
+        if (bottomRowNumber in 1..4 )
+            return TextureRegionDrawable(uiElements["cellBottom"])
+        if (cellNumber % 5 == 0)
+            return TextureRegionDrawable(uiElements["cellLeft"])
+        return TextureRegionDrawable(uiElements["cellMiddle"])
+    }
+
     private fun addInventory() {
         val borderWidth: Int = 12
         val borderHeight: Int = 12
@@ -533,19 +516,19 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         var rows = Player.inventorySize / 10 + if (Player.inventorySize % 10 != 0) 1 else 0
         rows = if (rows < 6) 6 else rows
         val table = scene2d.table {
-                this.setFillParent(false)
-                clip(true)
-                for (n in 0 until rows) {
-                    for (i in 0 until 10) {
-                        add(container {
-                            val cellNumber = n * 10 + i
-                            name = (cellNumber).toString()
-                            background = getCellDrawable(cellNumber, rows)
-                            align(Align.bottomLeft)
-                        }).size(84f, 84f).space(0f)
-                    }
-                    row().space(0f)
+            this.setFillParent(false)
+            clip(true)
+            for (n in 0 until rows) {
+                for (i in 0 until 10) {
+                    add(container {
+                        val cellNumber = n * 10 + i
+                        name = (cellNumber).toString()
+                        background = getCellDrawable(cellNumber, rows)
+                        align(Align.bottomLeft)
+                    }).size(84f, 84f).space(0f)
                 }
+                row().space(0f)
+            }
         }
         table.pack()
         inventory = ScrollPane(table)
@@ -772,6 +755,55 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         else if (equipmentMap[type]!!.hasChildren())
             equipmentMap[type]!!.removeActorAt(0, false)
     }
+
+    /** ======================================================================================================================================================
+                                                                    Skills
+    */
+
+    private fun addSkills() {
+        skills.name = "skills"
+        skills.addActor(Image(uiElements["Background"]))
+
+        var rows = Player.skills.size / 10 + if (Player.skills.size % 10 != 0) 1 else 0
+        rows = if (rows < 6) 6 else rows
+
+        val table = scene2d.table {
+            this.setFillParent(false)
+            clip(true)
+            for (n in 0 until rows) {
+                for (i in 0 until 5) {
+                    add(container {
+                        val cellNumber = n * 5 + i
+                        name = (cellNumber).toString()
+                        background = getSkillsCellDrawable(cellNumber, cellNumber)
+                        align(Align.bottomLeft)
+                    }).size(84f, 84f).space(0f)
+                }
+                row().space(0f)
+            }
+        }
+        table.pack()
+
+        val skillsPane = ScrollPane(table)
+        skillsPane.name = "skillsPane"
+        // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
+        skillsPane.setScrollingDisabled(true, false)
+        skillsPane.setOverscroll(false, false)
+        skillsPane.setScrollbarsVisible(false)
+        skillsPane.layout()
+
+        skills.addActor(skillsPane)
+        skillsPane.width = border.width / 2 - 10
+        skillsPane.height = border.height - 2 * 12 + 4
+        skillsPane.setPosition(skills.x + 12, skills.y + 12)
+
+        addActor(skills)
+        skills.width = border.width
+        skills.height = border.height
+        skills.isVisible = false
+    }
+
+
 
     /** ======================================================================================================================================================
                                                                     Item related variables

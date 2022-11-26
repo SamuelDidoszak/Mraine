@@ -57,7 +57,7 @@ class ConstInits {
         return Font.FontFamily(
             arrayOf(
                 getFont("equipment").scale(2f, 2f),
-                getFont("matchup").scale(2.2f, 2.2f),
+                getFont("matchup").scale(2f, 2f),
                 getFont("munro").scale(1.6f, 1.6f),
                 getFont("schmal").scale(1.25f, 1.25f),
                 getFont("outline"),
@@ -74,4 +74,13 @@ class ConstInits {
         font.name = name
         return font
     }
+}
+
+object Fonts {
+    val EQUIPMENT = Constants.fonts.get("equipment")
+    val MATCHUP = Constants.fonts.get("matchup")
+    val MUNRO = Constants.fonts.get("munro")
+    val SCHMAL = Constants.fonts.get("schmal")
+    val OUTLINE = Constants.fonts.get("outline")
+    val GOTHIC = Constants.fonts.get("gothic")
 }

@@ -16,9 +16,9 @@ class Meat: Item(), ItemType.EDIBLE {
     override val itemTier: Int = 1
 
     override val isFood: Boolean = true
-    override val powerOg: Float = 0.5f
+    override val powerOg: Float = 0.2f
     override val speedOg: Double = 0.5
-    override val repeatsOg: Int = 20
+    override val repeatsOg: Int = 60
     override var power: Float = powerOg
     override val speed: Double = speedOg
     override val repeats: Int = repeatsOg
@@ -30,17 +30,17 @@ class Meat: Item(), ItemType.EDIBLE {
         randomizedValue.let {
             when {
                 it < 0.2 -> {
-                    power = 0.25f
+                    power = 0.15f
                     name = "Rotten meat"
                     goldValue -= 2
                 }
                 it < 0.4 -> {
-                    power = 0.75f
+                    power = 0.3f
                     name = "Tasty meat"
                     goldValue += 2
                 }
                 else -> {
-                    power = 0.5f
+                    power = powerOg
                 }
             }
         }

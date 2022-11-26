@@ -33,6 +33,8 @@ object Player : Character(0, 0, 0.0), HasInventory {
     /** Determines the maximum number of concurrently used skills that do not use mana */
     var maxSkills: Int = 3
 
+    var level: Int = 1
+
     init {
         initialize("Player")
         damage = setDamage()

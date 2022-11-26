@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.*
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.EquipmentType
@@ -36,6 +37,7 @@ import ktx.scene2d.table
 import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.math.ceil
+import kotlin.math.roundToInt
 import kotlin.math.sign
 
 
@@ -110,7 +112,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     */
 
     private val equipment: Group = Group()
-    private val stats: Group = Group()
+    private val stats: Table = Table()
     private lateinit var equipmentTable: Table
     private var equipmentMap: EnumMap<EquipmentType, Container<Actor>> = EnumMap(EquipmentType::class.java)
 
@@ -166,12 +168,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         equipment.name = "equipment"
         equipment.addActor(Image(uiElements["EquipmentScreen"]))
 
-        stats.name = "stats"
-
-
-
-        equipment.addActor(stats)
-
         val namesList: List<Pair<String, EquipmentType>> = listOf(
             Pair("hands", EquipmentType.HANDS), Pair("head", EquipmentType.HEAD), Pair("amulet", EquipmentType.AMULET),
             Pair("lHand", EquipmentType.LHAND), Pair("torso", EquipmentType.TORSO), Pair("rHand", EquipmentType.RHAND),
@@ -208,7 +204,266 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).item.amount = 0
         (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).refreshAmount()
 
+        addStatsTable()
+        stats.name = "stats"
+        equipment.addActor(stats)
+        stats.setPosition(24f, 24f)
+
         addActor(equipment)
+    }
+
+    private fun addStatsTable() {
+        val width = border.width * 0.55f
+        val title = scene2d.table {
+            val name = TextraLabel(Player.name, Fonts.EQUIPMENT, Color.BLACK)
+            name.align = Align.left
+            add(name).padLeft(24f)
+
+            val lvl = TextraLabel("lvl ${Player.level}", Fonts.EQUIPMENT, Color.BLACK)
+            lvl.align = Align.center
+            add(lvl).fillX().expandX().center()
+
+            val expValues = scene2d.table {
+                val expValue = TextraLabel("${Player.experience}", Fonts.MATCHUP, Color.BLACK)
+                expValue.name = "exp"
+                expValue.align = Align.center
+                add(expValue).fillX().expandX().uniform()
+                add(TextraLabel("/", Fonts.MATCHUP, Color.BLACK))
+                val expMax = TextraLabel("2137", Fonts.MATCHUP, Color.BLACK)
+                expMax.name = "expMax"
+                expMax.align = Align.center
+                add(expMax).fillX().expandX().uniform()
+            }
+            expValues.pack()
+            add(expValues).top().right()
+        }
+        stats.add(title).fillX().center().padBottom(12f)
+        stats.row()
+
+        val stats1 = scene2d.table {
+            val hpLabel = TextraLabel("Hp", Fonts.EQUIPMENT, Color.BLACK)
+            add(hpLabel).width(width / 3).fillX().colspan(2).uniform()
+            hpLabel.align = Align.left
+            val hpValues = scene2d.table {
+                val hpValue = TextraLabel("${Player.hp}", Fonts.EQUIPMENT, Color.BLACK)
+                hpValue.name = "hp"
+                hpValue.align = Align.center
+                add(hpValue).fillX().expandX().uniform()
+                add(TextraLabel("/", Fonts.EQUIPMENT, Color.BLACK))
+                val hpMax = TextraLabel("${Player.hpMax}", Fonts.EQUIPMENT, Color.BLACK)
+                hpMax.name = "hpMax"
+                hpMax.align = Align.center
+                add(hpMax).fillX().expandX().uniform()
+            }
+            add(hpValues).width(width / 3).colspan(2).uniform().fillX()
+            row()
+
+            val mpLabel = TextraLabel("Mp", Fonts.EQUIPMENT, Color.BLACK)
+            mpLabel.align = Align.left
+            add(mpLabel).fillX().width(width / 3).colspan(2).uniform()
+            val mpValues = scene2d.table {
+                val mpValue = TextraLabel("${Player.mp}", Fonts.EQUIPMENT, Color.BLACK)
+                mpValue.name = "mp"
+                mpValue.align = Align.center
+                add(mpValue).fillX().expandX().uniform()
+                add(TextraLabel("/", Fonts.EQUIPMENT, Color.BLACK))
+                val mpMax = TextraLabel("${Player.mpMax}", Fonts.EQUIPMENT, Color.BLACK)
+                mpMax.name = "mpMax"
+                mpMax.align = Align.center
+                add(mpMax).fillX().expandX().uniform()
+            }
+            add(mpValues).colspan(2).uniform().fillX()
+            row()
+
+            val strengthLabel = TextraLabel("Strength", Fonts.EQUIPMENT, Color.BLACK)
+            strengthLabel.alignment = Align.left
+            add(strengthLabel).fillX().width(width / 3).colspan(2).uniform()
+            strengthLabel.align = Align.left
+            val strength = TextraLabel("${Player.strength}", Fonts.EQUIPMENT, Color.BLACK)
+            strength.name = "strength"
+            add(strength).colspan(2).uniform()
+            row()
+
+            val dexterityLabel = TextraLabel("Dexterity", Fonts.EQUIPMENT, Color.BLACK)
+            dexterityLabel.align = Align.left
+            add(dexterityLabel).fillX().width(width / 3).colspan(2).uniform()
+            val dexterity = TextraLabel("${Player.dexterity}", Fonts.EQUIPMENT, Color.BLACK)
+            dexterity.name = "dexterity"
+            add(dexterity).colspan(2).uniform()
+            row()
+
+            val intelligenceLabel = TextraLabel("Intelligence", Fonts.EQUIPMENT, Color.BLACK)
+            intelligenceLabel.align = Align.left
+            add(intelligenceLabel).fillX().width(width / 3).colspan(2).uniform()
+            val intelligence = TextraLabel("${Player.intelligence}", Fonts.EQUIPMENT, Color.BLACK)
+            intelligence.name = "intelligence"
+            add(intelligence).colspan(2).uniform()
+            row()
+
+            val luckLabel = TextraLabel("Luck", Fonts.EQUIPMENT, Color.BLACK)
+            luckLabel.align = Align.left
+            add(luckLabel).fillX().width(width / 3).colspan(2).uniform()
+            val luck = TextraLabel("${Player.luck}", Fonts.EQUIPMENT, Color.BLACK)
+            luck.name = "luck"
+            add(luck).colspan(2).uniform()
+            row()
+
+            val damageLabel = TextraLabel("Damage", Fonts.EQUIPMENT, Color.BLACK)
+            damageLabel.align = Align.left
+            add(damageLabel).fillX().width(width / 3).colspan(2).uniform()
+            val damageValues = scene2d.table {
+                val damageValue = TextraLabel("${Player.damage - Player.damageVariation}", Fonts.EQUIPMENT, Color.BLACK)
+                damageValue.name = "damage"
+                damageValue.align = Align.center
+                add(damageValue).fillX().expandX().uniform()
+                add(TextraLabel("-", Fonts.EQUIPMENT, Color.BLACK))
+                val damageMax = TextraLabel("${Player.damage + Player.damageVariation}", Fonts.EQUIPMENT, Color.BLACK)
+                damageMax.name = "damageMax"
+                damageMax.align = Align.center
+                add(damageMax).fillX().expandX().uniform()
+            }
+            add(damageValues).colspan(2).uniform().fillX()
+            row()
+
+            val defenceLabel = TextraLabel("Defence", Fonts.EQUIPMENT, Color.BLACK)
+            defenceLabel.align = Align.left
+            add(defenceLabel).fillX().width(width / 3).colspan(2).uniform()
+            val defence = TextraLabel("${Player.defence}", Fonts.EQUIPMENT, Color.BLACK)
+            defence.name = "defence"
+            add(defence).colspan(2).uniform()
+            row()
+        }
+        stats.add(stats1).padBottom(12f)
+        stats.row()
+
+        val stats2 = scene2d.table {
+            val evasionLabel = TextraLabel("Evasion", Fonts.EQUIPMENT, Color.BLACK)
+            evasionLabel.align = Align.left
+            add(evasionLabel).fillX().width(width / 3).colspan(2).uniform()
+            val evasion = TextraLabel("${(Player.evasion * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            evasion.name = "evasion"
+            evasion.align = Align.center
+            add(evasion).width(width / 6).colspan(1).uniform()
+
+            val accuracyLabel = TextraLabel("Accuracy", Fonts.EQUIPMENT, Color.BLACK)
+            accuracyLabel.align = Align.left
+            add(accuracyLabel).fillX().width(width / 3).colspan(2).uniform()
+            val accuracy = TextraLabel("${(Player.accuracy * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            accuracy.name = "accuracy"
+            accuracy.align = Align.center
+            add(accuracy).width(width / 6).colspan(1).uniform()
+            row()
+
+            val critChanceLabel = TextraLabel("Crit chance", Fonts.EQUIPMENT, Color.BLACK)
+            critChanceLabel.align = Align.left
+            add(critChanceLabel).fillX().colspan(2).uniform()
+            val critChance = TextraLabel("${(Player.criticalChance * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            critChance.name = "critChance"
+            add(critChance).colspan(1).uniform()
+
+            val critDamageLabel = TextraLabel("Crit damage", Fonts.EQUIPMENT, Color.BLACK)
+            critDamageLabel.align = Align.left
+            add(critDamageLabel).fillX().colspan(2).uniform()
+            val critDamage = TextraLabel("${(Player.criticalDamage * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            critDamage.name = "critDamage"
+            add(critDamage).colspan(1).uniform()
+            row()
+
+            val movementSpeedLabel = TextraLabel("Movement", Fonts.EQUIPMENT, Color.BLACK)
+            movementSpeedLabel.align = Align.left
+            add(movementSpeedLabel).fillX().colspan(2).uniform()
+            movementSpeedLabel.setBounds(0f, 0f, border.width / 3f, 100f)
+            val movementSpeed = TextraLabel("${Player.movementSpeed}", Fonts.EQUIPMENT, Color.BLACK)
+            movementSpeed.name = "movementSpeed"
+            add(movementSpeed).colspan(1).uniform()
+
+            val attackSpeedLabel = TextraLabel("Attack spd", Fonts.EQUIPMENT, Color.BLACK)
+            attackSpeedLabel.align = Align.left
+            add(attackSpeedLabel).fillX().colspan(2).uniform()
+            val attackSpeed = TextraLabel("${Player.attackSpeed}", Fonts.EQUIPMENT, Color.BLACK)
+            attackSpeed.name = "attackSpeed"
+            add(attackSpeed).colspan(1).uniform()
+            row().padBottom(12f)
+
+            val fireDamagelabel = TextraLabel("Fire dmg", Fonts.EQUIPMENT, Color.BLACK)
+            fireDamagelabel.align = Align.left
+            add(fireDamagelabel).fillX().colspan(2)
+            val fireDamage = TextraLabel("${(Player.fireDamage * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            fireDamage.name = "fireDamage"
+            add(fireDamage).colspan(1)
+
+            val fireDefenceLabel = TextraLabel("Fire def", Fonts.EQUIPMENT, Color.BLACK)
+            fireDefenceLabel.align = Align.left
+            add(fireDefenceLabel).fillX().colspan(2)
+            val fireDefence = TextraLabel("${(Player.fireDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            fireDefence.name = "fireDefence"
+            add(fireDefence).colspan(1)
+            row()
+
+            val waterDamageLabel = TextraLabel("Water dmg", Fonts.EQUIPMENT, Color.BLACK)
+            waterDamageLabel.align = Align.left
+            add(waterDamageLabel).fillX().colspan(2)
+            val waterDamage = TextraLabel("${(Player.waterDamage * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            waterDamage.name = "waterDamage"
+            add(waterDamage).colspan(1)
+
+            val waterDefenceLabel = TextraLabel("Water def", Fonts.EQUIPMENT, Color.BLACK)
+            waterDefenceLabel.align = Align.left
+            add(waterDefenceLabel).fillX().colspan(2)
+            val waterDefence = TextraLabel("${(Player.waterDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            waterDefence.name = "waterDefence"
+            add(waterDefence).colspan(1)
+            row()
+
+            val earthDamageLabel = TextraLabel("Earth dmg", Fonts.EQUIPMENT, Color.BLACK)
+            earthDamageLabel.align = Align.left
+            add(earthDamageLabel).fillX().colspan(2)
+            val earthDamage = TextraLabel("${(Player.earthDamage * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            earthDamage.name = "earthDamage"
+            add(earthDamage).colspan(1)
+
+            val earthDefenceLabel = TextraLabel("Earth def", Fonts.EQUIPMENT, Color.BLACK)
+            earthDefenceLabel.align = Align.left
+            add(earthDefenceLabel).fillX().colspan(2)
+            val earthDefence = TextraLabel("${(Player.earthDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            earthDefence.name = "earthDefence"
+            add(earthDefence).colspan(1)
+            row()
+
+            val airDamageLabel = TextraLabel("Air dmg", Fonts.EQUIPMENT, Color.BLACK)
+            airDamageLabel.align = Align.left
+            add(airDamageLabel).fillX().colspan(2)
+            val airDamage = TextraLabel("${(Player.airDamage * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            airDamage.name = "airDamage"
+            add(airDamage).colspan(1)
+
+            val airDefenceLabel = TextraLabel("Air def", Fonts.EQUIPMENT, Color.BLACK)
+            airDefenceLabel.align = Align.left
+            add(airDefenceLabel).fillX().colspan(2)
+            val airDefence = TextraLabel("${(Player.airDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            airDefence.name = "airDefence"
+            add(airDefence).colspan(1)
+            row()
+
+            val poisonDamageLabel = TextraLabel("Poison dmg", Fonts.EQUIPMENT, Color.BLACK)
+            poisonDamageLabel.align = Align.left
+            add(poisonDamageLabel).fillX().colspan(2)
+            val poisonDamage = TextraLabel("${(Player.poisonDamage * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            poisonDamage.name = "poisonDamage"
+            add(poisonDamage).colspan(1)
+
+            val poisonDefenceLabel = TextraLabel("Poison def", Fonts.EQUIPMENT, Color.BLACK)
+            poisonDefenceLabel.align = Align.left
+            add(poisonDefenceLabel).fillX().colspan(2)
+            val poisonDefence = TextraLabel("${(Player.poisonDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            poisonDefence.name = "poisonDefence"
+            add(poisonDefence).colspan(1)
+            row()
+        }
+
+        stats.add(stats2)
+        stats.row()
+        stats.pack()
     }
 
     private fun addInventoryActorOld() {

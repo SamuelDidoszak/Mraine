@@ -25,16 +25,16 @@ class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = tr
         when (item) {
             is ItemType.EDIBLE -> {
                 add(TextraLabel("Total heal:", KnownFonts.getStandardFamily())).colspan(2).left()
-                add(TextraLabel(ValueComparison().compareStats(item.power * item.repeats, item.powerOg * item.repeatsOg) + (item.power * item.repeats).toString(), KnownFonts.getStandardFamily())).colspan(1).right()
+                add(TextraLabel(ValueComparison().compareStats(item.power * item.executions, item.powerOg * item.executionsOg) + (item.power * item.executions).toString(), KnownFonts.getStandardFamily())).colspan(1).right()
                 row().pad(4f).colspan(3)
                 add(TextraLabel("Power:", KnownFonts.getStandardFamily())).colspan(2).left()
                 add(TextraLabel(ValueComparison().compareStats(item.power, item.powerOg) + item.power.toString(), KnownFonts.getStandardFamily())).colspan(1).right()
                 row().pad(4f).colspan(3)
                 add(TextraLabel("Speed:", KnownFonts.getStandardFamily())).colspan(2).left()
-                add(TextraLabel(ValueComparison().compareStats(item.speed, item.speedOg) + item.speed.toString(), KnownFonts.getStandardFamily())).colspan(1).right()
+                add(TextraLabel(ValueComparison().compareStats(item.timeout, item.timeoutOg) + item.timeout.toString(), KnownFonts.getStandardFamily())).colspan(1).right()
                 row().pad(4f).colspan(3)
                 add(TextraLabel("Repeats:", KnownFonts.getStandardFamily())).colspan(2).left()
-                add(TextraLabel(ValueComparison().compareStats(item.repeats, item.repeatsOg) + item.repeats.toString(), KnownFonts.getStandardFamily())).colspan(1).right()
+                add(TextraLabel(ValueComparison().compareStats(item.executions, item.executionsOg) + item.executions.toString(), KnownFonts.getStandardFamily())).colspan(1).right()
             }
         }
         this.name = "itemDetails"

@@ -1,51 +1,21 @@
 package com.neutrino.game.domain.model.items
 
-import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.turn.Event
+import com.neutrino.game.domain.model.event.CausesCooldown
+import com.neutrino.game.domain.model.event.CausesEvents
 
 sealed interface ItemType {
-    interface CAUSESEVENT: ItemType {
-        fun use(character: Character, turn: Double): Event
-    }
-    sealed interface SCROLL: ItemType {
-//        fun use(character: Character, turn: Double): Event
-//        fun use(character: Character, turn: Double, length: Double): Event
-        interface STAT: SCROLL {
-            val statName: String
-            val power: Any
-            val speed: Double
-            val repeats: Int
-            fun use(character: Character, turn: Double): Event {
-                return Event.MODIFYSTAT(
-                    character, statName, power, turn, speed, repeats
-                )
-            }
-            fun getEffectLength(): Double {
-                // repeats -1??? Idk, test it out
-                return speed * repeats
-            }
-        }
-        interface ATTACK: SCROLL {
+    interface USABLE: ItemType, CausesEvents
 
-        }
-        interface EFFECT: SCROLL {
-
-        }
-    }
-    interface EDIBLE: ItemType {
+    interface EDIBLE: ItemType, CausesEvents, CausesCooldown {
         val isFood: Boolean
         val powerOg: Float
-        val speedOg: Double
-        val repeatsOg: Int
+        val timeoutOg: Double
+        val executionsOg: Int
         val power: Float
-        val speed: Double
-        val repeats: Int
-        fun use(character: Character, turn: Double): Event {
-            return Event.HEAL(character, isFood, power, turn, speed, repeats)
-        }
+        val timeout: Double
+        val executions: Int
         fun getEffectLength(): Double {
-            // repeats -1??? Idk, test it out
-            return speed * (repeats - 1)
+            return executions * timeout
         }
     }
     interface KEY: ItemType

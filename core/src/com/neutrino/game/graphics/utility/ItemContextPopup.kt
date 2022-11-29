@@ -1,6 +1,7 @@
 package com.neutrino.game.graphics.utility
 
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -12,10 +13,10 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.event.types.CooldownType
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
-import com.neutrino.game.domain.model.turn.CooldownType
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
@@ -39,8 +40,9 @@ class ItemContextPopup(
                             if (Player.hasCooldown(CooldownType.FOOD)) {
                                 val cooldownLabel = TextraLabel("[@Cozette][%600][*]Food is on cooldown", KnownFonts.getStandardFamily())
                                 cooldownLabel.name = "cooldown"
-                                addActor(cooldownLabel)
-                                cooldownLabel.setPosition(x, y + 8f)
+                                parent.addActor(cooldownLabel)
+                                val coords = localToParentCoordinates(Vector2(x, y))
+                                cooldownLabel.setPosition(coords.x, coords.y + 8f)
                                 cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
                                 cooldownLabel.addAction(
                                     Actions.sequence(
@@ -72,18 +74,20 @@ class ItemContextPopup(
 
                     add(equipButton).prefWidth(90f).prefHeight(40f)
                 }
-                is ItemType.SCROLL -> {
+                is ItemType.USABLE -> {
                     val useButton = TextraButton("[%150][@Cozette]Use", Scene2DSkin.defaultSkin)
                     useButton.addListener(object: ClickListener() {
                         override fun clicked(event: InputEvent?, x: Float, y: Float) {
                             if (event?.button != Input.Buttons.LEFT)
                                 return
                             super.clicked(event, x, y)
+                            Player.characterEventArray.forEach { println(it) }
                             if (Player.hasCooldown(CooldownType.ITEM(item.name))) {
-                                val cooldownLabel = TextraLabel("[@Cozette][%600][*]This scroll is on cooldown", KnownFonts.getStandardFamily())
+                                val cooldownLabel = TextraLabel("[@Cozette][%600][*]This item is on cooldown", KnownFonts.getStandardFamily())
                                 cooldownLabel.name = "cooldown"
-                                addActor(cooldownLabel)
-                                cooldownLabel.setPosition(x, y + 8f)
+                                parent.addActor(cooldownLabel)
+                                val coords = localToParentCoordinates(Vector2(x, y))
+                                cooldownLabel.setPosition(coords.x, coords.y + 8f)
                                 cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
                                 cooldownLabel.addAction(
                                     Actions.sequence(

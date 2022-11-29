@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Pools
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
+import com.neutrino.game.Constants
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
 import com.neutrino.game.Render

@@ -2,6 +2,10 @@ package com.neutrino.game.domain.model.items.edible
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
+import com.neutrino.game.domain.model.event.types.CooldownType
+import com.neutrino.game.domain.model.event.types.EventHeal
+import com.neutrino.game.domain.model.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
 
@@ -17,12 +21,19 @@ class Meat: Item(), ItemType.EDIBLE {
 
     override val isFood: Boolean = true
     override val powerOg: Float = 0.2f
-    override val speedOg: Double = 0.5
-    override val repeatsOg: Int = 60
+    override val timeoutOg: Double = 0.5
+    override val executionsOg: Int = 60
     override var power: Float = powerOg
-    override val speed: Double = speedOg
-    override val repeats: Int = repeatsOg
+    override val timeout: Double = timeoutOg
+    override val executions: Int = executionsOg
     override var goldValueOg: Int = 5
+
+    override val eventWrappers: List<EventWrapper> = List(1) {
+        TimedEvent(0.0, timeout, executions, EventHeal(power))
+    }
+
+    override val cooldownType: CooldownType = CooldownType.FOOD
+    override val cooldownLength: Double = (eventWrappers[0] as TimedEvent).getEventLength()
 
     init {
         goldValue = goldValueOg

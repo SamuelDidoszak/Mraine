@@ -1,22 +1,23 @@
 package com.neutrino.game.domain.model.turn
 
+import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
 import com.neutrino.game.equalsDelta
 import com.neutrino.game.lessThanDelta
 
-class EventArray: ArrayList<Event>() {
+class EventArray: ArrayList<CharacterEvent>() {
     /** Adds the event both to this list and the character arrayList */
-    fun startEvent(event: Event): Boolean {
-        event.character.characterEventArray.add(event)
-        return this.add(event)
+    fun startEvent(characterEvent: CharacterEvent): Boolean {
+        characterEvent.character.characterEventArray.add(characterEvent)
+        return this.add(characterEvent)
     }
 
     /** Removes the event both from this list and the character arrayList */
-    fun stopEvent(event: Event): Boolean {
-        event.character.characterEventArray.remove(event)
-        return this.remove(event)
+    fun stopEvent(characterEvent: CharacterEvent): Boolean {
+        characterEvent.character.characterEventArray.remove(characterEvent)
+        return this.remove(characterEvent)
     }
 
-    override fun add(element: Event): Boolean {
+    override fun add(element: CharacterEvent): Boolean {
         for (i in 0 until this.size) {
             if (element.turn.lessThanDelta(this[i].turn)) {
                 this.add(i, element)
@@ -27,10 +28,10 @@ class EventArray: ArrayList<Event>() {
         return true
     }
 
-    fun move(event: Event): Boolean {
+    fun move(eventOld: CharacterEvent): Boolean {
         if (this.size == 1) return true
-        return if(this.remove(event))
-            this.add(event)
+        return if(this.remove(eventOld))
+            this.add(eventOld)
         else
             false
     }
@@ -50,11 +51,10 @@ class EventArray: ArrayList<Event>() {
      * Get event by turn
      * @return null if it's not event's turn
      */
-    fun get(turn: Double): Event? {
+    fun get(turn: Double): CharacterEvent? {
         return if (this.elementAt(0).turn.equalsDelta(turn))
             this.elementAt(0)
         else
             null
     }
-
 }

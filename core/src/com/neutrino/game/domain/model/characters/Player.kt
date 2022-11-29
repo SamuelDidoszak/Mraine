@@ -30,6 +30,9 @@ object Player : Character(0, 0, 0.0), HasInventory {
     override var criticalChance: Float = 0.3f
     override var experience: Float = 0f
     override var movementSpeed: Double = 1.0
+
+    val skills = ArrayList<Int>()
+
     /** Determines the maximum number of concurrently used skills that do not use mana */
     var maxSkills: Int = 3
 

@@ -13,9 +13,10 @@ import com.neutrino.game.Constants
 import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import com.neutrino.game.domain.model.event.types.CooldownType
+import com.neutrino.game.domain.model.event.types.EventCooldown
+import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.turn.CooldownType
-import com.neutrino.game.domain.model.turn.Event
 import com.neutrino.game.domain.model.utility.ColorUtils
 import kotlin.random.Random
 import kotlin.reflect.KClass
@@ -93,9 +94,16 @@ abstract class Character(
     override val textureHaver: TextureHaver = this
 
     val ai: Ai = Ai(this)
-    val characterEventArray: MutableList<Event> = ArrayList()
+    val characterEventArray: MutableList<CharacterEvent> = ArrayList()
     fun hasCooldown(cooldownType: CooldownType): Boolean {
-        return characterEventArray.find { it is Event.COOLDOWN && it.cooldownType == cooldownType } != null
+        return characterEventArray.find {
+            it.event is EventCooldown && it.event.cooldownType == cooldownType &&
+            when (it.event.cooldownType) {
+                is CooldownType.SKILL -> it.event.cooldownType.skill == (cooldownType as CooldownType.SKILL).skill
+                is CooldownType.ITEM -> it.event.cooldownType.itemName == (cooldownType as CooldownType.ITEM).itemName
+                else -> true
+            }
+        } != null
     }
 
     override var textureList:  List<TextureAtlas.AtlasRegion> = listOf()

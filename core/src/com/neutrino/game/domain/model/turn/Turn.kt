@@ -7,12 +7,17 @@ import com.neutrino.game.Constants.RunSpeed
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.utility.HpBar
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
-import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.event.CausesCooldown
+import com.neutrino.game.domain.model.event.CausesEvents
+import com.neutrino.game.domain.model.event.types.EventCooldown
+import com.neutrino.game.domain.model.event.types.EventHeal
+import com.neutrino.game.domain.model.event.types.EventModifyStat
+import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
+import com.neutrino.game.domain.model.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import com.neutrino.game.domain.use_case.level.LevelUseCases
@@ -177,32 +182,39 @@ object Turn {
                     }
                     is Action.ITEM -> {
                         character.showItemUsed(action.item)
-                        when(action.item) {
-                            is ItemType.EDIBLE -> {
-                                val event = action.item.use(action.character, turn)
-                                eventArray.startEvent(event)
-                                // TODO change the cooldown type if more edible effects are added
-                                val cooldownType = if (action.item.isFood) CooldownType.FOOD else CooldownType.HEAL
-                                val cooldown = Event.COOLDOWN(action.character, cooldownType, turn, action.item.getEffectLength())
-                                eventArray.startEvent(cooldown)
-                                updateBatch.addFirst(Action.EVENT)
-                            }
-                            is ItemType.SCROLL -> {
-                                when (action.item) {
-                                    is ItemType.SCROLL.STAT -> {
-                                        val event = action.item.use(action.character, turn)
-                                        eventArray.startEvent(event)
-                                        if (action.item.causesCooldown >= 0) {
-                                            val cooldown = Event.COOLDOWN(Player, CooldownType.ITEM(action.item.name), turn, action.item.getEffectLength())
-                                            eventArray.startEvent(cooldown)
-                                            updateBatch.addFirst(Action.EVENT)
-                                        }
-                                    }
-                                    else -> {}
+
+                        if (action.item is CausesEvents) {
+                            for (wrapper in action.item.eventWrappers) {
+                                when (wrapper.event) {
+                                    is EventHeal ->
+                                        (wrapper.event as EventHeal).attachData(action.character)
+                                    is EventModifyStat ->
+                                        (wrapper.event as EventModifyStat).attachData(action.character)
                                 }
 
-
+                                when (wrapper) {
+                                    is TimedEvent -> {
+                                        eventArray.startEvent(
+                                            CharacterEvent(
+                                            action.character, wrapper, turn
+                                        )
+                                        )
+                                    }
+                                    is CharacterEvent -> {
+                                        eventArray.startEvent(wrapper)
+                                    }
+                                }
                             }
+                            updateBatch.addFirst(Action.EVENT)
+                        }
+                        if (action.item is CausesCooldown) {
+                            println("Causes cooldown!")
+                            eventArray.startEvent(
+                                CharacterEvent(
+                                Player, turn, action.item.cooldownLength, 1,
+                                EventCooldown(action.item.cooldownType, action.item.cooldownLength).attachData(Player)
+                            )
+                            )
                         }
                     }
 
@@ -301,80 +313,21 @@ object Turn {
         tick()
     }
 
-    /** Executes the event happening at current turn */
     private fun executeEvent() {
-        println()
         try {
             val event = eventArray.get(turn)!!
-            when (event) {
-                is Event.HEAL -> {
-                    event.character.hp += event.power
-                    if (event.character.hp > event.character.hpMax)
-                        event.character.hp = event.character.hpMax
-                    event.character.findActor<HpBar>("hpBar").update(event.character.hp)
-                    event.turn += event.speed
-                    event.curRepeat++
-                    if (event.curRepeat < event.repeats)
-                        eventArray.move(0)
-                    else {
-                        eventArray.stopEvent(event)
-                    }
-                }
-                is Event.COOLDOWN -> {
-                    eventArray.removeAt(0)
-                    event.character.characterEventArray.remove(event)
-                }
-                is Event.MODIFYSTAT -> {
-                    val field = event.character.javaClass.declaredFields.first {it.name == event.statName}
-                    field.trySetAccessible()
-                    val fieldValue = field.get(event.character)
 
-                    val multiplier: Int
-                    if (event.curRepeat < event.repeats) {
-                        event.turn += event.speed
-                        event.curRepeat++
-                        multiplier = 1
-                    } else {
-                        multiplier = -1 * event.repeats
-                    }
-
-                    when (field.type.toString()) {
-                        "float" -> {
-                            field.set(event.character, (fieldValue as Float) + multiplier * (event.power as Float))
-                        }
-                        "double" -> {
-                            field.set(event.character, (fieldValue as Double) + multiplier * (event.power as Double))
-                        }
-                        "int" -> {
-                            field.set(event.character, (fieldValue as Int) + multiplier * (event.power as Int))
-                        }
-                        else -> {
-                            throw Exception("Field type is not supported")
-                        }
-                    }
-
-                    if (multiplier != 1)
-                        eventArray.stopEvent(event)
-                }
-                is Event.STUN -> {
-                    event.character.turn += event.stunLength
-                    eventArray.stopEvent(event)
-                }
-                // damage
-                is Event.DAMAGE -> {
-                    event.character.getDamage(event.power, event.damageType)
-                    // Character is killed
-                    if (event.character.hp <= 0) {
-                        Player.experience += event.character.experience
-                        characterArray.remove(event.character)
-                        // Drop its items
-                        event.character.dropItems().forEach {
-                            currentLevel.map.map[event.character.yPos][event.character.xPos].add(ItemEntity(it))
-                        }
-                    }
-                }
-                else -> {println("Event ${event::class} not yet implemented")}
+            if (event.curRepeat >= event.executions) {
+                event.event.stop()
+                eventArray.stopEvent(event)
+                return
             }
+
+            event.event.start()
+            event.turn += event.timeout
+            event.curRepeat++
+
+            eventArray.move(0)
         } catch (e: Exception) {
             e.printStackTrace()
         }

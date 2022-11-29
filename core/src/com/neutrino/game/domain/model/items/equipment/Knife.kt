@@ -1,9 +1,13 @@
 package com.neutrino.game.domain.model.items.equipment
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.event.Event
+import com.neutrino.game.domain.model.event.Data
+import com.neutrino.game.domain.model.event.Requirement
 import com.neutrino.game.domain.model.event.types.EventModifyStat
+import com.neutrino.game.domain.model.event.wrappers.EqItemStat
+import com.neutrino.game.domain.model.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.HandedItemType
 import com.neutrino.game.domain.model.items.ItemType
@@ -19,13 +23,15 @@ class Knife: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
 
     override var goldValueOg: Int = 15
 
-    override val modifierList: ArrayList<Event<*>> = arrayListOf(
-        EventModifyStat(StatsEnum.DAMAGE, 10f),
-        // TODO DYNAMIC PLAYER
+    override var requirements: Requirement = Requirement(mutableMapOf(Pair("character", Data<Character>())))
+
+    override val modifierList: ArrayList<EventWrapper> = arrayListOf(
+        EqItemStat(EventModifyStat(StatsEnum.DAMAGE, 1f)),
         // example
-//        Event.HEAL(Player, false, 0f, Turn.turn, 1.0, Int.MAX_VALUE)
+//        TimedEvent(0.0, 5.0, Int.MAX_VALUE, EventHeal(1f))
     )
     init {
+        requirements.add { (requirements.data["character"]?.data as Character).strength >= 2  }
 //        statRandomization(1f)
 
         goldValue = goldValueOg

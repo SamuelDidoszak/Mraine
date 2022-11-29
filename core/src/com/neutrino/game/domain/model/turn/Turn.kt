@@ -1,6 +1,9 @@
 package com.neutrino.game.domain.model.turn
 
 import com.badlogic.gdx.Gdx
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataObserver
+import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants.IsSeeded
 import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.Constants.RunSpeed
@@ -17,6 +20,7 @@ import com.neutrino.game.domain.model.event.types.EventCooldown
 import com.neutrino.game.domain.model.event.types.EventHeal
 import com.neutrino.game.domain.model.event.types.EventModifyStat
 import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
+import com.neutrino.game.domain.model.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
@@ -41,6 +45,10 @@ object Turn {
 
     private fun tick() {
         turn += 0.01
+    }
+
+    init {
+        setObservers()
     }
 
     var playerAction: Boolean = false
@@ -196,9 +204,8 @@ object Turn {
                                     is TimedEvent -> {
                                         eventArray.startEvent(
                                             CharacterEvent(
-                                            action.character, wrapper, turn
-                                        )
-                                        )
+                                                action.character, wrapper, turn
+                                        ))
                                     }
                                     is CharacterEvent -> {
                                         eventArray.startEvent(wrapper)
@@ -300,7 +307,6 @@ object Turn {
                 executeEvent()
                 updateBatch.removeFirst()
             }
-
         }
         // events
         while (eventArray.isNotEmpty() && eventArray.get(turn) != null) {
@@ -337,6 +343,21 @@ object Turn {
         val characterToMove = characterMap[fromY][fromX]
         characterMap[fromY][fromX] = null
         characterMap[toY][toX] = characterToMove
+    }
+
+
+    private fun setObservers() {
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.EVENT
+            override fun update(data: Any?): Boolean {
+                if (data != null && data is EventWrapper) {
+                    when (data) {
+                        is CharacterEvent -> eventArray.startEvent(data)
+                    }
+                }
+                return true
+            }
+        } )
     }
 
 }

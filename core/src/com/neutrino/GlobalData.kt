@@ -6,7 +6,8 @@ object GlobalData {
         Pair(GlobalDataType.PLAYERHP, ArrayList()),
         Pair(GlobalDataType.PLAYERMANA, ArrayList()),
         Pair(GlobalDataType.PICKUP, ArrayList()),
-        Pair(GlobalDataType.CHANGELEVEL, ArrayList())
+        Pair(GlobalDataType.CHANGELEVEL, ArrayList()),
+        Pair(GlobalDataType.EVENT, ArrayList())
     )
     fun registerObserver(globalDataObserver: GlobalDataObserver) {
         observerList.add(globalDataObserver)
@@ -55,5 +56,6 @@ enum class GlobalDataType {
     PLAYERMANA,
     PICKUP,
     EQUIPMENT,
-    CHANGELEVEL
+    CHANGELEVEL,
+    EVENT
 }

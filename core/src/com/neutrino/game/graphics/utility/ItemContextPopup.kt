@@ -12,7 +12,9 @@ import com.github.tommyettinger.textra.TextraButton
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
+import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.event.Data
 import com.neutrino.game.domain.model.event.types.CooldownType
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
@@ -65,6 +67,22 @@ class ItemContextPopup(
                             if (event?.button != Input.Buttons.LEFT)
                                 return
                             super.clicked(event, x, y)
+
+                            if ((item as EquipmentItem).requirements.data.containsKey("character"))
+                                (item.requirements.data["character"] as Data<Character>).setData(Player)
+                            if (!item.requirements.checkAll()) {
+                                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
+                                cooldownLabel.name = "requirements"
+                                parent.addActor(cooldownLabel)
+                                val coords = localToParentCoordinates(Vector2(x, y))
+                                cooldownLabel.setPosition(coords.x, coords.y + 8f)
+                                cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                                cooldownLabel.addAction(
+                                    Actions.sequence(
+                                        Actions.fadeOut(1.25f),
+                                        Actions.removeActor()))
+                                return
+                            }
 
                             val itemType = Player.equipment.setItem(item as EquipmentItem)
                             GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, itemType)

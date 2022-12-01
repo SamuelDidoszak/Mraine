@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.github.tommyettinger.textra.Font
+import com.github.tommyettinger.textra.TextraLabel
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -16,11 +17,23 @@ fun Float.lessThanDelta(other: Float) = (this - other) < -0.0000001
 
 /** Cuts off the decimal value of a floating point number. Mostly used to fix the floating point precision issue with rendering */
 fun Float.round() = this.roundToInt().toFloat()
+/** Rounds the number to one decimal place */
+fun Float.roundOneDecimal() = (this * 10).roundToInt() / 10f
+/** Cuts off the decimal value of a floating point number. Mostly used to fix the floating point precision issue with rendering */
+fun Double.round() = this.roundToInt().toFloat()
+/** Rounds the number to one decimal place */
+fun Double.roundOneDecimal() = (this * 10).roundToInt() / 10.0
 
 /** Cuts off the decimal value of the actor's position */
 fun Actor.roundPosition() = this.setPosition(this.x.round(), this.y.round())
 fun Actor.widthScaled() = this.width * this.scaleX
 fun Actor.heightScaled() = this.height * this.scaleY
+
+fun TextraLabel.setTextSameWidth(markupText: String) = run {
+    this.storedText = markupText
+    this.layout.targetWidth = width
+    this.font.markup(markupText, layout.clear())
+}
 
 /** Returns 0 if the values are the same. Returns -1 if the value is smaller than other and 1 if it's bigger */
 fun Float.compareDelta(other: Float) = if (this.equalsDelta(other)) 0

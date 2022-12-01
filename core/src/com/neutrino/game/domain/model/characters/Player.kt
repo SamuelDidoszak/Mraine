@@ -10,37 +10,151 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.utility.HasInventory
+import com.neutrino.game.domain.model.characters.utility.RangeType
+import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Equipment
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.lessThanDelta
 
 object Player : Character(0, 0, 0.0), HasInventory {
+    override var hp: Float = 0f
+        set(value) {
+            val previous = hp
+            field = value
+            // Send true if hp decreased, false otherwise
+            GlobalData.notifyObservers(GlobalDataType.PLAYERHP, value.lessThanDelta(previous))}
+    override var mp: Float = 0f
+        set(value) {field = value
+            GlobalData.notifyObservers(GlobalDataType.PLAYERMANA, false)}
+
     override var hpMax: Float = 30f
+        set(value) {field = value
+            sendStatChangeData(StatsEnum.HPMAX)}
     override var mpMax: Float = 10f
-    override var strength: Float = 3f
-    override var dexterity: Float = 2f
+        set(value) {field = value
+            sendStatChangeData(StatsEnum.MPMAX)}
+    override var strength: Float = 0f
+        set(value) {
+            val difference = value - strength
+            field = value
+            hpMax += difference * 5f
+            hp += difference * 5f
+            damage += difference * 0.5f
+            sendStatChangeData(StatsEnum.STRENGTH)}
+    override var dexterity: Float = 0f
+        set(value) {
+            val difference = value - dexterity
+            field = value
+            evasion += difference * 0.015f
+            accuracy += difference * 0.02f
+            stealth += difference * 0.015f
+            sendStatChangeData(StatsEnum.DEXTERITY)}
     override var intelligence: Float = 0f
-    override var luck: Float = 2f
-    override var damage: Float = 0f
+        set(value) {
+            val difference = value - intelligence
+            field = value
+            mpMax += difference * 5f
+            mp += difference * 5f
+            sendStatChangeData(StatsEnum.INTELLIGENCE)}
+    override var luck: Float = 0f
+        set(value) {
+            val difference = value - luck
+            field = value
+            criticalChance += difference * 0.015f
+            sendStatChangeData(StatsEnum.LUCK)}
+
+    override var damage: Float = 3f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.DAMAGE)}
     override var damageVariation: Float = 1f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.DAMAGEVARIATION)}
     override var defence: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.DEFENCE)}
+
     override var criticalChance: Float = 0.3f
-    override var experience: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.CRITICALCHANCE)}
+    override var criticalDamage: Float = 2f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.CRITICALDAMAGE)}
+
     override var movementSpeed: Double = 1.0
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.MOVEMENTSPEED)}
+    override var attackSpeed: Double = 1.0
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.ATTACKSPEED)}
+
+    override var accuracy: Float = 1f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.ACCURACY)}
+    override var evasion: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.EVASION)}
+
+    override var range: Int = 1
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.RANGE)}
+    override var rangeType: RangeType = RangeType.SQUARE
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.RANGETYPE)}
+    override var stealth: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.STEALTH)}
+
+    override var fireDamage: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.FIREDAMAGE)}
+    override var waterDamage: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.WATERDAMAGE)}
+    override var earthDamage: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.EARTHDAMAGE)}
+    override var airDamage: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.AIRDAMAGE)}
+    override var poisonDamage: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.POISONDAMAGE)}
+
+    override var fireDefence: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.FIREDEFENCE)}
+    override var waterDefence: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.WATERDEFENCE)}
+    override var earthDefence: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.EARTHDEFENCE)}
+    override var airDefence: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.AIRDEFENCE)}
+    override var poisonDefence: Float = 0f
+        set(value) {field = value
+        sendStatChangeData(StatsEnum.POISONDEFENCE)}
+
+    override var experience: Float = 0f
+        set(value) {field = value
+        GlobalData.registerData(GlobalDataType.PLAYEREXP, true)}
+    var level: Int = 1
+        set(value) {field = value
+        GlobalData.registerData(GlobalDataType.PLAYERSTAT, "level")}
 
     val skills = ArrayList<Int>()
 
     /** Determines the maximum number of concurrently used skills that do not use mana */
     var maxSkills: Int = 3
 
-    var level: Int = 1
 
     init {
         initialize("Player")
-        damage = setDamage()
         // TODO maybe delete it entirely. Each character would have to check if infogroup != null tho
         val infoGroup = findActor<Group>("infoGroup")
         infoGroup.isVisible = false
@@ -110,8 +224,7 @@ object Player : Character(0, 0, 0.0), HasInventory {
         GlobalData.notifyObservers(GlobalDataType.PICKUP, item)
     }
 
-    override fun getDamage(character: Character): Float {
-        GlobalData.notifyObservers(GlobalDataType.PLAYERHP)
-        return super.getDamage(character)
+    private fun sendStatChangeData(stat: StatsEnum) {
+        GlobalData.registerData(GlobalDataType.PLAYERSTAT, stat)
     }
 }

@@ -101,6 +101,7 @@ class GameScreen: KtxScreen {
             Gdx.input.inputProcessor = uiInputMultiplexer
             hudStage.darkenScreen(true)
             isEqVisible = true
+            uiStage.show()
             // refresh inventory
             if (uiStage.forceRefreshInventory) {
                 uiStage.refreshInventory()
@@ -304,12 +305,14 @@ class GameScreen: KtxScreen {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERHP
             // stops the player movement and focuses him on the screen
             override fun update(data: Any?): Boolean {
-                gameStage.focusPlayer = true
-                gameStage.lookingAround = false
+                if (data == true) {
+                    gameStage.focusPlayer = true
+                    gameStage.lookingAround = false
 
-                Player.ai.moveList = ArrayDeque()
-                Player.ai.entityTargetCoords = null
-                return true
+                    Player.ai.moveList = ArrayDeque()
+                    Player.ai.entityTargetCoords = null
+                }
+                return false
             }
         })
 

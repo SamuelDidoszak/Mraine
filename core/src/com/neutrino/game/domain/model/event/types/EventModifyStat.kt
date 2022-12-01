@@ -35,6 +35,7 @@ class EventModifyStat(
             StatsEnum.MOVEMENTSPEED -> if (!percent) character.movementSpeed += value as Double else character.movementSpeed *= value as Double
             StatsEnum.RANGE -> if (!percent) character.range += value as Int else character.range *= value as Int
             StatsEnum.RANGETYPE -> if (!percent) character.rangeType = value as RangeType else character.rangeType = value as RangeType
+            StatsEnum.STEALTH -> if (!percent) character.stealth += value as Float else character.stealth *= value as Float
             StatsEnum.FIREDAMAGE -> if (!percent) character.fireDamage += value as Float else character.fireDamage *= value as Float
             StatsEnum.WATERDAMAGE -> if (!percent) character.waterDamage += value as Float else character.waterDamage *= value as Float
             StatsEnum.EARTHDAMAGE -> if (!percent) character.earthDamage += value as Float else character.earthDamage *= value as Float
@@ -69,8 +70,8 @@ class EventModifyStat(
             StatsEnum.ATTACKSPEED -> if (!percent) character.attackSpeed -= value as Double else character.attackSpeed /= value as Double
             StatsEnum.MOVEMENTSPEED -> if (!percent) character.movementSpeed -= value as Double else character.movementSpeed /= value as Double
             StatsEnum.RANGE -> if (!percent) character.range -= value as Int else character.range /= value as Int
-            // TODO DUALWIELD if there is dual wield change rangetype to the second weapon rangetype
             StatsEnum.RANGETYPE -> if (!percent) character.rangeType = value as RangeType else character.rangeType = value as RangeType
+            StatsEnum.STEALTH -> if (!percent) character.stealth -= value as Float else character.stealth /= value as Float
             StatsEnum.FIREDAMAGE -> if (!percent) character.fireDamage -= value as Float else character.fireDamage /= value as Float
             StatsEnum.WATERDAMAGE -> if (!percent) character.waterDamage -= value as Float else character.waterDamage /= value as Float
             StatsEnum.EARTHDAMAGE -> if (!percent) character.earthDamage -= value as Float else character.earthDamage /= value as Float

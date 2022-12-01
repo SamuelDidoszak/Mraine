@@ -5,9 +5,11 @@ object GlobalData {
     private val dataList: HashMap<GlobalDataType, ArrayList<Any?>> = hashMapOf(
         Pair(GlobalDataType.PLAYERHP, ArrayList()),
         Pair(GlobalDataType.PLAYERMANA, ArrayList()),
+        Pair(GlobalDataType.PLAYEREXP, ArrayList()),
         Pair(GlobalDataType.PICKUP, ArrayList()),
         Pair(GlobalDataType.CHANGELEVEL, ArrayList()),
-        Pair(GlobalDataType.EVENT, ArrayList())
+        Pair(GlobalDataType.EVENT, ArrayList()),
+        Pair(GlobalDataType.PLAYERSTAT, ArrayList())
     )
     fun registerObserver(globalDataObserver: GlobalDataObserver) {
         observerList.add(globalDataObserver)
@@ -30,17 +32,20 @@ object GlobalData {
         try {
             dataList[dataType]!!.add(data)
         } catch (e: Exception) {
+            println("There is no $dataType array")
             e.printStackTrace()
         }
     }
     private fun unregisterData(dataType: GlobalDataType, data: Any?) {
         dataList[dataType]?.remove(data)
     }
-    private fun getData(dataType: GlobalDataType): ArrayList<Any?> {
+    fun getData(dataType: GlobalDataType): ArrayList<Any?> {
         return dataList[dataType]!!
     }
 
     fun notifyObservers(dataType: GlobalDataType, data: Any? = null) {
+        if (data != null)
+            registerData(dataType, data)
         for (observer in observerList) {
             if (observer.dataType == dataType) {
                 val unregister = observer.update(data)
@@ -54,8 +59,10 @@ object GlobalData {
 enum class GlobalDataType {
     PLAYERHP,
     PLAYERMANA,
+    PLAYEREXP,
     PICKUP,
     EQUIPMENT,
     CHANGELEVEL,
-    EVENT
+    EVENT,
+    PLAYERSTAT
 }

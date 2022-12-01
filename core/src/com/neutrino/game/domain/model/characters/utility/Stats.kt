@@ -24,8 +24,9 @@ interface Stats {
     var range: Int
     var rangeType: RangeType
     var experience: Float
+    var stealth: Float
 
-    // environmental
+    // elemental
     var fireDamage: Float
     var waterDamage: Float
     var earthDamage: Float
@@ -41,10 +42,6 @@ interface Stats {
     var airDefence: Float
     /** Range is 0 - 2, where 1+ heals instead of damaging */
     var poisonDefence: Float
-
-    fun setDamage(): Float {
-        return strength
-    }
 
     fun damageMin(): Float {
         return damage - damageVariation

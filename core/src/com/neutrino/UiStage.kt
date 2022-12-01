@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.*
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.items.Gold
@@ -149,6 +150,12 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         sortingTabsGroup.name = "sortingTabsGroup"
     }
 
+    fun show() {
+//        hoveredTab = mainTabsGroup.findActor("InventoryClosed")
+//        activeTab = openTabsGroup.findActor("InventoryOpen")
+//        activateTab()
+    }
+
     private fun addScreensTemp() {
         quests.name = "quests"
         quests.addActor(Image(uiElements["Background"]))
@@ -225,6 +232,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             add(name).padLeft(24f)
 
             val lvl = TextraLabel("lvl ${Player.level}", Fonts.EQUIPMENT, Color.BLACK)
+            lvl.name = "level"
             lvl.align = Align.center
             add(lvl).fillX().expandX().center()
 
@@ -286,7 +294,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             strengthLabel.align = Align.left
             val strength = TextraLabel("${Player.strength}", Fonts.EQUIPMENT, Color.BLACK)
             strength.name = "strength"
-            add(strength).colspan(2).uniform()
+            add(strength).colspan(2).fillX().expandX().uniform()
             row()
 
             val dexterityLabel = TextraLabel("Dexterity", Fonts.EQUIPMENT, Color.BLACK)
@@ -294,7 +302,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             add(dexterityLabel).fillX().width(width / 3).colspan(2).uniform()
             val dexterity = TextraLabel("${Player.dexterity}", Fonts.EQUIPMENT, Color.BLACK)
             dexterity.name = "dexterity"
-            add(dexterity).colspan(2).uniform()
+            add(dexterity).colspan(2).fillX().expandX().uniform()
             row()
 
             val intelligenceLabel = TextraLabel("Intelligence", Fonts.EQUIPMENT, Color.BLACK)
@@ -302,7 +310,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             add(intelligenceLabel).fillX().width(width / 3).colspan(2).uniform()
             val intelligence = TextraLabel("${Player.intelligence}", Fonts.EQUIPMENT, Color.BLACK)
             intelligence.name = "intelligence"
-            add(intelligence).colspan(2).uniform()
+            add(intelligence).colspan(2).fillX().expandX().uniform()
             row()
 
             val luckLabel = TextraLabel("Luck", Fonts.EQUIPMENT, Color.BLACK)
@@ -310,7 +318,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             add(luckLabel).fillX().width(width / 3).colspan(2).uniform()
             val luck = TextraLabel("${Player.luck}", Fonts.EQUIPMENT, Color.BLACK)
             luck.name = "luck"
-            add(luck).colspan(2).uniform()
+            add(luck).colspan(2).fillX().expandX().uniform()
             row()
 
             val damageLabel = TextraLabel("Damage", Fonts.EQUIPMENT, Color.BLACK)
@@ -388,7 +396,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             val attackSpeed = TextraLabel("${Player.attackSpeed}", Fonts.EQUIPMENT, Color.BLACK)
             attackSpeed.name = "attackSpeed"
             add(attackSpeed).colspan(1).uniform()
-            row().padBottom(12f)
+            row().padTop(12f)
 
             val fireDamagelabel = TextraLabel("Fire dmg", Fonts.EQUIPMENT, Color.BLACK)
             fireDamagelabel.align = Align.left
@@ -469,6 +477,86 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         stats.add(stats2)
         stats.row()
         stats.pack()
+        stats.setDebug(true, true)
+    }
+
+    private fun refreshStats() {
+        val uniqueStats: MutableSet<StatsEnum> = mutableSetOf()
+        val otherData: MutableSet<String> = mutableSetOf()
+
+        for (data in GlobalData.getData(GlobalDataType.PLAYERSTAT)) {
+            when (data) {
+                is StatsEnum -> uniqueStats.add(data)
+                is String -> otherData.add(data)
+            }
+        }
+
+        for (stat in uniqueStats)
+            setStatLabelText(stat)
+
+        for (other in otherData) {
+            when (other) {
+                "level" -> {
+                    stats.findActor<TextraLabel>("level").setText("lvl ${Player.level}")
+                    stats.findActor<TextraLabel>("expMax").setText("1237")
+                }
+            }
+        }
+
+        val expData = GlobalData.getData(GlobalDataType.PLAYEREXP)
+        if (expData.isNotEmpty()) {
+            stats.findActor<TextraLabel>("exp").setText("${Player.experience.roundOneDecimal()}")
+            expData.clear()
+        }
+        val hpData = GlobalData.getData(GlobalDataType.PLAYERHP)
+        if (hpData.isNotEmpty()) {
+            stats.findActor<TextraLabel>("hp").setTextSameWidth("${Player.hp.roundOneDecimal()}")
+            hpData.clear()
+        }
+        val mpData = GlobalData.getData(GlobalDataType.PLAYERMANA)
+        if (mpData.isNotEmpty()) {
+            stats.findActor<TextraLabel>("mp").setTextSameWidth("${Player.mp.roundOneDecimal()}")
+            mpData.clear()
+        }
+    }
+
+    private fun setStatLabelText(stat: StatsEnum) {
+        when (stat) {
+            StatsEnum.HPMAX -> stats.findActor<TextraLabel>("hpMax").setTextSameWidth("${Player.hpMax.roundOneDecimal()}")
+            StatsEnum.MPMAX -> stats.findActor<TextraLabel>("mpMax").setTextSameWidth("${Player.mpMax.roundOneDecimal()}")
+            StatsEnum.STRENGTH -> stats.findActor<TextraLabel>("strength").setText("${Player.strength.roundOneDecimal()}")
+            StatsEnum.DEXTERITY -> stats.findActor<TextraLabel>("dexterity").setText("${Player.dexterity.roundOneDecimal()}")
+            StatsEnum.INTELLIGENCE -> stats.findActor<TextraLabel>("intelligence").setText("${Player.intelligence.roundOneDecimal()}")
+            StatsEnum.LUCK -> stats.findActor<TextraLabel>("luck").setText("${Player.luck.roundOneDecimal()}")
+            StatsEnum.DAMAGE, StatsEnum.DAMAGEVARIATION -> {
+                stats.findActor<TextraLabel>("damage").setTextSameWidth("${(Player.damage - Player.damageVariation).roundOneDecimal()}")
+                stats.findActor<TextraLabel>("damageMax").setTextSameWidth("${(Player.damage + Player.damageVariation).roundOneDecimal()}")
+
+            }
+            StatsEnum.DEFENCE -> stats.findActor<TextraLabel>("defence").setText("${Player.defence.roundOneDecimal()}")
+            StatsEnum.EVASION -> stats.findActor<TextraLabel>("evasion").setTextSameWidth("${(Player.evasion * 100).roundToInt()}%")
+            StatsEnum.ACCURACY -> stats.findActor<TextraLabel>("accuracy").setTextSameWidth("${(Player.accuracy * 100).roundToInt()}%")
+            StatsEnum.CRITICALCHANCE -> stats.findActor<TextraLabel>("critChance").setText("${(Player.criticalChance * 100).roundToInt()}%")
+            StatsEnum.CRITICALDAMAGE -> stats.findActor<TextraLabel>("critDamage").setText("${(Player.criticalDamage * 100).roundToInt()}%")
+            StatsEnum.ATTACKSPEED -> stats.findActor<TextraLabel>("movementSpeed").setText("${Player.movementSpeed.roundOneDecimal()}")
+            StatsEnum.MOVEMENTSPEED -> stats.findActor<TextraLabel>("attackSpeed").setText("${Player.attackSpeed.roundOneDecimal()}")
+
+            StatsEnum.FIREDAMAGE -> stats.findActor<TextraLabel>("fireDamage").setText("${Player.fireDamage.roundOneDecimal()}")
+            StatsEnum.WATERDAMAGE -> stats.findActor<TextraLabel>("waterDamage").setText("${Player.waterDamage.roundOneDecimal()}")
+            StatsEnum.EARTHDAMAGE -> stats.findActor<TextraLabel>("earthDamage").setText("${Player.earthDamage.roundOneDecimal()}")
+            StatsEnum.AIRDAMAGE -> stats.findActor<TextraLabel>("airDamage").setText("${Player.airDamage.roundOneDecimal()}")
+            StatsEnum.POISONDAMAGE -> stats.findActor<TextraLabel>("poisonDamage").setText("${Player.poisonDamage.roundOneDecimal()}")
+
+            StatsEnum.FIREDEFENCE -> stats.findActor<TextraLabel>("fireDefence").setText("${(Player.fireDefence * 100).roundToInt()}%")
+            StatsEnum.WATERDEFENCE -> stats.findActor<TextraLabel>("waterDefence").setText("${(Player.waterDefence * 100).roundToInt()}%")
+            StatsEnum.EARTHDEFENCE -> stats.findActor<TextraLabel>("earthDefence").setText("${(Player.earthDefence * 100).roundToInt()}%")
+            StatsEnum.AIRDEFENCE -> stats.findActor<TextraLabel>("airDefence").setText("${(Player.airDefence * 100).roundToInt()}%")
+            StatsEnum.POISONDEFENCE -> stats.findActor<TextraLabel>("poisonDefence").setText("${(Player.poisonDefence * 100).roundToInt()}%")
+
+            StatsEnum.RANGE -> {}
+            StatsEnum.RANGETYPE -> {}
+            StatsEnum.STEALTH -> {}
+        }
     }
 
     private fun getCellDrawable(cellNumber: Int, rows: Int): Drawable {
@@ -848,6 +936,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                     equipment.isVisible = true
                     currentScreen = equipment
                     refreshGoldInEquipment()
+                    refreshStats()
                 }
                 "SkillsClosed" -> {
                     skills.isVisible = true

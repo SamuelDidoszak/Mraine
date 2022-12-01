@@ -27,6 +27,32 @@ abstract class Character(
     var yPos: Int,
     var turn: Double
 ): Group(), TextureHaver, Animated, Stats, Randomization {
+    override var strength: Float = 0f
+        set(value) {
+            val difference = value - Player.strength
+            field = value
+            hpMax += difference * 5f
+            hp += difference * 5f
+            damage += difference * 0.5f}
+    override var dexterity: Float = 0f
+        set(value) {
+            val difference = value - Player.dexterity
+            field = value
+            evasion += difference * 0.015f
+            accuracy += difference * 0.02f
+            stealth += difference * 0.015f}
+    override var intelligence: Float = 0f
+        set(value) {
+            val difference = value - Player.intelligence
+            field = value
+            mpMax += difference * 5f
+            mp += difference * 5f}
+    override var luck: Float = 0f
+        set(value) {
+            val difference = value - Player.luck
+            field = value
+            criticalChance += difference * 0.015f}
+
     // Stat initialization for character boilerplate reduction
     override var hp: Float = 0f
     override var mp: Float = 0f
@@ -37,6 +63,7 @@ abstract class Character(
     override var criticalDamage: Float = 2f
     override var range: Int = 1
     override var rangeType: RangeType = RangeType.SQUARE
+    override var stealth: Float = 0f
     // environmental stats
     override var fireDamage: Float = 0f
     override var waterDamage: Float = 0f

@@ -18,6 +18,7 @@ enum class StatsEnum(val priorityWeight: Float, val statCost: Float) {
     MOVEMENTSPEED(1.5f, 3f),
     RANGE(0f, 10f),
     RANGETYPE(0f, 10f),
+    STEALTH(1.5f, 1.25f),
 
     FIREDAMAGE(3.5f, 1.5f),
     WATERDAMAGE(3.5f, 1.5f),

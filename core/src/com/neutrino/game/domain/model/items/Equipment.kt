@@ -3,6 +3,7 @@ package com.neutrino.game.domain.model.items
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasInventory
 import com.neutrino.game.domain.model.event.Data
 import com.neutrino.game.domain.model.event.types.EventHeal
@@ -154,7 +155,7 @@ class Equipment(val character: Character) {
             when (modifier) {
                 is EqItemStat -> {
                     modifier.event.attachData(character)
-                    modifier.event.start()
+                    modifier.event.stop()
                 }
                 is TimedEvent -> {
 

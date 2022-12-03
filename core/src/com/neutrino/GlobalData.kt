@@ -30,9 +30,8 @@ object GlobalData {
     }
     fun registerData(dataType: GlobalDataType, data: Any?) {
         try {
-            dataList[dataType]!!.add(data)
+            dataList[dataType]?.add(data)
         } catch (e: Exception) {
-            println("There is no $dataType array")
             e.printStackTrace()
         }
     }

@@ -1,6 +1,7 @@
 package com.neutrino.game.domain.model.items.equipment
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.event.Data
@@ -31,7 +32,7 @@ class Knife: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
 //        TimedEvent(0.0, 5.0, Int.MAX_VALUE, EventHeal(1f))
     )
     init {
-        requirements.add { (requirements.data["character"]?.data as Character).strength >= 2  }
+        requirements.add { (requirements.data["character"]?.data as Character).strength.compareDelta(0f) >= 0  }
 //        statRandomization(1f)
 
         goldValue = goldValueOg

@@ -1,33 +1,21 @@
 package com.neutrino.game.domain.model.event
 
-interface Event<T> {
-    var data: T
-    var dataAttached: Boolean
+abstract class Event: DataMap {
+    /** Variable to check for data correctness only once instead of in each method call */
+    var dataAttached: Boolean = false
 
-    fun attachData(data: T): Event<T> {
-        this.data = data
-        dataAttached = true
-        return this
-    }
-
-    fun start() {
+    open fun start() {
 
     }
 
-    fun stop() {
+    open fun stop() {
 
     }
 
     fun checkData(): Boolean {
-        if (!dataAttached) {
-            try {
-                throw (Exception("Data not attached"))
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            return false
-        }
-        return true
+        if (!dataAttached)
+            dataAttached = isDataSet()
+        return dataAttached
     }
 
 }

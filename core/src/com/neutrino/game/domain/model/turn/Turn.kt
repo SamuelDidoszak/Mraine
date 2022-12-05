@@ -17,8 +17,6 @@ import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.event.CausesCooldown
 import com.neutrino.game.domain.model.event.CausesEvents
 import com.neutrino.game.domain.model.event.types.EventCooldown
-import com.neutrino.game.domain.model.event.types.EventHeal
-import com.neutrino.game.domain.model.event.types.EventModifyStat
 import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.event.wrappers.TimedEvent
@@ -193,12 +191,8 @@ object Turn {
 
                         if (action.item is CausesEvents) {
                             for (wrapper in action.item.eventWrappers) {
-                                when (wrapper.event) {
-                                    is EventHeal ->
-                                        (wrapper.event as EventHeal).attachData(action.character)
-                                    is EventModifyStat ->
-                                        (wrapper.event as EventModifyStat).attachData(action.character)
-                                }
+                                if (wrapper.event.has("character"))
+                                    wrapper.event.set("character", action.character)
 
                                 when (wrapper) {
                                     is TimedEvent -> {
@@ -219,7 +213,7 @@ object Turn {
                             eventArray.startEvent(
                                 CharacterEvent(
                                 Player, turn, action.item.cooldownLength, 1,
-                                EventCooldown(action.item.cooldownType, action.item.cooldownLength).attachData(Player)
+                                EventCooldown(action.character, action.item.cooldownType, action.item.cooldownLength)
                             )
                             )
                         }

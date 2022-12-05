@@ -11,7 +11,7 @@ data class CharacterEvent(
     val timeout: Double,
     /** How many times the event will occur */
     var executions: Int,
-    override val event: Event<*>
+    override val event: Event
 ): EventWrapper(event) {
     var curRepeat: Int = 0
 

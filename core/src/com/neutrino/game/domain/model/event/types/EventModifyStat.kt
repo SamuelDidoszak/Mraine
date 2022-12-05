@@ -3,20 +3,46 @@ package com.neutrino.game.domain.model.event.types
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.domain.model.event.Data
 import com.neutrino.game.domain.model.event.Event
 
-class EventModifyStat(
-    val stat: StatsEnum,
-    var value: Any,
-    val percent: Boolean = false
-): Event<Character> {
-    override lateinit var data: Character
-    override var dataAttached: Boolean = false
+class EventModifyStat(): Event(){
+    constructor(stat: StatsEnum) : this() {
+        this.stat = stat
+    }
+
+    constructor(stat: StatsEnum, value: Any) : this() {
+        this.stat = stat
+        this.value = value
+    }
+
+    override val data: MutableMap<String, Data<*>> = mutableMapOf(
+        Pair("character", Data<Character>()),
+        Pair("stat", Data<StatsEnum>()),
+        Pair("value", Data<Any>()),
+        Pair("percent", Data<Boolean>())
+    )
+    var character: Character
+        get() { return get("character", Character::class)!! }
+        set(value) { set("character", value) }
+
+    var stat: StatsEnum
+        get() { return get("stat", StatsEnum::class)!! }
+        set(value) { set("stat", value) }
+    var value: Any
+        get() { return get("value", Any::class)!! }
+        set(value) { set("value", value) }
+    var percent: Boolean
+        get() { return get("percent", Boolean::class)!! }
+        set(value) { set("percent", value) }
+
+    init {
+        percent = false
+    }
 
     override fun start() {
         checkData()
-        
-        val character = data
+
         when (stat) {
             StatsEnum.HPMAX -> if (!percent) character.hpMax += value as Float else character.hpMax *= value as Float
             StatsEnum.MPMAX -> if (!percent) character.mpMax += value as Float else character.mpMax *= value as Float
@@ -52,7 +78,6 @@ class EventModifyStat(
     override fun stop() {
         checkData()
 
-        val character = data
         when (stat) {
             StatsEnum.HPMAX -> if (!percent) character.hpMax -= value as Float else character.hpMax /= value as Float
             StatsEnum.MPMAX -> if (!percent) character.mpMax -= value as Float else character.mpMax /= value as Float

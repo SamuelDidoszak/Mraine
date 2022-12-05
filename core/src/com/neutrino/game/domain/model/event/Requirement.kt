@@ -1,8 +1,8 @@
 package com.neutrino.game.domain.model.event
 
 class Requirement(
-    val data: Map<String, Data<*>> = mutableMapOf()
-) {
+    override val data: MutableMap<String, Data<*>> = mutableMapOf()
+): DataMap {
     private val requirementList: ArrayList<() -> Boolean> = ArrayList()
     fun add(check: () -> Boolean): Requirement {
         requirementList.add(check)
@@ -18,20 +18,4 @@ class Requirement(
         }
         return true
     }
-
-    private fun isDataSet(): Boolean {
-        for (data in data) {
-            if (data.value.data == null) {
-                try {
-                    throw Exception("Data \"${data.key}\" is not set")
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    return false
-                }
-            }
-        }
-        return true
-    }
-
-
 }

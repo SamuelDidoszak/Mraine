@@ -3,11 +3,7 @@ package com.neutrino.game.domain.model.items
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasInventory
-import com.neutrino.game.domain.model.event.Data
-import com.neutrino.game.domain.model.event.types.EventHeal
-import com.neutrino.game.domain.model.event.types.EventModifyStat
 import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.event.wrappers.EqItemStat
 import com.neutrino.game.domain.model.event.wrappers.TimedEvent
@@ -132,16 +128,13 @@ class Equipment(val character: Character) {
         for (modifier in item.modifierList) {
             when (modifier) {
                 is EqItemStat -> {
-                    modifier.event.attachData(character)
+                    modifier.event.character = character
                     modifier.event.start()
                 }
                 is TimedEvent -> {
-                    when (modifier.event) {
-                        is EventHeal ->
-                            (modifier.event as EventHeal).attachData(character)
-                        is EventModifyStat ->
-                            (modifier.event as EventModifyStat).attachData(character)
-                    }
+                    if (modifier.event.has("character"))
+                        modifier.event.set("character", Character::class)
+
                     GlobalData.notifyObservers(GlobalDataType.EVENT, CharacterEvent(
                         character, modifier, Turn.turn
                     ))
@@ -154,7 +147,7 @@ class Equipment(val character: Character) {
         for (modifier in item.modifierList) {
             when (modifier) {
                 is EqItemStat -> {
-                    modifier.event.attachData(character)
+                    modifier.event.character = character
                     modifier.event.stop()
                 }
                 is TimedEvent -> {
@@ -165,8 +158,8 @@ class Equipment(val character: Character) {
     }
 
     private fun checkRequirements(item: EquipmentItem): Boolean {
-        if (item.requirements.data.containsKey("character"))
-            (item.requirements.data["character"] as Data<Character>).setData(character)
+        if (item.requirements.has("character"))
+            item.requirements.set("character", character)
 
         return item.requirements.checkAll()
     }

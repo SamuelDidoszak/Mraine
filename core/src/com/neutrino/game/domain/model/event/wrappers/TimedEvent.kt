@@ -10,5 +10,5 @@ data class TimedEvent(
     override val timeout: Double,
     /** How many times the event will occur */
     override var executions: Int,
-    override val event: Event<*>
+    override val event: Event
 ): EventWrapper(event), Timed

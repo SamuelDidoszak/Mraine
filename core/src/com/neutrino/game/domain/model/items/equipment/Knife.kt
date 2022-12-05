@@ -32,7 +32,7 @@ class Knife: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
 //        TimedEvent(0.0, 5.0, Int.MAX_VALUE, EventHeal(1f))
     )
     init {
-        requirements.add { (requirements.data["character"]?.data as Character).strength.compareDelta(0f) >= 0  }
+        requirements.add { requirements.get("character", Character::class)!!.strength.compareDelta(0f) >= 0  }
 //        statRandomization(1f)
 
         goldValue = goldValueOg

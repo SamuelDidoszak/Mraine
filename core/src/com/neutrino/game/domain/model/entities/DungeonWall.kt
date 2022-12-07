@@ -86,8 +86,9 @@ class DungeonWall: Entity() {
             if (entityChecker.checkAllTiles(listOf(1, 2))) "dungeonWallInsideMiddleTop" else
             if (entityChecker.checkAllTiles(listOf(2))) "dungeonWallInsideMiddleTop" else
             if (entityChecker.checkAllTiles(listOf(1, 2, 6, 9))) "dungeonWallInsideMiddleTop" else
-                // Possibly change
+
             if (entityChecker.checkAllTiles(listOf(2, 4, 6, 9))) "dungeonWallInsideMiddleTop" else
+            if (entityChecker.checkAllTiles(listOf(2, 3, 4))) "dungeonWallInsideMiddleTop" else
             if (entityChecker.checkAllTiles(listOf(2, 4, 6))) "dungeonWallInsideMiddleTop" else
             if (entityChecker.checkAllTiles(listOf(1, 2, 6))) "dungeonWallInsideMiddleTop" else
             if (entityChecker.checkAllTiles(listOf(2, 4, 7))) "dungeonWallInsideMiddleTop" else

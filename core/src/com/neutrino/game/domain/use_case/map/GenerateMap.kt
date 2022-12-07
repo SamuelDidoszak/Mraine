@@ -1,13 +1,11 @@
 package com.neutrino.game.domain.use_case.map
 
 import com.neutrino.game.Constants.RandomGenerator
+import com.neutrino.game.domain.model.entities.CrateDoor
 import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.WoodenDoor
 import com.neutrino.game.domain.model.entities.WoodenDoorArched
-import com.neutrino.game.domain.model.entities.containers.Barrel
-import com.neutrino.game.domain.model.entities.containers.CrateBigger
-import com.neutrino.game.domain.model.entities.containers.CrateSmall
-import com.neutrino.game.domain.model.entities.containers.WoodenChest
+import com.neutrino.game.domain.model.entities.containers.*
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.map.TagInterpretation
@@ -57,7 +55,7 @@ class GenerateMap(
             EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
             EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
             EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9)),
-        ), 15f, assertAmount = true)
+        ), 12f, assertAmount = true)
 
         addEntities(
             WoodenDoorArched::class as KClass<Entity>, listOf(
@@ -73,11 +71,21 @@ class GenerateMap(
             EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
             EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
             EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9)),
-        ), 10f, assertAmount = true)
+        ), 8f, assertAmount = true)
+
+        addEntities(
+            CrateDoor::class as KClass<Entity>, listOf(
+                EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+                EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
+                EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
+                EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9)),
+            ), 5f, assertAmount = true)
 
 
-        addEntitiesNearWall(Barrel::class as KClass<Entity>, 0.005f, false)
-        addEntitiesNearWall(CrateSmall::class as KClass<Entity>, 0.003f)
+        addEntitiesNearWall(Barrel::class as KClass<Entity>, 0.05f, false)
+        addEntitiesNearWall(CrateSmall::class as KClass<Entity>, 0.003f, true)
 
         addEntities(CrateBigger::class as KClass<Entity>, listOf(
             EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
@@ -99,6 +107,9 @@ class GenerateMap(
             EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(1, 2, 3)),
             EntityPositionRequirement(EntityPositionRequirementType.OPTIONALFORBIDDEN, DungeonWall::class as KClass<Entity>, listOf(4, 7, 8, 9, 6)),
         ), 3f, assertAmount = true)
+
+        addEntitiesNearWall(ClayPot::class as KClass<Entity>, 0.0075f, true)
+        addEntitiesNearWall(ClayPotMultiple::class as KClass<Entity>, 0.003f, true)
 
         GenerateItems(map, interpretedTags.itemList, interpretedTags.generationParams)()
 

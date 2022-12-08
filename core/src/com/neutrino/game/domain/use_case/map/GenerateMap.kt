@@ -84,8 +84,8 @@ class GenerateMap(
             ), 5f, assertAmount = true)
 
 
-        addEntitiesNearWall(Barrel::class as KClass<Entity>, 0.05f, false)
-        addEntitiesNearWall(CrateSmall::class as KClass<Entity>, 0.003f, true)
+        addEntitiesNearWall(Barrel::class as KClass<Entity>, 0.0085f, false)
+        addEntitiesNearWall(CrateSmall::class as KClass<Entity>, 0.005f, false)
 
         addEntities(CrateBigger::class as KClass<Entity>, listOf(
             EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
@@ -108,8 +108,8 @@ class GenerateMap(
             EntityPositionRequirement(EntityPositionRequirementType.OPTIONALFORBIDDEN, DungeonWall::class as KClass<Entity>, listOf(4, 7, 8, 9, 6)),
         ), 3f, assertAmount = true)
 
-        addEntitiesNearWall(ClayPot::class as KClass<Entity>, 0.0075f, true)
-        addEntitiesNearWall(ClayPotMultiple::class as KClass<Entity>, 0.003f, true)
+        addEntitiesNearWall(ClayPot::class as KClass<Entity>, 0.01f, false)
+        addEntitiesNearWall(ClayPotMultiple::class as KClass<Entity>, 0.005f, false)
 
         GenerateItems(map, interpretedTags.itemList, interpretedTags.generationParams)()
 
@@ -130,6 +130,8 @@ class GenerateMap(
                 EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, DungeonWall::class as KClass<Entity>,
                     listOf(2, 8)))
         }
+
+        requirementList.forEach { println(it) }
 
         addEntities(entity, requirementList, probability)
     }
@@ -227,11 +229,11 @@ class GenerateMap(
                                 }
                             }
                             EntityPositionRequirementType.FORBIDDEN -> {
-                                if (requirementFulfilled) {
-                                    generationAllowed = false
+                                if (!requirementFulfilled) {
+                                    generationAllowed = true
                                     break
                                 } else
-                                    generationAllowed = true
+                                    generationAllowed = false
                             }
                             EntityPositionRequirementType.OPTIONAL -> {
                                 if (requirementFulfilled) {
@@ -252,7 +254,7 @@ class GenerateMap(
                         // not grouped, all of the requirements have to be passed
                         null -> {
                             if (!generationAllowed)
-                                break
+                                continue
                         }
                         EntityPositionRequirementType.REQUIRED -> {
                             if (!generationAllowed)

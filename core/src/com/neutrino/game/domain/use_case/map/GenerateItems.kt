@@ -155,12 +155,21 @@ class GenerateItems(
     }
 
     private fun addItem(item: Item) {
+        var tries = 0
         while (true) {
             val x = (Constants.RandomGenerator.nextFloat() * (map[0].size - 1)).roundToInt()
             val y = (Constants.RandomGenerator.nextFloat() * (map.size - 1)).roundToInt()
             if (map[y][x].isNotEmpty() && map[y][x][map[y][x].size - 1].allowOnTop) {
                 map[y][x].add(ItemEntity(item))
                 break
+            }
+            if (tries++ == 50) {
+                try {
+                    throw Exception("Couldn't find more positions")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    break
+                }
             }
         }
     }

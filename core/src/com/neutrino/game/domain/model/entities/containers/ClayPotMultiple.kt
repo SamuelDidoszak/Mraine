@@ -23,6 +23,7 @@ class ClayPotMultiple: Entity(), ChangesImpassable, Destructable, Container {
         texture = getTexture(
             getTextureFromEqualRange(Constants.RandomGenerator.nextFloat() * 100, textures = textureNames.filter { it.startsWith("clayPotMultiple$") })!!
         )
+        mirror(20f)
     }
 
     override val interactionList: List<Interaction> = List(1) {

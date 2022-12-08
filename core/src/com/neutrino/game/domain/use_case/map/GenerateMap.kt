@@ -1,10 +1,7 @@
 package com.neutrino.game.domain.use_case.map
 
 import com.neutrino.game.Constants.RandomGenerator
-import com.neutrino.game.domain.model.entities.CrateDoor
-import com.neutrino.game.domain.model.entities.DungeonWall
-import com.neutrino.game.domain.model.entities.WoodenDoor
-import com.neutrino.game.domain.model.entities.WoodenDoorArched
+import com.neutrino.game.domain.model.entities.*
 import com.neutrino.game.domain.model.entities.containers.*
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.map.Level
@@ -42,45 +39,79 @@ class GenerateMap(
         squidGeneration.setWalls(map, interpretedTags.entityParams.wall)
         addEntities(interpretedTags.entityParams.floor, listOf(),1f)
 
+        addEntities(StonePillar::class as KClass<Entity>, listOf(
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(7, 8, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 2, 3, 4, 6))
+        ), 6f, assertAmount = true)
+
+        addEntities(StonePillar::class as KClass<Entity>, listOf(
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(1, 2, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(4, 6, 7, 8, 9))
+        ), 2f, assertAmount = true)
+
         addEntities(WoodenDoor::class as KClass<Entity>, listOf(
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(2, 8)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(4, 9, 6, 3)),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(2, 8)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(6, 1, 4, 7)),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9)),
-        ), 12f, assertAmount = true)
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(1, 2, 3, 8)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(4, 7, 6, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(7, 8, 9, 2)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 4, 3, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(4, 3, 6, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 2, 7, 8)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(1, 4, 7, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(2, 3, 8, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(2, 8)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(4, 9, 6, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(2, 8)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(6, 1, 4, 7)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(4, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(4, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9))
+        ), 10f, assertAmount = true)
 
         addEntities(
             WoodenDoorArched::class as KClass<Entity>, listOf(
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(2, 8)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(4, 9, 6, 3)),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(2, 8)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(6, 1, 4, 7)),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(1, 2, 3, 8)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(4, 7, 6, 9)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(7, 8, 9, 2)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 4, 3, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(4, 3, 6, 9)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 2, 7, 8)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(1, 4, 7, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(2, 3, 8, 9)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(2, 8)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(4, 9, 6, 3)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(2, 8)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(6, 1, 4, 7)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(4, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(4, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9))
         ), 8f, assertAmount = true)
 
         addEntities(
             CrateDoor::class as KClass<Entity>, listOf(
-                EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-                EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
-                EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
-                EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-                EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, interpretedTags.entityParams.wall, listOf(4, 6)),
-                EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(4, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(4, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(2, 7, 8, 9)),
             ), 5f, assertAmount = true)
 
 
@@ -88,24 +119,24 @@ class GenerateMap(
         addEntitiesNearWall(CrateSmall::class as KClass<Entity>, 0.005f, false)
 
         addEntities(CrateBigger::class as KClass<Entity>, listOf(
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, DungeonWall::class as KClass<Entity>, listOf(4, 6)),
-            EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, CrateBigger::class as KClass<Entity>, listOf(4)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class as KClass<Entity>, listOf(4, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.NAND, CrateBigger::class as KClass<Entity>, listOf(4)),
         ), 0.01f)
 
         addEntities(WoodenChest::class as KClass<Entity>, listOf(
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(1, 4, 7)),
-            EntityPositionRequirement(EntityPositionRequirementType.OPTIONALFORBIDDEN, DungeonWall::class as KClass<Entity>, listOf(2, 3, 6, 8, 9)),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
-            EntityPositionRequirement(EntityPositionRequirementType.OPTIONALFORBIDDEN, DungeonWall::class as KClass<Entity>, listOf(4, 1, 2, 3, 6)),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(9, 6, 3)),
-            EntityPositionRequirement(EntityPositionRequirementType.OPTIONALFORBIDDEN, DungeonWall::class as KClass<Entity>, listOf(7, 8, 4, 1, 2)),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED),
-            EntityPositionRequirement(EntityPositionRequirementType.REQUIRED, DungeonWall::class as KClass<Entity>, listOf(1, 2, 3)),
-            EntityPositionRequirement(EntityPositionRequirementType.OPTIONALFORBIDDEN, DungeonWall::class as KClass<Entity>, listOf(4, 7, 8, 9, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(1, 4, 7)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class as KClass<Entity>, listOf(2, 3, 6, 8, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class as KClass<Entity>, listOf(4, 1, 2, 3, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(9, 6, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class as KClass<Entity>, listOf(7, 8, 4, 1, 2)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(1, 2, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class as KClass<Entity>, listOf(4, 7, 8, 9, 6)),
         ), 3f, assertAmount = true)
 
         addEntitiesNearWall(ClayPot::class as KClass<Entity>, 0.01f, false)
@@ -118,20 +149,18 @@ class GenerateMap(
 
     private fun addEntitiesNearWall(entity: KClass<Entity>, probability: Float, canBlockPassage: Boolean = true) {
         var requirementList = listOf(
-            EntityPositionRequirement(EntityPositionRequirementType.OPTIONAL, DungeonWall::class as KClass<Entity>,
+            EntityPositionRequirement(EntityPositionRequirementType.OR, DungeonWall::class as KClass<Entity>,
                 listOf(2, 4, 6, 8))
         )
 
         if (!canBlockPassage) {
-            requirementList = requirementList.plus(
-                EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, DungeonWall::class as KClass<Entity>,
-                    listOf(4, 6)))
-            requirementList = requirementList.plus(
-                EntityPositionRequirement(EntityPositionRequirementType.FORBIDDEN, DungeonWall::class as KClass<Entity>,
-                    listOf(2, 8)))
+            requirementList = requirementList.plus(listOf(
+                EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class as KClass<Entity>,
+                    listOf(4, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class as KClass<Entity>,
+                    listOf(2, 8))
+            ))
         }
-
-        requirementList.forEach { println(it) }
 
         addEntities(entity, requirementList, probability)
     }
@@ -150,100 +179,108 @@ class GenerateMap(
                 }
                 if (!generationAllowed)
                     continue
-                // Interpret requirements
 
+                // Interpret requirements
                 // Variable needed to interpret remaining requirements as grouped
                 var groupRequirementType: EntityPositionRequirementType? = null
                 for (requirement in entityPositionRequirementList) {
+                    // Group initiator
                     if (requirement.requirementList.isEmpty()) {
-                        if (groupRequirementType == EntityPositionRequirementType.REQUIRED && generationAllowed)
+                        if (when(groupRequirementType) {
+                            EntityPositionRequirementType.AND -> generationAllowed
+                            EntityPositionRequirementType.NAND -> generationAllowed
+                            EntityPositionRequirementType.NOR -> generationAllowed
+                            EntityPositionRequirementType.OR, null -> false
+                        })
                             break
+
                         groupRequirementType = requirement.requirementType
                         generationAllowed = true
+                        continue
                     }
                     // Iterate until the next group
                     if (!generationAllowed)
                         continue
 
                     for (pair in requirement.requirementList) {
-                        var requirementFulfilled = true
+                        var entityUnder = true
                         when (pair.first) {
                             1 -> {
                                 if (x == 0 || y == level.sizeY - 1)
                                     break
                                 if (!checkMapForEntity(y + 1, x - 1, pair.second))
-                                    requirementFulfilled = false
+                                    entityUnder = false
                             }
                             2 -> {
                                 if (y == level.sizeY - 1)
                                     break
                                 if (!checkMapForEntity(y + 1, x, pair.second))
-                                    requirementFulfilled = false
+                                    entityUnder = false
                             }
                             3 -> {
                                 if (x == level.sizeY - 1 || y == level.sizeY - 1)
                                     break
                                 if (!checkMapForEntity(y + 1, x + 1, pair.second))
-                                    requirementFulfilled = false
+                                    entityUnder = false
                             }
                             4 -> {
                                 if (x == 0)
                                     break
                                 if (!checkMapForEntity(y, x - 1, pair.second))
-                                    requirementFulfilled = false
+                                    entityUnder = false
                             }
                             5 -> {
                                 if (!checkMapForEntity(y, x, pair.second))
-                                    requirementFulfilled = false
+                                    entityUnder = false
                             }
                             6 -> {
                                 if (x == level.sizeX - 1)
                                     break
                                 if (!checkMapForEntity(y, x + 1, pair.second))
-                                    requirementFulfilled = false
+                                    entityUnder = false
                             }
                             7 -> {
                                 if (x == 0 || y == 0)
                                     break
                                 if (!checkMapForEntity(y - 1, x - 1, pair.second))
-                                    requirementFulfilled = false
+                                    entityUnder = false
                             }
                             8 -> {
                                 if (y == 0)
                                     break
                                 if (!checkMapForEntity(y - 1, x, pair.second))
-                                    requirementFulfilled = false
+                                    entityUnder = false
                             }
                             9 -> {
                                 if (x == level.sizeX - 1 || y == 0)
                                     break
                                 if (!checkMapForEntity(y - 1, x + 1, pair.second))
-                                    requirementFulfilled = false
+                                    entityUnder = false
                             }
                         }
                         when (requirement.requirementType) {
-                            EntityPositionRequirementType.REQUIRED -> {
-                                if (!requirementFulfilled) {
+                            EntityPositionRequirementType.AND -> {
+                                if (!entityUnder) {
                                     generationAllowed = false
                                     break
                                 }
                             }
-                            EntityPositionRequirementType.FORBIDDEN -> {
-                                if (!requirementFulfilled) {
+                            EntityPositionRequirementType.NAND -> {
+                                if (!entityUnder) {
                                     generationAllowed = true
                                     break
                                 } else
                                     generationAllowed = false
                             }
-                            EntityPositionRequirementType.OPTIONAL -> {
-                                if (requirementFulfilled) {
+                            EntityPositionRequirementType.OR -> {
+                                if (entityUnder) {
                                     generationAllowed = true
                                     break
                                 } else
                                     generationAllowed = false
                             }
-                            EntityPositionRequirementType.OPTIONALFORBIDDEN -> {
-                                if (requirementFulfilled) {
+                            EntityPositionRequirementType.NOR -> {
+                                if (entityUnder) {
                                     generationAllowed = false
                                     break
                                 }
@@ -256,28 +293,30 @@ class GenerateMap(
                             if (!generationAllowed)
                                 continue
                         }
-                        EntityPositionRequirementType.REQUIRED -> {
+                        EntityPositionRequirementType.AND -> {
                             if (!generationAllowed)
                                 continue
                         }
-                        EntityPositionRequirementType.FORBIDDEN -> {
+                        EntityPositionRequirementType.NAND -> {
+                            if (!generationAllowed) {
+                                generationAllowed = true
+                                break
+                            }
+                        }
+                        EntityPositionRequirementType.OR -> {
+                            if (generationAllowed)
+                                break
+
+                            if (requirement != entityPositionRequirementList.last())
+                                generationAllowed = true
+                        }
+                        EntityPositionRequirementType.NOR -> {
                             if (generationAllowed) {
                                 generationAllowed = false
                                 continue
                             }
-                        }
-                        EntityPositionRequirementType.OPTIONAL -> {
-                            if (generationAllowed)
-                                break
-                            // if it's not the last requirement check remaining
-                            if (!generationAllowed && requirement != entityPositionRequirementList.last())
-                                generationAllowed = true
-                        }
-                        EntityPositionRequirementType.OPTIONALFORBIDDEN -> {
-                            if (generationAllowed) {
-                                generationAllowed = false
-                                break
-                            }
+
+                            generationAllowed = true
                         }
                     }
                 }

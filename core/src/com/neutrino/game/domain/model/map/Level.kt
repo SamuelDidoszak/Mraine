@@ -169,7 +169,8 @@ class Level(
         for (y in yTop until yBottom) {
             for (x in xLeft until xRight) {
                 for (entity in map.map[y][x]) {
-                    batch!!.draw(entity.texture, screenX, screenY, entity.texture.regionWidth * 4f, entity.texture.regionHeight * 4f)
+                    batch!!.draw(entity.texture, if (!entity.mirrored) screenX else screenX + entity.texture.regionWidth * 4f, screenY,
+                        entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
                 }
                 screenX += 64
             }
@@ -188,8 +189,8 @@ class Level(
                         for (entity in map.map[y][x]) {
                             if (entity.texture.regionHeight > 16) {
                                 batch!!.draw(entity.texture,
-                                    movingChar.xPos * 64f,
-                                    screenY, entity.texture.regionWidth * 4f, entity.texture.regionHeight * 4f)
+                                    if (!entity.mirrored) movingChar.xPos * 64f else movingChar.xPos * 64f + entity.texture.regionWidth * 4f, screenY,
+                                    entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
                             }
                         }
                     }
@@ -203,8 +204,8 @@ class Level(
                         for (entity in map.map[y][x + 1]) {
                             if (entity.texture.regionHeight > 16) {
                                 batch!!.draw(entity.texture,
-                                    movingChar.xPos * 64f + 64,
-                                    screenY, entity.texture.regionWidth * 4f, entity.texture.regionHeight * 4f)
+                                    if (!entity.mirrored) movingChar.xPos * 64f + 64 else movingChar.xPos * 64f + 64 + entity.texture.regionWidth * 4f, screenY,
+                                    entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
                             }
                         }
                     }
@@ -213,8 +214,8 @@ class Level(
                         for (entity in map.map[y][x - 1]) {
                             if (entity.texture.regionHeight > 16) {
                                 batch!!.draw(entity.texture,
-                                    movingChar.xPos * 64f - 64,
-                                    screenY, entity.texture.regionWidth * 4f, entity.texture.regionHeight * 4f)
+                                    if (!entity.mirrored) movingChar.xPos * 64f - 64 else movingChar.xPos * 64f - 64 + entity.texture.regionWidth * 4f, screenY,
+                                    entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
                             }
                         }
                     }

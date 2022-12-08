@@ -7,6 +7,7 @@ import com.neutrino.game.domain.model.entities.utility.TextureHaver
 abstract class Item: ItemType, TextureHaver, Cloneable {
     abstract val name: String
     abstract val description: String
+    override var mirrored: Boolean = false
     /** Amount of items in stack. Null means that it's not stackable */
     open var amount: Int? = null
     /** Specifies if the item causes cooldown. -1 means no, 0 means player and 1 means every use type */

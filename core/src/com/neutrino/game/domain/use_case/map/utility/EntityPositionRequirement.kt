@@ -28,16 +28,16 @@ class EntityPositionRequirement {
 }
 
 enum class EntityPositionRequirementType{
-    /** All of the requirements have to be fulfilled for generation
+    /** All of the requirements have to be fulfilled for generation.
      * In a group: all of below requirements have to be fulfilled*/
-    REQUIRED,
-    /** Passed requirements cannot be fulfilled
+    AND,
+    /** Passed requirements cannot be fulfilled.
      * In a group: will not generate if below requirements were fulfilled*/
-    FORBIDDEN,
-    /** Any of the requirements have to be fulfilled for generation
+    NAND,
+    /** Any of the requirements have to be fulfilled for generation.
      * In a group: any of below requirements have to be fulfilled*/
-    OPTIONAL,
-    /** None of the requirements can be fulfilled
+    OR,
+    /** None of the requirements can be fulfilled.
      * In a group: none of below requirements can be fulfilled*/
-    OPTIONALFORBIDDEN,
+    NOR,
 }

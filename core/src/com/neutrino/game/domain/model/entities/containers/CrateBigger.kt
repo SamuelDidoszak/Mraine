@@ -21,6 +21,7 @@ class CrateBigger: Entity(), ChangesImpassable, Destructable, Container {
     override var texture: TextureAtlas.AtlasRegion = setTexture()
     override fun pickTexture(onMapPosition: OnMapPosition) {
         texture = getTexture(textureNames[0])
+        mirror(20f)
     }
 
     override val interactionList: List<Interaction> = List(1) {

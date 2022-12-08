@@ -76,6 +76,8 @@ abstract class Character(
     override var airDefence: Float = 0f
     override var poisonDefence: Float = 0f
 
+    override var mirrored: Boolean = false
+
     /** List of item drops */
     open val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf()
     private val itemtemDropList: MutableList<Item> = ArrayList()
@@ -126,8 +128,8 @@ abstract class Character(
         return characterEventArray.find {
             it.event is EventCooldown && it.event.cooldownType == cooldownType &&
             when (it.event.cooldownType) {
-                is CooldownType.SKILL -> it.event.cooldownType.skill == (cooldownType as CooldownType.SKILL).skill
-                is CooldownType.ITEM -> it.event.cooldownType.itemName == (cooldownType as CooldownType.ITEM).itemName
+                is CooldownType.SKILL -> (it.event.cooldownType as CooldownType.SKILL).skill == (cooldownType as CooldownType.SKILL).skill
+                is CooldownType.ITEM -> (it.event.cooldownType as CooldownType.ITEM).itemName == (cooldownType as CooldownType.ITEM).itemName
                 else -> true
             }
         } != null
@@ -162,7 +164,7 @@ abstract class Character(
         // required for fading
         batch?.setColor(color.r, color.g, color.b, color.a * parentAlpha)
 
-        batch?.draw(textureHaver.texture, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
+        batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
         super.draw(batch, parentAlpha)
 
         color.a = 1f
@@ -171,6 +173,8 @@ abstract class Character(
 
     fun move(xPos: Int, yPos: Int, speed: Float = MoveSpeed) {
         this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, speed))
+        if (xPos != this.xPos)
+            mirrored = xPos < this.xPos
         this.xPos = xPos
         this.yPos = yPos
     }

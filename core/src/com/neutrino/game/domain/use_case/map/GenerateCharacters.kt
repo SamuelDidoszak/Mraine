@@ -27,7 +27,7 @@ class GenerateCharacters(
             // TODO Spawn player on the stairs
             println("level is a dungeon")
         else {
-            val coord = getRandomPosition()!!
+            val coord = getRandomPosition()?: Coord.get(30, 30)
             Player.xPos = coord.getX()
             Player.yPos = coord.getY()
             characterArray.add(Player)

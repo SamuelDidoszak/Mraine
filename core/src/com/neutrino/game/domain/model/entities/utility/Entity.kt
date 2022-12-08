@@ -9,6 +9,8 @@ abstract class Entity: TextureHaver {
     abstract var allowOnTop: Boolean
     abstract var allowCharacterOnTop: Boolean
 
+    override var mirrored: Boolean = false
+
     abstract fun pickTexture(onMapPosition: OnMapPosition)
 
     override fun getTexture(name: String): TextureAtlas.AtlasRegion {

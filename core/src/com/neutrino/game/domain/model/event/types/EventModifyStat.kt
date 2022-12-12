@@ -6,14 +6,15 @@ import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.event.Data
 import com.neutrino.game.domain.model.event.Event
 
-class EventModifyStat(): Event(){
+class EventModifyStat(percent: Boolean = false): Event(){
     constructor(stat: StatsEnum) : this() {
         this.stat = stat
     }
 
-    constructor(stat: StatsEnum, value: Any) : this() {
+    constructor(stat: StatsEnum, value: Any, percent: Boolean = false) : this() {
         this.stat = stat
         this.value = value
+        this.percent = percent
     }
 
     override val data: MutableMap<String, Data<*>> = mutableMapOf(
@@ -32,13 +33,11 @@ class EventModifyStat(): Event(){
     var value: Any
         get() { return get("value", Any::class)!! }
         set(value) { set("value", value) }
-    var percent: Boolean
+    var percent: Boolean = percent
         get() { return get("percent", Boolean::class)!! }
-        set(value) { set("percent", value) }
-
-    init {
-        percent = false
-    }
+        set(value) { set("percent", value)
+            field = value
+        }
 
     override fun start() {
         checkData()

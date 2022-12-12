@@ -7,7 +7,7 @@ import com.neutrino.game.lessThanDelta
 data class Inventory(
     val itemList: MutableList<EqElement> = ArrayList(),
     val name: String? = null,
-    var maxSize: Int = 137,
+    var size: Int = 137,
     var sortType: SortType = SortType.SORT_DATE,
     var isSortAscending: Boolean = false
 ) {
@@ -33,7 +33,7 @@ data class Inventory(
                 return
             }
         }
-        if (itemList.size == maxSize) {
+        if (itemList.size == size) {
             println("$name inventory is full")
             return
         }
@@ -43,7 +43,7 @@ data class Inventory(
 
 
 //        var itemPosition: Int = itemList.last().customPosition!! + 1
-        if (itemPosition == maxSize) {
+        if (itemPosition == size) {
             for (i in itemList.size - 2 .. 0) {
                 itemPosition = itemList[i].customPosition!! + 1
                 if (itemList[i + 1].customPosition != itemPosition)

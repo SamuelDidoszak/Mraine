@@ -153,12 +153,6 @@ object Player : Character(0, 0, 0.0), HasInventory {
     var maxSkills: Int = 3
 
 
-    init {
-        initialize("Player")
-        // TODO maybe delete it entirely. Each character would have to check if infogroup != null tho
-        val infoGroup = findActor<Group>("infoGroup")
-        infoGroup.isVisible = false
-    }
 
     override fun setTexture(name: String) {
         texture = getTexture(name)
@@ -170,6 +164,14 @@ object Player : Character(0, 0, 0.0), HasInventory {
     /** Player inventory */
     override val inventory: Inventory = Inventory()
     val equipment: Equipment = Equipment(this)
+
+    init {
+        initialize("Player")
+        // TODO maybe delete it entirely. Each character would have to check if infogroup != null tho
+        val infoGroup = findActor<Group>("infoGroup")
+        infoGroup.isVisible = false
+        inventory.size = 30
+    }
 
     override val description: String
         get() = TODO("Not yet implemented")
@@ -186,13 +188,6 @@ object Player : Character(0, 0, 0.0), HasInventory {
 
     override var animation: Animation<TextureRegion>? = null
 
-    var inventorySize: Int = 30
-        private set(value) {
-            field = value
-            inventorySizeChanged = true
-        }
-    var inventorySizeChanged: Boolean = false
-
     fun addToInventory(item: Item): Boolean {
         // add to stack
         if (item.amount != null) {
@@ -202,7 +197,7 @@ object Player : Character(0, 0, 0.0), HasInventory {
                 return true
             }
         }
-        if (inventory.itemList.size < inventorySize) {
+        if (inventory.itemList.size < inventory.size) {
             inventory.itemList.add(EqElement(item, Turn.turn))
             return true
         }

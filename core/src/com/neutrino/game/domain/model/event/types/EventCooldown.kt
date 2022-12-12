@@ -10,13 +10,11 @@ class EventCooldown(): Event(), Timed {
         this.character = character
         this.cooldownType = cooldownType
         this.cooldownLength = cooldownLength
-        turnDelay = cooldownLength
     }
 
     constructor(cooldownType: CooldownType, cooldownLength: Double) : this() {
         this.cooldownType = cooldownType
         this.cooldownLength = cooldownLength
-        turnDelay = cooldownLength
     }
 
     override val data: MutableMap<String, Data<*>> = mutableMapOf(
@@ -33,7 +31,10 @@ class EventCooldown(): Event(), Timed {
         set(value) { set("cooldownType", value) }
     var cooldownLength: Double
         get() { return get("cooldownLength", Double::class)!! }
-        set(value) { set("cooldownLength", value) }
+        set(value) {
+            set("cooldownLength", value)
+            turnDelay = value
+        }
 
     override var turnDelay: Double = 0.0
     override val timeout: Double = 0.0

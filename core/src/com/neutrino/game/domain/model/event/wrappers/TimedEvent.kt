@@ -11,4 +11,7 @@ data class TimedEvent(
     /** How many times the event will occur */
     override var executions: Int,
     override val event: Event
-): EventWrapper(event), Timed
+): EventWrapper(event), Timed {
+    constructor(onOffEvent: OnOffEvent) :
+            this(0.0, Double.MAX_VALUE, 1, onOffEvent.event)
+}

@@ -5,7 +5,7 @@ import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.HasInventory
 import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
-import com.neutrino.game.domain.model.event.wrappers.EqItemStat
+import com.neutrino.game.domain.model.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.turn.Turn
@@ -126,15 +126,13 @@ class Equipment(val character: Character) {
 
     private fun setItemModifiers(item: EquipmentItem) {
         for (modifier in item.modifierList) {
+            if (modifier.event.has("character"))
+                modifier.event.set("character", character)
             when (modifier) {
-                is EqItemStat -> {
-                    modifier.event.character = character
+                is OnOffEvent -> {
                     modifier.event.start()
                 }
                 is TimedEvent -> {
-                    if (modifier.event.has("character"))
-                        modifier.event.set("character", Character::class)
-
                     GlobalData.notifyObservers(GlobalDataType.EVENT, CharacterEvent(
                         character, modifier, Turn.turn
                     ))
@@ -145,9 +143,10 @@ class Equipment(val character: Character) {
 
     private fun unsetItemModifiers(item: EquipmentItem) {
         for (modifier in item.modifierList) {
+            if (modifier.event.has("character"))
+                modifier.event.set("character", character)
             when (modifier) {
-                is EqItemStat -> {
-                    modifier.event.character = character
+                is OnOffEvent -> {
                     modifier.event.stop()
                 }
                 is TimedEvent -> {

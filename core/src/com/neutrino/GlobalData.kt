@@ -63,5 +63,6 @@ enum class GlobalDataType {
     EQUIPMENT,
     CHANGELEVEL,
     EVENT,
-    PLAYERSTAT
+    PLAYERSTAT,
+    PLAYERINVENTORYSIZE
 }

@@ -148,6 +148,19 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         mainTabsGroup.name = "mainTabsGroup"
         openTabsGroup.name = "openTabsGroup"
         sortingTabsGroup.name = "sortingTabsGroup"
+
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.PLAYERINVENTORYSIZE
+            override fun update(data: Any?): Boolean {
+                val zIndex = inventory.zIndex
+                actors.removeValue(inventory, true)
+                addInventory()
+                inventory.zIndex = zIndex
+                updateSize(width.toInt(), height.toInt())
+                currentScreen = inventory
+                return true
+            }
+        })
     }
 
     fun showInventory() {
@@ -682,7 +695,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     }
 
     private fun getCellDrawable(cellNumber: Int, rows: Int): Drawable {
-        if (cellNumber >= Player.inventorySize)
+        if (cellNumber >= Player.inventory.size)
             return TextureRegionDrawable(uiElements["cellUnavailable"])
         if (cellNumber == 0)
             return TextureRegionDrawable(uiElements["cellTopLeft"])
@@ -723,7 +736,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         val borderWidth: Int = 12
         val borderHeight: Int = 12
 
-        var rows = Player.inventorySize / 10 + if (Player.inventorySize % 10 != 0) 1 else 0
+        var rows = Player.inventory.size / 10 + if (Player.inventory.size % 10 != 0) 1 else 0
         rows = if (rows < 6) 6 else rows
         val table = scene2d.table {
             this.setFillParent(false)
@@ -1543,7 +1556,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         // if the area between cells was clicked, reset the item position
         val container = getInventoryCell(x, y, clickedInv)
         // TODO checking the Player inventorySize here can cause bugs when other inventories will be displayed
-        if (container == null || container.name?.toInt()!! >= Player.inventorySize) {
+        if (container == null || container.name?.toInt()!! >= Player.inventory.size) {
             if (originalStackItem != null) {
                 originalStackItem!!.item.amount = originalStackItem!!.item.amount?.plus((clickedItem as EqActor).item.amount!!)
                 originalStackItem!!.refreshAmount()
@@ -1623,18 +1636,5 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             this.actors.removeValue(contextPopup, true)
             contextPopup = null
         }
-    }
-
-    /** ======================================================================================================================================================
-                                                                    Stage related methods
-    */
-
-    override fun draw() {
-        if (Player.inventorySizeChanged) {
-            Player.inventorySizeChanged = false
-            actors.removeValue(inventory, true)
-            addInventory()
-        }
-        super.draw()
     }
 }

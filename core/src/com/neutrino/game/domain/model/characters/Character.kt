@@ -3,6 +3,7 @@ package com.neutrino.game.domain.model.characters
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -18,6 +19,7 @@ import com.neutrino.game.domain.model.event.types.EventCooldown
 import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.utility.ColorUtils
+import com.neutrino.game.domain.use_case.Shaderable
 import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -26,7 +28,7 @@ abstract class Character(
     var xPos: Int,
     var yPos: Int,
     var turn: Double
-): Group(), TextureHaver, Animated, Stats, Randomization {
+): Group(), TextureHaver, Animated, Shaderable, Stats, Randomization {
     override var strength: Float = 0f
         set(value) {
             val difference = value - Player.strength
@@ -77,6 +79,7 @@ abstract class Character(
     override var poisonDefence: Float = 0f
 
     override var mirrored: Boolean = false
+    override var shader: ShaderProgram? = null
 
     /** List of item drops */
     open val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf()
@@ -160,11 +163,26 @@ abstract class Character(
         turnBar?.update(this.turn, this.movementSpeed, forceUpdateMovementColor)
     }
 
+    val outlineColor = Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f)
+
+
     override fun draw(batch: Batch?, parentAlpha: Float) {
         // required for fading
         batch?.setColor(color.r, color.g, color.b, color.a * parentAlpha)
 
         batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
+
+        if (shader != null) {
+            batch?.shader = shader
+            shader!!.setUniformf("u_outlineColor", outlineColor)
+            shader!!.setUniformf("u_textureSize", textureHaver.texture.texture.width.toFloat(), textureHaver.texture.texture.height.toFloat())
+        }
+
+        batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
+
+        if (shader != null)
+            batch?.shader = null
+
         super.draw(batch, parentAlpha)
 
         color.a = 1f

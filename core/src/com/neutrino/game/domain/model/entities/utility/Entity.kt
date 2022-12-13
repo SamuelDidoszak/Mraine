@@ -1,15 +1,19 @@
 package com.neutrino.game.domain.model.entities.utility
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.neutrino.game.Constants
+import com.neutrino.game.domain.use_case.Shaderable
 
-abstract class Entity: TextureHaver {
+abstract class Entity: TextureHaver, Shaderable {
     abstract val name: String
     open val description: String? = ""
     abstract var allowOnTop: Boolean
     abstract var allowCharacterOnTop: Boolean
 
     override var mirrored: Boolean = false
+
+    override var shader: ShaderProgram? = null
 
     abstract fun pickTexture(onMapPosition: OnMapPosition)
 

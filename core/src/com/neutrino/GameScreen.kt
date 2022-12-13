@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Pool
@@ -84,6 +85,16 @@ class GameScreen: KtxScreen {
 
         // Player related methods
         registerPlayerObservers()
+
+        val shaderProgram: ShaderProgram = ShaderProgram(
+            Gdx.files.internal("shaders/vertex.vert").readString(),
+            Gdx.files.internal("shaders/outline.glsl").readString()
+        )
+
+//        val textureSizeLocation = shaderProgram.getUniformLocation("u_textureSize")
+//        val outlineColorLocation = shaderProgram.getUniformLocation("u_outlineColor")
+
+        Turn.characterArray.forEach {it.shader = shaderProgram }
     }
 
     private fun selectInput(showEq: Boolean) {

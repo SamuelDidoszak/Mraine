@@ -1,7 +1,10 @@
 package com.neutrino.game.domain.model.entities.utility
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.graphics.shaders.OutlineShader
+import com.neutrino.game.graphics.shaders.ShaderParametered
 
 class ItemEntity(val item: Item): Entity(), Interactable {
     override val name: String = item.name
@@ -17,4 +20,6 @@ class ItemEntity(val item: Item): Entity(), Interactable {
     override val interactionList: List<Interaction> = List(1) {
         Interaction.ITEM()
     }
+
+    override var shaders: ArrayList<ShaderParametered?> = arrayListOf(OutlineShader(Color.BLACK, 2f, texture))
 }

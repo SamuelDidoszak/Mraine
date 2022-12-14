@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.use_case
 
-import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import com.neutrino.game.graphics.shaders.ShaderParametered
 
 interface Shaderable {
-    var shader: ShaderProgram?
+    var shaders: ArrayList<ShaderParametered?>
 }

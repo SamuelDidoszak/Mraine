@@ -3,7 +3,6 @@ package com.neutrino.game.domain.model.characters
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -20,6 +19,7 @@ import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.utility.ColorUtils
 import com.neutrino.game.domain.use_case.Shaderable
+import com.neutrino.game.graphics.shaders.ShaderParametered
 import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -79,7 +79,7 @@ abstract class Character(
     override var poisonDefence: Float = 0f
 
     override var mirrored: Boolean = false
-    override var shader: ShaderProgram? = null
+    override var shaders: ArrayList<ShaderParametered?> = ArrayList(1)
 
     /** List of item drops */
     open val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf()
@@ -172,15 +172,11 @@ abstract class Character(
 
         batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
 
-        if (shader != null) {
-            batch?.shader = shader
-            shader!!.setUniformf("u_outlineColor", outlineColor)
-            shader!!.setUniformf("u_textureSize", textureHaver.texture.texture.width.toFloat(), textureHaver.texture.texture.height.toFloat())
+        for (shader in shaders) {
+            shader?.applyToBatch(batch)
+            batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
         }
-
-        batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
-
-        if (shader != null)
+        if (shaders.isNotEmpty())
             batch?.shader = null
 
         super.draw(batch, parentAlpha)

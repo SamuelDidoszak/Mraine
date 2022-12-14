@@ -3,8 +3,8 @@ package com.neutrino
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Pool
@@ -22,6 +22,7 @@ import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.graphics.shaders.OutlineShader
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
 import kotlin.math.abs
@@ -86,15 +87,10 @@ class GameScreen: KtxScreen {
         // Player related methods
         registerPlayerObservers()
 
-        val shaderProgram: ShaderProgram = ShaderProgram(
-            Gdx.files.internal("shaders/vertex.vert").readString(),
-            Gdx.files.internal("shaders/outline.glsl").readString()
-        )
-
 //        val textureSizeLocation = shaderProgram.getUniformLocation("u_textureSize")
 //        val outlineColorLocation = shaderProgram.getUniformLocation("u_outlineColor")
 
-        Turn.characterArray.forEach {it.shader = shaderProgram }
+        Turn.characterArray.forEach {it.shaders.add(OutlineShader(Color.FIREBRICK, 2f, it.texture)) }
     }
 
     private fun selectInput(showEq: Boolean) {

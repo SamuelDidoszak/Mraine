@@ -171,6 +171,14 @@ class Level(
                 for (entity in map.map[y][x]) {
                     batch!!.draw(entity.texture, if (!entity.mirrored) screenX else screenX + entity.texture.regionWidth * 4f, screenY,
                         entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+
+                    for (shader in entity.shaders) {
+                        shader?.applyToBatch(batch)
+                        batch!!.draw(entity.texture, if (!entity.mirrored) screenX else screenX + entity.texture.regionWidth * 4f, screenY,
+                            entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+                    }
+                    if (entity.shaders.isNotEmpty())
+                        batch?.shader = null
                 }
                 screenX += 64
             }
@@ -191,6 +199,15 @@ class Level(
                                 batch!!.draw(entity.texture,
                                     if (!entity.mirrored) movingChar.xPos * 64f else movingChar.xPos * 64f + entity.texture.regionWidth * 4f, screenY,
                                     entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+
+                                for (shader in entity.shaders) {
+                                    shader?.applyToBatch(batch)
+                                    batch!!.draw(entity.texture,
+                                        if (!entity.mirrored) movingChar.xPos * 64f else movingChar.xPos * 64f + entity.texture.regionWidth * 4f, screenY,
+                                        entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+                                }
+                                if (entity.shaders.isNotEmpty())
+                                    batch?.shader = null
                             }
                         }
                     }
@@ -206,6 +223,15 @@ class Level(
                                 batch!!.draw(entity.texture,
                                     if (!entity.mirrored) movingChar.xPos * 64f + 64 else movingChar.xPos * 64f + 64 + entity.texture.regionWidth * 4f, screenY,
                                     entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+
+                                for (shader in entity.shaders) {
+                                    shader?.applyToBatch(batch)
+                                    batch!!.draw(entity.texture,
+                                        if (!entity.mirrored) movingChar.xPos * 64f + 64 else movingChar.xPos * 64f + 64 + entity.texture.regionWidth * 4f, screenY,
+                                        entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+                                }
+                                if (entity.shaders.isNotEmpty())
+                                    batch?.shader = null
                             }
                         }
                     }
@@ -216,6 +242,15 @@ class Level(
                                 batch!!.draw(entity.texture,
                                     if (!entity.mirrored) movingChar.xPos * 64f - 64 else movingChar.xPos * 64f - 64 + entity.texture.regionWidth * 4f, screenY,
                                     entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+
+                                for (shader in entity.shaders) {
+                                    shader?.applyToBatch(batch)
+                                    batch!!.draw(entity.texture,
+                                        if (!entity.mirrored) movingChar.xPos * 64f - 64 else movingChar.xPos * 64f - 64 + entity.texture.regionWidth * 4f, screenY,
+                                        entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+                                }
+                                if (entity.shaders.isNotEmpty())
+                                    batch?.shader = null
                             }
                         }
                     }

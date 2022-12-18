@@ -172,10 +172,21 @@ class Level(
                     batch!!.draw(entity.texture, if (!entity.mirrored) screenX else screenX + entity.texture.regionWidth * 4f, screenY,
                         entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
 
+                    // Draw a larger part of the texture, so the outline won't cut off
                     for (shader in entity.shaders) {
                         shader?.applyToBatch(batch)
-                        batch!!.draw(entity.texture, if (!entity.mirrored) screenX else screenX + entity.texture.regionWidth * 4f, screenY,
-                            entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+                        batch.draw(
+                            entity.texture.texture,
+                            if (!entity.mirrored) screenX - 4f else screenX + entity.texture.regionWidth * 4f + 4f,
+                            screenY - 4f,
+                            if (!entity.mirrored) entity.texture.regionWidth * 4f + 8f else entity.texture.regionWidth * -4f - 8f,
+                            entity.texture.regionHeight * 4f + 8f,
+                            entity.texture.regionX - 1,
+                            entity.texture.regionY - 1,
+                            entity.texture.regionWidth + 2,
+                            entity.texture.regionHeight + 2,
+                            false, false
+                        )
                     }
                     if (entity.shaders.isNotEmpty())
                         batch?.shader = null

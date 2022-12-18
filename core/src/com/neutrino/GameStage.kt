@@ -243,7 +243,7 @@ class GameStage(
     }
 
     fun addCharacterOutline(character: Character?): Boolean {
-        if (character == outlinedCharacter)
+        if (character == outlinedCharacter || character == Player)
             return false
 
         outlinedCharacter?.shaders?.removeAll { it is OutlineShader }

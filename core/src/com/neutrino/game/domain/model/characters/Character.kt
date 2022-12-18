@@ -19,6 +19,7 @@ import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.utility.ColorUtils
 import com.neutrino.game.domain.use_case.Shaderable
+import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import kotlin.random.Random
 import kotlin.reflect.KClass
@@ -173,6 +174,8 @@ abstract class Character(
         batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
 
         for (shader in shaders) {
+            if (shader is OutlineShader)
+                shader.setBoundaries(texture)
             shader?.applyToBatch(batch)
             batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
         }

@@ -30,4 +30,10 @@ class OutlineShader(): ShaderParametered() {
         shader.setUniformf("u_outlineColor", color)
         shader.setUniformf("u_pixelSize", textureSize * thickness)
     }
+
+    companion object {
+        val OUTLINE_GREEN = Color.FOREST
+        val OUTLINE_RED = Color.FIREBRICK
+        val OUTLINE_BLACK = Color.BLACK
+    }
 }

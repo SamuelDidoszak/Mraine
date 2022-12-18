@@ -1,6 +1,5 @@
 package com.neutrino.game.domain.model.entities.utility
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.graphics.shaders.OutlineShader
@@ -21,5 +20,5 @@ class ItemEntity(val item: Item): Entity(), Interactable {
         Interaction.ITEM()
     }
 
-    override var shaders: ArrayList<ShaderParametered?> = arrayListOf(OutlineShader(Color.BLACK, 2f, texture))
+    override var shaders: ArrayList<ShaderParametered?> = arrayListOf(OutlineShader(OutlineShader.OUTLINE_BLACK, 2f, texture))
 }

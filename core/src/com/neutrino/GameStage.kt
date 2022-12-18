@@ -8,14 +8,21 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.entities.utility.Interactable
+import com.neutrino.game.domain.model.entities.utility.Interaction
+import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.utility.EntityLookupPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.math.sign
 
 class GameStage(
     viewport: Viewport
@@ -113,17 +120,6 @@ class GameStage(
             calledFromLongpress = true
         val button = if (button == Input.Buttons.FORWARD) Input.Buttons.RIGHT else button
 
-        val touch: Vector3 = Vector3(screenX.toFloat(), screenY.toFloat(),0f)
-        camera.unproject(touch)
-        // Change the outOfBounds click behavior
-        val tileX: Int = if(touch.x.toInt() / 64 <= 0) 0 else
-            if (touch.x.toInt() / 64 >= level!!.sizeX) level!!.sizeX - 1 else
-                touch.x.toInt() / 64
-
-        val tileY: Int = if((startYPosition - touch.y) / 64 <= 0) 0 else
-            if ((startYPosition - touch.y) / 64 >= level!!.sizeY) level!!.sizeY - 1 else
-                (startYPosition - touch.y).toInt() / 64
-
         // If there is a popup, remove it
         var currPopup: Table? = this.actors.find { it.name == "entityPopup" } as EntityLookupPopup?
         if (currPopup == null)
@@ -135,16 +131,20 @@ class GameStage(
                 return true
         }
 
+        val touch: Vector3 = Vector3(screenX.toFloat(), screenY.toFloat(),0f)
+        camera.unproject(touch)
+        val tile = getTileUnprojected(touch)
+
         // create the entityLookupPopup
         if (button == Input.Buttons.RIGHT) {
             val popup: Table
-            if (level!!.getTopItem(tileX, tileY) != null) {
-                popup = ItemDetailsPopup(level!!.getTopItem(tileX, tileY)!!, false)
+            if (level!!.getTopItem(tile.x, tile.y) != null) {
+                popup = ItemDetailsPopup(level!!.getTopItem(tile.x, tile.y)!!, false)
                 popup.width = 300f
                 popup.assignBg(touch.x, touch.y)
             }
             else {
-                popup = EntityLookupPopup(level!!.map.map[tileY][tileX], level!!.characterMap[tileY][tileX])
+                popup = EntityLookupPopup(level!!.map.map[tile.y][tile.x], level!!.characterMap[tile.y][tile.x])
                 popup.assignBg(touch.x, touch.y)
             }
             this.addActor(popup)
@@ -155,7 +155,7 @@ class GameStage(
         dragging = false
 
         if (waitForPlayerInput) {
-            clickedCoordinates = Coord.get(tileX, tileY)
+            clickedCoordinates = Coord.get(tile.x, tile.y)
             waitForPlayerInput = false
         }
 
@@ -190,14 +190,92 @@ class GameStage(
     }
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean {
-        var zoom = (camera as OrthographicCamera).zoom
-        zoom += amountY * zoom / 10
-        if (zoom <= 0.4)
-            (camera as OrthographicCamera).zoom = 0.4f
-        else if (zoom >= 12f)
-            (camera as OrthographicCamera).zoom = 12f
+        if (amountY.sign.toInt() == -1)
+            (camera as OrthographicCamera).zoom /= 2
         else
-            (camera as OrthographicCamera).zoom = zoom
+            (camera as OrthographicCamera).zoom *= 2
         return true
+
+//        var zoom = (camera as OrthographicCamera).zoom
+//        zoom += amountY * zoom / 10
+//        if (zoom <= 0.4)
+//            (camera as OrthographicCamera).zoom = 0.4f
+//        else if (zoom >= 12f)
+//            (camera as OrthographicCamera).zoom = 12f
+//        else
+//            (camera as OrthographicCamera).zoom = zoom
+//        return true
+    }
+
+    private var outlinedEntity: Entity? = null
+    private var outlinedCharacter: Character? = null
+    override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
+        val coord = getTile(screenX, screenY)
+        addCharacterOutline(coord.x, coord.y)
+        addOutline(coord.x, coord.y)
+
+        return super.mouseMoved(screenX, screenY)
+    }
+
+    fun addOutline(xPos: Int, yPos: Int): Boolean {
+        val entity = level?.getEntityWithAction(xPos, yPos)
+        if (entity == outlinedEntity || entity is ItemEntity)
+            return false
+
+        outlinedEntity?.shaders?.removeAll { it is OutlineShader }
+        outlinedEntity = entity
+        outlinedEntity?.shaders?.add(
+            OutlineShader(
+            if ((outlinedEntity as Interactable).getPrimaryAction() is Interaction.DESTROY)
+                OutlineShader.OUTLINE_RED
+            else
+                OutlineShader.OUTLINE_GREEN,
+            2f,
+            outlinedEntity!!.texture
+            )
+        )
+        return outlinedEntity != null
+    }
+
+    fun addCharacterOutline(xPos: Int, yPos: Int): Boolean {
+        val character: Character? = level!!.characterMap[yPos][xPos]
+        return addCharacterOutline(character)
+    }
+
+    fun addCharacterOutline(character: Character?): Boolean {
+        if (character == outlinedCharacter)
+            return false
+
+        outlinedCharacter?.shaders?.removeAll { it is OutlineShader }
+        outlinedCharacter = character
+        outlinedCharacter?.shaders?.add(
+            OutlineShader(
+                OutlineShader.OUTLINE_RED,
+                2f,
+                outlinedCharacter!!.texture
+            )
+        )
+        return outlinedCharacter != null
+    }
+
+    fun getTile(screenX: Int, screenY: Int): Coord {
+        val touch: Vector3 = Vector3(screenX.toFloat(), screenY.toFloat(),0f)
+        camera.unproject(touch)
+
+        return getTileUnprojected(touch)
+    }
+
+
+    fun getTileUnprojected(position: Vector3): Coord {
+        // Change the outOfBounds click behavior
+        val tileX: Int = if(position.x.toInt() / 64 <= 0) 0 else
+            if (position.x.toInt() / 64 >= level!!.sizeX) level!!.sizeX - 1 else
+                position.x.toInt() / 64
+
+        val tileY: Int = if((startYPosition - position.y) / 64 <= 0) 0 else
+            if ((startYPosition - position.y) / 64 >= level!!.sizeY) level!!.sizeY - 1 else
+                (startYPosition - position.y).toInt() / 64
+
+        return Coord.get(tileX, tileY)
     }
 }

@@ -1,11 +1,13 @@
 package com.neutrino.game
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.github.tommyettinger.textra.Font
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.game.graphics.utility.PixelData
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -51,7 +53,9 @@ object Constants {
 
     val DefaultItemTexture: TextureAtlas = TextureAtlas("textures/items.atlas")
     val DefaultEntityTexture: TextureAtlas = TextureAtlas("textures/entities.atlas")
+    val EntityPixelData = PixelData(DefaultEntityTexture)
     val DefaultIconTexture: TextureAtlas = TextureAtlas("textures/icons.atlas")
+    val WhitePixel: Texture = Texture("whitePixel.png")
 
     // Level constants
     val LevelChunkSize: Int = 100

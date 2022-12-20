@@ -10,10 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.entities.utility.Entity
-import com.neutrino.game.domain.model.entities.utility.Interactable
-import com.neutrino.game.domain.model.entities.utility.Interaction
-import com.neutrino.game.domain.model.entities.utility.ItemEntity
+import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.utility.EntityLookupPopup
@@ -226,8 +223,12 @@ class GameStage(
         outlinedEntity = entity
         outlinedEntity?.shaders?.add(
             OutlineShader(
-            if ((outlinedEntity as Interactable).getPrimaryAction() is Interaction.DESTROY)
-                OutlineShader.OUTLINE_RED
+            if ((outlinedEntity as Interactable).getPrimaryAction() is Interaction.DESTROY) {
+                if ((outlinedEntity as Destructable).destroyed)
+                    OutlineShader.OUTLINE_CLEAR
+                else
+                    OutlineShader.OUTLINE_RED
+            }
             else
                 OutlineShader.OUTLINE_GREEN,
             2f,

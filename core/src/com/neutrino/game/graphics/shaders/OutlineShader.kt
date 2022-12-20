@@ -45,5 +45,6 @@ class OutlineShader(): ShaderParametered() {
         val OUTLINE_GREEN = Color.FOREST
         val OUTLINE_RED = Color.FIREBRICK
         val OUTLINE_BLACK = Color.BLACK
+        val OUTLINE_CLEAR = Color(0f, 0f, 0f, 0f)
     }
 }

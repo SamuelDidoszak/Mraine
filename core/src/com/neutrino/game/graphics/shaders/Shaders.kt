@@ -6,6 +6,10 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
 object Shaders {
     val outlineShader: ShaderProgram = ShaderProgram(
         Gdx.files.internal("shaders/vertex.vert").readString(),
-        Gdx.files.internal("shaders/outline.glsl").readString()
+        Gdx.files.internal("shaders/outline.frag").readString()
+    )
+    val lightShader: ShaderProgram = ShaderProgram(
+        Gdx.files.internal("shaders/vertex.vert").readString(),
+        Gdx.files.internal("shaders/light.frag").readString()
     )
 }

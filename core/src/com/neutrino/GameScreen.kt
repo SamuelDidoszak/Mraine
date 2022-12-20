@@ -77,6 +77,7 @@ class GameScreen: KtxScreen {
         Turn.setLevel(initialize.level)
         gameStage.addActor(initialize.level)
         gameStage.camera.position.set(Player.x, Player.y, gameStage.camera.position.z)
+        initialize.level.prepareLights()
 
         // Initiate pools
         val damagePool: Pool<DamageNumber> = Pools.get(DamageNumber::class.java)

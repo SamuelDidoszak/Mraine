@@ -1,5 +1,7 @@
 package com.neutrino.game.domain.model.map
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
@@ -7,6 +9,7 @@ import com.badlogic.gdx.math.MathUtils.ceil
 import com.badlogic.gdx.math.MathUtils.floor
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.neutrino.game.Constants
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.entities.utility.*
@@ -14,6 +17,9 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
 import com.neutrino.game.domain.use_case.map.MapUseCases
+import com.neutrino.game.graphics.shaders.Shaders
+import com.neutrino.game.graphics.utility.Pixel
+import kotlin.math.pow
 
 
 class Level(
@@ -148,6 +154,62 @@ class Level(
         return null
     }
 
+    private val lights: ArrayList<Pair<Pair<Float, Float>, Color>> = arrayListOf()
+
+    fun prepareLights() {
+        var screenX = 0f
+        var screenY = height
+
+        for (y in 0 until map.yMax) {
+            for (x in 0 until map.xMax) {
+                for (entity in map.map[y][x]) {
+                    if (entity !is ItemEntity)
+                        addLightFromTexture(entity.texture, screenX, screenY, entity.mirrored)
+                }
+                screenX += 64f
+            }
+            screenY -= 64f
+            screenX = 0f
+        }
+    }
+
+    private fun addLightFromTexture(texture: TextureAtlas.AtlasRegion, screenX: Float, screenY: Float, mirrored: Boolean = false) {
+        val pixelData = Constants.EntityPixelData
+        var pixel: Pixel
+
+        for (y in 0 until texture.regionHeight) {
+            for (x in 0 until texture.regionWidth) {
+                pixel = pixelData.getPixel(texture.regionX + x, texture.regionY + y)
+                if (pixel.a() in 100..250)
+                    lights.add(Pair(
+                        Pair(screenX + if (!mirrored) (x + 1) * 4f - 2f else (texture.regionWidth - (x + 1)) * 4f + 2f, screenY + (texture.regionHeight - y) * 4f - 2f),
+                        pixel.color()))
+            }
+        }
+    }
+
+    private fun drawLights(batch: Batch?) {
+        Shaders.lightShader
+        batch?.shader = Shaders.lightShader
+        batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE)
+        for (light in lights) {
+            val intensity = light.second.a * 255f % 25f
+            val radius = ((intensity / 26.0).pow(1.4) / (1 - intensity / 26.0) * 256).toFloat()
+            batch?.color = light.second
+            batch?.shader?.setUniformf("u_intensity", intensity)
+//            batch?.shader?.setUniformf("u_flickering", 1f)
+
+            batch?.draw(
+                Constants.WhitePixel,
+                light.first.first - radius, light.first.second - radius,
+                2 * radius, 2 * radius
+            )
+        }
+
+        batch?.shader = null
+        batch?.color = Color(1f, 1f, 1f, 1f)
+        batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+    }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val gameCamera = parent.stage.camera as OrthographicCamera
@@ -175,7 +237,7 @@ class Level(
                     // Draw a larger part of the texture, so the outline won't cut off
                     for (shader in entity.shaders) {
                         shader?.applyToBatch(batch)
-                        batch.draw(
+                        batch?.draw(
                             entity.texture.texture,
                             if (!entity.mirrored) screenX - 4f else screenX + entity.texture.regionWidth * 4f + 4f,
                             screenY - 4f,
@@ -270,6 +332,8 @@ class Level(
             screenY -= 64
             screenX = xLeft * 64f
         }
+
+        drawLights(batch)
 //        // draw the children after level layout
 //        super.draw(batch, parentAlpha)
     }

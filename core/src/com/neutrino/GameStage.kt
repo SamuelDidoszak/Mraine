@@ -3,6 +3,8 @@ package com.neutrino
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -23,7 +25,12 @@ import kotlin.math.sign
 
 class GameStage(
     viewport: Viewport
-): Stage(viewport) {
+): Stage(viewport,
+    SpriteBatch(1000,
+        ShaderProgram(
+            Gdx.files.internal("shaders/vertex.vert").readString(),
+            Gdx.files.internal("shaders/fragmentAlphas.frag").readString()
+        ))) {
     var level: Level? = null
     var startXPosition: Float = 0f
     var startYPosition: Float = 800f

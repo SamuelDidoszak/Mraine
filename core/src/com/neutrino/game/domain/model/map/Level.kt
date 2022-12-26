@@ -1,17 +1,25 @@
 package com.neutrino.game.domain.model.map
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.MathUtils.ceil
 import com.badlogic.gdx.math.MathUtils.floor
+import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.Constants
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
@@ -19,6 +27,7 @@ import com.neutrino.game.domain.use_case.map.GenerateCharacters
 import com.neutrino.game.domain.use_case.map.MapUseCases
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.utility.Pixel
+import squidpony.squidmath.Coord
 
 
 class Level(
@@ -60,6 +69,15 @@ class Level(
         ArrayList<Character?>(sizeX)
     }
 
+    /**
+     * Map of discovered and undiscovered tiles
+     */
+    val discoveredMap: List<MutableList<Boolean>> = List(sizeY) { MutableList(sizeX) {false} }
+
+    private val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, 6400, 6400, false)
+    private val fogOfWarRegion = TextureRegion(fogOfWarFBO.colorBufferTexture)
+    val fboBatch = SpriteBatch(128)
+
     init {
         setBounds(xScreen, yScreen, sizeX * 64f, sizeY * 64f)
         // scene2d name
@@ -71,6 +89,14 @@ class Level(
                 characterMap[y].add(this.characterArray.find { it.yPos == y && it.xPos == x })
             }
         }
+
+//        // initialize fog of war
+        fogOfWarFBO.begin()
+        Gdx.gl.glClearColor(21f / 255f, 21f / 255f, 23f / 255f, 1f)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        fogOfWarFBO.end()
+        fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, 6400f, 6400f)
+        fboBatch.disableBlending()
     }
 
     /**
@@ -234,6 +260,22 @@ class Level(
         batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
     }
 
+    private fun updateFogOfWar(batch: Batch?, viewedTilesList: List<Coord>) {
+        batch?.end()
+        fogOfWarFBO.begin()
+        fboBatch?.begin()
+        for (tile in viewedTilesList) {
+            if (discoveredMap[tile.y][tile.x])
+                continue
+            discoveredMap[tile.y][tile.x] = true
+            fboBatch?.draw(Constants.FogOfWarTexture, tile.x * 64f, tile.y * 64f, 64f, 64f)
+        }
+        fboBatch?.end()
+        fogOfWarFBO.end()
+        batch?.begin()
+    }
+    val fov = Fov(map)
+
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val gameCamera = parent.stage.camera as OrthographicCamera
 
@@ -357,6 +399,10 @@ class Level(
         }
 
         drawLights(batch)
+
+        fov.cast(Player.xPos, Player.yPos)
+        updateFogOfWar(batch, fov.coordList)
+        batch?.draw(fogOfWarFBO.colorBufferTexture, 0f, 64f)
 //        // draw the children after level layout
 //        super.draw(batch, parentAlpha)
     }

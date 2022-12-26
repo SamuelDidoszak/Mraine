@@ -214,7 +214,7 @@ class GameScreen: KtxScreen {
                 if (entity == null)
                     Player.ai.entityTargetCoords = null
                 else {
-                    val action = entity.getPrimaryAction()
+                    val action = entity.getPrimaryInteraction()
                     if (action != null) {
                         if (action is Interaction.DESTROY)
                             action.requiredDistance = if ((entity as Destructable).destroyed) -1 else Player.range

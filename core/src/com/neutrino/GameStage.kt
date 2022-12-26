@@ -230,7 +230,7 @@ class GameStage(
         outlinedEntity = entity
         outlinedEntity?.shaders?.add(
             OutlineShader(
-            if ((outlinedEntity as Interactable).getPrimaryAction() is Interaction.DESTROY) {
+            if ((outlinedEntity as Interactable).getPrimaryInteraction() is Interaction.DESTROY) {
                 if ((outlinedEntity as Destructable).destroyed)
                     OutlineShader.OUTLINE_CLEAR
                 else

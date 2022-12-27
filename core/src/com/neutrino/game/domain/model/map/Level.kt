@@ -74,9 +74,11 @@ class Level(
      */
     val discoveredMap: List<MutableList<Boolean>> = List(sizeY) { MutableList(sizeX) {false} }
 
-    private val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, 6400, 6400, false)
+    private val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
     private val fogOfWarRegion = TextureRegion(fogOfWarFBO.colorBufferTexture)
-    val fboBatch = SpriteBatch(128)
+
+    private val fovOverlayFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
+    private val fboBatch = SpriteBatch(128)
 
     init {
         setBounds(xScreen, yScreen, sizeX * 64f, sizeY * 64f)
@@ -92,7 +94,8 @@ class Level(
 
 //        // initialize fog of war
         fogOfWarFBO.begin()
-        Gdx.gl.glClearColor(21f / 255f, 21f / 255f, 23f / 255f, 1f)
+//        Gdx.gl.glClearColor(21f / 255f, 21f / 255f, 23f / 255f, 1f)
+        Gdx.gl.glClearColor(07f / 255f, 07f / 255f, 08f / 255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         fogOfWarFBO.end()
         fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, 6400f, 6400f)
@@ -260,8 +263,10 @@ class Level(
         batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
     }
 
-    private fun updateFogOfWar(batch: Batch?, viewedTilesList: List<Coord>) {
-        batch?.end()
+    /**
+     * Updates the fog of war texture by drawing on top of it in places that were not visited before
+     */
+    private fun updateFogOfWar(viewedTilesList: List<Coord>) {
         fogOfWarFBO.begin()
         fboBatch?.begin()
         for (tile in viewedTilesList) {
@@ -272,7 +277,6 @@ class Level(
         }
         fboBatch?.end()
         fogOfWarFBO.end()
-        batch?.begin()
     }
     val fov = Fov(map)
 
@@ -295,6 +299,11 @@ class Level(
 
         for (y in yTop until yBottom) {
             for (x in xLeft until xRight) {
+                if (discoveredMap[y][x] == false) {
+                    screenX += 64
+                    continue
+                }
+
                 for (entity in map.map[y][x]) {
                     batch!!.draw(entity.texture, if (!entity.mirrored) screenX else screenX + entity.texture.regionWidth * 4f, screenY,
                         entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
@@ -398,13 +407,59 @@ class Level(
             screenX = xLeft * 64f
         }
 
+        fov.cast(Player.xPos, Player.yPos)
+
+        batch?.end()
+        updateFovTexture()
+        updateFogOfWar(fov.coordList)
+        batch?.begin()
+
+        batch?.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO)
+        batch?.draw(fovOverlayFBO.colorBufferTexture, 0f, 64f)
+
+        /** Reset is unnecessary, because drawLights() flushes the batch and sets its own color **/
+//        batch?.flush()
+//        batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+//        batch?.color = Color(1.0f, 1.0f, 1.0f, 1.0f)
+
         drawLights(batch)
 
-        fov.cast(Player.xPos, Player.yPos)
-        updateFogOfWar(batch, fov.coordList)
         batch?.draw(fogOfWarFBO.colorBufferTexture, 0f, 64f)
-//        // draw the children after level layout
-//        super.draw(batch, parentAlpha)
+    }
+
+    fun updateFovTexture() {
+        fovOverlayFBO.begin()
+        fboBatch?.begin()
+        fboBatch?.enableBlending()
+
+        fboBatch?.color = Color(0.35f, 0.35f, 0.35f, 1.0f)
+        fboBatch?.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO)
+        fboBatch?.draw(Constants.WhitePixel, 0f, 64f, 6400f, 6400f)
+
+        fboBatch?.flush()
+
+        fboBatch?.color = Color(1.0f, 1.0f, 1.0f, 1.0f)
+        fboBatch?.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO)
+        for (tile in fov.coordList) {
+            fboBatch?.draw(Constants.WhitePixel, tile.x * 64f, tile.y * 64f, 64f, 64f)
+        }
+
+        fboBatch?.end()
+        fovOverlayFBO.end()
+        fboBatch?.disableBlending()
+    }
+
+    /**
+     * Overlays the batch with a provided color by multiplying destination with itself
+     */
+    private fun drawOverlayingColor(batch: Batch?, color: Color) {
+        batch?.color = Color(color.r, color.g, color.b, color.a)
+        batch?.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO)
+        batch?.draw(Constants.WhitePixel, 0f, 64f, 6400f, 6400f)
+
+        // Reset batch settings
+        batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+        batch?.color = Color(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
     /**

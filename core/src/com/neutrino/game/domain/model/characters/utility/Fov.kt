@@ -14,11 +14,6 @@ import kotlin.math.*
  */
 class Fov(var map: Map) {
 
-    /**
-     * List of coordinates in view
-     */
-    var coordList = ArrayList<Coord>()
-
     companion object {
         // TODO when implementing several distance values, make a precalculated indexed array of distances
         /**
@@ -52,8 +47,7 @@ class Fov(var map: Map) {
      * @param cx Center x position
      * @param cy Center y position
      */
-    fun cast(cx: Int, cy: Int) {
-        var totalScans = 0
+    fun updateFov(cx: Int, cy: Int, coordList: ArrayList<Coord>) {
         coordList.clear()
         coordList.add(Coord.get(cx, cy))
 
@@ -62,7 +56,6 @@ class Fov(var map: Map) {
          * @param end right slope
          */
         fun scan(y: Int, start: Double, end: Double, transform: Transform) {
-            totalScans++
             var start = start
             if (start.compareDelta(end) != -1)
                 return

@@ -59,6 +59,7 @@ enum class GlobalDataType {
     PLAYERHP,
     PLAYERMANA,
     PLAYEREXP,
+    PLAYERMOVED,
     PICKUP,
     EQUIPMENT,
     CHANGELEVEL,

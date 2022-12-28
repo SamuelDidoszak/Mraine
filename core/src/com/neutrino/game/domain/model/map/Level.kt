@@ -8,18 +8,19 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.MathUtils.ceil
 import com.badlogic.gdx.math.MathUtils.floor
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataObserver
+import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
@@ -76,10 +77,9 @@ class Level(
     val discoveredMap: List<MutableList<Boolean>> = List(sizeY) { MutableList(sizeX) {false} }
 
     private val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
-    private val fogOfWarRegion = TextureRegion(fogOfWarFBO.colorBufferTexture)
-
     private val fovOverlayFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
-    private val fovRegion = TextureRegion(fovOverlayFBO.colorBufferTexture)
+    private val blurredFogOfWar = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
+    private val blurredFov = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
     private val fboBatch = SpriteBatch(128)
 
     private val darkenedColor = Color(0.35f, 0.35f, 0.35f, 1.0f)
@@ -100,11 +100,18 @@ class Level(
 //        // initialize fog of war
         fogOfWarFBO.begin()
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1f)
-//        Gdx.gl.glClearColor(0f, 0f, 0f, 0f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         fogOfWarFBO.end()
         fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, 100f, 100f)
         fboBatch.disableBlending()
+
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.PLAYERMOVED
+            override fun update(data: Any?): Boolean {
+                updateVisibility()
+                return true
+            }
+        })
     }
 
     /**
@@ -285,7 +292,6 @@ class Level(
         fboBatch.end()
         fogOfWarFBO.end()
     }
-    val fov = Fov(map)
 
     /**
      * Resets the FOV texture
@@ -297,12 +303,29 @@ class Level(
         Gdx.gl.glClearColor(darkenedColor.r, darkenedColor.g, darkenedColor.b, darkenedColor.a)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        for (tile in fov.coordList) {
+        for (tile in Player.ai.fov) {
             fboBatch.draw(Constants.WhitePixel, tile.x.toFloat(), tile.y.toFloat(), 1f, 1f)
         }
 
         fboBatch.end()
         fovOverlayFBO.end()
+    }
+
+    /**
+     * Updates FOV, fog of war and blurs those textures
+     */
+    private fun updateVisibility() {
+        val drawing = parent?.stage?.batch?.isDrawing ?: false
+        if (drawing)
+            parent.stage.batch.end()
+
+        updateFovTexture()
+        updateFogOfWar(Player.ai.fov)
+        Blurring.blurTexture(fovOverlayFBO.colorBufferTexture, blurredFov)
+        Blurring.blurTexture(fogOfWarFBO.colorBufferTexture, blurredFogOfWar)
+
+        if (drawing)
+            parent.stage.batch.begin()
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
@@ -427,15 +450,8 @@ class Level(
             screenX = xLeft * 64f
         }
 
-        fov.cast(Player.xPos, Player.yPos)
-
-        batch?.end()
-        updateFovTexture()
-        updateFogOfWar(fov.coordList)
-        batch?.begin()
-
         batch?.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO)
-        batch?.draw(Blurring.blurTexture(batch, fovOverlayFBO.colorBufferTexture), 0f, 64f)
+        batch?.draw(blurredFov.colorBufferTexture, 0f, 64f)
 
         /** Reset is unnecessary, because drawLights() flushes the batch and sets its own color **/
 //        batch?.flush()
@@ -445,7 +461,7 @@ class Level(
         drawLights(batch)
 
         batch?.shader = Shaders.defaultShader
-        batch?.draw(Blurring.blurTexture(batch, fogOfWarFBO.colorBufferTexture), 0f, 64f)
+        batch?.draw(blurredFogOfWar.colorBufferTexture, 0f, 64f)
         batch?.shader = null
     }
 

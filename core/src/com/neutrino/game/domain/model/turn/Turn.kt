@@ -10,6 +10,7 @@ import com.neutrino.game.Constants.RunSpeed
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interaction
@@ -72,6 +73,7 @@ object Turn {
 
     lateinit var characterMap: List<MutableList<Character?>>
     lateinit var currentLevel: Level
+    lateinit var fov: Fov
 
     /**
      * List containing various short term events, often related to characters.
@@ -102,6 +104,10 @@ object Turn {
         dijkstraMap.measurement = Measurement.EUCLIDEAN
 
         dijkstraMap.initialize(level.movementMap)
+
+        fov = Fov(level.map)
+        fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov)
+        GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
     }
 
     fun makeTurn() {
@@ -126,6 +132,8 @@ object Turn {
                         character.move(action.x, action.y,
                             if (updateBatch.firstOrNull() == null) RunSpeed else MoveSpeed)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
+                        fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov)
+                        GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)!!
@@ -179,6 +187,8 @@ object Turn {
                                 else
                                     mapImpassableList.add(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
 
+                                fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov)
+                                GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
                             }
                             else -> {
                                 action.interaction.act()

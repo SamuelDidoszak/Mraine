@@ -38,6 +38,14 @@ object Blurring {
      * Returns blurred texture by downsampling it on GPU
      */
     fun blurTexture(texture: Texture): Texture {
+        blurTexture(texture, fullSizeTexture)
+        return fullSizeTexture.colorBufferTexture
+    }
+
+    /**
+     * Draws blurred texture into texture provided
+     */
+    fun blurTexture(texture: Texture, blurInto: FrameBuffer): Texture {
         rescaledTexture1.begin()
         blurBatch.begin()
         blurBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, rescaledTexture1.width.toFloat(), rescaledTexture1.height.toFloat())
@@ -59,13 +67,13 @@ object Blurring {
 //        blurBatch.end()
 //        rescaledTexture3.end()
 
-        fullSizeTexture.begin()
+        blurInto.begin()
         blurBatch.begin()
-        blurBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, Constants.LevelChunkSize * 64f, Constants.LevelChunkSize * 64f)
-        blurBatch.draw(rescaledTexture2.colorBufferTexture, 0f, fullSizeTexture.height.toFloat(), fullSizeTexture.width.toFloat(), -1 * fullSizeTexture.height.toFloat())
+        blurBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, blurInto.width.toFloat(), blurInto.height.toFloat())
+        blurBatch.draw(rescaledTexture2.colorBufferTexture, 0f, blurInto.height.toFloat(), blurInto.width.toFloat(), -1 * blurInto.height.toFloat())
         blurBatch.end()
-        fullSizeTexture.end()
+        blurInto.end()
 
-        return fullSizeTexture.colorBufferTexture
+        return blurInto.colorBufferTexture
     }
 }

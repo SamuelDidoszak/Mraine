@@ -10,6 +10,11 @@ class Ai (private val character: Character) {
     var entityTargetCoords: Pair<Int, Int>? = null
 
     /**
+     * List of coordinates in view
+     */
+    val fov: ArrayList<Coord> = ArrayList<Coord>()
+
+    /**
      * FIFO list with planned moves
      */
     var moveList: ArrayDeque<Coord> = ArrayDeque()

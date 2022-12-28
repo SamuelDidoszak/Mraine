@@ -26,6 +26,7 @@ import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
 import com.neutrino.game.domain.use_case.map.MapUseCases
 import com.neutrino.game.graphics.shaders.Shaders
+import com.neutrino.game.graphics.utility.Blurring
 import com.neutrino.game.graphics.utility.Pixel
 import squidpony.squidmath.Coord
 
@@ -74,11 +75,15 @@ class Level(
      */
     val discoveredMap: List<MutableList<Boolean>> = List(sizeY) { MutableList(sizeX) {false} }
 
-    private val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
+    private val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
     private val fogOfWarRegion = TextureRegion(fogOfWarFBO.colorBufferTexture)
 
-    private val fovOverlayFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
+    private val fovOverlayFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
+    private val fovRegion = TextureRegion(fovOverlayFBO.colorBufferTexture)
     private val fboBatch = SpriteBatch(128)
+
+    private val darkenedColor = Color(0.35f, 0.35f, 0.35f, 1.0f)
+    private val backgroundColor = Color((21f / 255f) * darkenedColor.r, (21f / 255f) * darkenedColor.g, (23f / 255f) * darkenedColor.b, 1f)
 
     init {
         setBounds(xScreen, yScreen, sizeX * 64f, sizeY * 64f)
@@ -94,11 +99,11 @@ class Level(
 
 //        // initialize fog of war
         fogOfWarFBO.begin()
-//        Gdx.gl.glClearColor(21f / 255f, 21f / 255f, 23f / 255f, 1f)
-        Gdx.gl.glClearColor(07f / 255f, 07f / 255f, 08f / 255f, 1f)
+        Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1f)
+//        Gdx.gl.glClearColor(0f, 0f, 0f, 0f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         fogOfWarFBO.end()
-        fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, 6400f, 6400f)
+        fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, 100f, 100f)
         fboBatch.disableBlending()
     }
 
@@ -268,17 +273,37 @@ class Level(
      */
     private fun updateFogOfWar(viewedTilesList: List<Coord>) {
         fogOfWarFBO.begin()
-        fboBatch?.begin()
+        fboBatch.begin()
+        Gdx.gl.glColorMask(false, false, false, true)
         for (tile in viewedTilesList) {
             if (discoveredMap[tile.y][tile.x])
                 continue
             discoveredMap[tile.y][tile.x] = true
-            fboBatch?.draw(Constants.FogOfWarTexture, tile.x * 64f, tile.y * 64f, 64f, 64f)
+            fboBatch.draw(Constants.TransparentPixel, tile.x.toFloat(), tile.y.toFloat(), 1f, 1f)
         }
-        fboBatch?.end()
+        Gdx.gl.glColorMask(true, true, true, true)
+        fboBatch.end()
         fogOfWarFBO.end()
     }
     val fov = Fov(map)
+
+    /**
+     * Resets the FOV texture
+     */
+    private fun updateFovTexture() {
+        fovOverlayFBO.begin()
+        fboBatch.begin()
+
+        Gdx.gl.glClearColor(darkenedColor.r, darkenedColor.g, darkenedColor.b, darkenedColor.a)
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+        for (tile in fov.coordList) {
+            fboBatch.draw(Constants.WhitePixel, tile.x.toFloat(), tile.y.toFloat(), 1f, 1f)
+        }
+
+        fboBatch.end()
+        fovOverlayFBO.end()
+    }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val gameCamera = parent.stage.camera as OrthographicCamera
@@ -299,11 +324,6 @@ class Level(
 
         for (y in yTop until yBottom) {
             for (x in xLeft until xRight) {
-                if (discoveredMap[y][x] == false) {
-                    screenX += 64
-                    continue
-                }
-
                 for (entity in map.map[y][x]) {
                     batch!!.draw(entity.texture, if (!entity.mirrored) screenX else screenX + entity.texture.regionWidth * 4f, screenY,
                         entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
@@ -415,7 +435,7 @@ class Level(
         batch?.begin()
 
         batch?.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO)
-        batch?.draw(fovOverlayFBO.colorBufferTexture, 0f, 64f)
+        batch?.draw(Blurring.blurTexture(batch, fovOverlayFBO.colorBufferTexture), 0f, 64f)
 
         /** Reset is unnecessary, because drawLights() flushes the batch and sets its own color **/
 //        batch?.flush()
@@ -424,29 +444,9 @@ class Level(
 
         drawLights(batch)
 
-        batch?.draw(fogOfWarFBO.colorBufferTexture, 0f, 64f)
-    }
-
-    fun updateFovTexture() {
-        fovOverlayFBO.begin()
-        fboBatch?.begin()
-        fboBatch?.enableBlending()
-
-        fboBatch?.color = Color(0.35f, 0.35f, 0.35f, 1.0f)
-        fboBatch?.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO)
-        fboBatch?.draw(Constants.WhitePixel, 0f, 64f, 6400f, 6400f)
-
-        fboBatch?.flush()
-
-        fboBatch?.color = Color(1.0f, 1.0f, 1.0f, 1.0f)
-        fboBatch?.setBlendFunction(GL20.GL_ONE, GL20.GL_ZERO)
-        for (tile in fov.coordList) {
-            fboBatch?.draw(Constants.WhitePixel, tile.x * 64f, tile.y * 64f, 64f, 64f)
-        }
-
-        fboBatch?.end()
-        fovOverlayFBO.end()
-        fboBatch?.disableBlending()
+        batch?.shader = Shaders.defaultShader
+        batch?.draw(Blurring.blurTexture(batch, fogOfWarFBO.colorBufferTexture), 0f, 64f)
+        batch?.shader = null
     }
 
     /**

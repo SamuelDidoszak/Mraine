@@ -56,7 +56,7 @@ object Constants {
     val EntityPixelData = PixelData(DefaultEntityTexture)
     val DefaultIconTexture: TextureAtlas = TextureAtlas("textures/icons.atlas")
     val WhitePixel: Texture = Texture("whitePixel.png")
-    val FogOfWarTexture: Texture = Texture("fogOfWarTransparent.png")
+    val TransparentPixel: Texture = Texture("transparentPixel.png")
 
     // Level constants
     val LevelChunkSize: Int = 100

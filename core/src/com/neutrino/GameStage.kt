@@ -31,6 +31,9 @@ class GameStage(
             Gdx.files.internal("shaders/vertex.vert").readString(),
             Gdx.files.internal("shaders/fragmentAlphas.frag").readString()
         ))) {
+    init {
+        this.root.name = "GameStage"
+    }
     var level: Level? = null
     var startXPosition: Float = 0f
     var startYPosition: Float = 800f

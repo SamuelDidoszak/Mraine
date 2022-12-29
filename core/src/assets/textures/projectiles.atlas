@@ -1,0 +1,5 @@
+projectiles.png
+	size: 32, 32
+	repeat: none
+woodenArrow
+	bounds: 1, 1, 16, 16

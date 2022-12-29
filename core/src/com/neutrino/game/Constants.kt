@@ -53,17 +53,18 @@ object Constants {
 
     val DefaultItemTexture: TextureAtlas = TextureAtlas("textures/items.atlas")
     val DefaultEntityTexture: TextureAtlas = TextureAtlas("textures/entities.atlas")
-    val EntityPixelData = PixelData(DefaultEntityTexture)
+    val DefaultProjectileTexture: TextureAtlas = TextureAtlas("textures/projectiles.atlas")
     val DefaultIconTexture: TextureAtlas = TextureAtlas("textures/icons.atlas")
     val WhitePixel: Texture = Texture("whitePixel.png")
     val TransparentPixel: Texture = Texture("transparentPixel.png")
+    val EntityPixelData = PixelData(DefaultEntityTexture)
 
     // Level constants
     val LevelChunkSize: Int = 100
 
     val maxItemTier: Int = 4
 
-    const val IsSeeded: Boolean = true
+    const val IsSeeded: Boolean = false
     const val Seed: Long = 2137213721372137
     val RandomGenerator: Random = if (IsSeeded) Random(Seed) else Random.Default
 

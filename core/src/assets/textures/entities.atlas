@@ -2,212 +2,238 @@ entities.png
 	size: 1024, 64
 	repeat: none
 barrel
-	bounds: 647, 24, 16, 16
+	bounds: 851, 25, 16, 16
 barrelDestroyed
-	bounds: 902, 46, 16, 16
+	bounds: 69, 14, 16, 16
+candleSingle$1
+	bounds: 970, 44, 16, 19
+candleSingle$2
+	bounds: 919, 26, 16, 16
+candleSingle$3
+	bounds: 579, 25, 16, 16
+candleSingle$4
+	bounds: 188, 20, 16, 16
+candleSingle$5
+	bounds: 766, 25, 16, 16
+candlesMultiple$1
+	bounds: 1, 1, 16, 17
+candlesMultiple$2
+	bounds: 511, 25, 16, 16
+candlesMultiple$3
+	bounds: 953, 44, 16, 19
+candlesMultiple$4
+	bounds: 681, 25, 16, 16
 clayPot$1
-	bounds: 222, 21, 16, 16
+	bounds: 358, 23, 16, 16
 clayPot$1Destroyed
-	bounds: 290, 21, 16, 16
+	bounds: 426, 25, 16, 16
 clayPot$2
-	bounds: 698, 24, 16, 16
+	bounds: 902, 25, 16, 16
 clayPot$2Destroyed
-	bounds: 69, 13, 16, 16
-clayPot$3
-	bounds: 392, 24, 16, 16
-clayPot$3Destroyed
-	bounds: 511, 24, 16, 16
-clayPot$4
-	bounds: 936, 46, 16, 16
-clayPot$4Destroyed
-	bounds: 256, 21, 16, 16
-clayPotMultiple$1
-	bounds: 205, 19, 16, 16
-clayPotMultiple$1Destroyed
-	bounds: 1004, 46, 16, 16
-clayPotMultiple$2
-	bounds: 885, 42, 16, 20
-clayPotMultiple$2Destroyed
-	bounds: 868, 42, 16, 20
-clayPotMultiple$3
-	bounds: 647, 41, 16, 21
-clayPotMultiple$3Destroyed
-	bounds: 681, 41, 16, 21
-crateBiggerDark
-	bounds: 120, 19, 16, 16
-crateBiggerDarkDestroyed
-	bounds: 953, 46, 16, 16
-crateDoor
-	bounds: 307, 39, 16, 23
-crateDoorClosed
-	bounds: 222, 38, 16, 24
-crateSmall
-	bounds: 460, 24, 16, 16
-crateSmallDestroyed
-	bounds: 239, 21, 16, 16
-dungeonFloorBasic$1
-	bounds: 919, 46, 16, 16
-dungeonFloorBasic$10
-	bounds: 477, 24, 16, 16
-dungeonFloorBasic$11
-	bounds: 188, 19, 16, 16
-dungeonFloorBasic$12
-	bounds: 664, 24, 16, 16
-dungeonFloorBasic$13
-	bounds: 375, 24, 16, 16
-dungeonFloorBasic$14
-	bounds: 103, 19, 16, 16
-dungeonFloorBasic$15
-	bounds: 528, 24, 16, 16
-dungeonFloorBasic$17
-	bounds: 1, 1, 16, 16
-dungeonFloorBasic$2
-	bounds: 545, 24, 16, 16
-dungeonFloorBasic$3
-	bounds: 273, 21, 16, 16
-dungeonFloorBasic$4
-	bounds: 18, 2, 16, 16
-dungeonFloorBasic$16
-	bounds: 18, 2, 16, 16
-dungeonFloorBasic$18
-	bounds: 18, 2, 16, 16
-dungeonFloorBasic$6
-	bounds: 18, 2, 16, 16
-dungeonFloorBasic$5
-	bounds: 426, 24, 16, 16
-dungeonFloorBasic$7
-	bounds: 630, 24, 16, 16
-dungeonFloorBasic$8
-	bounds: 358, 24, 16, 16
-dungeonFloorBasic$9
 	bounds: 86, 14, 16, 16
-dungeonFloorCracked$1
-	bounds: 171, 19, 16, 16
-dungeonFloorCracked$2
-	bounds: 613, 24, 16, 16
-dungeonFloorCracked$3
-	bounds: 341, 24, 16, 16
-dungeonFloorCracked$4
-	bounds: 52, 13, 16, 16
-dungeonFloorLights$1
-	bounds: 681, 24, 16, 16
-dungeonFloorLights$2
-	bounds: 409, 24, 16, 16
-dungeonFloorLights$3
-	bounds: 137, 19, 16, 16
-dungeonFloorLights$4
-	bounds: 562, 24, 16, 16
-dungeonFloorLights$5
+clayPot$3
+	bounds: 545, 25, 16, 16
+clayPot$3Destroyed
+	bounds: 698, 25, 16, 16
+clayPot$4
+	bounds: 171, 20, 16, 16
+clayPot$4Destroyed
+	bounds: 392, 25, 16, 16
+clayPotMultiple$1
+	bounds: 341, 22, 16, 16
+clayPotMultiple$1Destroyed
+	bounds: 324, 22, 16, 16
+clayPotMultiple$2
+	bounds: 936, 43, 16, 20
+clayPotMultiple$2Destroyed
+	bounds: 919, 43, 16, 20
+clayPotMultiple$3
+	bounds: 698, 42, 16, 21
+clayPotMultiple$3Destroyed
+	bounds: 732, 42, 16, 21
+crateBiggerDark
+	bounds: 154, 20, 16, 16
+crateBiggerDarkDestroyed
+	bounds: 205, 20, 16, 16
+crateDoor
+	bounds: 358, 40, 16, 23
+crateDoorClosed
+	bounds: 273, 39, 16, 24
+crateSmall
+	bounds: 630, 25, 16, 16
+crateSmallDestroyed
+	bounds: 375, 25, 16, 16
+dungeonFloorBasic$1
+	bounds: 137, 15, 16, 16
+dungeonFloorBasic$10
+	bounds: 647, 25, 16, 16
+dungeonFloorBasic$11
 	bounds: 307, 22, 16, 16
+dungeonFloorBasic$12
+	bounds: 868, 25, 16, 16
+dungeonFloorBasic$13
+	bounds: 528, 25, 16, 16
+dungeonFloorBasic$14
+	bounds: 120, 14, 16, 16
+dungeonFloorBasic$15
+	bounds: 715, 25, 16, 16
+dungeonFloorBasic$17
+	bounds: 18, 3, 16, 16
+dungeonFloorBasic$2
+	bounds: 732, 25, 16, 16
+dungeonFloorBasic$3
+	bounds: 409, 25, 16, 16
+dungeonFloorBasic$4
+	bounds: 35, 11, 16, 16
+dungeonFloorBasic$16
+	bounds: 35, 11, 16, 16
+dungeonFloorBasic$18
+	bounds: 35, 11, 16, 16
+dungeonFloorBasic$6
+	bounds: 35, 11, 16, 16
+dungeonFloorBasic$5
+	bounds: 596, 25, 16, 16
+dungeonFloorBasic$7
+	bounds: 834, 25, 16, 16
+dungeonFloorBasic$8
+	bounds: 494, 25, 16, 16
+dungeonFloorBasic$9
+	bounds: 103, 14, 16, 16
+dungeonFloorCracked$1
+	bounds: 273, 22, 16, 16
+dungeonFloorCracked$2
+	bounds: 817, 25, 16, 16
+dungeonFloorCracked$3
+	bounds: 477, 25, 16, 16
+dungeonFloorCracked$4
+	bounds: 52, 11, 16, 16
+dungeonFloorLights$1
+	bounds: 885, 25, 16, 16
+dungeonFloorLights$2
+	bounds: 562, 25, 16, 16
+dungeonFloorLights$3
+	bounds: 222, 20, 16, 16
+dungeonFloorLights$4
+	bounds: 749, 25, 16, 16
+dungeonFloorLights$5
+	bounds: 443, 25, 16, 16
 dungeonFloorSmaller$1
-	bounds: 154, 19, 16, 16
+	bounds: 239, 20, 16, 16
 dungeonFloorSmaller$2
-	bounds: 579, 24, 16, 16
+	bounds: 783, 25, 16, 16
 dungeonFloorSmaller$3
-	bounds: 324, 24, 16, 16
+	bounds: 460, 25, 16, 16
 dungeonFloorSmaller$4
-	bounds: 35, 10, 16, 16
+	bounds: 1005, 47, 16, 16
 dungeonFloorSmaller$5
-	bounds: 443, 24, 16, 16
+	bounds: 613, 25, 16, 16
 dungeonFloorSmaller$6
-	bounds: 987, 46, 16, 16
+	bounds: 290, 22, 16, 16
 dungeonWall$1
-	bounds: 664, 41, 16, 21
+	bounds: 715, 42, 16, 21
 dungeonWall$2
-	bounds: 443, 41, 16, 21
+	bounds: 494, 42, 16, 21
 dungeonWall$3
-	bounds: 783, 41, 16, 21
+	bounds: 834, 42, 16, 21
 dungeonWall$4
-	bounds: 562, 41, 16, 21
+	bounds: 613, 42, 16, 21
 dungeonWall$5
-	bounds: 375, 41, 16, 21
+	bounds: 426, 42, 16, 21
 dungeonWallInside
-	bounds: 596, 24, 16, 16
+	bounds: 800, 25, 16, 16
 dungeonWallInsideEdgeLeft$1
-	bounds: 341, 41, 16, 21
+	bounds: 392, 42, 16, 21
 dungeonWallInsideEdgeLeft$2
-	bounds: 698, 41, 16, 21
+	bounds: 749, 42, 16, 21
 dungeonWallInsideEdgeRight$1
-	bounds: 817, 41, 16, 21
+	bounds: 868, 42, 16, 21
 dungeonWallInsideEdgeRight$2
-	bounds: 596, 41, 16, 21
+	bounds: 647, 42, 16, 21
 dungeonWallInsideMiddle$1
-	bounds: 800, 41, 16, 21
+	bounds: 851, 42, 16, 21
 dungeonWallInsideMiddle$2
-	bounds: 579, 41, 16, 21
+	bounds: 630, 42, 16, 21
 dungeonWallInsideMiddle$3
-	bounds: 392, 41, 16, 21
+	bounds: 443, 42, 16, 21
 dungeonWallInsideMiddle$4
-	bounds: 732, 41, 16, 21
+	bounds: 783, 42, 16, 21
 dungeonWallInsideMiddle$5
-	bounds: 494, 41, 16, 21
+	bounds: 545, 42, 16, 21
 dungeonWallInsideMiddleTop
-	bounds: 460, 41, 16, 21
+	bounds: 511, 42, 16, 21
 dungeonWallInsideTop$1
-	bounds: 834, 41, 16, 21
+	bounds: 885, 42, 16, 21
 dungeonWallInsideTop$2
-	bounds: 613, 41, 16, 21
+	bounds: 664, 42, 16, 21
 dungeonWallInsideTop$3
-	bounds: 426, 41, 16, 21
+	bounds: 477, 42, 16, 21
 dungeonWallInsideTop$4
-	bounds: 766, 41, 16, 21
+	bounds: 817, 42, 16, 21
 dungeonWallInsideTop$5
-	bounds: 528, 41, 16, 21
+	bounds: 579, 42, 16, 21
 dungeonWallLeft$1
-	bounds: 630, 41, 16, 21
+	bounds: 681, 42, 16, 21
 dungeonWallLeft$2
-	bounds: 409, 41, 16, 21
+	bounds: 460, 42, 16, 21
 dungeonWallLeft$3
-	bounds: 749, 41, 16, 21
+	bounds: 800, 42, 16, 21
 dungeonWallLeft$4
-	bounds: 511, 41, 16, 21
+	bounds: 562, 42, 16, 21
 dungeonWallLeft$5
-	bounds: 324, 41, 16, 21
+	bounds: 375, 42, 16, 21
 dungeonWallRight$1
-	bounds: 545, 41, 16, 21
+	bounds: 596, 42, 16, 21
 dungeonWallRight$2
-	bounds: 358, 41, 16, 21
+	bounds: 409, 42, 16, 21
 dungeonWallRight$3
-	bounds: 715, 41, 16, 21
+	bounds: 766, 42, 16, 21
 dungeonWallRight$4
-	bounds: 477, 41, 16, 21
+	bounds: 528, 42, 16, 21
 dungeonWallRight$5
-	bounds: 851, 41, 16, 21
+	bounds: 902, 42, 16, 21
 dungeonWallSingle$1
-	bounds: 188, 36, 16, 26
+	bounds: 239, 37, 16, 26
 dungeonWallSingle$2
-	bounds: 137, 36, 16, 26
+	bounds: 188, 37, 16, 26
 dungeonWallSingleHorizontal$1
-	bounds: 171, 36, 16, 26
+	bounds: 222, 37, 16, 26
 dungeonWallSingleHorizontal$2
-	bounds: 120, 36, 16, 26
+	bounds: 171, 37, 16, 26
 dungeonWallSingleHorizontal$3
-	bounds: 205, 36, 16, 26
+	bounds: 256, 37, 16, 26
 dungeonWallSingleHorizontal$4
-	bounds: 154, 36, 16, 26
+	bounds: 205, 37, 16, 26
 dungeonWallSingleHorizontal$5
-	bounds: 103, 36, 16, 26
+	bounds: 154, 37, 16, 26
+standingTorch$1
+	bounds: 52, 28, 16, 35
+standingTorch$2
+	bounds: 103, 31, 16, 32
 stonePillar
-	bounds: 1, 18, 16, 44
+	bounds: 1, 19, 16, 44
 stonePillarCracked
-	bounds: 18, 19, 16, 43
+	bounds: 18, 20, 16, 43
 stonePillarTop
-	bounds: 970, 46, 16, 16
+	bounds: 256, 20, 16, 16
+torchFront
+	bounds: 120, 31, 16, 32
+torchSide
+	bounds: 987, 47, 17, 16
 woodenChest
-	bounds: 494, 24, 16, 16
+	bounds: 664, 25, 16, 16
 woodenDoor
-	bounds: 256, 38, 16, 24
+	bounds: 307, 39, 16, 24
 woodenDoorArched
-	bounds: 273, 38, 16, 24
+	bounds: 324, 39, 16, 24
 woodenDoorArchedClosed
-	bounds: 239, 38, 16, 24
+	bounds: 290, 39, 16, 24
 woodenDoorArchedVertical
-	bounds: 35, 27, 16, 35
+	bounds: 35, 28, 16, 35
 woodenDoorArchedVerticalClosed
-	bounds: 86, 31, 16, 31
+	bounds: 137, 32, 16, 31
 woodenDoorClosed
-	bounds: 290, 38, 16, 24
+	bounds: 341, 39, 16, 24
 woodenDoorVertical
-	bounds: 52, 30, 16, 32
+	bounds: 69, 31, 16, 32
 woodenDoorVerticalClosed
-	bounds: 69, 30, 16, 32
+	bounds: 86, 31, 16, 32

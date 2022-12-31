@@ -82,7 +82,7 @@ class Level(
     private val blurredFov = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
     private val fboBatch = SpriteBatch(128)
 
-    private val darkenedColor = Color(0.35f, 0.35f, 0.35f, 1.0f)
+    private val darkenedColor = Color(0.50f, 0.45f, 0.60f, 1.0f)
     private val backgroundColor = Color((21f / 255f) * darkenedColor.r, (21f / 255f) * darkenedColor.g, (23f / 255f) * darkenedColor.b, 1f)
 
     init {

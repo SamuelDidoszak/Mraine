@@ -86,7 +86,6 @@ class ItemContextPopup(
 
                             val itemType = Player.equipment.setItem(item as EquipmentItem)
                             GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, itemType)
-                            GlobalData.notifyObservers(GlobalDataType.PICKUP, item)
                         }
                     })
 

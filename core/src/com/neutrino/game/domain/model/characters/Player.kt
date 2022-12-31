@@ -194,11 +194,13 @@ object Player : Character(0, 0, 0.0), HasInventory {
             val stackableItem = inventory.itemList.find { it.item.name == item.name }
             if (stackableItem != null) {
                 stackableItem.item.amount = stackableItem.item.amount!!.plus(item.amount!!)
+                GlobalData.notifyObservers(GlobalDataType.PICKUP, stackableItem.item)
                 return true
             }
         }
         if (inventory.itemList.size < inventory.size) {
             inventory.itemList.add(EqElement(item, Turn.turn))
+            GlobalData.notifyObservers(GlobalDataType.PICKUP, item)
             return true
         }
         return false
@@ -216,7 +218,6 @@ object Player : Character(0, 0, 0.0), HasInventory {
             Actions.sequence(
             Actions.fadeOut(1.25f),
             Actions.removeActor()))
-        GlobalData.notifyObservers(GlobalDataType.PICKUP, item)
     }
 
     private fun sendStatChangeData(stat: StatsEnum) {

@@ -28,7 +28,6 @@ import com.neutrino.game.domain.model.items.items.Gold
 import com.neutrino.game.domain.model.items.utility.EqActor
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
-import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.graphics.utility.ItemContextPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
 import ktx.scene2d.container
@@ -1460,6 +1459,11 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                                                                     Item related methods
     */
 
+    /**
+     * clickedItem becomes a new stack with passed value
+     * Subtracts stack amount from the originalStackItem
+     * If the original stack becomes 0, originalStackContainer actor is removed
+     */
     private fun changeStackAmount(value: Int) {
         if (originalStackItem == null)
             return
@@ -1519,18 +1523,13 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         return clickedChild
     }
 
+    /**
+     * Interprets where the item was dropped.
+     * Either drops it out of the inventory, adds to a different inventory, makes a new stack or combines stacks
+     */
     private fun parseItemDrop(x: Float, y: Float) {
         if (clickedItem == null)
             return
-
-        var stackedItemDate: Double = Turn.turn
-        if (originalStackItem != null) {
-            val stackedItem = originalInventory!!.itemList.find { it.item == originalStackItem!!.item }
-            stackedItemDate = stackedItem!!.dateAdded
-            if (stackedItem.item.amount == 0)
-                originalInventory!!.itemList.remove(stackedItem)
-        }
-
 
         val clickedInv = getInvClicked(x, y)
         if (clickedInv == null) {
@@ -1549,6 +1548,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                     Actions.fadeOut(0.35f),
                     Actions.removeActor()
                 ))
+                // Refresh hotBar after dropping the item
+                hudStage.refreshHotBar()
             }
             return
         }
@@ -1570,6 +1571,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         this.actors.removeValue(clickedItem, true)
         // check if the cell is ocupied and act accordingly
         if (container.hasChildren()) {
+            // Item dropped onto identical stackable item
             // sum item amounts
             if ((container.actor as EqActor).item.amount != null &&
                 (clickedItem as EqActor).item.equalsIdentical((container.actor as EqActor).item)) {
@@ -1577,19 +1579,49 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                     (container.actor as EqActor).item.amount?.plus((clickedItem as EqActor).item.amount!!)
                 originalInventory!!.itemList.remove(
                     originalInventory!!.itemList.find { it.item == (clickedItem as EqActor).item })
+
+                // Remove empty stack
+                if (originalStackItem != null) {
+                    val stackedItem = originalInventory!!.itemList.find { it.item == originalStackItem!!.item }
+                    if (stackedItem?.item?.amount == 0) {
+                        originalInventory!!.itemList.remove(stackedItem)
+                    }
+                }
+
                 (container.actor as EqActor).refreshAmount()
+                hudStage.refreshHotBar()
                 return
+            // Item was dropped onto another item, position is reset
             } else if (originalStackItem != null) {
+                // If original stack is 0 and container's actor was removed, create a new one
+                if (originalContainer?.actor == null)
+                    originalContainer?.actor = originalStackItem
                 originalStackItem!!.item.amount = originalStackItem!!.item.amount?.plus((clickedItem as EqActor).item.amount!!)
                 originalStackItem!!.refreshAmount()
                 this.actors.removeValue(clickedItem, true)
+                hudStage.refreshHotBar()
                 return
             } else
                 originalContainer!!.actor = container.actor as EqActor
         }
-        container.actor = (clickedItem)
-        if (originalStackItem != null)
-            originalInventory!!.itemList.add(EqElement((clickedItem as EqActor).item, stackedItemDate))
+        // Creates a new item in inventory out of the stack
+        if (originalStackItem != null) {
+            val stackedItem = originalInventory!!.itemList.find { it.item == originalStackItem!!.item }
+            // Create a new item or move the existing one while preserving references
+            if (stackedItem!!.item.amount != 0) {
+                originalInventory!!.itemList.add(EqElement((clickedItem as EqActor).item, stackedItem.dateAdded))
+                container.actor = clickedItem
+            }
+            else {
+                originalStackItem!!.item.amount = originalStackItem!!.item.amount?.plus((clickedItem as EqActor).item.amount!!)
+                originalStackItem?.refreshAmount()
+                container.actor = originalStackItem
+            }
+
+            hudStage.refreshHotBar()
+            return
+        }
+        container.actor = clickedItem
     }
 
     fun itemPassedToHud() {

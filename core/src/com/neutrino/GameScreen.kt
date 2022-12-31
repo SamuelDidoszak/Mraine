@@ -19,6 +19,7 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.EquipmentType
+import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
 import ktx.app.KtxScreen
@@ -100,7 +101,6 @@ class GameScreen: KtxScreen {
             // drops items
             while (uiStage.itemDropList.isNotEmpty())
                 gameStage.level!!.map.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
-            hudStage.refreshHotBar()
         } else {
             Gdx.input.inputProcessor = uiInputMultiplexer
             hudStage.darkenScreen(true)
@@ -150,8 +150,8 @@ class GameScreen: KtxScreen {
 
         // Diagnostics and debug information
         hudStage.diagnostics.updateValues(startNano)
-        val cameraPosition = gameStage.getCameraPosition()
-        hudStage.diagnostics.updatePosition(cameraPosition.first, cameraPosition.second)
+//        val cameraPosition = gameStage.getCameraPosition()
+//        hudStage.diagnostics.updatePosition(cameraPosition.first, cameraPosition.second)
     }
 
     override fun dispose() {
@@ -328,8 +328,9 @@ class GameScreen: KtxScreen {
                 else
                     uiStage.forceRefreshInventory = true
 
-                if (uiStage.clickedItem == null)
-                    hudStage.refreshHotBar()
+                if (data is Item) {
+                    hudStage.parsePickedUpItem(data)
+                }
 
                 return true
             }
@@ -338,8 +339,11 @@ class GameScreen: KtxScreen {
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.EQUIPMENT
             override fun update(data: Any?): Boolean {
-                if (data is EquipmentType || data == null)
+                if (data is EquipmentType || data == null) {
                     uiStage.refreshEquipment(data as EquipmentType)
+                    uiStage.refreshInventory()
+                    hudStage.refreshHotBar()
+                }
                 return true
             }
         })

@@ -3,6 +3,7 @@ package com.neutrino.game.domain.model.items
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasInventory
 import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.event.wrappers.OnOffEvent
@@ -119,6 +120,9 @@ class Equipment(val character: Character) {
         unsetItemModifiers(item)
         if (character is HasInventory) {
             character.inventory.itemList.add(EqElement(item as Item, Turn.turn))
+            // required to add it to hud bar
+            if (character is Player)
+                GlobalData.notifyObservers(GlobalDataType.PICKUP, item)
         } else {
             // TODO drop item onto the ground or add to dropItemList
         }

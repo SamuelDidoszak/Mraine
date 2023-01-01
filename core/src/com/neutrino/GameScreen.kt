@@ -281,7 +281,7 @@ class GameScreen: KtxScreen {
                         Player.ai.entityTargetCoords = null
 
                     // Add player movement list
-                    if (!Turn.currentLevel.allowsCharacterChangesImpassable(x, y))
+                    if (!Turn.currentLevel.discoveredMap[y][x] || !Turn.currentLevel.allowsCharacterChangesImpassable(x, y))
                         Player.ai.action = Action.NOTHING
                     else
                         Player.ai.setMoveList(x, y, Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))

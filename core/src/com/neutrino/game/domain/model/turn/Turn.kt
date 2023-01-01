@@ -5,12 +5,11 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants.IsSeeded
-import com.neutrino.game.Constants.MoveSpeed
-import com.neutrino.game.Constants.RunSpeed
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Fov
+import com.neutrino.game.domain.model.characters.utility.Projectile
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interaction
@@ -129,8 +128,7 @@ object Turn {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
                         moveCharacter(character.xPos, character.yPos, action.x, action.y)
-                        character.move(action.x, action.y,
-                            if (updateBatch.firstOrNull() == null) RunSpeed else MoveSpeed)
+                        character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                         fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov)
                         GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)

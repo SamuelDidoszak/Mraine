@@ -46,8 +46,7 @@ fun Double.compareDelta(other: Double) = if (this.equalsDelta(other)) 0
 
 object Constants {
     const val AnimationSpeed: Float = 0.1666666666666666f
-    const val MoveSpeed: Float = 0.5f
-    const val RunSpeed: Float = 0.2f
+    const val MoveSpeed: Float = 0.275f
 
     //  Global textures for items and entities
 

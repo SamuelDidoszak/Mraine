@@ -29,7 +29,6 @@ import com.neutrino.game.domain.use_case.map.MapUseCases
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.utility.Blurring
 import com.neutrino.game.graphics.utility.Pixel
-import squidpony.squidmath.Coord
 
 
 class Level(
@@ -278,15 +277,17 @@ class Level(
     /**
      * Updates the fog of war texture by drawing on top of it in places that were not visited before
      */
-    private fun updateFogOfWar(viewedTilesList: List<Coord>) {
+    private fun updateFogOfWar() {
         fogOfWarFBO.begin()
         fboBatch.begin()
         Gdx.gl.glColorMask(false, false, false, true)
-        for (tile in viewedTilesList) {
-            if (discoveredMap[tile.y][tile.x])
-                continue
-            discoveredMap[tile.y][tile.x] = true
-            fboBatch.draw(Constants.TransparentPixel, tile.x.toFloat(), tile.y.toFloat(), 1f, 1f)
+        for (y in 0 until Player.ai.fov.size) {
+            for (x in 0 until Player.ai.fov[0].size) {
+                if (Player.ai.fov[y][x] && !discoveredMap[y][x]) {
+                    discoveredMap[y][x] = true
+                    fboBatch.draw(Constants.TransparentPixel, x.toFloat(), y.toFloat(), 1f, 1f)
+                }
+            }
         }
         Gdx.gl.glColorMask(true, true, true, true)
         fboBatch.end()
@@ -303,8 +304,11 @@ class Level(
         Gdx.gl.glClearColor(darkenedColor.r, darkenedColor.g, darkenedColor.b, darkenedColor.a)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        for (tile in Player.ai.fov) {
-            fboBatch.draw(Constants.WhitePixel, tile.x.toFloat(), tile.y.toFloat(), 1f, 1f)
+        for (y in 0 until Player.ai.fov.size) {
+            for (x in 0 until Player.ai.fov[0].size) {
+                if (Player.ai.fov[y][x])
+                    fboBatch.draw(Constants.WhitePixel, x.toFloat(), y.toFloat(), 1f, 1f)
+            }
         }
 
         fboBatch.end()
@@ -320,7 +324,7 @@ class Level(
             parent.stage.batch.end()
 
         updateFovTexture()
-        updateFogOfWar(Player.ai.fov)
+        updateFogOfWar()
         Blurring.blurTexture(fovOverlayFBO.colorBufferTexture, blurredFov)
         Blurring.blurTexture(fogOfWarFBO.colorBufferTexture, blurredFogOfWar)
 
@@ -374,6 +378,10 @@ class Level(
             }
             // Render characters
             for (x in xLeft until xRight) {
+                // Do not render if not in view
+                if (!Player.ai.fov[y][x])
+                    continue
+
                 if (characterMap[y][x] != null) {
                     characterMap[y][x]!!.draw(batch, parentAlpha)
                 }

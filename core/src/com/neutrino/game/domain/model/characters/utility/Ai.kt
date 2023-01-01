@@ -1,5 +1,6 @@
 package com.neutrino.game.domain.model.characters.utility
 
+import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.turn.Action
@@ -12,7 +13,7 @@ class Ai (private val character: Character) {
     /**
      * List of coordinates in view
      */
-    val fov: ArrayList<Coord> = ArrayList<Coord>()
+    val fov: Array<BooleanArray> = Array(Constants.LevelChunkSize) { BooleanArray(Constants.LevelChunkSize) {false} }
 
     /**
      * FIFO list with planned moves

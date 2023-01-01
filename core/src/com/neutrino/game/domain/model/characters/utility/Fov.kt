@@ -5,7 +5,7 @@ import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.utility.Interactable
 import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.map.Map
-import squidpony.squidmath.Coord
+import com.neutrino.game.utility.BArray
 import kotlin.math.*
 
 /**
@@ -47,9 +47,9 @@ class Fov(var map: Map) {
      * @param cx Center x position
      * @param cy Center y position
      */
-    fun updateFov(cx: Int, cy: Int, coordList: ArrayList<Coord>) {
-        coordList.clear()
-        coordList.add(Coord.get(cx, cy))
+    fun updateFov(cx: Int, cy: Int, fov: Array<BooleanArray>) {
+        BArray.setFalse(fov)
+        fov[cy][cx] = true
 
         /**
          * @param start left slope
@@ -72,10 +72,10 @@ class Fov(var map: Map) {
 
                 if (inMap(realX, realY) && transparent(realX, realY)) {
                     if (x >= y * start && x <= y * end)
-                        coordList.add(Coord.get(realX, realY))
+                        fov[realY][realX] = true
                 } else {
                     if (inMap(realX, realY) && x.toDouble().compareDelta((y - 0.5) * start) != -1  && (x - 0.5).compareDelta(y * end) != 1)
-                        coordList.add(Coord.get(realX, realY))
+                        fov[realY][realX] = true
 
                     scan(y + 1, start, (x - 0.5) / y, transform)
                     start = (x + 0.5) / y

@@ -218,8 +218,10 @@ class GameStage(
     private var outlinedCharacter: Character? = null
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val coord = getTile(screenX, screenY)
-        addCharacterOutline(coord.x, coord.y)
-        addOutline(coord.x, coord.y)
+        if (level?.discoveredMap?.get(coord.y)?.get(coord.x) == true) {
+            addCharacterOutline(coord.x, coord.y)
+            addOutline(coord.x, coord.y)
+        }
 
         return super.mouseMoved(screenX, screenY)
     }

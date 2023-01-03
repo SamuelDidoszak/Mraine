@@ -7,11 +7,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.graphics.shaders.OutlineShader
@@ -32,7 +35,8 @@ class GameStage(
             Gdx.files.internal("shaders/fragmentAlphas.frag").readString()
         ))) {
     init {
-        this.root.name = "GameStage"
+        root = GameStageGroup()
+        root.name = "GameStage"
     }
     var level: Level? = null
     var startXPosition: Float = 0f
@@ -45,6 +49,16 @@ class GameStage(
     var lookingAround: Boolean = false
 
     var showEq: Boolean = false
+
+    val animatedArray: ArrayList<Animated> = ArrayList()
+
+    private var stateTime: Float = 0f
+
+    fun animateAll() {
+        stateTime += Gdx.graphics.deltaTime
+        for (animated in animatedArray)
+            animated.setFrame(stateTime)
+    }
 
     fun isPlayerFocused(): Boolean {
         return (abs(camera.position.x - Player.xPos * 64f) < 16 &&
@@ -261,6 +275,9 @@ class GameStage(
 
         outlinedCharacter?.shaders?.removeAll { it is OutlineShader }
         outlinedCharacter = character
+        if (character?.isAlive() != true)
+            return false
+
         outlinedCharacter?.shaders?.add(
             OutlineShader(
                 OutlineShader.OUTLINE_RED,
@@ -290,5 +307,27 @@ class GameStage(
                 (startYPosition - position.y).toInt() / 64
 
         return Coord.get(tileX, tileY)
+    }
+
+    override fun getRoot(): Group {
+        return super.getRoot()
+    }
+
+    override fun addActor(actor: Actor?) {
+        super.addActor(actor)
+        if (actor is Animated)
+            animatedArray.add(actor)
+    }
+
+
+    /**
+     * Group functioning as a root of GameStage
+     */
+    inner class GameStageGroup: Group() {
+        override fun removeActor(actor: Actor?, unfocus: Boolean): Boolean {
+            if (actor is Animated)
+                animatedArray.remove(actor)
+            return super.removeActor(actor, unfocus)
+        }
     }
 }

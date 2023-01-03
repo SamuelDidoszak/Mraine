@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.neutrino.game.Constants
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
-import com.neutrino.game.Render
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.entities.utility.*
@@ -28,7 +27,6 @@ import kotlin.math.abs
 
 class GameScreen: KtxScreen {
     private val initialize: Initialize = Initialize()
-    private val render: Render = Render(initialize.level)
     private val startXPosition = 0f
     private val startYPosition = LevelChunkSize * 64f
 
@@ -71,12 +69,14 @@ class GameScreen: KtxScreen {
 
         // level initialization
         initialize.initialize()
+        Turn.setLevel(initialize.level)
+        gameStage.addActor(initialize.level)
+        initialize.level.initialize()
         gameStage.level = initialize.level
         gameStage.startXPosition = startXPosition
         gameStage.startYPosition = startYPosition
 
-        Turn.setLevel(initialize.level)
-        gameStage.addActor(initialize.level)
+        gameStage.animatedArray.addAll(initialize.level.characterArray)
         gameStage.camera.position.set(Player.x, Player.y, gameStage.camera.position.z)
         initialize.level.prepareLights()
 
@@ -124,7 +124,7 @@ class GameScreen: KtxScreen {
         // game events such as player input and ai
         gameLoop()
 
-        render.addAnimations()
+        gameStage.animateAll()
         gameStage.act(delta)
         gameStage.draw()
 

@@ -39,7 +39,7 @@ class GenerateCharacters(
 
 
     private fun spawnEnemies() {
-        for (i in 0 until (15 * interpretedTags.generationParams.enemyMultiplier * (2f - interpretedTags.generationParams.enemyQuality)).roundToInt()) {
+        for (i in 0 until (20 * interpretedTags.generationParams.enemyMultiplier * (2f - interpretedTags.generationParams.enemyQuality)).roundToInt()) {
             try {
                 characterArray.add(getCharacter())
             } catch (e: Exception) {

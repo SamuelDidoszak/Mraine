@@ -8,6 +8,5 @@ class Initialize {
 
     fun initialize() {
         level.characterArray.forEach {level.addActor(it)}
-        level.provideTextures()
     }
 }

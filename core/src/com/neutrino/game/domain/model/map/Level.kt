@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.MathUtils.floor
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.neutrino.GameStage
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
@@ -21,6 +22,7 @@ import com.neutrino.game.Constants
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
@@ -113,9 +115,15 @@ class Level(
         })
     }
 
+    fun initialize() {
+        provideTextures()
+        prepareLights()
+    }
+
     /**
      * Fills the level textureList with textures needed by the level
      * Provides the textures for every entity on the map
+     * If entity is animated, adds it to the list
      */
     fun provideTextures() {
         // textures for tiles and entities
@@ -126,6 +134,10 @@ class Level(
                         continue
 
                     map.map[y][x][z].pickTexture(OnMapPosition(map.map, x, y, z))
+                    if (map.map[y][x][z] is Animated) {
+                        (map.map[y][x][z] as Animated).setDefaultAnimation()
+                        addAnimatedToList(map.map[y][x][z])
+                    }
                 }
             }
         }
@@ -492,6 +504,42 @@ class Level(
     override fun removeActor(actor: Actor?, unfocus: Boolean): Boolean {
         if (characterMap[(actor as Character).yPos][(actor as Character).xPos] == actor as Character)
             characterMap[(actor as Character).yPos][(actor as Character).xPos] = null
+
+        removeAnimatedFromList(actor)
+
         return super.removeActor(actor, unfocus)
     }
+
+    /**
+     * Adds actor to the animated list
+     */
+    private fun addAnimatedToList(actor: Actor) {
+        if (actor is Animated)
+            (parent?.stage as GameStage?)?.animatedArray?.add(actor)
+    }
+
+    /**
+     * Adds entity to the animated list
+     */
+    private fun addAnimatedToList(entity: Entity) {
+        if (entity is Animated)
+            (parent?.stage as GameStage?)?.animatedArray?.add(entity)
+    }
+
+    /**
+     * Removes actor from the animated list
+     */
+    private fun removeAnimatedFromList(actor: Actor) {
+        if (actor is Animated)
+            (parent?.stage as GameStage?)?.animatedArray?.remove(actor)
+    }
+
+    /**
+     * Removes entity from the animated list
+     */
+    private fun removeAnimatedFromList(entity: Entity) {
+        if (entity is Animated)
+            (parent?.stage as GameStage?)?.animatedArray?.remove(entity)
+    }
+
 }

@@ -11,6 +11,7 @@ import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants
 import com.neutrino.game.Constants.MoveSpeed
+import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.event.types.CooldownType
@@ -307,6 +308,7 @@ abstract class Character(
 
         this.hp -= damage
         if (hp <= 0) {
+            shaders.clear()
             this.addAction(Actions.sequence(
                 Actions.fadeOut(1.25f),
                 Actions.removeActor()
@@ -333,5 +335,9 @@ abstract class Character(
 
     fun dropItems(): MutableList<Item> {
         return itemtemDropList
+    }
+
+    fun isAlive(): Boolean {
+        return hp.compareDelta(0f) == 1
     }
 }

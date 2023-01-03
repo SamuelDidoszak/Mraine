@@ -16,7 +16,9 @@ import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.event.types.CooldownType
 import com.neutrino.game.domain.model.event.types.EventCooldown
 import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
+import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.utility.ColorUtils
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.graphics.shaders.OutlineShader
@@ -295,20 +297,8 @@ abstract class Character(
 
         damageColor = colorUtils.applySaturation(damageColor, 0.8f)
 
-        // Old damage particle/number system
-
-//        val damageLabel = Label(round(damage).toInt().toString(), Scene2DSkin.defaultSkin)
-//        damageLabel.color = com.badlogic.gdx.graphics.Color(damageColor.red.toFloat(),
-//            damageColor.green.toFloat(), damageColor.blue.toFloat(), damageColor.alpha.toFloat())
-////        val damageLabel = TextraLabel("[@Cozette][${colorUtils.toHexadecimal(damageColor)}][%150][*]{SQUASH=0.3;false}" +
-////                "${round(damage).toInt()}", KnownFonts.getStandardFamily())
-//        damageLabel.name = "damage"
-//        this.addActor(damageLabel)
-//        damageLabel.setPosition(Random.nextFloat() * this.width * 0.8f, Random.nextFloat() * this.height / 3 + this.height / 4)
-//        damageLabel.addAction(Actions.moveBy(0f, 36f, 1f))
-//        damageLabel.addAction(Actions.sequence(
-//            Actions.fadeOut(1.25f),
-//            Actions.removeActor()))
+        if (character is HasEquipment && character.equipment.getEquipped(EquipmentType.RHAND) is HasProjectile)
+            (character.equipment.getEquipped(EquipmentType.RHAND) as HasProjectile).shoot(character.xPos, character.yPos, xPos, yPos, character.parent.parent)
 
         val damageNumber = Pools.get(DamageNumber::class.java).obtain()
         this.addActor(damageNumber)

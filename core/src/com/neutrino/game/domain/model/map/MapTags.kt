@@ -10,10 +10,7 @@ import com.neutrino.game.domain.model.items.edible.SmallHealingPotion
 import com.neutrino.game.domain.model.items.equipment.armor.*
 import com.neutrino.game.domain.model.items.equipment.misc.SmallBackpack
 import com.neutrino.game.domain.model.items.equipment.misc.SmallBag
-import com.neutrino.game.domain.model.items.equipment.weapons.BrokenSword
-import com.neutrino.game.domain.model.items.equipment.weapons.Dagger
-import com.neutrino.game.domain.model.items.equipment.weapons.PocketKnife
-import com.neutrino.game.domain.model.items.equipment.weapons.Sword
+import com.neutrino.game.domain.model.items.equipment.weapons.*
 import com.neutrino.game.domain.model.items.items.Gold
 import com.neutrino.game.domain.model.items.scrolls.ScrollOfDefence
 import com.neutrino.game.domain.use_case.map.utility.EntityParams
@@ -37,6 +34,16 @@ enum class MapTags(val entityParams: EntityParams, val characterList: List<KClas
 
             Pair(PocketKnife::class as KClass<Item>, 5f),
             Pair(BrokenSword::class as KClass<Item>, 5f),
+
+            Pair(SmallBow::class as KClass<Item>, 5f),
+            Pair(CurvedBow::class as KClass<Item>, 5f),
+            Pair(BigBow::class as KClass<Item>, 5f),
+
+            Pair(ExtinguishedFireWand::class as KClass<Item>, 5f),
+            Pair(BasicFireWand::class as KClass<Item>, 5f),
+            Pair(BasicPoisonWand::class as KClass<Item>, 5f),
+            Pair(FireStaff::class as KClass<Item>, 5f),
+            Pair(RockWand::class as KClass<Item>, 5f),
 
             Pair(Dagger::class as KClass<Item>, 5f),
             Pair(Sword::class as KClass<Item>, 5f),

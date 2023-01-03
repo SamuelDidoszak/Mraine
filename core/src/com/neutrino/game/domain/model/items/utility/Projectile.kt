@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.characters.utility
+package com.neutrino.game.domain.model.items.utility
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
@@ -19,20 +19,24 @@ class Projectile(
      * @param speed tiles per second
      */
     enum class ProjectileType(val textureName: String, val speed: Float) {
-        WOODENARROW("woodenArrow", 10f),
-        FIREBALL("fireball", 10f)
+        WOODENARROW("woodenArrow", 20f),
+        FIREPROJECTILE("fireProjectile", 15f),
+        POISONPROJECTILE("poisonProjectile", 15f),
+        ROCK("rock", 12f),
     }
 
     /**
      * Casts a projectile from the center of the source tile to the center of the destination tile
      */
     constructor(sourceX: Int, sourceY: Int, destX: Int, destY: Int, projectileType: ProjectileType): this(
-        sourceX * 64f + 32f,
+        sourceX * 64f - 32f,
         sourceY * 64f - 32f,
-        destX * 64f + 32f,
+        destX * 64f - 32f,
         destY * 64f - 32f,
         projectileType
     )
+
+    var flightTime: Float? = null
 
     override val textureNames: List<String> = ProjectileType.values().map { it.textureName }
     override var texture: TextureAtlas.AtlasRegion = getTexture(projectileType.textureName)
@@ -58,12 +62,13 @@ class Projectile(
         sourceY = Constants.LevelChunkSize * 64f - sourceY
         destY = Constants.LevelChunkSize * 64f - destY
         this.setPosition(sourceX, sourceY)
-        this.setOrigin(width, height * 2f)
+//        this.setOrigin(width, height * 2f)
         val distance = VectorOperations.getDistance(sourceX, sourceY, destX, destY)
+        flightTime = (distance / 64) / projectileType.speed
         this.addAction(Actions.rotateBy(VectorOperations.pointsAngleDegrees(sourceX, sourceY, destX, destY)))
         this.addAction(
             Actions.sequence(
-                Actions.moveBy(destX - sourceX, destY - sourceY, (distance / 64) / projectileType.speed),
+                Actions.moveBy(destX - sourceX, destY - sourceY, flightTime!!),
                 Actions.fadeOut(0.5f),
                 Actions.removeActor()
             )
@@ -73,7 +78,7 @@ class Projectile(
     override fun draw(batch: Batch?, parentAlpha: Float) {
         batch?.setColor(color.r, color.g, color.b, color.a * parentAlpha)
 
-        batch?.draw(texture, x, y, texture.regionWidth * 4f, texture.regionHeight * 4f,
+        batch?.draw(texture, x, y, texture.regionWidth * 4f, texture.regionHeight * 2f,
             texture.regionWidth * 4f, texture.regionHeight * 4f,
             scaleX, scaleY, rotation)
 

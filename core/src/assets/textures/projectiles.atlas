@@ -1,5 +1,11 @@
 projectiles.png
-	size: 32, 32
+	size: 128, 32
 	repeat: none
 woodenArrow
+	bounds: 52, 1, 16, 16
+fireProjectile
+	bounds: 18, 1, 16, 16
+poisonProjectile
+	bounds: 35, 1, 16, 16
+rock
 	bounds: 1, 1, 16, 16

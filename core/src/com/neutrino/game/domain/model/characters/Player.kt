@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
+import com.neutrino.game.domain.model.characters.utility.HasEquipment
 import com.neutrino.game.domain.model.characters.utility.HasInventory
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
@@ -20,7 +21,7 @@ import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.lessThanDelta
 
-object Player : Character(0, 0, 0.0), HasInventory {
+object Player : Character(0, 0, 0.0), HasInventory, HasEquipment {
     override var hp: Float = 0f
         set(value) {
             val previous = hp
@@ -163,7 +164,7 @@ object Player : Character(0, 0, 0.0), HasInventory {
     // Inventory
     /** Player inventory */
     override val inventory: Inventory = Inventory()
-    val equipment: Equipment = Equipment(this)
+    override val equipment: Equipment = Equipment(this)
 
     init {
         initialize("Player")

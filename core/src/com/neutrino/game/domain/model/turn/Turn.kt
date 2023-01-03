@@ -9,7 +9,6 @@ import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Fov
-import com.neutrino.game.domain.model.characters.utility.Projectile
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interaction
@@ -20,6 +19,8 @@ import com.neutrino.game.domain.model.event.types.EventCooldown
 import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.event.wrappers.TimedEvent
+import com.neutrino.game.domain.model.items.EquipmentType
+import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import com.neutrino.game.domain.use_case.level.LevelUseCases
@@ -160,6 +161,10 @@ object Turn {
                             }
                             is Interaction.DESTROY -> {
                                 val entity = (action.entity as Destructable)
+                                if (Player.equipment.getEquipped(EquipmentType.RHAND) is HasProjectile)
+                                    (Player.equipment.getEquipped(EquipmentType.RHAND) as HasProjectile)
+                                        .shoot(Player.xPos, Player.yPos, Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second, Player.parent.parent)
+
                                 entity.entityHp -= character.damage
                                 if (entity.entityHp.lessThanDelta(0f)) {
                                     val items = entity.destroy()

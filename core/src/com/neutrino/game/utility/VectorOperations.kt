@@ -16,6 +16,13 @@ object VectorOperations {
     }
 
     /**
+     * Returns the euclidean distance between source and destination
+     */
+    fun getDistance(sourceX: Int, sourceY: Int, destX: Int, destY: Int): Float {
+        return sqrt((destX - sourceX).toFloat().pow(2) + (destY - sourceY).toFloat().pow(2))
+    }
+
+    /**
      * Returns length of a vector
      */
     fun getLength(x: Float, y: Float): Float {

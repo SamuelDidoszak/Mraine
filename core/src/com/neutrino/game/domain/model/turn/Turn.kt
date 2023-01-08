@@ -8,6 +8,7 @@ import com.neutrino.game.Constants.IsSeeded
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.Destructable
@@ -29,7 +30,6 @@ import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord
 import squidpony.squidmath.GWTRNG
-import kotlin.math.abs
 
 /**
  * Singleton turn class containing turn and tick data
@@ -106,7 +106,10 @@ object Turn {
         dijkstraMap.initialize(level.movementMap)
 
         fov = Fov(level.map)
-        fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov)
+        for (character in characterArray) {
+            fov.updateFov(character.xPos, character.yPos, character.ai.fov, character.viewDistance)
+        }
+
         GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
     }
 
@@ -131,7 +134,7 @@ object Turn {
                         moveCharacter(character.xPos, character.yPos, action.x, action.y)
                         character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
-                        fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov)
+                        fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov, Player.viewDistance)
                         GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
                     }
                     is Action.ATTACK -> {
@@ -190,7 +193,7 @@ object Turn {
                                 else
                                     mapImpassableList.add(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
 
-                                fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov)
+                                fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov, Player.viewDistance)
                                 GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
                             }
                             else -> {
@@ -248,8 +251,10 @@ object Turn {
 //                println()
             } else {
                 // initialize the ai if it's 10 tiles or less from the player
-                if (abs(character.xPos - Player.xPos) <= 10 && abs(character.yPos - Player.yPos) <= 10)
-                    character.ai.decide(Player.xPos, Player.yPos, dijkstraMap, mapImpassableList.plus(charactersUseCases.getImpassable()))
+                if (character.ai is EnemyAi)
+                    (character.ai as EnemyAi).decide()
+//                if (abs(character.xPos - Player.xPos) <= 10 && abs(character.yPos - Player.yPos) <= 10)
+//                    character.ai.decide(Player.xPos, Player.yPos, dijkstraMap, mapImpassableList.plus(charactersUseCases.getImpassable()))
                 else
                     character.ai.action = Action.WAIT
 
@@ -266,6 +271,7 @@ object Turn {
                         moveCharacter(character.xPos, character.yPos, action.x, action.y)
                         character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
+                        fov.updateFov(character.xPos, character.yPos, character.ai.fov, character.viewDistance)
                     }
                     is Action.ATTACK -> {
                         val attackedCharacter = characterArray.get(action.x, action.y)

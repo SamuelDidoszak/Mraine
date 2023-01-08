@@ -7,7 +7,7 @@ import com.neutrino.game.domain.model.turn.Action
 import squidpony.squidai.DijkstraMap
 import squidpony.squidmath.Coord
 
-class Ai (private val character: Character) {
+open class Ai (private val character: Character) {
     var entityTargetCoords: Pair<Int, Int>? = null
 
     /**
@@ -48,11 +48,17 @@ class Ai (private val character: Character) {
         return thisAction
     }
 
-    fun decide(xPos: Int, yPos: Int, dijkstraMap: DijkstraMap, impassable: Collection<Coord>) {
+    open fun decide() {}
+
+    fun target(xPos: Int, yPos: Int, dijkstraMap: DijkstraMap, impassable: Collection<Coord>) {
         if (canAttack(xPos, yPos)) {
             action = Action.ATTACK(xPos, yPos)
             return
         }
+        moveTo(xPos, yPos, dijkstraMap, impassable)
+    }
+
+    fun moveTo(xPos: Int, yPos: Int, dijkstraMap: DijkstraMap, impassable: Collection<Coord>) {
         setMoveList(xPos, yPos, dijkstraMap, impassable)
         dijkstraMap.clearGoals()
         val coord = getMove()

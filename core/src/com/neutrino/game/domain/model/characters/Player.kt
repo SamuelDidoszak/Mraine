@@ -9,10 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
-import com.neutrino.game.domain.model.characters.utility.HasEquipment
-import com.neutrino.game.domain.model.characters.utility.HasInventory
-import com.neutrino.game.domain.model.characters.utility.RangeType
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Equipment
 import com.neutrino.game.domain.model.items.Item
@@ -153,7 +150,9 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment {
     /** Determines the maximum number of concurrently used skills that do not use mana */
     var maxSkills: Int = 3
 
+    override var viewDistance: Int = 20
 
+    override var characterAlignment: CharacterAlignment = CharacterAlignment.PLAYER
 
     override fun setTexture(name: String) {
         texture = getTexture(name)

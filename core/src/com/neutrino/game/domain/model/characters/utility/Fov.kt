@@ -19,12 +19,18 @@ class Fov(var map: Map) {
         /**
          * View distance of FOV. Actually is i - 1
          */
-        const val viewDistance = 20
-        val distance: IntArray = IntArray(viewDistance)
+//        const val viewDistance = 20
+
+        /**
+         * Array of possible view distances. Each distance is actually i - 1
+         */
+        val distance: Array<IntArray> = Array(50) { IntArray(it) }
 
         init {
-            for (j in 1 .. viewDistance) {
-                distance[j - 1] = round((viewDistance + 0.05) * cos(asin(j / (viewDistance + 0.5)))).toInt()
+            for (maxDist in 1 until 50) {
+                for (j in 1 .. maxDist) {
+                    distance[maxDist][j - 1] = round((maxDist + 0.05) * cos(asin(j / (maxDist + 0.5)))).toInt()
+                }
             }
         }
 
@@ -46,8 +52,9 @@ class Fov(var map: Map) {
     /**
      * @param cx Center x position
      * @param cy Center y position
+     * @param viewDistance View distance
      */
-    fun updateFov(cx: Int, cy: Int, fov: Array<BooleanArray>) {
+    fun updateFov(cx: Int, cy: Int, fov: Array<BooleanArray>, viewDistance: Int) {
         BArray.setFalse(fov)
         fov[cy][cx] = true
 
@@ -64,7 +71,7 @@ class Fov(var map: Map) {
                 return
 
             val xMin = round((y - 0.5) * start).toInt()
-            var xMax = min(ceil((y + 0.5) * end - 0.5).toInt(), distance[y])
+            var xMax = min(ceil((y + 0.5) * end - 0.5).toInt(), distance[viewDistance][y])
 
             for (x in xMin .. xMax) {
                 val realX = cx + transform.xx * x + transform.xy * y

@@ -77,6 +77,11 @@ class Level(
      */
     val discoveredMap: List<MutableList<Boolean>> = List(sizeY) { MutableList(sizeX) {false} }
 
+    /**
+     * DEBUG draw overlaying fog of war and FOV
+     */
+    var drawFovFow: Int = 0
+
     private val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
     private val fovOverlayFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
     private val blurredFogOfWar = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
@@ -391,7 +396,7 @@ class Level(
             // Render characters
             for (x in xLeft until xRight) {
                 // Do not render if not in view
-                if (!Player.ai.fov[y][x])
+                if (!Player.ai.fov[y][x] && drawFovFow % 3 == 0)
                     continue
 
                 if (characterMap[y][x] != null) {
@@ -470,8 +475,10 @@ class Level(
             screenX = xLeft * 64f
         }
 
-        batch?.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO)
-        batch?.draw(blurredFov.colorBufferTexture, 0f, 64f)
+        if (drawFovFow % 3 in 0 .. 1) {
+            batch?.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO)
+            batch?.draw(blurredFov.colorBufferTexture, 0f, 64f)
+        }
 
         /** Reset is unnecessary, because drawLights() flushes the batch and sets its own color **/
 //        batch?.flush()
@@ -480,9 +487,11 @@ class Level(
 
         drawLights(batch)
 
-        batch?.shader = Shaders.defaultShader
-        batch?.draw(blurredFogOfWar.colorBufferTexture, 0f, 64f)
-        batch?.shader = null
+        if (drawFovFow % 3 == 0) {
+            batch?.shader = Shaders.defaultShader
+            batch?.draw(blurredFogOfWar.colorBufferTexture, 0f, 64f)
+            batch?.shader = null
+        }
     }
 
     /**

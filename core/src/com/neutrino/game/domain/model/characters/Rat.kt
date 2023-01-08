@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.Constants
+import com.neutrino.game.domain.model.characters.utility.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.Randomization
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
@@ -30,6 +31,8 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ran
     override val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf(
         Pair(Meat::class as KClass<Item>, 0.25)
     )
+
+    override val ai = EnemyAi(this)
 
     init {
         randomizeStats()

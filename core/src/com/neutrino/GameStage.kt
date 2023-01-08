@@ -190,6 +190,10 @@ class GameStage(
             Input.Keys.TAB -> {
                 showEq = true
             }
+            Input.Keys.NUM_2 -> {
+                if (level != null)
+                    level!!.drawFovFow += 1
+            }
             Input.Keys.LEFT -> {
 //                Player.move(Player.xPos - 1, Player.yPos)
                 camera.position.set(camera.position.x - 64, camera.position.y, 0f)

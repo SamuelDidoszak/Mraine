@@ -85,6 +85,13 @@ abstract class Character(
     override var mirrored: Boolean = false
     override var shaders: ArrayList<ShaderParametered?> = ArrayList(1)
 
+    /**
+     * Maximum viewing distance
+     */
+    open var viewDistance: Int = 10
+
+    open var characterAlignment: CharacterAlignment = CharacterAlignment.ENEMY
+
     /** List of item drops */
     open val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf()
     private val itemtemDropList: MutableList<Item> = ArrayList()
@@ -129,7 +136,7 @@ abstract class Character(
     abstract val textureSrc: String
     override val textureHaver: TextureHaver = this
 
-    val ai: Ai = Ai(this)
+    open val ai: Ai = Ai(this)
     val characterEventArray: MutableList<CharacterEvent> = ArrayList()
     fun hasCooldown(cooldownType: CooldownType): Boolean {
         return characterEventArray.find {
@@ -305,6 +312,8 @@ abstract class Character(
         this.addActor(damageNumber)
         damageNumber.init(colorUtils.toHexadecimal(damageColor), damage)
 
+        if (ai is EnemyAi)
+            (ai as EnemyAi).gotAttackedBy = character
 
         this.hp -= damage
         if (hp <= 0) {

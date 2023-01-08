@@ -22,13 +22,18 @@ class EnemyAi(val character: Character): Ai(character) {
         private val MAX_DETECTION_DISTANCE = VectorOperations.getLength(DETECTION_RADIUS.toFloat(), DETECTION_RADIUS.toFloat())
     }
 
-    private var possibleTargetArray: ArrayList<Character> = ArrayList()
+    private var sensedEnemyArray: MutableSet<Character> = mutableSetOf()
 
     private var targettedEnemy: Character? = null
 
     var gotAttackedBy: Character? = null
         set(value) {
-            energy += 10
+            if (value != null) {
+                energy += 10
+                searchTarget(Turn.characterMap)
+                if (targettedEnemy != null)
+                    currentBehavior = AiBehavior.TARGET_ENEMY
+            }
             field = value
         }
 
@@ -50,11 +55,18 @@ class EnemyAi(val character: Character): Ai(character) {
                     value
         }
 
+    /**
+     * Forces character to wait after losing aggro despite having enough energy to return
+     */
+    private var energyRecharged = 0
+
     override fun decide() {
+        checkEnemyVisibility()
+
         when (currentBehavior) {
             AiBehavior.SENSE_ENEMIES -> {
                 searchTarget(Turn.characterMap)
-                if (targettedEnemy != null){
+                if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     return decide()
                 }
@@ -71,24 +83,46 @@ class EnemyAi(val character: Character): Ai(character) {
                     energy += 5
                 else
                     energy--
+
+                if (energy == 0)
+                    currentBehavior = AiBehavior.LOSE_AGGRO
             }
             AiBehavior.LOSE_AGGRO -> {
-                if (energy >= 5) {
+                if (energyRecharged >= 5) {
+                    // If the enemy is still in view, can decide to attack it
+                    if (targettedEnemy == null)
+                        searchTarget(Turn.characterMap)
+                    if (targettedEnemy != null && Random.nextFloat() <= 0.5) {
+                        currentBehavior = AiBehavior.TARGET_ENEMY
+                        return decide()
+                    }
+
+                    energyRecharged = 0
                     setMoveList(designatedPosition.x, designatedPosition.y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
                     val returnPath = moveList.toList()
-                    designatedPosition = returnPath[Random.nextInt(returnPath.size / 2, returnPath.size)]
+                    if (returnPath.isNotEmpty())
+                        designatedPosition = returnPath[Random.nextInt(returnPath.size / 2, returnPath.size)]
                     currentBehavior = AiBehavior.RETURN
                     return decide()
                 }
 
-                targettedEnemy = null
                 gotAttackedBy = null
                 character.ai.action = Action.WAIT
                 energy++
+                energyRecharged++
             }
             AiBehavior.RETURN -> {
                 if (character.xPos == designatedPosition!!.x && character.yPos == designatedPosition!!.y) {
+                    energy += MAX_ENERGY
                     currentBehavior = AiBehavior.SENSE_ENEMIES
+                    return decide()
+                }
+
+                // If the enemy is still sensed, add a probability to attack it
+                if (targettedEnemy == null)
+                    searchTarget(Turn.characterMap)
+                if (targettedEnemy != null && Random.nextFloat() <= 0.137) {
+                    currentBehavior = AiBehavior.TARGET_ENEMY
                     return decide()
                 }
 
@@ -98,9 +132,6 @@ class EnemyAi(val character: Character): Ai(character) {
                 energy++
             }
         }
-
-        if (energy == 0)
-            currentBehavior = AiBehavior.LOSE_AGGRO
     }
 
 
@@ -139,32 +170,48 @@ class EnemyAi(val character: Character): Ai(character) {
         val up: Int = if (character.yPos - DETECTION_RADIUS <= 0) 0 else character.yPos - DETECTION_RADIUS
         val down: Int = if (character.yPos + DETECTION_RADIUS >= characterMap.size) characterMap.size - 1 else character.yPos + DETECTION_RADIUS
 
-        possibleTargetArray = ArrayList()
-
         // Add every enemy in radius
         for (x in left .. right) {
             for (y in up .. down) {
                 if (characterMap[y][x] != null && character.characterAlignment.enemies.contains(characterMap[y][x]!!.characterAlignment))
-                    possibleTargetArray.add(characterMap[y][x]!!)
+                    sensedEnemyArray.add(characterMap[y][x]!!)
             }
         }
 
         // Try to detect each enemy
-        val iterator = possibleTargetArray.iterator()
+        val iterator = sensedEnemyArray.iterator()
         while (iterator.hasNext()) {
             if (!tryDetect(iterator.next()))
                 iterator.remove()
         }
 
-        if (possibleTargetArray.size == 0)
+        if (sensedEnemyArray.size == 0)
             return
 
         // Randomize to get single target
         targettedEnemy =
-            if (possibleTargetArray.size > 1)
-                possibleTargetArray[Random.nextInt(possibleTargetArray.size)]
+            if (sensedEnemyArray.size > 1)
+                sensedEnemyArray.elementAt(Random.nextInt(sensedEnemyArray.size))
             else
-                possibleTargetArray[0]
+                sensedEnemyArray.elementAt(0)
+    }
+
+    /**
+     * If enemies are not visible, there is a chance of forgetting about them
+     */
+    private fun checkEnemyVisibility() {
+        // Check the state of each enemy
+        val iterator = sensedEnemyArray.iterator()
+        while (iterator.hasNext()) {
+            val enemy = iterator.next()
+            if (!fov[enemy.yPos][enemy.xPos] && Random.nextFloat() <= 0.137) {
+                iterator.remove()
+                if (targettedEnemy == enemy) {
+                    targettedEnemy = null
+                    currentBehavior = AiBehavior.LOSE_AGGRO
+                }
+            }
+        }
     }
 
 

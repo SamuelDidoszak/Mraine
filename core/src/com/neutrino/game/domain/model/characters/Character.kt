@@ -342,6 +342,21 @@ abstract class Character(
                 Actions.removeActor()))
     }
 
+    fun showAiIntention(intention: IntentionIcon) {
+        this.findActor<Image>("intention")?.remove()
+        val intentionActor = Image(intention.statusTexture)
+        intentionActor.setSize(intentionActor.width * 4, intentionActor.height * 4)
+        intentionActor.name = "intention"
+
+        this.addActor(intentionActor)
+        intentionActor.setPosition(0f, this.height + 32f)
+        intentionActor.addAction(
+            Actions.sequence(
+                Actions.delay(intention.displayTime),
+                Actions.fadeOut(0.1f),
+                Actions.removeActor()))
+    }
+
     fun dropItems(): MutableList<Item> {
         return itemtemDropList
     }

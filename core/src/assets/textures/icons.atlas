@@ -1,9 +1,15 @@
 icons.png
-	size: 64, 16
+	size: 128, 16
 	repeat: none
-itemBetter
+exclamationMark
+	bounds: 48, 0, 16, 16
+heart
 	bounds: 16, 0, 16, 16
+itemBetter
+	bounds: 32, 0, 16, 16
 itemBetter2
 	bounds: 0, 0, 16, 16
 itemWorse
-	bounds: 32, 0, 16, 16
+	bounds: 64, 0, 16, 16
+threeDots
+	bounds: 80, 0, 16, 16

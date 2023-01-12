@@ -8,7 +8,7 @@ import squidpony.squidmath.Coord
 import kotlin.math.pow
 import kotlin.random.Random
 
-class EnemyAi(val character: Character): Ai(character) {
+open class EnemyAi(private val character: Character): Ai(character) {
 
     /**
      * Constant values related to enemy detection and sensing
@@ -24,15 +24,19 @@ class EnemyAi(val character: Character): Ai(character) {
 
     private var sensedEnemyArray: MutableSet<Character> = mutableSetOf()
 
-    private var targettedEnemy: Character? = null
+    protected var targettedEnemy: Character? = null
 
     var gotAttackedBy: Character? = null
         set(value) {
             if (value != null) {
                 energy += 10
+                val displayDetection = !sensedEnemyArray.contains(value)
                 searchTarget(Turn.characterMap)
-                if (targettedEnemy != null)
+                if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
+                    if (displayDetection)
+                        character.showAiIntention(AiIntentionIcons.ENEMY_DETECTED())
+                }
             }
             field = value
         }
@@ -44,7 +48,7 @@ class EnemyAi(val character: Character): Ai(character) {
 
     var currentBehavior: AiBehavior = AiBehavior.SENSE_ENEMIES
 
-    private var energy: Int = MAX_ENERGY
+    protected var energy: Int = MAX_ENERGY
         set(value) {
             field =
                 if (value > MAX_ENERGY)
@@ -68,6 +72,7 @@ class EnemyAi(val character: Character): Ai(character) {
                 searchTarget(Turn.characterMap)
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
+                    character.showAiIntention(AiIntentionIcons.ENEMY_DETECTED())
                     return decide()
                 }
 
@@ -89,19 +94,22 @@ class EnemyAi(val character: Character): Ai(character) {
             }
             AiBehavior.LOSE_AGGRO -> {
                 if (energyRecharged >= 5) {
+                    energyRecharged = 0
                     // If the enemy is still in view, can decide to attack it
                     if (targettedEnemy == null)
                         searchTarget(Turn.characterMap)
                     if (targettedEnemy != null && Random.nextFloat() <= 0.5) {
                         currentBehavior = AiBehavior.TARGET_ENEMY
+                        character.showAiIntention(AiIntentionIcons.ENEMY_DETECTED())
                         return decide()
                     }
 
-                    energyRecharged = 0
                     setMoveList(designatedPosition.x, designatedPosition.y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
                     val returnPath = moveList.toList()
                     if (returnPath.isNotEmpty())
                         designatedPosition = returnPath[Random.nextInt(returnPath.size / 2, returnPath.size)]
+                    else
+                        println("Path is empty!")
                     currentBehavior = AiBehavior.RETURN
                     return decide()
                 }
@@ -110,6 +118,7 @@ class EnemyAi(val character: Character): Ai(character) {
                 character.ai.action = Action.WAIT
                 energy++
                 energyRecharged++
+                character.showAiIntention(AiIntentionIcons.WAITING())
             }
             AiBehavior.RETURN -> {
                 if (character.xPos == designatedPosition!!.x && character.yPos == designatedPosition!!.y) {
@@ -118,10 +127,11 @@ class EnemyAi(val character: Character): Ai(character) {
                     return decide()
                 }
 
-                // If the enemy is still sensed, add a probability to attack it
                 if (targettedEnemy == null)
                     searchTarget(Turn.characterMap)
+                // If the enemy is still sensed, add a probability to attack it
                 if (targettedEnemy != null && Random.nextFloat() <= 0.137) {
+                    character.showAiIntention(AiIntentionIcons.ENEMY_DETECTED())
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     return decide()
                 }
@@ -131,6 +141,10 @@ class EnemyAi(val character: Character): Ai(character) {
 
                 energy++
             }
+            else -> {
+                currentBehavior = AiBehavior.SENSE_ENEMIES
+                return decide()
+            }
         }
     }
 
@@ -139,7 +153,7 @@ class EnemyAi(val character: Character): Ai(character) {
      * Searches possible targets in a square area around the character
      * Sets the found character as the target
      */
-    private fun searchTarget(characterMap: List<MutableList<Character?>>) {
+    protected fun searchTarget(characterMap: List<MutableList<Character?>>) {
         /**
          * Tries to detect the enemy.
          * Takes into account distance, enemy stealth and character stealth as detection buff
@@ -219,6 +233,7 @@ class EnemyAi(val character: Character): Ai(character) {
         TARGET_ENEMY,
         LOSE_AGGRO,
         RETURN,
-        SENSE_ENEMIES
+        SENSE_ENEMIES,
+        GOTO_CHARACTER
     }
 }

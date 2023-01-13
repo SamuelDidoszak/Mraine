@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.event
+package com.neutrino.game.domain.model.systems.event
 
 import kotlin.reflect.KClass
 import kotlin.reflect.cast

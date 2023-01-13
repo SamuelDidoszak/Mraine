@@ -14,8 +14,8 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.event.Data
-import com.neutrino.game.domain.model.event.types.CooldownType
+import com.neutrino.game.domain.model.systems.event.Data
+import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType

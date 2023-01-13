@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.event.types
+package com.neutrino.game.domain.model.systems.event.types
 
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
@@ -6,8 +6,8 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.CharacterParamsEnum
 import com.neutrino.game.domain.model.characters.utility.HasInventory
-import com.neutrino.game.domain.model.event.Data
-import com.neutrino.game.domain.model.event.Event
+import com.neutrino.game.domain.model.systems.event.Data
+import com.neutrino.game.domain.model.systems.event.Event
 
 class EventModifyCharacterParam(): Event() {
     constructor(param: CharacterParamsEnum) : this() {

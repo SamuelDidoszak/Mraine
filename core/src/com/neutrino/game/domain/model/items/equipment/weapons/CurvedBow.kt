@@ -4,16 +4,18 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.event.Data
-import com.neutrino.game.domain.model.event.Requirement
-import com.neutrino.game.domain.model.event.types.EventModifyStat
-import com.neutrino.game.domain.model.event.wrappers.EventWrapper
-import com.neutrino.game.domain.model.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.HandedItemType
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.items.utility.Projectile
+import com.neutrino.game.domain.model.systems.attack.Attack
+import com.neutrino.game.domain.model.systems.attack.ProjectileAttack
+import com.neutrino.game.domain.model.systems.event.Data
+import com.neutrino.game.domain.model.systems.event.Requirement
+import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
+import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import kotlin.math.roundToInt
 
 class CurvedBow: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjectile {
@@ -35,6 +37,9 @@ class CurvedBow: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjectile {
         OnOffEvent(EventModifyStat(StatsEnum.DAMAGEVARIATION, 2f)),
         OnOffEvent(EventModifyStat(StatsEnum.RANGE, 6))
     )
+
+    override var attack: Attack = ProjectileAttack(this, getDamageTypesFromModifiers(modifierList))
+
     init {
         requirements.add { requirements.get("character", Character::class)!!.dexterity.compareDelta(2f) >= 0  }
 

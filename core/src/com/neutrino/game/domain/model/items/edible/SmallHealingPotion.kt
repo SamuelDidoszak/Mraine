@@ -2,10 +2,10 @@ package com.neutrino.game.domain.model.items.edible
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
-import com.neutrino.game.domain.model.event.wrappers.EventWrapper
-import com.neutrino.game.domain.model.event.types.CooldownType
-import com.neutrino.game.domain.model.event.types.EventHeal
-import com.neutrino.game.domain.model.event.wrappers.TimedEvent
+import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.systems.event.types.CooldownType
+import com.neutrino.game.domain.model.systems.event.types.EventHeal
+import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
 

@@ -3,16 +3,18 @@ package com.neutrino.game.domain.model.items.equipment.weapons
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.event.Data
-import com.neutrino.game.domain.model.event.Requirement
-import com.neutrino.game.domain.model.event.types.EventModifyStat
-import com.neutrino.game.domain.model.event.wrappers.EventWrapper
-import com.neutrino.game.domain.model.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.HandedItemType
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.items.utility.Projectile
+import com.neutrino.game.domain.model.systems.attack.Attack
+import com.neutrino.game.domain.model.systems.attack.ProjectileAttack
+import com.neutrino.game.domain.model.systems.event.Data
+import com.neutrino.game.domain.model.systems.event.Requirement
+import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
+import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import kotlin.math.roundToInt
 
 class ExtinguishedFireWand: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjectile {
@@ -34,6 +36,9 @@ class ExtinguishedFireWand: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjec
         OnOffEvent(EventModifyStat(StatsEnum.DAMAGEVARIATION, 1f)),
         OnOffEvent(EventModifyStat(StatsEnum.RANGE, 5))
     )
+
+    override var attack: Attack = ProjectileAttack(this, getDamageTypesFromModifiers(modifierList))
+
     init {
         goldValue = goldValueOg
         realValue = (goldValue * 1.2).roundToInt()

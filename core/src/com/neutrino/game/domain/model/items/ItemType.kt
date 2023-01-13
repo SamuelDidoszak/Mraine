@@ -1,7 +1,11 @@
 package com.neutrino.game.domain.model.items
 
-import com.neutrino.game.domain.model.event.CausesCooldown
-import com.neutrino.game.domain.model.event.CausesEvents
+import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.domain.model.systems.attack.Attack
+import com.neutrino.game.domain.model.systems.event.CausesCooldown
+import com.neutrino.game.domain.model.systems.event.CausesEvents
+import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
+import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 
 sealed interface ItemType {
     interface USABLE: ItemType, CausesEvents
@@ -38,6 +42,10 @@ sealed interface ItemType {
 }
 interface INHAND {
     val handedItemType: HandedItemType
+    var attack: Attack
+    fun getDamageTypesFromModifiers(modifierList: ArrayList<EventWrapper>): Set<StatsEnum> {
+        return modifierList.mapNotNull { if (it.event is EventModifyStat) (it.event as EventModifyStat).stat else null }.toSet()
+    }
 }
 
 enum class HandedItemType {

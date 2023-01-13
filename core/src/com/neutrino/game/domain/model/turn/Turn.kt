@@ -14,15 +14,15 @@ import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
-import com.neutrino.game.domain.model.event.CausesCooldown
-import com.neutrino.game.domain.model.event.CausesEvents
-import com.neutrino.game.domain.model.event.types.EventCooldown
-import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
-import com.neutrino.game.domain.model.event.wrappers.EventWrapper
-import com.neutrino.game.domain.model.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.domain.model.systems.event.CausesCooldown
+import com.neutrino.game.domain.model.systems.event.CausesEvents
+import com.neutrino.game.domain.model.systems.event.types.EventCooldown
+import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
+import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import com.neutrino.game.domain.use_case.level.LevelUseCases
 import com.neutrino.game.lessThanDelta
@@ -139,7 +139,8 @@ object Turn {
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)!!
-                        clickedCharacter.getDamage(character)
+                        Player.primaryAttack.attack(Player, Coord.get(action.x, action.y))
+
                         // Enemy is killed
                         if (clickedCharacter.hp <= 0) {
                             Player.experience += clickedCharacter.experience
@@ -278,7 +279,8 @@ object Turn {
                         if (attackedCharacter == null) {
                             println("No character there")
                         } else {
-                            attackedCharacter.getDamage(character)
+                            character.primaryAttack.attack(character, Coord.get(action.x, action.y))
+
                             if (attackedCharacter.hp <= 0.0) {
                                 /** Exiting the app **/
                                 if (attackedCharacter is Player) {

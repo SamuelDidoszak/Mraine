@@ -1,9 +1,9 @@
-package com.neutrino.game.domain.model.event.types
+package com.neutrino.game.domain.model.systems.event.types
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.event.Data
-import com.neutrino.game.domain.model.event.Event
-import com.neutrino.game.domain.model.event.Timed
+import com.neutrino.game.domain.model.systems.event.Data
+import com.neutrino.game.domain.model.systems.event.Event
+import com.neutrino.game.domain.model.systems.event.Timed
 
 class EventCooldown(): Event(), Timed {
     constructor(character: Character, cooldownType: CooldownType, cooldownLength: Double) : this() {

@@ -14,12 +14,14 @@ import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
-import com.neutrino.game.domain.model.event.types.CooldownType
-import com.neutrino.game.domain.model.event.types.EventCooldown
-import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
-import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.utility.HasProjectile
+import com.neutrino.game.domain.model.systems.attack.Attack
+import com.neutrino.game.domain.model.systems.attack.BasicAttack
+import com.neutrino.game.domain.model.systems.attack.utility.AttackData
+import com.neutrino.game.domain.model.systems.attack.utility.Attackable
+import com.neutrino.game.domain.model.systems.event.types.CooldownType
+import com.neutrino.game.domain.model.systems.event.types.EventCooldown
+import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.utility.ColorUtils
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.graphics.shaders.OutlineShader
@@ -32,7 +34,7 @@ abstract class Character(
     var xPos: Int,
     var yPos: Int,
     var turn: Double
-): Group(), TextureHaver, Animated, Shaderable, Stats, Randomization {
+): Group(), TextureHaver, Animated, Shaderable, Stats, Randomization, Attackable {
     override var strength: Float = 0f
         set(value) {
             val difference = value - Player.strength
@@ -84,6 +86,15 @@ abstract class Character(
 
     override var mirrored: Boolean = false
     override var shaders: ArrayList<ShaderParametered?> = ArrayList(1)
+
+    /**
+     * Basic attack when no item is equipped
+     */
+    open var basicAttack: Attack = BasicAttack(setOf(StatsEnum.DAMAGE))
+    /**
+     * Primary attack
+     */
+    open var primaryAttack: Attack = basicAttack
 
     /**
      * Maximum viewing distance
@@ -267,21 +278,20 @@ abstract class Character(
         return damage
     }
 
-    open fun getDamage(character: Character): Float {
-        val evaded = Random.nextFloat() * (1 - character.accuracy + evasion)
+    override fun getDamage(data: AttackData) {
+        val evaded = Random.nextFloat() * (1 - data.accuracy + evasion)
         if (evaded != 0f && evaded in 0f .. evasion) {
             println("Evaded the attack")
-            return 0f
+            return
         }
 
         var damage: Float = 0f
-        val randomizedDamage = character.damage - character.damageVariation + Random.nextFloat() * character.damageVariation
-        val physicalDamage = randomizedDamage * randomizedDamage / (randomizedDamage + defence)
-        val fireDamage = character.fireDamage * (1 - fireDefence)
-        val waterDamage = character.waterDamage * (1 - waterDefence)
-        val earthDamage = character.earthDamage * (1 - earthDefence)
-        val airDamage = character.airDamage * (1 - airDefence)
-        var poisonDamage = character.poisonDamage * (1 - poisonDefence)
+        val physicalDamage = data.physicalDamage * data.physicalDamage / (data.physicalDamage + defence)
+        val fireDamage = data.fireDamage * (1 - fireDefence)
+        val waterDamage = data.waterDamage * (1 - waterDefence)
+        val earthDamage = data.earthDamage * (1 - earthDefence)
+        val airDamage = data.airDamage * (1 - airDefence)
+        var poisonDamage = data.poisonDamage * (1 - poisonDefence)
         poisonDamage = if (hp - poisonDamage <= 1) hp - 1f else poisonDamage
 
         damage += physicalDamage
@@ -305,15 +315,12 @@ abstract class Character(
 
         damageColor = colorUtils.applySaturation(damageColor, 0.8f)
 
-        if (character is HasEquipment && character.equipment.getEquipped(EquipmentType.RHAND) is HasProjectile)
-            (character.equipment.getEquipped(EquipmentType.RHAND) as HasProjectile).shoot(character.xPos, character.yPos, xPos, yPos, character.parent.parent)
-
         val damageNumber = Pools.get(DamageNumber::class.java).obtain()
         this.addActor(damageNumber)
         damageNumber.init(colorUtils.toHexadecimal(damageColor), damage)
 
-        if (ai is EnemyAi)
-            (ai as EnemyAi).gotAttackedBy = character
+//        if (ai is EnemyAi)
+//            (ai as EnemyAi).gotAttackedBy = character
 
         this.hp -= damage
         if (hp <= 0) {
@@ -325,7 +332,6 @@ abstract class Character(
             hp = 0f
         }
         this.findActor<HpBar>("hpBar").update(hp)
-        return damage
     }
 
     fun showItemUsed(item: Item) {

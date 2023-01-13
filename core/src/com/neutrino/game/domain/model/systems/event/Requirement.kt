@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.event
+package com.neutrino.game.domain.model.systems.event
 
 class Requirement(
     override val data: MutableMap<String, Data<*>> = mutableMapOf()

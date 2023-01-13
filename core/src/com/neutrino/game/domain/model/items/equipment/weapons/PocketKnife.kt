@@ -4,14 +4,16 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.event.Data
-import com.neutrino.game.domain.model.event.Requirement
-import com.neutrino.game.domain.model.event.types.EventModifyStat
-import com.neutrino.game.domain.model.event.wrappers.EventWrapper
-import com.neutrino.game.domain.model.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.HandedItemType
 import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.systems.attack.Attack
+import com.neutrino.game.domain.model.systems.attack.BasicAttack
+import com.neutrino.game.domain.model.systems.event.Data
+import com.neutrino.game.domain.model.systems.event.Requirement
+import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
+import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import kotlin.math.roundToInt
 
 class PocketKnife: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
@@ -31,6 +33,9 @@ class PocketKnife: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
         // example
 //        TimedEvent(0.0, 5.0, Int.MAX_VALUE, EventHeal(1f))
     )
+
+    override var attack: Attack = BasicAttack(getDamageTypesFromModifiers(modifierList))
+
     init {
         requirements.add { requirements.get("character", Character::class)!!.strength.compareDelta(0f) >= 0  }
 //        statRandomization(1f)

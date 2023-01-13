@@ -1,7 +1,7 @@
-package com.neutrino.game.domain.model.event.wrappers
+package com.neutrino.game.domain.model.systems.event.wrappers
 
-import com.neutrino.game.domain.model.event.Event
-import com.neutrino.game.domain.model.event.Timed
+import com.neutrino.game.domain.model.systems.event.Event
+import com.neutrino.game.domain.model.systems.event.Timed
 
 data class TimedEvent(
     /** Execution delay */

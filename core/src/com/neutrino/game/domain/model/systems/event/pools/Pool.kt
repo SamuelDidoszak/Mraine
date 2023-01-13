@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.event.pools
+package com.neutrino.game.domain.model.systems.event.pools
 
 open class Pool {
     /**

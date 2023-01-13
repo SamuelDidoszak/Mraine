@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.event
+package com.neutrino.game.domain.model.systems.event
 
 abstract class Event: DataMap {
     /** Variable to check for data correctness only once instead of in each method call */

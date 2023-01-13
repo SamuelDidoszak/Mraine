@@ -1,9 +1,9 @@
-package com.neutrino.game.domain.model.event.types
+package com.neutrino.game.domain.model.systems.event.types
 
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.HpBar
-import com.neutrino.game.domain.model.event.Data
-import com.neutrino.game.domain.model.event.Event
+import com.neutrino.game.domain.model.systems.event.Data
+import com.neutrino.game.domain.model.systems.event.Event
 
 class EventHeal(): Event() {
     constructor(character: Character, power: Float) : this() {

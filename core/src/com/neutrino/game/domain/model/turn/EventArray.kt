@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.model.turn
 
-import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
+import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.equalsDelta
 import com.neutrino.game.lessThanDelta
 

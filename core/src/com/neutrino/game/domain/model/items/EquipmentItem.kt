@@ -1,8 +1,8 @@
 package com.neutrino.game.domain.model.items
 
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.event.Requirement
-import com.neutrino.game.domain.model.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.systems.event.Requirement
+import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.utility.RandomizationTypes
 
 abstract class EquipmentItem: Item(), ItemType.EQUIPMENT {

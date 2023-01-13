@@ -5,10 +5,10 @@ import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasInventory
-import com.neutrino.game.domain.model.event.wrappers.CharacterEvent
-import com.neutrino.game.domain.model.event.wrappers.OnOffEvent
-import com.neutrino.game.domain.model.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.items.utility.EqElement
+import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
+import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
+import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.turn.Turn
 import java.util.*
 
@@ -93,6 +93,7 @@ class Equipment(val character: Character) {
                 previousItem = equipmentMap[EquipmentType.RHAND]
                 equipmentMap[EquipmentType.RHAND] = item
                 equipmentType = EquipmentType.RHAND
+                character.primaryAttack = item.attack
             }
             is ItemType.EQUIPMENT.TWOHAND -> {
                 val lHandItem = equipmentMap[EquipmentType.LHAND]
@@ -126,6 +127,8 @@ class Equipment(val character: Character) {
         } else {
             // TODO drop item onto the ground or add to dropItemList
         }
+        if (item is INHAND)
+            character.primaryAttack = character.basicAttack
     }
 
     private fun setItemModifiers(item: EquipmentItem) {
@@ -143,6 +146,8 @@ class Equipment(val character: Character) {
                 }
             }
         }
+        if (item is INHAND)
+            character.primaryAttack = (item as INHAND).attack
     }
 
     private fun unsetItemModifiers(item: EquipmentItem) {

@@ -2,11 +2,11 @@ package com.neutrino.game.domain.model.items.scrolls
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.event.CausesCooldown
-import com.neutrino.game.domain.model.event.types.CooldownType
-import com.neutrino.game.domain.model.event.types.EventModifyStat
-import com.neutrino.game.domain.model.event.wrappers.EventWrapper
-import com.neutrino.game.domain.model.event.wrappers.TimedEvent
+import com.neutrino.game.domain.model.systems.event.CausesCooldown
+import com.neutrino.game.domain.model.systems.event.types.CooldownType
+import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
+import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
 

@@ -17,6 +17,7 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.domain.model.systems.attack.utility.Attackable
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.utility.EntityLookupPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
@@ -250,6 +251,20 @@ class GameStage(
             return false
 
         outlinedEntity?.shaders?.removeAll { it is OutlineShader }
+        outlinedEntity = null
+
+        if (entity is Attackable) {
+            if (!Player.ai.canAttack(xPos, yPos))
+                return false
+        }
+        else if (entity is Interactable) {
+            val requiredDistance = (entity as Interactable).getPrimaryInteraction()?.requiredDistance
+                ?: return false
+            if ((xPos !in Player.xPos - requiredDistance .. Player.xPos + requiredDistance) ||
+                (yPos !in Player.yPos - requiredDistance .. Player.yPos + requiredDistance))
+                return false
+        }
+
         outlinedEntity = entity
         outlinedEntity?.shaders?.add(
             OutlineShader(
@@ -278,6 +293,11 @@ class GameStage(
             return false
 
         outlinedCharacter?.shaders?.removeAll { it is OutlineShader }
+        outlinedCharacter = null
+
+        if (character == null || !Player.ai.canAttack(character.xPos, character.yPos))
+            return false
+
         outlinedCharacter = character
         if (character?.isAlive() != true)
             return false

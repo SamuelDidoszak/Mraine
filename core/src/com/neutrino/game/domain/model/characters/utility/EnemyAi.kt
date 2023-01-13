@@ -35,7 +35,7 @@ open class EnemyAi(private val character: Character): Ai(character) {
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     if (displayDetection)
-                        character.showAiIntention(AiIntentionIcons.ENEMY_DETECTED())
+                        ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
                 }
             }
             field = value
@@ -72,7 +72,7 @@ open class EnemyAi(private val character: Character): Ai(character) {
                 searchTarget(Turn.characterMap)
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
-                    character.showAiIntention(AiIntentionIcons.ENEMY_DETECTED())
+                    ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
                     return decide()
                 }
 
@@ -100,7 +100,7 @@ open class EnemyAi(private val character: Character): Ai(character) {
                         searchTarget(Turn.characterMap)
                     if (targettedEnemy != null && Random.nextFloat() <= 0.5) {
                         currentBehavior = AiBehavior.TARGET_ENEMY
-                        character.showAiIntention(AiIntentionIcons.ENEMY_DETECTED())
+                        ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
                         return decide()
                     }
 
@@ -118,7 +118,7 @@ open class EnemyAi(private val character: Character): Ai(character) {
                 character.ai.action = Action.WAIT
                 energy++
                 energyRecharged++
-                character.showAiIntention(AiIntentionIcons.WAITING())
+                ActorVisuals.showAiIntention(character, AiIntentionIcons.WAITING())
             }
             AiBehavior.RETURN -> {
                 if (character.xPos == designatedPosition!!.x && character.yPos == designatedPosition!!.y) {
@@ -131,7 +131,7 @@ open class EnemyAi(private val character: Character): Ai(character) {
                     searchTarget(Turn.characterMap)
                 // If the enemy is still sensed, add a probability to attack it
                 if (targettedEnemy != null && Random.nextFloat() <= 0.137) {
-                    character.showAiIntention(AiIntentionIcons.ENEMY_DETECTED())
+                    ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     return decide()
                 }

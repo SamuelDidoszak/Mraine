@@ -492,7 +492,6 @@ class HudStage(viewport: Viewport): Stage(viewport) {
 class HudHpBar(private val initialWidth: Float, private val initialHeight: Float): Actor() {
     private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
     private var drawer: ShapeDrawer? = null
-    private val colorUtils = ColorUtils()
     init {
         name = "hpBar"
         height = initialHeight
@@ -517,7 +516,7 @@ class HudHpBar(private val initialWidth: Float, private val initialHeight: Float
         val red = if (Player.hp / Player.hpMax >= 0.5f) 1 - (Player.hp / Player.hpMax) else 1f
         val green = if (Player.hp / Player.hpMax >= 0.5f) 1f else 2 * (Player.hp / Player.hpMax)
 
-        return colorUtils.applySaturation(Color(red, green, 0f, 1f), 0.8f)
+        return ColorUtils.applySaturation(Color(red, green, 0f, 1f), 0.8f)
     }
 
     override fun remove(): Boolean {
@@ -529,7 +528,6 @@ class HudHpBar(private val initialWidth: Float, private val initialHeight: Float
 class HudMpBar(private val initialWidth: Float, private val initialHeight: Float): Actor() {
     private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
     private var drawer: ShapeDrawer? = null
-    private val colorUtils = ColorUtils()
     init {
         name = "hpBar"
         height = initialHeight
@@ -538,7 +536,7 @@ class HudMpBar(private val initialWidth: Float, private val initialHeight: Float
     override fun draw(batch: Batch?, parentAlpha: Float) {
         if (drawer == null) {
             drawer = ShapeDrawer(batch, textureRegion)
-            drawer!!.setColor(colorUtils.applySaturation(Color(0f, 0f, 1f, 1f), 0.6f))
+            drawer!!.setColor(ColorUtils.applySaturation(Color(0f, 0f, 1f, 1f), 0.6f))
         }
 
         drawer!!.filledRectangle(0f, 0f, initialWidth * (Player.mp / Player.mpMax), initialHeight)

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import kotlin.math.max
 import kotlin.math.min
 
-class ColorUtils {
+object ColorUtils {
     fun colorInterpolation(colorA: Color, colorB: Color, t: Int): Color {
         val r = colorA.r + (colorB.r - colorA.r) * t
         val g = colorA.g + (colorB.g - colorA.g) * t

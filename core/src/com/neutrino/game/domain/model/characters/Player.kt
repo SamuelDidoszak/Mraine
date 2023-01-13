@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
@@ -204,20 +202,6 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment {
             return true
         }
         return false
-    }
-
-    fun showPickedUpItem(item: Item) {
-        val itemActor = Image(item.texture)
-        itemActor.setSize(itemActor.width * 4, itemActor.height * 4)
-        itemActor.name = "item"
-
-        this.addActor(itemActor)
-        itemActor.setPosition(0f, this.height)
-        itemActor.addAction(Actions.moveBy(0f, 36f, 1f))
-        itemActor.addAction(
-            Actions.sequence(
-            Actions.fadeOut(1.25f),
-            Actions.removeActor()))
     }
 
     private fun sendStatChangeData(stat: StatsEnum) {

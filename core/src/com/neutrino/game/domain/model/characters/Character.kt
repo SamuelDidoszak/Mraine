@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Pools
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
@@ -220,7 +219,6 @@ abstract class Character(
     fun getDamage(damage: Float, type: String): Float {
         var finalDamage: Float
         // for optimization, instead of creating Colors, pure rgb values can be passed
-        val colorUtils = ColorUtils()
         var damageColor: Color = Color(0f, 0f, 0f, 1f)
         val color: Color
         when (type) {
@@ -259,12 +257,12 @@ abstract class Character(
                 return 0f
             }
         }
-        damageColor = colorUtils.colorInterpolation(damageColor, color, 1)
-        damageColor = colorUtils.applySaturation(damageColor, 0.8f)
+        damageColor = ColorUtils.colorInterpolation(damageColor, color, 1)
+        damageColor = ColorUtils.applySaturation(damageColor, 0.8f)
 
         val damageNumber = Pools.get(DamageNumber::class.java).obtain()
         this.addActor(damageNumber)
-        damageNumber.init(colorUtils.toHexadecimal(damageColor), finalDamage)
+        damageNumber.init(ColorUtils.toHexadecimal(damageColor), finalDamage)
 
         this.hp -= damage
         if (hp <= 0) {
@@ -301,23 +299,18 @@ abstract class Character(
         damage += airDamage
         damage += poisonDamage
 
-        // for optimization, instead of creating Colors, pure rgb values can be passed
-        val colorUtils = ColorUtils()
-
         // get damage color from interpolation
         var damageColor: Color = Color(0f, 0f, 0f, 1f)
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(255f, 0f, 0f, 1f), (physicalDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(255f, 128f, 0f, 1f), (fireDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(0f, 0f, 255f, 1f), (waterDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(0f, 255f, 0f, 1f), (earthDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(0f, 255f, 255f, 1f), (airDamage / damage).toInt())
-        damageColor = colorUtils.colorInterpolation(damageColor, Color(128f, 255f, 0f, 1f), (poisonDamage / damage).toInt())
+        damageColor = ColorUtils.colorInterpolation(damageColor, Color(255f, 0f, 0f, 1f), (physicalDamage / damage).toInt())
+        damageColor = ColorUtils.colorInterpolation(damageColor, Color(255f, 128f, 0f, 1f), (fireDamage / damage).toInt())
+        damageColor = ColorUtils.colorInterpolation(damageColor, Color(0f, 0f, 255f, 1f), (waterDamage / damage).toInt())
+        damageColor = ColorUtils.colorInterpolation(damageColor, Color(0f, 255f, 0f, 1f), (earthDamage / damage).toInt())
+        damageColor = ColorUtils.colorInterpolation(damageColor, Color(0f, 255f, 255f, 1f), (airDamage / damage).toInt())
+        damageColor = ColorUtils.colorInterpolation(damageColor, Color(128f, 255f, 0f, 1f), (poisonDamage / damage).toInt())
 
-        damageColor = colorUtils.applySaturation(damageColor, 0.8f)
+        damageColor = ColorUtils.applySaturation(damageColor, 0.8f)
 
-        val damageNumber = Pools.get(DamageNumber::class.java).obtain()
-        this.addActor(damageNumber)
-        damageNumber.init(colorUtils.toHexadecimal(damageColor), damage)
+        ActorVisuals.showDamage(this, damageColor, damage)
 
 //        if (ai is EnemyAi)
 //            (ai as EnemyAi).gotAttackedBy = character
@@ -332,35 +325,6 @@ abstract class Character(
             hp = 0f
         }
         this.findActor<HpBar>("hpBar").update(hp)
-    }
-
-    fun showItemUsed(item: Item) {
-        val itemActor = Image(item.texture)
-        itemActor.setSize(itemActor.width * 4, itemActor.height * 4)
-        itemActor.name = "itemUsed"
-
-        this.addActor(itemActor)
-        itemActor.setPosition(0f, this.height + 32f)
-        itemActor.addAction(Actions.moveBy(0f, -32f, 1f))
-        itemActor.addAction(
-            Actions.sequence(
-                Actions.fadeOut(1.25f),
-                Actions.removeActor()))
-    }
-
-    fun showAiIntention(intention: IntentionIcon) {
-        this.findActor<Image>("intention")?.remove()
-        val intentionActor = Image(intention.statusTexture)
-        intentionActor.setSize(intentionActor.width * 4, intentionActor.height * 4)
-        intentionActor.name = "intention"
-
-        this.addActor(intentionActor)
-        intentionActor.setPosition(0f, this.height + 32f)
-        intentionActor.addAction(
-            Actions.sequence(
-                Actions.delay(intention.displayTime),
-                Actions.fadeOut(0.1f),
-                Actions.removeActor()))
     }
 
     fun dropItems(): MutableList<Item> {

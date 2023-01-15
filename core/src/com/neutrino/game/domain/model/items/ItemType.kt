@@ -43,8 +43,8 @@ sealed interface ItemType {
 interface INHAND {
     val handedItemType: HandedItemType
     var attack: Attack
-    fun getDamageTypesFromModifiers(modifierList: ArrayList<EventWrapper>): Set<StatsEnum> {
-        return modifierList.mapNotNull { if (it.event is EventModifyStat) (it.event as EventModifyStat).stat else null }.toSet()
+    fun getDamageTypesFromModifiers(modifierList: ArrayList<EventWrapper>): Map<StatsEnum, Float> {
+        return modifierList.mapNotNull { if (it.event is EventModifyStat) (it.event as EventModifyStat).stat to 0f else null }.toMap()
     }
 }
 

@@ -3,11 +3,11 @@ package com.neutrino.game.domain.model.items.equipment.weapons
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.items.EquipmentItem
+import com.neutrino.game.domain.model.items.EquipmentItemRanged
 import com.neutrino.game.domain.model.items.HandedItemType
 import com.neutrino.game.domain.model.items.ItemType
-import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.items.utility.Projectile
 import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.attack.ProjectileAttack
@@ -18,7 +18,7 @@ import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import kotlin.math.roundToInt
 
-class RockWand: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjectile {
+class RockWand: EquipmentItemRanged(), ItemType.EQUIPMENT.RHAND {
     override val handedItemType: HandedItemType = HandedItemType.WAND
     override val name: String = "Basic poison staff"
 //    override val description: String = "Too lazy to throw rocks at people? With the new MagicOoga technology You can make rocks materialize out of thin air!"
@@ -30,6 +30,8 @@ class RockWand: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjectile {
 
     override var goldValueOg: Int = 75
 
+    override var range: Int = 6
+    override var rangeType: RangeType = RangeType.SQUARE
     override val projectileType: Projectile.ProjectileType = Projectile.ProjectileType.ROCK
 
     override var requirements: Requirement = Requirement(mutableMapOf(Pair("character", Data<Character>())))
@@ -37,7 +39,7 @@ class RockWand: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjectile {
     override val modifierList: ArrayList<EventWrapper> = arrayListOf(
         OnOffEvent(EventModifyStat(StatsEnum.EARTHDAMAGE, 5f)),
         OnOffEvent(EventModifyStat(StatsEnum.DAMAGEVARIATION, 3.5f)),
-        OnOffEvent(EventModifyStat(StatsEnum.RANGE, 6))
+        OnOffEvent(EventModifyStat(StatsEnum.RANGE, range))
     )
 
     override var attack: Attack = ProjectileAttack(this, getDamageTypesFromModifiers(modifierList))

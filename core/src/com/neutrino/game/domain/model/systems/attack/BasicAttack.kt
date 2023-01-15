@@ -6,7 +6,7 @@ import squidpony.squidmath.Coord
 
 class BasicAttack: Attack {
 
-    constructor(acceptedDamageTypes: Set<StatsEnum>) : super(acceptedDamageTypes)
+    constructor(acceptedDamageTypes: Map<StatsEnum, Float>) : super(acceptedDamageTypes)
     constructor() : super()
 
     override fun attack(character: Character, target: Coord) {

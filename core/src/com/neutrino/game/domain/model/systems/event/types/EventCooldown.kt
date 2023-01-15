@@ -4,6 +4,7 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.Event
 import com.neutrino.game.domain.model.systems.event.Timed
+import com.neutrino.game.domain.model.systems.skills.Skill
 
 class EventCooldown(): Event(), Timed {
     constructor(character: Character, cooldownType: CooldownType, cooldownLength: Double) : this() {
@@ -43,8 +44,7 @@ class EventCooldown(): Event(), Timed {
 
 sealed class CooldownType {
     object FOOD: CooldownType()
-    // TODO skills not yet implemented
-    data class SKILL(val skill: Int): CooldownType()
+    data class SKILL(val skill: Skill): CooldownType()
     /** Cooldown for a specific item */
     data class ITEM(val itemName: String): CooldownType()
     object NONE: CooldownType()

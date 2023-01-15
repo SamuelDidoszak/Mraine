@@ -3,11 +3,11 @@ package com.neutrino.game.domain.model.items.equipment.weapons
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.items.EquipmentItem
+import com.neutrino.game.domain.model.items.EquipmentItemRanged
 import com.neutrino.game.domain.model.items.HandedItemType
 import com.neutrino.game.domain.model.items.ItemType
-import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.items.utility.Projectile
 import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.attack.ProjectileAttack
@@ -18,7 +18,7 @@ import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import kotlin.math.roundToInt
 
-class BigBow: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjectile {
+class BigBow: EquipmentItemRanged(), ItemType.EQUIPMENT.RHAND {
     override val handedItemType: HandedItemType = HandedItemType.BOW
     override val name: String = "Big bow"
     override val description: String = "Almost the same size as you"
@@ -28,6 +28,8 @@ class BigBow: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjectile {
 
     override var goldValueOg: Int = 65
 
+    override var range: Int = 7
+    override var rangeType: RangeType = RangeType.SQUARE
     override val projectileType: Projectile.ProjectileType = Projectile.ProjectileType.WOODENARROW
 
     override var requirements: Requirement = Requirement(mutableMapOf(Pair("character", Data<Character>())))
@@ -35,7 +37,7 @@ class BigBow: EquipmentItem(), ItemType.EQUIPMENT.RHAND, HasProjectile {
     override val modifierList: ArrayList<EventWrapper> = arrayListOf(
         OnOffEvent(EventModifyStat(StatsEnum.DAMAGE, 5f)),
         OnOffEvent(EventModifyStat(StatsEnum.DAMAGEVARIATION, 2f)),
-        OnOffEvent(EventModifyStat(StatsEnum.RANGE, 7))
+        OnOffEvent(EventModifyStat(StatsEnum.RANGE, range))
     )
 
     override var attack: Attack = ProjectileAttack(this, getDamageTypesFromModifiers(modifierList))

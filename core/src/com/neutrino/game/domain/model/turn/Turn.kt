@@ -8,6 +8,7 @@ import com.neutrino.game.Constants.IsSeeded
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.characters.utility.ActorVisuals
 import com.neutrino.game.domain.model.characters.utility.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.entities.utility.Container
@@ -157,7 +158,7 @@ object Turn {
                             is Interaction.ITEM -> {
                                 val item = (action.entity as ItemEntity).item
                                 if (Player.addToInventory(item)) {
-                                    Player.showPickedUpItem(item)
+                                    ActorVisuals.showPickedUpItem(Player, item)
                                     currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].removeLast()
                                 } else {
                                     println("Inventory is full!")
@@ -204,7 +205,7 @@ object Turn {
                         Player.ai.entityTargetCoords = null
                     }
                     is Action.ITEM -> {
-                        character.showItemUsed(action.item)
+                        ActorVisuals.showItemUsed(character, action.item)
 
                         if (action.item is CausesEvents) {
                             for (wrapper in action.item.eventWrappers) {
@@ -301,7 +302,7 @@ object Turn {
                         println(character.name + " interacted with ${action.entity.name}")
                     }
                     is Action.ITEM -> {
-                        character.showItemUsed(action.item)
+                        ActorVisuals.showItemUsed(character, action.item)
                         println(character.name + " used an item")
                     }
                     is Action.WAIT -> {

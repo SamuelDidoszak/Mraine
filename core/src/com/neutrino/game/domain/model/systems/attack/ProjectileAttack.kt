@@ -10,7 +10,7 @@ import squidpony.squidmath.Coord
 //): Attack() {
 class ProjectileAttack: Attack {
 
-    constructor(hasProjectile: HasProjectile, acceptedDamageTypes: Set<StatsEnum>) : super(acceptedDamageTypes) {
+    constructor(hasProjectile: HasProjectile, acceptedDamageTypes: Map<StatsEnum, Float>) : super(acceptedDamageTypes) {
         this.hasProjectile = hasProjectile
     }
     constructor(hasProjectile: HasProjectile) : super() {

@@ -25,6 +25,7 @@ import com.neutrino.game.domain.model.utility.ColorUtils
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
+import squidpony.squidmath.Coord
 import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -89,7 +90,7 @@ abstract class Character(
     /**
      * Basic attack when no item is equipped
      */
-    open var basicAttack: Attack = BasicAttack(setOf(StatsEnum.DAMAGE))
+    open var basicAttack: Attack = BasicAttack(mapOf(StatsEnum.DAMAGE to 0f))
     /**
      * Primary attack
      */
@@ -333,5 +334,9 @@ abstract class Character(
 
     fun isAlive(): Boolean {
         return hp.compareDelta(0f) == 1
+    }
+
+    fun getPosition(): Coord {
+        return Coord.get(xPos, yPos)
     }
 }

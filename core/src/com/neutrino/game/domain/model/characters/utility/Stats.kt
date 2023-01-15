@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.model.characters.utility
 
-interface Stats {
+interface Stats: HasRange {
     var hpMax: Float
     var hp: Float
     var mpMax: Float
@@ -21,8 +21,8 @@ interface Stats {
     var criticalDamage: Float
     var attackSpeed: Double
     var movementSpeed: Double
-    var range: Int
-    var rangeType: RangeType
+    override var range: Int
+    override var rangeType: RangeType
     var experience: Float
     var stealth: Float
 

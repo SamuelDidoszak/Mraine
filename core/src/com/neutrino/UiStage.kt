@@ -28,8 +28,11 @@ import com.neutrino.game.domain.model.items.items.Gold
 import com.neutrino.game.domain.model.items.utility.EqActor
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
+import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.domain.model.systems.skills.SkillActor
 import com.neutrino.game.graphics.utility.ItemContextPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
+import com.neutrino.game.graphics.utility.SkillContextPopup
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
@@ -49,8 +52,13 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
     var showInventory: Boolean = true
 
+    /**
+     * Skill used from UI
+     */
+    var usedSkill: Skill? = null
+
     // UI elements
-    private val uiAtlas = TextureAtlas("UI/ui.atlas")
+    private val uiAtlas = Constants.DefaultUITexture
     private val uiElements: Map<String, TextureAtlas.AtlasRegion> = mapOf(
         "BottomBar" to uiAtlas.findRegion("BottomBar"),
         "InventoryBorder" to uiAtlas.findRegion("InventoryBorder"),
@@ -986,7 +994,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         skills.name = "skills"
         skills.addActor(Image(uiElements["Background"]))
 
-        var rows = Player.skills.size / 10 + if (Player.skills.size % 10 != 0) 1 else 0
+        var rows = Player.skillList.size / 10 + if (Player.skillList.size % 10 != 0) 1 else 0
         rows = if (rows < 6) 6 else rows
 
         val table = scene2d.table {
@@ -1023,6 +1031,18 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         skills.width = border.width
         skills.height = border.height
         skills.isVisible = false
+
+        refreshSkills()
+    }
+
+
+    fun refreshSkills() {
+        (skills.findActor<ScrollPane>("skillsPane").actor as Table).children.forEach {
+            (it as Container<*>).actor = null
+            val cellNumber = it.name.toInt()
+            if (cellNumber < Player.skillList.size)
+                it.actor = SkillActor(Player.skillList[cellNumber])
+        }
     }
 
 
@@ -1180,6 +1200,12 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                         timeClicked = TimeUtils.millis()
                 }
             }
+            skills -> {
+                val coord: Vector2 = screenToStageCoordinates(
+                    Vector2(screenX.toFloat(), screenY.toFloat())
+                )
+                clickedItem = getSkillCell(coord.x, coord.y)
+            }
         }
 
         return super.touchDown(screenX, screenY, pointer, button)
@@ -1321,6 +1347,33 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                         }
                     }
                 }
+            }
+            skills -> {
+                if (button == Input.Buttons.RIGHT && clickedItem == null) {
+                    if (contextPopup != null) {
+                        this.actors.removeValue(contextPopup, true)
+                        contextPopup = null
+                    }
+                    else {
+                        clickedItem = getSkillCell(coord.x, coord.y)
+                        if (clickedItem != null && (clickedItem as Container<*>).actor != null) {
+                            val skill = ((clickedItem as Container<*>).actor as SkillActor).skill
+                            contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
+                                usedSkill = skill
+                                showInventory = false
+                                clickedItem = null
+                                nullifyAllValues()
+                            }
+                            if (contextPopup != null) {
+                                if (detailsPopup != null)
+                                    this.actors.removeValue(detailsPopup, true)
+                                addActor(contextPopup)
+                                contextPopup?.setPosition(coord.x, coord.y)
+                            }
+                        }
+                    }
+                }
+                clickedItem = null
             }
         }
 
@@ -1504,6 +1557,23 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         }
         else
             return null
+    }
+
+    private fun getSkillCell(x: Float, y: Float): Container<*>? {
+        val coord: Vector2 = skills.stageToLocalCoordinates(
+            Vector2(x, y)
+        )
+
+        var clickedChild = skills.hit(coord.x, coord.y, false)
+
+        // space between cells was hit
+        if (clickedChild is Table)
+            return null
+
+        if (clickedChild !is Container<*>)
+            return null
+
+        return clickedChild
     }
 
     private fun getInventoryCell(x: Float, y: Float, clickedEq: ScrollPane): Container<*>? {

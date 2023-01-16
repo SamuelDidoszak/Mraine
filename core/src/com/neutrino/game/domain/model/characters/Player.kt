@@ -13,10 +13,13 @@ import com.neutrino.game.domain.model.items.Equipment
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
+import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.domain.model.systems.skills.SkillBleed
+import com.neutrino.game.domain.model.systems.skills.SkillCripplingSpin
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.lessThanDelta
 
-object Player : Character(0, 0, 0.0), HasInventory, HasEquipment {
+object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
     override var hp: Float = 0f
         set(value) {
             val previous = hp
@@ -143,10 +146,10 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment {
         set(value) {field = value
         GlobalData.registerData(GlobalDataType.PLAYERSTAT, "level")}
 
-    val skills = ArrayList<Int>()
+    override val skillList: ArrayList<Skill> = ArrayList(5)
 
     /** Determines the maximum number of concurrently used skills that do not use mana */
-    var maxSkills: Int = 3
+    override var maxSkills: Int = 3
 
     override var viewDistance: Int = 20
 
@@ -169,6 +172,9 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment {
         val infoGroup = findActor<Group>("infoGroup")
         infoGroup.isVisible = false
         inventory.size = 30
+
+        skillList.add(SkillBleed(this))
+        skillList.add(SkillCripplingSpin(this))
     }
 
     override val description: String

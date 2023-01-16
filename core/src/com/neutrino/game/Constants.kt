@@ -54,6 +54,7 @@ object Constants {
     val DefaultEntityTexture: TextureAtlas = TextureAtlas("textures/entities.atlas")
     val DefaultProjectileTexture: TextureAtlas = TextureAtlas("textures/projectiles.atlas")
     val DefaultIconTexture: TextureAtlas = TextureAtlas("textures/icons.atlas")
+    val DefaultUITexture: TextureAtlas = TextureAtlas("UI/ui.atlas")
     val WhitePixel: Texture = Texture("whitePixel.png")
     val TransparentPixel: Texture = Texture("transparentPixel.png")
     val EntityPixelData = PixelData(DefaultEntityTexture)

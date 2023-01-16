@@ -16,6 +16,7 @@ class SkillBleed(override val character: Character): Skill.ActiveSkillCharacter 
     override val name: String = "Bleed"
     override val description: String = "Physical attack that induces bleeding."
     override val requirement: RequirementPrintable = RequirementPrintable().add("Dexterity: 2") { character.dexterity >= 2 }
+    override val textureName: String = "skillBleed"
 
     override val cooldownLength: Double = 20.0
     override val cooldownType: CooldownType = CooldownType.SKILL(this)

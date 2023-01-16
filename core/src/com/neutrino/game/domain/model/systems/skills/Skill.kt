@@ -17,6 +17,7 @@ sealed interface Skill {
     val description: String
     val requirement: RequirementPrintable
     val printableData: List<Pair<String, Any>>
+    val textureName: String
 
     interface ActiveSkillCharacter: Skill, CausesCooldown, HasRange {
         fun use(target: Character)

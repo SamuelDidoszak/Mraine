@@ -1,15 +1,21 @@
 icons.png
-	size: 128, 16
+	size: 256, 16
 	repeat: none
 exclamationMark
-	bounds: 48, 0, 16, 16
+	bounds: 64, 0, 16, 16
 heart
 	bounds: 16, 0, 16, 16
 itemBetter
-	bounds: 32, 0, 16, 16
+	bounds: 48, 0, 16, 16
 itemBetter2
 	bounds: 0, 0, 16, 16
 itemWorse
-	bounds: 64, 0, 16, 16
-threeDots
+	bounds: 112, 0, 16, 16
+skillBleed
 	bounds: 80, 0, 16, 16
+skillCripple
+	bounds: 32, 0, 16, 16
+skillJumpAttack
+	bounds: 96, 0, 16, 16
+threeDots
+	bounds: 128, 0, 16, 16

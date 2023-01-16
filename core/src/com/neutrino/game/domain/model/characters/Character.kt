@@ -153,7 +153,7 @@ abstract class Character(
         return characterEventArray.find {
             it.event is EventCooldown && it.event.cooldownType == cooldownType &&
             when (it.event.cooldownType) {
-                is CooldownType.SKILL -> (it.event.cooldownType as CooldownType.SKILL).skill == (cooldownType as CooldownType.SKILL).skill
+                is CooldownType.SKILL -> (it.event.cooldownType as CooldownType.SKILL).skill::class == (cooldownType as CooldownType.SKILL).skill::class
                 is CooldownType.ITEM -> (it.event.cooldownType as CooldownType.ITEM).itemName == (cooldownType as CooldownType.ITEM).itemName
                 else -> true
             }

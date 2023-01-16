@@ -206,6 +206,11 @@ class GameScreen: KtxScreen {
                 hudStage.refreshHotBar()
             }
 
+            val usedSkill = uiStage.usedSkill
+            if (usedSkill != null) {
+                uiStage.usedSkill = null
+            }
+
             // interact with an entity
             if (Player.ai.action is Action.NOTHING && !Player.hasActions() && Player.ai.entityTargetCoords != null) {
                 val entityCoords = Player.ai.entityTargetCoords!!

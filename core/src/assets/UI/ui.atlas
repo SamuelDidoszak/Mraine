@@ -38,7 +38,7 @@ SortingCustom
 SortingCustomOpen
 	bounds: 1720, 704, 188, 56
 SortingDate
-	bounds: 1720, 760, 188, 56
+	bounds: 0, 236, 188, 56
 SortingDateOpen
 	bounds: 1720, 816, 188, 56
 SortingDesc
@@ -52,7 +52,7 @@ SortingTypeOpen
 SortingValue
 	bounds: 212, 356, 188, 56
 SortingValueOpen
-	bounds: 0, 236, 188, 56
+	bounds: 1720, 760, 188, 56
 cellBottom
 	bounds: 1804, 620, 84, 84
 cellBottomLeft
@@ -64,7 +64,7 @@ cellLeft
 cellMiddle
 	bounds: 1908, 712, 84, 84
 cellRight
-	bounds: 1832, 452, 84, 84
+	bounds: 188, 264, 84, 84
 cellTop
 	bounds: 0, 0, 84, 84
 cellTopLeft
@@ -75,3 +75,7 @@ cellUnavailable
 	bounds: 1804, 536, 84, 84
 equipmentDefault
 	bounds: 0, 84, 96, 96
+skillBackground
+	bounds: 1832, 456, 80, 80
+skillBackgroundCooldown
+	bounds: 188, 184, 80, 80

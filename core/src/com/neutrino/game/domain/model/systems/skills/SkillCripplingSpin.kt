@@ -15,10 +15,11 @@ import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.turn.Turn
 import squidpony.squidmath.Coord
 
-class SkillSlowDown(override val character: Character): Skill.ActiveSkillTile {
-    override val name: String = "Slowing spin"
+class SkillCripplingSpin(override val character: Character): Skill.ActiveSkillTile {
+    override val name: String = "Crippling spin"
     override val description: String = "Spinning attack which slowes down nearby enemies"
     override val requirement: RequirementPrintable = RequirementPrintable().add("Strength: 2") { character.strength >= 2 }
+    override val textureName: String = "skillCripple"
 
     override val cooldownLength: Double = 20.0
     override val cooldownType: CooldownType = CooldownType.SKILL(this)

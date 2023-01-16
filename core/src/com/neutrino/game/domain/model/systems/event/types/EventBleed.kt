@@ -28,7 +28,8 @@ class EventBleed(): Event() {
         set(value) { set("power", value) }
 
     override fun start() {
-        checkData()
+        if (!checkData())
+            return
 
         character.getDamage(power, "bleeding")
     }

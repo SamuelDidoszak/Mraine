@@ -12,6 +12,15 @@ data class TimedEvent(
     override var executions: Int,
     override val event: Event
 ): EventWrapper(event), Timed {
+    /**
+     * Creates an event that lasts infinitely
+     */
     constructor(onOffEvent: OnOffEvent) :
             this(0.0, Double.MAX_VALUE, 1, onOffEvent.event)
+
+    /**
+     * Creates an event that is executed once and lasts for provided turns
+     */
+    constructor(turns: Double, event: Event) :
+            this(0.0, turns, 1, event)
 }

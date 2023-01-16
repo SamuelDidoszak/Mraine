@@ -14,11 +14,13 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.neutrino.game.Constants
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.Initialize
+import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
 import ktx.app.KtxScreen
@@ -172,6 +174,8 @@ class GameScreen: KtxScreen {
         hudStage.updateSize(width, height)
     }
 
+    private var waitForAdditionalClick: Boolean = false
+
     private fun gameLoop() {
         if ((Player.hasActions() || gameStage.focusPlayer) && !gameStage.lookingAround) {
             gameStage.setCameraToPlayer()
@@ -206,9 +210,54 @@ class GameScreen: KtxScreen {
                 hudStage.refreshHotBar()
             }
 
+            // use skill
             val usedSkill = uiStage.usedSkill
             if (usedSkill != null) {
-                uiStage.usedSkill = null
+                when (usedSkill) {
+                    is Skill.ActiveSkill -> {
+                        Player.ai.action = Action.SKILL(usedSkill)
+                        uiStage.usedSkill = null
+                    }
+                    is Skill.ActiveSkillCharacter -> {
+                        if (!waitForAdditionalClick) {
+                            waitForAdditionalClick = true
+                            gameStage.highlightTiles(usedSkill)
+                        }
+                        if (gameStage.clickedCoordinates == null)
+                            return
+
+                        val clickedCharacter: Character? = LevelArrays.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
+                        if (clickedCharacter == null ||
+                                !usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
+                            gameStage.clickedCoordinates = null
+                            return
+                        }
+
+                        Player.ai.action = Action.SKILL(usedSkill, clickedCharacter)
+                        uiStage.usedSkill = null
+                        waitForAdditionalClick = false
+                    }
+                    is Skill.ActiveSkillTile -> {
+                        if (!waitForAdditionalClick) {
+                            waitForAdditionalClick = true
+                            gameStage.highlightTiles(usedSkill)
+                        }
+                        if (gameStage.clickedCoordinates == null)
+                            return
+
+                        if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
+                            gameStage.clickedCoordinates = null
+                            return
+                        }
+
+                        Player.ai.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
+                        uiStage.usedSkill = null
+                        waitForAdditionalClick = false
+                    }
+                    is Skill.PassiveSkill -> {
+                        throw Exception("Cannot use passive skill!")
+                    }
+                }
             }
 
             // interact with an entity

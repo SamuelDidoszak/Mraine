@@ -680,8 +680,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             StatsEnum.ACCURACY -> stats.findActor<TextraLabel>("accuracy").setTextSameWidth("${(Player.accuracy * 100).roundToInt()}%")
             StatsEnum.CRITICALCHANCE -> stats.findActor<TextraLabel>("critChance").setTextSameWidth("${(Player.criticalChance * 100).roundToInt()}%")
             StatsEnum.CRITICALDAMAGE -> stats.findActor<TextraLabel>("critDamage").setTextSameWidth("${(Player.criticalDamage * 100).roundToInt()}%")
-            StatsEnum.ATTACKSPEED -> stats.findActor<TextraLabel>("movementSpeed").setTextSameWidth("${Player.movementSpeed.roundOneDecimal()}")
-            StatsEnum.MOVEMENTSPEED -> stats.findActor<TextraLabel>("attackSpeed").setTextSameWidth("${Player.attackSpeed.roundOneDecimal()}")
+            StatsEnum.MOVEMENTSPEED -> stats.findActor<TextraLabel>("movementSpeed").setTextSameWidth("${Player.movementSpeed.roundOneDecimal()}")
+            StatsEnum.ATTACKSPEED -> stats.findActor<TextraLabel>("attackSpeed").setTextSameWidth("${Player.attackSpeed.roundOneDecimal()}")
 
             StatsEnum.FIREDAMAGE -> refreshDamageLabelText()
             StatsEnum.WATERDAMAGE -> refreshDamageLabelText()

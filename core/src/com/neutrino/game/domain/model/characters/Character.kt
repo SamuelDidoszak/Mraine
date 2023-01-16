@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Pools
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
 import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.compareDelta
@@ -272,6 +274,7 @@ abstract class Character(
                 Actions.removeActor()
             ))
             hp = 0f
+            GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this)
         }
         this.findActor<HpBar>("hpBar")?.update(hp)
         return damage
@@ -324,6 +327,7 @@ abstract class Character(
                 Actions.removeActor()
             ))
             hp = 0f
+            GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this)
         }
         this.findActor<HpBar>("hpBar").update(hp)
     }

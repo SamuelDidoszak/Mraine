@@ -3,6 +3,7 @@ package com.neutrino.game.domain.model.systems.attack
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.items.utility.HasProjectile
+import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord
 import squidpony.squidmath.Coord
 
 //class ProjectileAttack(
@@ -20,6 +21,10 @@ class ProjectileAttack: Attack {
 
     override fun attack(character: Character, target: Coord) {
         hasProjectile.shoot(character.xPos, character.yPos, target.x, target.y, character.parent.parent)
-        getTopmostAttackable(target)?.getDamage(getAttackData(character))
+        val attackable = getTopmostAttackable(target)
+        if (attackable !is AttackableRequiresCoord)
+            attackable?.getDamage(getAttackData(character))
+        else
+            attackable.getDamage(getAttackData(character), target)
     }
 }

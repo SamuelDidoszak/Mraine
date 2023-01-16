@@ -36,7 +36,8 @@ class EventModifyCharacterParam(): Event() {
         set(value) { set("value", value) }
 
     override fun start() {
-        checkData()
+        if (!checkData())
+            return
 
         when(param) {
             CharacterParamsEnum.INVENTORYSIZE -> {
@@ -49,7 +50,8 @@ class EventModifyCharacterParam(): Event() {
     }
 
     override fun stop() {
-        checkData()
+        if (!checkData())
+            return
 
         when(param) {
             CharacterParamsEnum.INVENTORYSIZE -> {

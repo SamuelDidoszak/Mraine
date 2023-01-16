@@ -27,11 +27,15 @@ object LevelArrays {
         return Turn.currentLevel.map.map
     }
 
-    fun getEntitiesAt(coord: Coord): List<Entity> {
+    fun getEntitiesAt(coord: Coord): MutableList<Entity> {
         return Turn.currentLevel.map.map[coord.y][coord.x]
     }
 
-    fun getEntitiesAt(x: Int, y: Int): List<Entity> {
+    fun getEntitiesAt(x: Int, y: Int): MutableList<Entity> {
         return Turn.currentLevel.map.map[y][x]
+    }
+
+    fun getImpassableList(): ArrayList<Coord> {
+        return Turn.mapImpassableList
     }
 }

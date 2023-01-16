@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
+import com.neutrino.LevelArrays
 import com.neutrino.game.Constants.IsSeeded
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
@@ -24,6 +25,7 @@ import com.neutrino.game.domain.model.systems.event.types.EventCooldown
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
+import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import com.neutrino.game.domain.use_case.level.LevelUseCases
 import com.neutrino.game.lessThanDelta
@@ -141,16 +143,6 @@ object Turn {
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)!!
                         Player.primaryAttack.attack(Player, Coord.get(action.x, action.y))
-
-                        // Enemy is killed
-                        if (clickedCharacter.hp <= 0) {
-                            Player.experience += clickedCharacter.experience
-                            characterArray.remove(clickedCharacter)
-                            // Drop its items
-                            clickedCharacter.dropItems().forEach {
-                                currentLevel.map.map[clickedCharacter.yPos][clickedCharacter.xPos].add(ItemEntity(it))
-                            }
-                        }
                     }
                     is Action.INTERACTION -> {
                         // Entity position(x, y) can be derived from ai.entityTargetCoords
@@ -236,12 +228,25 @@ object Turn {
                             )
                         }
                     }
+                    is Action.SKILL -> {
+                        when (action.skill) {
+                            is Skill.ActiveSkill -> {
+                                action.skill.use()
+                            }
+                            is Skill.ActiveSkillCharacter -> {
+                                action.skill.use(action.target!!)
+                            }
+                            is Skill.ActiveSkillTile -> {
+                                action.skill.use(action.tile!!)
+                            }
+                            is Skill.PassiveSkill -> {
+                                throw Exception("Skill cannot be used")
+                            }
+                        }
+                    }
 
                     is Action.WAIT -> {
                         println("passing turn")
-                    }
-                    is Action.SKILL -> {
-                        println("using skill")
                     }
                     is Action.EVENT -> {
                         println("caused an event")
@@ -255,8 +260,6 @@ object Turn {
                 // initialize the ai if it's 10 tiles or less from the player
                 if (character.ai is EnemyAi)
                     (character.ai as EnemyAi).decide()
-//                if (abs(character.xPos - Player.xPos) <= 10 && abs(character.yPos - Player.yPos) <= 10)
-//                    character.ai.decide(Player.xPos, Player.yPos, dijkstraMap, mapImpassableList.plus(charactersUseCases.getImpassable()))
                 else
                     character.ai.action = Action.WAIT
 
@@ -281,19 +284,6 @@ object Turn {
                             println("No character there")
                         } else {
                             character.primaryAttack.attack(character, Coord.get(action.x, action.y))
-
-                            if (attackedCharacter.hp <= 0.0) {
-                                /** Exiting the app **/
-                                if (attackedCharacter is Player) {
-                                    println("\n\n=======================================================================================================================================\n")
-                                    println("Current score is: ${Player.experience}")
-                                    println("\tGold collected: ${Player.inventory.get("Gold")?.amount}")
-                                    println("\n=======================================================================================================================================\n\n")
-                                    Gdx.app.exit()
-                                    System.exit(0)
-                                }
-                                characterArray.remove(attackedCharacter)
-                            }
                         }
                     }
                     is Action.SKILL -> {
@@ -335,6 +325,33 @@ object Turn {
         tick()
     }
 
+    /**
+     * Called from character class when enemy is killed.
+     */
+    private fun characterDied(character: Character) {
+        if (character is Player)
+            return playerDied()
+
+        Player.experience += character.experience
+        characterArray.remove(character)
+        // Drop its items
+        character.dropItems().forEach {
+            LevelArrays.getEntitiesAt(character.getPosition()).add(ItemEntity(it))
+        }
+    }
+
+    private fun playerDied() {
+        /** Exiting the app **/
+        println("\n\n=======================================================================================================================================\n")
+        println("Current score is: ${Player.experience}")
+        println("\tGold collected: ${Player.inventory.get("Gold")?.amount?:0}")
+        println("\n=======================================================================================================================================\n\n")
+        Gdx.app.exit()
+        System.exit(0)
+
+        characterArray.remove(Player)
+    }
+
     private fun executeEvent() {
         try {
             val event = eventArray.get(turn)!!
@@ -374,6 +391,16 @@ object Turn {
                 return true
             }
         } )
+
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.CHARACTERDIED
+            override fun update(data: Any?): Boolean {
+                if (data != null && data is Character)
+                    characterDied(data)
+
+                return true
+            }
+        })
     }
 
 }

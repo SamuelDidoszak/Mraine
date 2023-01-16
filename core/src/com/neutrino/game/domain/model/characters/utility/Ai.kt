@@ -92,21 +92,6 @@ open class Ai (private val character: Character) {
     }
 
     fun canAttack(xTarget: Int, yTarget: Int): Boolean {
-        when (character.rangeType) {
-            RangeType.DIAGONAL -> {
-                return (yTarget == character.yPos &&
-                    xTarget in character.xPos - character.range .. character.xPos + character.range) ||
-                    (xTarget == character.xPos &&
-                            yTarget in character.yPos - character.range .. character.yPos + character.range)
-            }
-            RangeType.SQUARE -> {
-                return (xTarget in character.xPos - character.range .. character.xPos + character.range) &&
-                        (yTarget in character.yPos - character.range .. character.yPos + character.range)
-            }
-            RangeType.DIAMOND -> {
-                TODO("implement DIAMOND RANGE TYPE")
-
-            }
-        }
+        return (character as HasRange).isInRange(character.getPosition(), Coord.get(xTarget, yTarget))
     }
 }

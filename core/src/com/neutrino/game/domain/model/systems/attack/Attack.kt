@@ -28,7 +28,7 @@ abstract class Attack(
         if (LevelArrays.getCharacterAt(target) is Attackable)
             return LevelArrays.getCharacterAt(target) as Attackable
 
-        for (z in LevelArrays.getEntitiesAt(target).size .. 0) {
+        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {
             if (LevelArrays.getEntitiesAt(target)[z] is Attackable)
                 return LevelArrays.getEntitiesAt(target)[z] as Attackable
         }
@@ -40,7 +40,7 @@ abstract class Attack(
         if (LevelArrays.getCharacterAt(target) is Attackable)
             attackableList.add(LevelArrays.getCharacterAt(target) as Attackable)
 
-        for (z in LevelArrays.getEntitiesAt(target).size .. 0) {
+        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {
             if (LevelArrays.getEntitiesAt(target)[z] is Attackable)
                 attackableList.add(LevelArrays.getEntitiesAt(target)[z] as Attackable)
         }

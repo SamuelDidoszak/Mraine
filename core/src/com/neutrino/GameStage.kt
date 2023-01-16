@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Animated
+import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.systems.attack.utility.Attackable
@@ -243,6 +244,10 @@ class GameStage(
         }
 
         return super.mouseMoved(screenX, screenY)
+    }
+
+    fun highlightTiles(range: HasRange) {
+
     }
 
     fun addOutline(xPos: Int, yPos: Int): Boolean {

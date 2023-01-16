@@ -4,13 +4,15 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.systems.skills.Skill
+import squidpony.squidmath.Coord
 
 sealed class Action {
     data class MOVE(val x: Int, val y: Int): Action()
     data class ATTACK(val x: Int, val y: Int): Action()
     data class INTERACTION(val entity: Entity, val interaction: Interaction): Action()
     data class ITEM(val item: Item, val character: Character): Action()
-    object SKILL: Action()
+    data class SKILL(val skill: Skill, val target: Character? = null, val tile: Coord? = null): Action()
     object EVENT: Action()
     object WAIT: Action()
     object NOTHING: Action()

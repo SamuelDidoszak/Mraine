@@ -29,7 +29,8 @@ class EventHeal(): Event() {
         set(value) { set("power", value) }
 
     override fun start() {
-        checkData()
+        if (!checkData())
+            return
 
         character.hp += power
         if (character.hp > character.hpMax)

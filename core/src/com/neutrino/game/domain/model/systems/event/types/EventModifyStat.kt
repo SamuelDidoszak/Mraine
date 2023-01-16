@@ -43,7 +43,8 @@ class EventModifyStat(percent: Boolean = false): Event(){
     private var initialDamageVariation by Delegates.notNull<Float>()
 
     override fun start() {
-        checkData()
+        if (!checkData())
+            return
 
         initialDamageVariation = character.damageVariation
 
@@ -80,7 +81,8 @@ class EventModifyStat(percent: Boolean = false): Event(){
     }
 
     override fun stop() {
-        checkData()
+        if (!checkData())
+            return
 
         when (stat) {
             StatsEnum.HPMAX -> if (!percent) character.hpMax -= value as Float else character.hpMax /= value as Float

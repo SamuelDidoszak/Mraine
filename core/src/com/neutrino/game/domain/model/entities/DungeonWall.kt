@@ -2,11 +2,11 @@ package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
-import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import com.neutrino.game.domain.model.entities.utility.Wall
 
-class DungeonWall: Entity() {
+class DungeonWall: Wall() {
     override var allowOnTop = false
     override var allowCharacterOnTop = false
     override val name = "Dungeon wall"

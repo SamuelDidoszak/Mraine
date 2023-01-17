@@ -313,6 +313,15 @@ object Turn {
                 executeEvent()
                 updateBatch.removeFirst()
             }
+
+            // events
+            while (eventArray.isNotEmpty() && eventArray.get(turn) != null) {
+                executeEvent()
+            }
+            // global events
+            while (globalEventArray.isNotEmpty() && globalEventArray.get(turn) != null) {
+                val globalEvent = globalEventArray[0]
+            }
         }
         // events
         while (eventArray.isNotEmpty() && eventArray.get(turn) != null) {

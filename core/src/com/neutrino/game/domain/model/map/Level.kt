@@ -31,6 +31,7 @@ import com.neutrino.game.domain.use_case.map.MapUseCases
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.utility.Blurring
 import com.neutrino.game.graphics.utility.Pixel
+import kotlin.reflect.KClass
 
 
 class Level(
@@ -206,6 +207,16 @@ class Level(
         for (entity in map.map[yPos][xPos].reversed()) {
             if (entity is Interactable)
                 return entity
+        }
+        return null
+    }
+
+    /** Returns topmost entity with provided interaction type */
+    fun getEntityWithAction(xPos: Int, yPos: Int, interaction: KClass<Interaction>): Entity? {
+        for (entity in map.map[yPos][xPos].reversed()) {
+            if (entity is Interactable && entity.interactionList.find { it::class == interaction } != null) {
+                return entity
+            }
         }
         return null
     }
@@ -387,6 +398,7 @@ class Level(
                             entity.texture.regionHeight + 2,
                             false, false
                         )
+                        shader?.cleanUp(batch)
                     }
                     if (entity.shaders.isNotEmpty())
                         batch?.shader = null
@@ -420,6 +432,7 @@ class Level(
                                     batch!!.draw(entity.texture,
                                         if (!entity.mirrored) movingChar.xPos * 64f else movingChar.xPos * 64f + entity.texture.regionWidth * 4f, screenY,
                                         entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+                                    shader?.cleanUp(batch)
                                 }
                                 if (entity.shaders.isNotEmpty())
                                     batch?.shader = null
@@ -444,6 +457,7 @@ class Level(
                                     batch!!.draw(entity.texture,
                                         if (!entity.mirrored) movingChar.xPos * 64f + 64 else movingChar.xPos * 64f + 64 + entity.texture.regionWidth * 4f, screenY,
                                         entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+                                    shader?.cleanUp(batch)
                                 }
                                 if (entity.shaders.isNotEmpty())
                                     batch?.shader = null
@@ -463,6 +477,7 @@ class Level(
                                     batch!!.draw(entity.texture,
                                         if (!entity.mirrored) movingChar.xPos * 64f - 64 else movingChar.xPos * 64f - 64 + entity.texture.regionWidth * 4f, screenY,
                                         entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
+                                    shader?.cleanUp(batch)
                                 }
                                 if (entity.shaders.isNotEmpty())
                                     batch?.shader = null

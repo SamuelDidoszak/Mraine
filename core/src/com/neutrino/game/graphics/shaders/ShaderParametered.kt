@@ -6,9 +6,15 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
 sealed class ShaderParametered {
     abstract val shader: ShaderProgram
 
+    /**
+     * Applies required shader parameters
+     */
     open fun applyParameters() {}
 
-    fun applyToBatch(batch: Batch?) {
+    /**
+     * Applies the shader to the batch
+     */
+    open fun applyToBatch(batch: Batch?) {
         try {
             batch?.shader = shader
             applyParameters()
@@ -16,5 +22,12 @@ sealed class ShaderParametered {
 //            e.printStackTrace()
             batch?.shader = null
         }
+    }
+
+    /**
+     * Reverts all the changes made to batch
+     */
+    open fun cleanUp(batch: Batch?) {
+
     }
 }

@@ -8,13 +8,6 @@ import ktx.math.div
 import ktx.math.times
 
 class OutlineShader(): ShaderParametered() {
-    constructor(color: Color): this() {
-        this.color = color
-    }
-    constructor(color: Color, thickness: Float): this() {
-        this.color = color
-        this.thickness = thickness
-    }
     constructor(color: Color, thickness: Float, texture: TextureAtlas.AtlasRegion): this() {
         this.color = color
         this.thickness = thickness

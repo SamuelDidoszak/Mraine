@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -12,16 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
-import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.HasRange
-import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.map.Level
-import com.neutrino.game.domain.model.systems.attack.utility.Attackable
-import com.neutrino.game.graphics.shaders.OutlineShader
+import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.utility.EntityLookupPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
+import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
 import kotlin.math.abs
@@ -31,11 +28,7 @@ import kotlin.math.sign
 class GameStage(
     viewport: Viewport
 ): Stage(viewport,
-    SpriteBatch(1000,
-        ShaderProgram(
-            Gdx.files.internal("shaders/vertex.vert").readString(),
-            Gdx.files.internal("shaders/fragmentAlphas.frag").readString()
-        ))) {
+    SpriteBatch(1000, Shaders.fragmentAlphas)) {
     init {
         root = GameStageGroup()
         root.name = "GameStage"
@@ -234,87 +227,32 @@ class GameStage(
 //        return true
     }
 
-    private var outlinedEntity: Entity? = null
-    private var outlinedCharacter: Character? = null
+    val highlighting = Highlighting()
+    var highlightMode: Highlighting.Companion.HighlightModes = Highlighting.Companion.HighlightModes.NORMAL
+        set(value) {
+            field = value
+            highlighting.deHighlightOnHover()
+        }
+    var highlightRange: HasRange? = null
+
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val coord = getTile(screenX, screenY)
-        if (level?.discoveredMap?.get(coord.y)?.get(coord.x) == true) {
-            addCharacterOutline(coord.x, coord.y)
-            addOutline(coord.x, coord.y)
+
+        when (highlightMode) {
+            Highlighting.Companion.HighlightModes.NORMAL -> {
+                if (LevelArrays.getDiscoveredAt(coord))
+                    highlighting.highlightOnHover(coord)
+            }
+            Highlighting.Companion.HighlightModes.AREA -> {
+                highlighting.highlightAttackArea(highlightRange!!, coord, false)
+            }
+            Highlighting.Companion.HighlightModes.ONLY_CHARACTERS -> {
+                highlighting.highlightAttackArea(highlightRange!!, coord, true)
+            }
         }
+
 
         return super.mouseMoved(screenX, screenY)
-    }
-
-    fun highlightTiles(range: HasRange) {
-
-    }
-
-    fun addOutline(xPos: Int, yPos: Int): Boolean {
-        val entity = level?.getEntityWithAction(xPos, yPos)
-        if (entity == outlinedEntity || entity is ItemEntity)
-            return false
-
-        outlinedEntity?.shaders?.removeAll { it is OutlineShader }
-        outlinedEntity = null
-
-        if (entity is Attackable) {
-            if (!Player.ai.canAttack(xPos, yPos))
-                return false
-        }
-        else if (entity is Interactable) {
-            val requiredDistance = (entity as Interactable).getPrimaryInteraction()?.requiredDistance
-                ?: return false
-            if ((xPos !in Player.xPos - requiredDistance .. Player.xPos + requiredDistance) ||
-                (yPos !in Player.yPos - requiredDistance .. Player.yPos + requiredDistance))
-                return false
-        }
-
-        outlinedEntity = entity
-        outlinedEntity?.shaders?.add(
-            OutlineShader(
-            if ((outlinedEntity as Interactable).getPrimaryInteraction() is Interaction.DESTROY) {
-                if ((outlinedEntity as Destructable).destroyed)
-                    OutlineShader.OUTLINE_CLEAR
-                else
-                    OutlineShader.OUTLINE_RED
-            }
-            else
-                OutlineShader.OUTLINE_GREEN,
-            2f,
-            outlinedEntity!!.texture
-            )
-        )
-        return outlinedEntity != null
-    }
-
-    fun addCharacterOutline(xPos: Int, yPos: Int): Boolean {
-        val character: Character? = level!!.characterMap[yPos][xPos]
-        return addCharacterOutline(character)
-    }
-
-    fun addCharacterOutline(character: Character?): Boolean {
-        if (character == outlinedCharacter || character == Player)
-            return false
-
-        outlinedCharacter?.shaders?.removeAll { it is OutlineShader }
-        outlinedCharacter = null
-
-        if (character == null || !Player.ai.canAttack(character.xPos, character.yPos))
-            return false
-
-        outlinedCharacter = character
-        if (character?.isAlive() != true)
-            return false
-
-        outlinedCharacter?.shaders?.add(
-            OutlineShader(
-                OutlineShader.OUTLINE_RED,
-                2f,
-                outlinedCharacter!!.texture
-            )
-        )
-        return outlinedCharacter != null
     }
 
     fun getTile(screenX: Int, screenY: Int): Coord {
@@ -323,7 +261,6 @@ class GameStage(
 
         return getTileUnprojected(touch)
     }
-
 
     fun getTileUnprojected(position: Vector3): Coord {
         // Change the outOfBounds click behavior

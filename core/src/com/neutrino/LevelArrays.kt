@@ -2,11 +2,25 @@ package com.neutrino
 
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.model.turn.Turn
 import squidpony.squidmath.Coord
 
 object LevelArrays {
+
+    fun getLevel(): Level {
+        return Turn.currentLevel
+    }
+
+    fun getDiscoveredMap(): List<MutableList<Boolean>> {
+        return Turn.currentLevel.discoveredMap
+    }
+
+    fun getDiscoveredAt(coord: Coord): Boolean {
+        return Turn.currentLevel.discoveredMap[coord.y][coord.x]
+    }
+
     fun getCharacterArray(): CharacterArray {
         return Turn.characterArray
     }

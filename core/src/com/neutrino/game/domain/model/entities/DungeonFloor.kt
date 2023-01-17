@@ -2,10 +2,10 @@ package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
-import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.entities.utility.Floor
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 
-class DungeonFloor: Entity() {
+class DungeonFloor: Floor() {
     override var allowOnTop = true
     override var allowCharacterOnTop = true
     override val name = "Dungeon floor"

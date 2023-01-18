@@ -7,7 +7,7 @@ data class TimedEvent(
     /** Execution delay */
     override val turnDelay: Double,
     /** After how long is the next turn */
-    override val timeout: Double,
+    override val cooldown: Double,
     /** How many times the event will occur */
     override var executions: Int,
     override val event: Event

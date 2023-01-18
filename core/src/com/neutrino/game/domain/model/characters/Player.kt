@@ -4,18 +4,22 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.neutrino.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
+import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Equipment
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
+import com.neutrino.game.domain.model.systems.event.types.EventManaRegen
+import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
+import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.*
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.lessThanDelta
 
 object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
     override var hp: Float = 0f
@@ -23,10 +27,12 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
             val previous = hp
             field = value
             // Send true if hp decreased, false otherwise
-            GlobalData.notifyObservers(GlobalDataType.PLAYERHP, value.lessThanDelta(previous))}
+            GlobalData.notifyObservers(GlobalDataType.PLAYERHP, value.compareDelta(previous))}
     override var mp: Float = 10f
-        set(value) {field = value
-            GlobalData.notifyObservers(GlobalDataType.PLAYERMANA, false)}
+        set(value) {
+            val previous = mp
+            field = value
+            GlobalData.notifyObservers(GlobalDataType.PLAYERMANA, value.compareDelta(previous))}
 
     override var hpMax: Float = 30f
         set(value) {field = value
@@ -175,6 +181,9 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
         skillList.add(SkillCripplingSpin(this))
         skillList.add(SkillTeleport(this))
         skillList.add(SkillTeleportBackstab(this))
+
+        val manaRegen = CharacterEvent(Player, TimedEvent(0.0, 0.3, Int.MAX_VALUE, EventManaRegen(Player, 0.1f)), Turn.turn)
+        EventDispatcher.dispatchEvent(manaRegen)
     }
 
     override val description: String

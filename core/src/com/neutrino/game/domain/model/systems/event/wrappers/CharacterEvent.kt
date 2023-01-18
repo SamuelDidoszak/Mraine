@@ -16,7 +16,7 @@ data class CharacterEvent(
     var curRepeat: Int = 0
 
     constructor(character: Character, timedEvent: TimedEvent, turn: Double) :
-        this(character, turn + timedEvent.turnDelay, timedEvent.timeout, timedEvent.executions, timedEvent.event) {
+        this(character, turn + timedEvent.turnDelay, timedEvent.cooldown, timedEvent.executions, timedEvent.event) {
             event.set("character", character)
         }
 

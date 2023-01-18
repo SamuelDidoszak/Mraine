@@ -1,11 +1,10 @@
 package com.neutrino.game.domain.model.systems.event.types
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.utility.HpBar
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.Event
 
-class EventHeal(): Event() {
+class EventManaRegen(): Event() {
     constructor(character: Character, power: Float) : this() {
         this.character = character
         this.power = power
@@ -32,10 +31,9 @@ class EventHeal(): Event() {
         if (!checkData())
             return
 
-        if (character.hp + power > character.hpMax)
-            character.hp = character.hpMax
+        if (character.mp + power > character.mpMax)
+            character.mp = character.mpMax
         else
-            character.hp += power
-        character.findActor<HpBar>("hpBar").update(character.hp)
+            character.mp += power
     }
 }

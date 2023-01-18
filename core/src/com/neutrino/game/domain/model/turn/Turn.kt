@@ -376,8 +376,6 @@ object Turn {
                 return
             }
 
-            println("Eggs ecuting event ${event.event::class.simpleName}")
-
             event.event.start()
             event.turn += event.timeout
             event.curRepeat++

@@ -32,6 +32,9 @@ import ktx.scene2d.horizontalGroup
 import ktx.scene2d.scene2d
 import ktx.scene2d.verticalGroup
 import space.earlygrey.shapedrawer.ShapeDrawer
+import java.util.*
+import kotlin.collections.ArrayDeque
+import kotlin.concurrent.schedule
 
 class HudStage(viewport: Viewport): Stage(viewport) {
     private val hudAtlas = TextureAtlas("UI/hud.atlas")
@@ -45,6 +48,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
 
     private lateinit var statusIcons: VerticalGroup
     private val hpMpBarGroup: VerticalGroup = VerticalGroup()
+    private lateinit var expBar: HudExpBar
 
     private val darkenBackground = Image(TextureRegion(Texture("UI/blackBg.png")))
     val diagnostics = Diagnostics()
@@ -95,15 +99,27 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         diagnostics.setPosition(0f, height - diagnostics.height)
         diagnostics.isVisible = Gdx.app.type != Application.ApplicationType.Desktop
 
+        // Initialize exp bar
+        expBar = HudExpBar(hotBarBorder.width)
+        expBar.height = 2f
+        expBar.name = "expBar"
+        addActor(expBar)
+
         // Initialize hp and mp bars
         val barHeight = 16f
         hpMpBarGroup.addActor(HudHpBar(hotBarBorder.width, barHeight))
-        hpMpBarGroup.addActor(HudMpBar(hotBarBorder.width, barHeight))
+        val mpGroup: Group = Group()
+            mpGroup.addActor(HudMpBarBackground(hotBarBorder.width, barHeight))
+            mpGroup.addActor(HudMpBar(hotBarBorder.width, barHeight))
+            mpGroup.height = barHeight
+        hpMpBarGroup.addActor(mpGroup)
         hpMpBarGroup.pack()
         hpMpBarGroup.height = barHeight * 2
         hpMpBarGroup.name = "hpMpBarGroup"
         addActor(hpMpBarGroup)
         hpMpBarGroup.zIndex = 1
+
+        initializeListeners()
     }
 
     fun darkenScreen(visible: Boolean) {
@@ -120,22 +136,81 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         darkenBackground.setSize(width.toFloat(), height.toFloat())
         darkenBackground.setScale(1f)
         diagnostics.setPosition(0f, height - diagnostics.heightScaled())
+        expBar.setPosition(hotBarBorder.x, hotBarBorder.y + hotBarBorder.heightScaled())
         // hpMpBar position can be offset via an action too!
         hpMpBarGroup.setPosition(hotBarBorder.x, hotBarBorder.y + hotBarBorder.heightScaled() + (hpMpBarStatus * hpMpBarGroup.heightScaled() / 2 - hpMpBarGroup.heightScaled()))
 
         // Rounding the position to get rid of the floating point precision error
         hotBarBorder.roundPosition()
         hotBar.roundPosition()
+        expBar.roundPosition()
         hpMpBarGroup.roundPosition()
     }
 
-    private var hpMpBarStatus: Int = 1
+    private var hpMpBarStatus: Int = 0
     /** Updates the bar position.
      * @param barStatus Value 0 - 2, where 0 is hidden, 1 shows only Hp, 2 shows Hp and Mp */
     fun updateHpMpBarPosition(barStatus: Int) {
         val difference = barStatus - hpMpBarStatus
         hpMpBarGroup.addAction(Actions.moveBy(0f, difference.toFloat() * 16f * currentScale, 0.5f))
         hpMpBarStatus = barStatus
+    }
+
+    fun hideBarsOnTimeout() {
+        Timer().schedule(2000) {
+            when (hpMpBarStatus) {
+                0 -> {
+                    return@schedule
+                }
+                1 -> {
+                    if (Player.mp.equalsDelta(Player.mpMax) && Player.hp.equalsDelta(Player.hpMax))
+                        updateHpMpBarPosition(0)
+                }
+                2 -> {
+                    var position = 2
+                    if (Player.hp.equalsDelta(Player.hpMax))
+                        position -= 1
+                    if (Player.mp.equalsDelta(Player.mpMax))
+                        position -= 1
+                    updateHpMpBarPosition(position)
+                }
+            }
+        }
+    }
+
+    fun initializeListeners() {
+        GlobalData.registerObserver(object : GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.PLAYERHP
+            override fun update(data: Any?): Boolean {
+                if (data == 0)
+                    return true
+
+                if (hpMpBarStatus == 1 && Player.hp.equalsDelta(Player.hpMax))
+                    hideBarsOnTimeout()
+
+                if (hpMpBarGroup.hasActions() || !Player.mp.equalsDelta(Player.mpMax))
+                    return true
+
+                updateHpMpBarPosition(1)
+                return true
+            }
+        })
+        GlobalData.registerObserver(object : GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.PLAYERMANA
+            override fun update(data: Any?): Boolean {
+                if (data == 0)
+                    return true
+
+                if (hpMpBarStatus == 2 && Player.mp.equalsDelta(Player.mpMax))
+                    hideBarsOnTimeout()
+
+                if (Player.mp.equalsDelta(Player.mpMax) || hpMpBarGroup.hasActions())
+                    return true
+
+                updateHpMpBarPosition(2)
+                return true
+            }
+        })
     }
 
     /** ======================================================================================================================================================
@@ -540,6 +615,54 @@ class HudMpBar(private val initialWidth: Float, private val initialHeight: Float
         }
 
         drawer!!.filledRectangle(0f, 0f, initialWidth * (Player.mp / Player.mpMax), initialHeight)
+    }
+
+    override fun remove(): Boolean {
+        textureRegion.texture.dispose()
+        return super.remove()
+    }
+}
+
+class HudMpBarBackground(private val initialWidth: Float, private val initialHeight: Float): Actor() {
+    private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
+    private var drawer: ShapeDrawer? = null
+    init {
+        name = "hpBar"
+        height = initialHeight
+    }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        if (drawer == null) {
+            drawer = ShapeDrawer(batch, textureRegion)
+//            drawer!!.setColor(ColorUtils.applySaturation(Color(0f, 0f, 0.6f, 1f), 0.6f))
+            drawer!!.setColor(Color(11 / 255f, 29 / 255f, 74 / 255f, 1f))
+        }
+
+        drawer!!.filledRectangle(0f, 0f, initialWidth, initialHeight)
+    }
+
+    override fun remove(): Boolean {
+        textureRegion.texture.dispose()
+        return super.remove()
+    }
+}
+
+class HudExpBar(private val initialWidth: Float, private val initialHeight: Float = 4f): Actor() {
+    private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
+    private var drawer: ShapeDrawer? = null
+    init {
+        name = "hpBar"
+        height = initialHeight
+    }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        if (drawer == null) {
+            drawer = ShapeDrawer(batch, textureRegion)
+            drawer!!.setColor(Color(80 / 255f, 208 / 255f, 121 / 255f, 1f))
+        }
+
+        drawer!!.filledRectangle(this.x, this.y, initialWidth * this.scaleX, initialHeight * this.scaleY)
+//                (Player.experience / Player.mpMax), initialHeight)
     }
 
     override fun remove(): Boolean {

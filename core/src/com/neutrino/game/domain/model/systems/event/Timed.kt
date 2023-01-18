@@ -4,11 +4,11 @@ interface Timed {
     /** Execution delay */
     val turnDelay: Double
     /** Length of delay before the next execution */
-    val timeout: Double
+    val cooldown: Double
     /** How many times the event will occur */
     var executions: Int
 
     fun getEventLength(): Double {
-        return executions * timeout + turnDelay
+        return executions * cooldown + turnDelay
     }
 }

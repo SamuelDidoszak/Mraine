@@ -387,7 +387,7 @@ class GameScreen: KtxScreen {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERHP
             // stops the player movement and focuses him on the screen
             override fun update(data: Any?): Boolean {
-                if (data == true) {
+                if (data == -1) {
                     gameStage.focusPlayer = true
                     gameStage.lookingAround = false
 

@@ -19,6 +19,8 @@ sealed interface Skill {
     val printableData: List<Pair<String, Any>>
     val textureName: String
 
+    val manaCost: Float?
+
     interface ActiveSkillCharacter: Skill, CausesCooldown, HasRange {
         fun use(target: Character)
         fun causeCooldown() {

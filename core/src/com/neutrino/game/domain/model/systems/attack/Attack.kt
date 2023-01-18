@@ -55,7 +55,11 @@ abstract class Attack(
             if (acceptedDamageTypes.contains(StatsEnum.EARTHDAMAGE)) character.earthDamage + acceptedDamageTypes[StatsEnum.EARTHDAMAGE]!! else 0f,
             if (acceptedDamageTypes.contains(StatsEnum.AIRDAMAGE)) character.airDamage + acceptedDamageTypes[StatsEnum.AIRDAMAGE]!! else 0f,
             if (acceptedDamageTypes.contains(StatsEnum.POISONDAMAGE)) character.poisonDamage + acceptedDamageTypes[StatsEnum.POISONDAMAGE]!! else 0f,
-            character.accuracy
+            if (acceptedDamageTypes.contains(StatsEnum.CRITICALCHANCE)) character.criticalChance + acceptedDamageTypes[StatsEnum.CRITICALCHANCE]!! else character.criticalChance,
+            if (acceptedDamageTypes.contains(StatsEnum.CRITICALDAMAGE)) character.criticalDamage + acceptedDamageTypes[StatsEnum.CRITICALDAMAGE]!! else character.criticalDamage,
+            character.accuracy,
+
+            character = character
         )
     }
 }

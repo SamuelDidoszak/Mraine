@@ -14,11 +14,11 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.systems.event.Data
-import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.systems.event.Data
+import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
@@ -39,7 +39,7 @@ class ItemContextPopup(
                             if (event?.button != Input.Buttons.LEFT)
                                 return
                             super.clicked(event, x, y)
-                            if (Player.hasCooldown(CooldownType.FOOD)) {
+                            if (Player.eventArray.hasCooldown(CooldownType.FOOD)) {
                                 val cooldownLabel = TextraLabel("[@Cozette][%600][*]Food is on cooldown", KnownFonts.getStandardFamily())
                                 cooldownLabel.name = "cooldown"
                                 parent.addActor(cooldownLabel)
@@ -98,8 +98,8 @@ class ItemContextPopup(
                             if (event?.button != Input.Buttons.LEFT)
                                 return
                             super.clicked(event, x, y)
-                            Player.characterEventArray.forEach { println(it) }
-                            if (Player.hasCooldown(CooldownType.ITEM(item.name))) {
+                            Player.eventArray.forEach { println(it) }
+                            if (Player.eventArray.hasCooldown(CooldownType.ITEM(item.name))) {
                                 val cooldownLabel = TextraLabel("[@Cozette][%600][*]This item is on cooldown", KnownFonts.getStandardFamily())
                                 cooldownLabel.name = "cooldown"
                                 parent.addActor(cooldownLabel)

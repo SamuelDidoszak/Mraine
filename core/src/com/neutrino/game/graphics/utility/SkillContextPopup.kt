@@ -22,8 +22,7 @@ class SkillContextPopup(skill: Skill, x: Float, y: Float, val customUseMethod: (
                 if (event?.button != Input.Buttons.LEFT)
                     return
                 super.clicked(event, x, y)
-                Player.characterEventArray.forEach { println(it) }
-                if (Player.hasCooldown(CooldownType.SKILL(skill))) {
+                if (Player.eventArray.hasCooldown(CooldownType.SKILL(skill))) {
                     val cooldownLabel = TextraLabel("[@Cozette][%600][*]Skill is on cooldown", KnownFonts.getStandardFamily())
                     cooldownLabel.name = "cooldown"
                     parent.addActor(cooldownLabel)
@@ -36,6 +35,32 @@ class SkillContextPopup(skill: Skill, x: Float, y: Float, val customUseMethod: (
                             Actions.removeActor()))
                     return
                 }
+                if (skill.manaCost != null && skill.manaCost!! > Player.mp) {
+                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]Not enough mana", KnownFonts.getStandardFamily())
+                    cooldownLabel.name = "noMana"
+                    parent.addActor(cooldownLabel)
+                    val coords = localToParentCoordinates(Vector2(x, y))
+                    cooldownLabel.setPosition(coords.x, coords.y + 8f)
+                    cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                    cooldownLabel.addAction(
+                        Actions.sequence(
+                            Actions.fadeOut(1.25f),
+                            Actions.removeActor()))
+                    return
+                } else if (skill.manaCost == null && Player.eventArray.skillsOnCooldown == Player.maxSkills) {
+                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]Used too many skills", KnownFonts.getStandardFamily())
+                    cooldownLabel.name = "tooManySkills"
+                    parent.addActor(cooldownLabel)
+                    val coords = localToParentCoordinates(Vector2(x, y))
+                    cooldownLabel.setPosition(coords.x, coords.y + 8f)
+                    cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                    cooldownLabel.addAction(
+                        Actions.sequence(
+                            Actions.fadeOut(1.25f),
+                            Actions.removeActor()))
+                    return
+                }
+
                 customUseMethod.invoke()
             }
         })

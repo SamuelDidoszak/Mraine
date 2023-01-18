@@ -19,4 +19,9 @@ data class CharacterEvent(
         this(character, turn + timedEvent.turnDelay, timedEvent.timeout, timedEvent.executions, timedEvent.event) {
             event.set("character", character)
         }
+
+    constructor(character: Character, onOffEvent: OnOffEvent, turn: Double) :
+            this(character, TimedEvent(onOffEvent), turn) {
+        event.set("character", character)
+    }
 }

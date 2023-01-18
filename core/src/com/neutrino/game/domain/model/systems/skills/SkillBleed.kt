@@ -21,6 +21,7 @@ class SkillBleed(override val character: Character): Skill.ActiveSkillCharacter 
     override val cooldownLength: Double = 20.0
     override val cooldownType: CooldownType = CooldownType.SKILL(this)
 
+    override val manaCost: Float? = null
     private val bleedDamage = 2f
     private val bleedingLength = 5
     override var range: Int = 1

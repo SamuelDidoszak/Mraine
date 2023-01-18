@@ -13,9 +13,7 @@ import com.neutrino.game.domain.model.items.Equipment
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
-import com.neutrino.game.domain.model.systems.skills.Skill
-import com.neutrino.game.domain.model.systems.skills.SkillBleed
-import com.neutrino.game.domain.model.systems.skills.SkillCripplingSpin
+import com.neutrino.game.domain.model.systems.skills.*
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.lessThanDelta
 
@@ -26,7 +24,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
             field = value
             // Send true if hp decreased, false otherwise
             GlobalData.notifyObservers(GlobalDataType.PLAYERHP, value.lessThanDelta(previous))}
-    override var mp: Float = 0f
+    override var mp: Float = 10f
         set(value) {field = value
             GlobalData.notifyObservers(GlobalDataType.PLAYERMANA, false)}
 
@@ -175,6 +173,8 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
 
         skillList.add(SkillBleed(this))
         skillList.add(SkillCripplingSpin(this))
+        skillList.add(SkillTeleport(this))
+        skillList.add(SkillTeleportBackstab(this))
     }
 
     override val description: String
@@ -191,6 +191,11 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
     override val textureHaver: TextureHaver = this
 
     override var animation: Animation<TextureRegion>? = null
+
+    override fun move(xPos: Int, yPos: Int, speed: Float) {
+        super.move(xPos, yPos, speed)
+        GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
+    }
 
     fun addToInventory(item: Item): Boolean {
         // add to stack

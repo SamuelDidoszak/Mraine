@@ -20,8 +20,6 @@ import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.attack.BasicAttack
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.Attackable
-import com.neutrino.game.domain.model.systems.event.types.CooldownType
-import com.neutrino.game.domain.model.systems.event.types.EventCooldown
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.utility.ColorUtils
 import com.neutrino.game.domain.use_case.Shaderable
@@ -150,17 +148,7 @@ abstract class Character(
     override val textureHaver: TextureHaver = this
 
     open val ai: Ai = Ai(this)
-    val characterEventArray: MutableList<CharacterEvent> = ArrayList()
-    fun hasCooldown(cooldownType: CooldownType): Boolean {
-        return characterEventArray.find {
-            it.event is EventCooldown && it.event.cooldownType == cooldownType &&
-            when (it.event.cooldownType) {
-                is CooldownType.SKILL -> (it.event.cooldownType as CooldownType.SKILL).skill::class == (cooldownType as CooldownType.SKILL).skill::class
-                is CooldownType.ITEM -> (it.event.cooldownType as CooldownType.ITEM).itemName == (cooldownType as CooldownType.ITEM).itemName
-                else -> true
-            }
-        } != null
-    }
+    val eventArray: CharacterEventArray = CharacterEventArray()
 
     override var textureList:  List<TextureAtlas.AtlasRegion> = listOf()
     override fun loadTextures(atlas: TextureAtlas) {
@@ -211,7 +199,7 @@ abstract class Character(
         batch?.color = color
     }
 
-    fun move(xPos: Int, yPos: Int, speed: Float = MoveSpeed) {
+    open fun move(xPos: Int, yPos: Int, speed: Float = MoveSpeed) {
         this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, speed))
         if (xPos != this.xPos)
             mirrored = xPos < this.xPos
@@ -303,6 +291,13 @@ abstract class Character(
         damage += airDamage
         damage += poisonDamage
 
+        val critical = Random.nextFloat() < data.criticalChance
+        if (critical || (ai is EnemyAi && !(ai as EnemyAi).sensedEnemyArray.contains(data.character))) {
+            println("Critical hit!")
+            damage *= data.criticalDamage
+        }
+
+
         // get damage color from interpolation
         var damageColor: Color = Color(0f, 0f, 0f, 1f)
         damageColor = ColorUtils.colorInterpolation(damageColor, Color(255f, 0f, 0f, 1f), (physicalDamage / damage).toInt())
@@ -316,8 +311,8 @@ abstract class Character(
 
         ActorVisuals.showDamage(this, damageColor, damage)
 
-//        if (ai is EnemyAi)
-//            (ai as EnemyAi).gotAttackedBy = character
+        if (ai is EnemyAi)
+            (ai as EnemyAi).gotAttackedBy = data.character
 
         this.hp -= damage
         if (hp <= 0) {

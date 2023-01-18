@@ -135,10 +135,9 @@ object Turn {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
                         moveCharacter(character.xPos, character.yPos, action.x, action.y)
+                        fov.updateFov(action.x, action.y, Player.ai.fov, Player.viewDistance)
                         character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
-                        fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov, Player.viewDistance)
-                        GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)!!
@@ -238,11 +237,14 @@ object Turn {
                             }
                             is Skill.ActiveSkillTile -> {
                                 action.skill.use(action.tile!!)
+                                println("Skill used")
                             }
                             is Skill.PassiveSkill -> {
                                 throw Exception("Skill cannot be used")
                             }
                         }
+                        if (action.skill.manaCost != null)
+                            Player.mp -= action.skill.manaCost!!
                     }
 
                     is Action.WAIT -> {
@@ -287,7 +289,10 @@ object Turn {
                         }
                     }
                     is Action.SKILL -> {
-                        println(character.name + " used a skill")}
+                        println(character.name + " used a skill")
+                        if (action.skill.manaCost != null)
+                            character.mp -= action.skill.manaCost!!
+                    }
                     is Action.INTERACTION -> {
                         println(character.name + " interacted with ${action.entity.name}")
                     }
@@ -370,6 +375,8 @@ object Turn {
                 eventArray.stopEvent(event)
                 return
             }
+
+            println("Eggs ecuting event ${event.event::class.simpleName}")
 
             event.event.start()
             event.turn += event.timeout

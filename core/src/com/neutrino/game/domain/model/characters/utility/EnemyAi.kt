@@ -22,7 +22,8 @@ open class EnemyAi(private val character: Character): Ai(character) {
         private val MAX_DETECTION_DISTANCE = VectorOperations.getLength(DETECTION_RADIUS.toFloat(), DETECTION_RADIUS.toFloat())
     }
 
-    private var sensedEnemyArray: MutableSet<Character> = mutableSetOf()
+    var sensedEnemyArray: MutableSet<Character> = mutableSetOf()
+        private set
 
     protected var targettedEnemy: Character? = null
 

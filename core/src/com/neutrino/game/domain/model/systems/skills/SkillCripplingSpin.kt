@@ -23,6 +23,7 @@ class SkillCripplingSpin(override val character: Character): Skill.ActiveSkill, 
     override val cooldownLength: Double = 20.0
     override val cooldownType: CooldownType = CooldownType.SKILL(this)
 
+    override val manaCost: Float? = null
     private val damage = 5f
     private val slowDownStrength = 2.0
     private val slowDownTime = 10.0

@@ -359,6 +359,8 @@ object Turn {
         character.dropItems().forEach {
             LevelArrays.getEntitiesAt(character.getPosition()).add(ItemEntity(it))
         }
+
+        eventArray.remove(character)
     }
 
     private fun playerDied() {

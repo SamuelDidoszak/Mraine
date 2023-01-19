@@ -1,5 +1,6 @@
 package com.neutrino.game.domain.model.turn
 
+import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.equalsDelta
 import com.neutrino.game.lessThanDelta
@@ -56,5 +57,19 @@ class EventArray: ArrayList<CharacterEvent>() {
             this.elementAt(0)
         else
             null
+    }
+
+    /**
+     * Remove all events connected to the character
+     */
+    fun remove(character: Character) {
+        var eventAmount = character.eventArray.size
+        val iterator = this.iterator()
+        while (eventAmount != 0 && iterator.hasNext()) {
+            if (iterator.next().character == character) {
+                iterator.remove()
+                eventAmount--
+            }
+        }
     }
 }

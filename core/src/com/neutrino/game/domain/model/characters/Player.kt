@@ -20,9 +20,11 @@ import com.neutrino.game.domain.model.systems.event.types.EventManaRegen
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.*
+import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
 import com.neutrino.game.domain.model.turn.Turn
+import kotlin.reflect.KClass
 
-object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
+object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, HasPassives {
     override var hp: Float = 0f
         set(value) {
             val previous = hp
@@ -156,6 +158,8 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
     override val inventory: Inventory = Inventory()
     override val equipment: Equipment = Equipment(this)
 
+    override val passives: HashMap<KClass<out Skill.PassiveSkill>, Skill.PassiveSkill> = HashMap()
+
     init {
         initialize("Player")
         // TODO maybe delete it entirely. Each character would have to check if infogroup != null tho
@@ -177,7 +181,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
         addTag(CharacterTag.IncreaseStealthDamage(1.5f))
         addTag(CharacterTag.Lifesteal(1f))
 
-        strength = 3f
+        addPassive(IncreaseTwohandedDamage(this, 1.1f))
     }
 
     override val description: String

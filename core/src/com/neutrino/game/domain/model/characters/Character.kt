@@ -33,14 +33,13 @@ import com.neutrino.game.graphics.shaders.ShaderParametered
 import squidpony.squidmath.Coord
 import kotlin.random.Random
 import kotlin.reflect.KClass
-import kotlin.reflect.cast
 import kotlin.reflect.full.createInstance
 
 abstract class Character(
     var xPos: Int,
     var yPos: Int,
     var turn: Double
-): Group(), TextureHaver, Animated, Shaderable, Stats, Randomization, Attackable {
+): Group(), TextureHaver, Animated, Shaderable, Stats, Randomization, Attackable, HasCharacterTags {
     override var strength: Float = 0f
         set(value) {
             val difference = value - Player.strength
@@ -156,18 +155,7 @@ abstract class Character(
     open val ai: Ai = Ai(this)
     val eventArray: CharacterEventArray = CharacterEventArray()
 
-    val tags: HashMap<KClass<out CharacterTag>, CharacterTag> = HashMap()
-
-    fun addTag(tag: CharacterTag) {
-        tags.put(tag::class, tag)
-    }
-
-    fun <K: CharacterTag> getTag(tag: KClass<K>): K? {
-        if (tags[tag] == null)
-            return null
-
-        return tag.cast(tags[tag])
-    }
+    override val tags: HashMap<KClass<out CharacterTag>, CharacterTag> = HashMap()
 
     override var textureList:  List<TextureAtlas.AtlasRegion> = listOf()
     override fun loadTextures(atlas: TextureAtlas) {

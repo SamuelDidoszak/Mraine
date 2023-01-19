@@ -78,4 +78,22 @@ abstract class EquipmentItem: Item(), ItemType.EQUIPMENT {
         }
         return true
     }
+
+    fun getEquipmentType(): EquipmentType {
+        return when (this as ItemType.EQUIPMENT) {
+            is ItemType.EQUIPMENT.HEAD -> EquipmentType.HEAD
+            is ItemType.EQUIPMENT.TORSO -> EquipmentType.TORSO
+            is ItemType.EQUIPMENT.LEGS -> EquipmentType.LEGS
+            is ItemType.EQUIPMENT.HANDS -> EquipmentType.HANDS
+            is ItemType.EQUIPMENT.FEET -> EquipmentType.FEET
+            is ItemType.EQUIPMENT.AMULET -> EquipmentType.AMULET
+            is ItemType.EQUIPMENT.LRING -> EquipmentType.LRING
+            is ItemType.EQUIPMENT.RRING -> EquipmentType.RRING
+            is ItemType.EQUIPMENT.BAG -> EquipmentType.BAG
+            is ItemType.EQUIPMENT.LHAND -> EquipmentType.LHAND
+            is ItemType.EQUIPMENT.RHAND -> EquipmentType.RHAND
+            is ItemType.EQUIPMENT.TWOHAND -> EquipmentType.RHAND
+            else -> throw Exception("Items is of unsupported type")
+        }
+    }
 }

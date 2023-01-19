@@ -141,7 +141,7 @@ class Equipment(val character: Character) {
         return equipmentType
     }
 
-    private fun unsetItem(item: EquipmentItem) {
+    fun unsetItem(item: EquipmentItem, addToInventory: Boolean = true) {
         unsetItemModifiers(item)
 
         if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseOnehandedDamage::class)) {
@@ -163,6 +163,14 @@ class Equipment(val character: Character) {
             }
         }
 
+        if (item is INHAND)
+            character.primaryAttack = character.basicAttack
+
+        equipmentMap[item.getEquipmentType()] = null
+
+        if (!addToInventory)
+            return
+
         if (character is HasInventory) {
             character.inventory.itemList.add(EqElement(item as Item, Turn.turn))
             // required to add it to hud bar
@@ -171,8 +179,6 @@ class Equipment(val character: Character) {
         } else {
             // TODO drop item onto the ground or add to dropItemList
         }
-        if (item is INHAND)
-            character.primaryAttack = character.basicAttack
     }
 
     private fun setItemModifiers(item: EquipmentItem) {

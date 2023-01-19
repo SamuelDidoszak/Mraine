@@ -16,7 +16,7 @@ class SkillManaDrain(override val character: Character): Skill.ActiveSkillCharac
 
     override val manaCost: Float? = null
     override var range: Int = 8
-    override var rangeType: RangeType = RangeType.SQUARE
+    override var rangeType: RangeType = RangeType.CIRCLE
     var manaDrain = 15f
 
     override val printableData: List<Pair<String, Any>> = listOf(

@@ -28,7 +28,7 @@ class SkillTeleportBackstab(override val character: Character): Skill.ActiveSkil
     val damage = 5f
     val criticalChance = 1f
     override var range: Int = 7
-    override var rangeType: RangeType = RangeType.SQUARE
+    override var rangeType: RangeType = RangeType.CIRCLE
 
     override val printableData: List<Pair<String, Any>> = listOf(
         Pair("Range", range),

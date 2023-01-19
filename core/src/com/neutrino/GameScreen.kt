@@ -85,6 +85,8 @@ class GameScreen: KtxScreen {
         gameStage.camera.position.set(Player.x, Player.y, gameStage.camera.position.z)
         initialize.level.prepareLights()
 
+        gameStage.cancelSkill = this::cancelSkill
+
         // Initiate pools
         val damagePool: Pool<DamageNumber> = Pools.get(DamageNumber::class.java)
         damagePool.fill(50)
@@ -216,63 +218,9 @@ class GameScreen: KtxScreen {
             // use skill
             val usedSkill = uiStage.usedSkill
             if (usedSkill != null) {
-                when (usedSkill) {
-                    is Skill.ActiveSkill -> {
-                        Player.ai.action = Action.SKILL(usedSkill)
-                        uiStage.usedSkill = null
-                    }
-                    is Skill.ActiveSkillCharacter -> {
-                        if (!waitForAdditionalClick) {
-                            waitForAdditionalClick = true
-                            gameStage.highlighting.highlightArea(usedSkill, Player.getPosition(), true, true)
-                            gameStage.highlightRange = object: HasRange {
-                                override var range: Int = 0
-                                override var rangeType: RangeType = RangeType.SQUARE
-                            }
-                            gameStage.highlightMode = Highlighting.Companion.HighlightModes.ONLY_CHARACTERS
-                        }
-                        if (gameStage.clickedCoordinates == null)
-                            return
-
-                        if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
-                            cancelSkill()
-                            return
-                        }
-
-                        val clickedCharacter: Character? = LevelArrays.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
-                        if (clickedCharacter == null) {
-                            gameStage.clickedCoordinates = null
-                            return
-                        }
-
-                        Player.ai.action = Action.SKILL(usedSkill, clickedCharacter)
-                        cancelSkill()
-                    }
-                    is Skill.ActiveSkillTile -> {
-                        if (!waitForAdditionalClick) {
-                            waitForAdditionalClick = true
-                            gameStage.highlighting.highlightArea(usedSkill, Player.getPosition(), true, true)
-                            gameStage.highlightRange = object: HasRange {
-                                override var range: Int = 0
-                                override var rangeType: RangeType = RangeType.SQUARE
-                            }
-                            gameStage.highlightMode = Highlighting.Companion.HighlightModes.AREA
-                        }
-                        if (gameStage.clickedCoordinates == null)
-                            return
-
-                        if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
-                            cancelSkill()
-                            return
-                        }
-
-                        Player.ai.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
-                        cancelSkill()
-                    }
-                    is Skill.PassiveSkill -> {
-                        throw Exception("Cannot use passive skill!")
-                    }
-                }
+                val used = useSkill(usedSkill)
+                if (!used)
+                    return
             }
 
             // interact with an entity
@@ -373,6 +321,93 @@ class GameScreen: KtxScreen {
             Turn.makeTurn()
     }
 
+    /**
+     * Tries to use provided skill
+     * @return false if skill was cancelled
+     */
+    private fun useSkill(usedSkill: Skill): Boolean {
+        when (usedSkill) {
+            is Skill.ActiveSkill -> {
+                Player.ai.action = Action.SKILL(usedSkill)
+                uiStage.usedSkill = null
+            }
+            is Skill.ActiveSkillCharacter -> {
+                if (!waitForAdditionalClick) {
+                    waitForAdditionalClick = true
+                    gameStage.highlighting.highlightArea(usedSkill, Player.getPosition(), true, true)
+                    gameStage.highlightRange = object: HasRange {
+                        override var range: Int = 0
+                        override var rangeType: RangeType = RangeType.SQUARE
+                    }
+                    gameStage.highlightMode = Highlighting.Companion.HighlightModes.ONLY_CHARACTERS
+                    gameStage.skillRange = usedSkill
+                }
+                if (gameStage.clickedCoordinates == null)
+                    return false
+
+                if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
+                    cancelSkill()
+                    return false
+                }
+
+                val clickedCharacter: Character? = LevelArrays.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
+                if (clickedCharacter == null) {
+                    gameStage.clickedCoordinates = null
+                    return false
+                }
+
+                Player.ai.action = Action.SKILL(usedSkill, clickedCharacter)
+                cancelSkill()
+            }
+            is Skill.ActiveSkillTile -> {
+                if (!waitForAdditionalClick) {
+                    waitForAdditionalClick = true
+                    gameStage.highlighting.highlightArea(usedSkill, Player.getPosition(), true, true)
+                    gameStage.highlightRange = object: HasRange {
+                        override var range: Int = 0
+                        override var rangeType: RangeType = RangeType.SQUARE
+                    }
+                    gameStage.highlightMode = Highlighting.Companion.HighlightModes.AREA
+                    gameStage.skillRange = usedSkill
+                }
+                if (gameStage.clickedCoordinates == null)
+                    return false
+
+                if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
+                    cancelSkill()
+                    return false
+                }
+
+                Player.ai.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
+                cancelSkill()
+            }
+            is Skill.ActiveSkillArea -> {
+                if (!waitForAdditionalClick) {
+                    waitForAdditionalClick = true
+                    gameStage.highlighting.highlightArea(usedSkill, Player.getPosition(), false, true)
+                    gameStage.highlightRange = usedSkill.area
+                    gameStage.highlightMode = Highlighting.Companion.HighlightModes.AREA
+                    gameStage.skillRange = usedSkill
+                }
+                if (gameStage.clickedCoordinates == null)
+                    return false
+
+                if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
+                    cancelSkill()
+                    return false
+                }
+
+                Player.ai.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
+                cancelSkill()
+            }
+
+            is Skill.PassiveSkill -> {
+                throw Exception("Cannot use passive skill!")
+            }
+        }
+        return true
+    }
+
     private fun cancelSkill() {
         gameStage.highlightRange = null
         gameStage.highlightMode = Highlighting.Companion.HighlightModes.NORMAL
@@ -380,6 +415,8 @@ class GameScreen: KtxScreen {
         gameStage.highlighting.deHighlight()
         gameStage.clickedCoordinates = null
         uiStage.usedSkill = null
+
+        gameStage.skillRange = null
     }
 
     private fun registerPlayerObservers() {

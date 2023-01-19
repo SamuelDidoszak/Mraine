@@ -168,6 +168,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
         skillList.add(SkillTeleport(this))
         skillList.add(SkillTeleportBackstab(this))
         skillList.add(SkillManaDrain(this))
+        skillList.add(SkillMeteorite(this))
 
         val manaRegen = CharacterEvent(Player, TimedEvent(0.0, 0.3, Int.MAX_VALUE, EventManaRegen(Player, 0.1f)), Turn.turn)
         EventDispatcher.dispatchEvent(manaRegen)

@@ -4,11 +4,11 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.Event
 
-class EventBleed(): Event() {
+class EventBurn(): Event() {
     constructor(character: Character, power: Float) : this() {
-    this.character = character
-    this.power = power
-}
+        this.character = character
+        this.power = power
+    }
 
     constructor(power: Float) : this() {
         this.power = power
@@ -31,6 +31,6 @@ class EventBleed(): Event() {
         if (!checkData())
             return
 
-        character.getDamage(power, "bleeding")
+        character.getDamage(power, "fire")
     }
 }

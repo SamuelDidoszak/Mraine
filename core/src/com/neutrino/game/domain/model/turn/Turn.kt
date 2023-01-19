@@ -238,7 +238,9 @@ object Turn {
                             }
                             is Skill.ActiveSkillTile -> {
                                 action.skill.use(action.tile!!)
-                                println("Skill used")
+                            }
+                            is Skill.ActiveSkillArea -> {
+                                action.skill.use(action.tile!!)
                             }
                             is Skill.PassiveSkill -> {
                                 throw Exception("Skill cannot be used")

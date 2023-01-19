@@ -227,6 +227,10 @@ abstract class Character(
     }
 
     fun getDamage(damage: Float, type: String): Float {
+        // TODO after cleaning up all character events this may be not necessary
+        if (!this.isAlive())
+            return 0f
+
         var finalDamage: Float
         // for optimization, instead of creating Colors, pure rgb values can be passed
         var damageColor: Color = Color(0f, 0f, 0f, 1f)
@@ -288,6 +292,9 @@ abstract class Character(
     }
 
     override fun getDamage(data: AttackData) {
+//        if (!this.isAlive())
+//            return
+
         val evaded = Random.nextFloat() * (1 - data.accuracy + evasion)
         if (evaded != 0f && evaded in 0f .. evasion) {
             println("Evaded the attack")

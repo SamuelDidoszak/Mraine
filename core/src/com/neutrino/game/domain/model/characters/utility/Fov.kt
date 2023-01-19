@@ -6,7 +6,9 @@ import com.neutrino.game.domain.model.entities.utility.Interactable
 import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.map.Map
 import com.neutrino.game.utility.BArray
-import kotlin.math.*
+import kotlin.math.ceil
+import kotlin.math.min
+import kotlin.math.round
 
 /**
  * Recursive shadowcasting implementation of FOV
@@ -15,24 +17,7 @@ import kotlin.math.*
 class Fov(var map: Map) {
 
     companion object {
-        // TODO when implementing several distance values, make a precalculated indexed array of distances
-        /**
-         * View distance of FOV. Actually is i - 1
-         */
-//        const val viewDistance = 20
-
-        /**
-         * Array of possible view distances. Each distance is actually i - 1
-         */
-        val distance: Array<IntArray> = Array(50) { IntArray(it) }
-
-        init {
-            for (maxDist in 1 until 50) {
-                for (j in 1 .. maxDist) {
-                    distance[maxDist][j - 1] = round((maxDist + 0.05) * cos(asin(j / (maxDist + 0.5)))).toInt()
-                }
-            }
-        }
+        val distance = HasRange.circleDistances
 
         /**
          * List of all octant transforms

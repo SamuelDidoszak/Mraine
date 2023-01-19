@@ -153,6 +153,11 @@ class GameStage(
 
         // create the entityLookupPopup
         if (button == Input.Buttons.RIGHT) {
+            if (highlightMode != Highlighting.Companion.HighlightModes.NORMAL) {
+                cancelSkill.invoke()
+                return true
+            }
+
             val popup: Table
             if (level!!.getTopItem(tile.x, tile.y) != null) {
                 popup = ItemDetailsPopup(level!!.getTopItem(tile.x, tile.y)!!, false)
@@ -205,6 +210,10 @@ class GameStage(
 //                Player.move(Player.xPos, Player.yPos + 1)
                 camera.position.set(camera.position.x, camera.position.y - 64, 0f)
             }
+            Input.Keys.ESCAPE -> {
+                if (highlightMode != Highlighting.Companion.HighlightModes.NORMAL)
+                    cancelSkill.invoke()
+            }
         }
         return true
     }
@@ -234,6 +243,8 @@ class GameStage(
             highlighting.deHighlightOnHover()
         }
     var highlightRange: HasRange? = null
+    var skillRange: HasRange? = null
+    lateinit var cancelSkill: () -> Unit
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val coord = getTile(screenX, screenY)
@@ -244,10 +255,16 @@ class GameStage(
                     highlighting.highlightOnHover(coord)
             }
             Highlighting.Companion.HighlightModes.AREA -> {
-                highlighting.highlightAttackArea(highlightRange!!, coord, false)
+                if (skillRange!!.isInRange(Player.getPosition(), coord))
+                    highlighting.highlightAttackArea(highlightRange!!, coord, false)
+                else
+                    highlighting.deHighlight(true)
             }
             Highlighting.Companion.HighlightModes.ONLY_CHARACTERS -> {
-                highlighting.highlightAttackArea(highlightRange!!, coord, true)
+                if (skillRange!!.isInRange(Player.getPosition(), coord))
+                    highlighting.highlightAttackArea(highlightRange!!, coord, true)
+                else
+                    highlighting.deHighlight(true)
             }
         }
 

@@ -15,6 +15,7 @@ import com.neutrino.game.domain.model.items.Equipment
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
+import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.types.EventManaRegen
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
@@ -40,35 +41,20 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
     override var mpMax: Float = 10f
         set(value) {field = value
             sendStatChangeData(StatsEnum.MPMAX)}
-    override var strength: Float = 0f
+    override var strength: Float
+        get() = super.strength
         set(value) {
-            val difference = value - strength
-            field = value
-            hpMax += difference * 5f
-            hp += difference * 5f
-            damage += difference * 0.5f
+            super.strength = value
             sendStatChangeData(StatsEnum.STRENGTH)}
-    override var dexterity: Float = 0f
-        set(value) {
-            val difference = value - dexterity
-            field = value
-            evasion += difference * 0.015f
-            accuracy += difference * 0.02f
-            stealth += difference * 0.015f
-            sendStatChangeData(StatsEnum.DEXTERITY)}
-    override var intelligence: Float = 0f
-        set(value) {
-            val difference = value - intelligence
-            field = value
-            mpMax += difference * 5f
-            mp += difference * 5f
-            sendStatChangeData(StatsEnum.INTELLIGENCE)}
-    override var luck: Float = 0f
-        set(value) {
-            val difference = value - luck
-            field = value
-            criticalChance += difference * 0.015f
-            sendStatChangeData(StatsEnum.LUCK)}
+    override var dexterity: Float
+        get() = super.dexterity
+        set(value) { sendStatChangeData(StatsEnum.DEXTERITY) }
+    override var intelligence: Float
+        get() = super.intelligence
+        set(value) { sendStatChangeData(StatsEnum.INTELLIGENCE) }
+    override var luck: Float
+        get() = super.luck
+        set(value) { sendStatChangeData(StatsEnum.LUCK) }
 
     override var damage: Float = 3f
         set(value) {field = value
@@ -181,9 +167,16 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills {
         skillList.add(SkillCripplingSpin(this))
         skillList.add(SkillTeleport(this))
         skillList.add(SkillTeleportBackstab(this))
+        skillList.add(SkillManaDrain(this))
 
         val manaRegen = CharacterEvent(Player, TimedEvent(0.0, 0.3, Int.MAX_VALUE, EventManaRegen(Player, 0.1f)), Turn.turn)
         EventDispatcher.dispatchEvent(manaRegen)
+
+        addTag(CharacterTag.IncreaseOnehandedDamage(400f))
+        addTag(CharacterTag.IncreaseStealthDamage(1.5f))
+        addTag(CharacterTag.Lifesteal(1f))
+
+        strength = 3f
     }
 
     override val description: String

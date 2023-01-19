@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Pools
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
@@ -16,11 +17,15 @@ import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.attack.BasicAttack
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.Attackable
+import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
+import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
+import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.domain.model.utility.ColorUtils
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.graphics.shaders.OutlineShader
@@ -28,6 +33,7 @@ import com.neutrino.game.graphics.shaders.ShaderParametered
 import squidpony.squidmath.Coord
 import kotlin.random.Random
 import kotlin.reflect.KClass
+import kotlin.reflect.cast
 import kotlin.reflect.full.createInstance
 
 abstract class Character(
@@ -149,6 +155,19 @@ abstract class Character(
 
     open val ai: Ai = Ai(this)
     val eventArray: CharacterEventArray = CharacterEventArray()
+
+    val tags: HashMap<KClass<out CharacterTag>, CharacterTag> = HashMap()
+
+    fun addTag(tag: CharacterTag) {
+        tags.put(tag::class, tag)
+    }
+
+    fun <K: CharacterTag> getTag(tag: KClass<K>): K? {
+        if (tags[tag] == null)
+            return null
+
+        return tag.cast(tags[tag])
+    }
 
     override var textureList:  List<TextureAtlas.AtlasRegion> = listOf()
     override fun loadTextures(atlas: TextureAtlas) {
@@ -291,10 +310,22 @@ abstract class Character(
         damage += airDamage
         damage += poisonDamage
 
-        val critical = Random.nextFloat() < data.criticalChance
-        if (critical || (ai is EnemyAi && !(ai as EnemyAi).sensedEnemyArray.contains(data.character))) {
+        if ((ai is EnemyAi && !(ai as EnemyAi).sensedEnemyArray.contains(data.character))) {
+            println("Stealth hit!")
+            val multiplier = data.character.getTag(CharacterTag.IncreaseStealthDamage::class)?.incrementPercent ?: 1f
+            println("Multiplier: ${multiplier}")
+            damage *= data.criticalDamage * multiplier
+        }
+        else if (Random.nextFloat() < data.criticalChance) {
             println("Critical hit!")
             damage *= data.criticalDamage
+        }
+
+        if (data.character.getTag(CharacterTag.Lifesteal::class) != null) {
+            val heal = CharacterEvent(data.character,
+                TimedEvent(1.0,
+                    EventHeal(damage * data.character.getTag(CharacterTag.Lifesteal::class)!!.power)), Turn.turn)
+            EventDispatcher.dispatchEvent(heal)
         }
 
 

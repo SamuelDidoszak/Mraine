@@ -1,6 +1,7 @@
 package com.neutrino.game.domain.model.systems.event.types
 
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.Event
 import com.neutrino.game.domain.model.systems.event.Timed
@@ -33,8 +34,12 @@ class EventCooldown(): Event(), Timed {
     var cooldownLength: Double
         get() { return get("cooldownLength", Double::class)!! }
         set(value) {
-            set("cooldownLength", value)
-            turnDelay = value
+            var multiplier = 1f
+            if (data["cooldownType"] != null && data["cooldownType"]!!.data is CooldownType.SKILL)
+                multiplier = character.getTag(CharacterTag.ReduceCooldown::class)?.reducePercent ?: 1f
+
+            turnDelay = value * multiplier
+            set("cooldownLength", turnDelay)
         }
 
     override var turnDelay: Double = 0.0

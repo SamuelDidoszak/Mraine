@@ -21,7 +21,7 @@ class SkillTeleport(override val character: Character): Skill.ActiveSkillTile {
     override val cooldownType: CooldownType = CooldownType.SKILL(this)
 
     override val manaCost: Float? = 5f
-    override var range: Int = 10
+    override var range: Int = 20
     override var rangeType: RangeType = RangeType.SQUARE
 
     override val printableData: List<Pair<String, Any>> = listOf(

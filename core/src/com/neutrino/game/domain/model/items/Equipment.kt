@@ -5,7 +5,10 @@ import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasInventory
+import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.items.utility.EqElement
+import com.neutrino.game.domain.model.systems.CharacterTag
+import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
@@ -94,12 +97,33 @@ class Equipment(val character: Character) {
                 equipmentMap[EquipmentType.RHAND] = item
                 equipmentType = EquipmentType.RHAND
                 character.primaryAttack = item.attack
+
+
+                if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseOnehandedDamage::class)) {
+                    item.modifierList.forEach {
+                        if (it.event is EventModifyStat && (it.event as EventModifyStat).stat == StatsEnum.DAMAGE) {
+                            val value = (it.event as EventModifyStat).value as Float * (character.getTag(CharacterTag.IncreaseOnehandedDamage::class))!!.incrementPercent
+                            (it.event as EventModifyStat).value = value
+                            return@forEach
+                        }
+                    }
+                }
             }
             is ItemType.EQUIPMENT.TWOHAND -> {
                 val lHandItem = equipmentMap[EquipmentType.LHAND]
                 if (lHandItem != null)
                     unsetItem(lHandItem)
                 previousItem = equipmentMap[EquipmentType.RHAND]
+
+                if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseTwohandedDamage::class)) {
+                    item.modifierList.forEach {
+                        if (it.event is EventModifyStat && (it.event as EventModifyStat).stat == StatsEnum.DAMAGE) {
+                            val value = (it.event as EventModifyStat).value as Float * (character.getTag(CharacterTag.IncreaseTwohandedDamage::class))!!.incrementPercent
+                            (it.event as EventModifyStat).value = value
+                            return@forEach
+                        }
+                    }
+                }
 
                 equipmentMap[EquipmentType.LHAND] = item
                 equipmentMap[EquipmentType.RHAND] = item
@@ -119,6 +143,26 @@ class Equipment(val character: Character) {
 
     private fun unsetItem(item: EquipmentItem) {
         unsetItemModifiers(item)
+
+        if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseOnehandedDamage::class)) {
+            item.modifierList.forEach {
+                if (it.event is EventModifyStat && (it.event as EventModifyStat).stat == StatsEnum.DAMAGE) {
+                    val value = (it.event as EventModifyStat).value as Float / (character.getTag(CharacterTag.IncreaseOnehandedDamage::class))!!.incrementPercent
+                    (it.event as EventModifyStat).value = value
+                    return@forEach
+                }
+            }
+        }
+        if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseTwohandedDamage::class)) {
+            item.modifierList.forEach {
+                if (it.event is EventModifyStat && (it.event as EventModifyStat).stat == StatsEnum.DAMAGE) {
+                    val value = (it.event as EventModifyStat).value as Float / (character.getTag(CharacterTag.IncreaseTwohandedDamage::class))!!.incrementPercent
+                    (it.event as EventModifyStat).value = value
+                    return@forEach
+                }
+            }
+        }
+
         if (character is HasInventory) {
             character.inventory.itemList.add(EqElement(item as Item, Turn.turn))
             // required to add it to hud bar

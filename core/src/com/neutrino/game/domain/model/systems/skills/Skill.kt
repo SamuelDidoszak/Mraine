@@ -45,6 +45,19 @@ sealed interface Skill {
         }
     }
 
+    interface ActiveSkillArea: Skill, CausesCooldown, HasRange {
+        val area: HasRange
+        fun use(tile: Coord)
+        fun causeCooldown() {
+            EventDispatcher.dispatchEvent(
+                CharacterEvent(
+                    character, Turn.turn, cooldownLength, 1,
+                    EventCooldown(character, cooldownType, cooldownLength)
+                )
+            )
+        }
+    }
+
     interface ActiveSkill: Skill, CausesCooldown {
         fun use()
         fun causeCooldown() {

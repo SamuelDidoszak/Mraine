@@ -2,6 +2,7 @@ package com.neutrino.game.domain.model.systems.event.wrappers
 
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.systems.event.Event
+import com.neutrino.game.domain.model.systems.event.types.EventCooldown
 
 data class CharacterEvent(
     val character: Character,
@@ -17,6 +18,11 @@ data class CharacterEvent(
 
     constructor(character: Character, timedEvent: TimedEvent, turn: Double) :
         this(character, turn + timedEvent.turnDelay, timedEvent.cooldown, timedEvent.executions, timedEvent.event) {
+            event.set("character", character)
+        }
+
+    constructor(character: Character, cooldownEvent: EventCooldown, turn: Double) :
+        this(character, turn + cooldownEvent.turnDelay, cooldownEvent.cooldown, cooldownEvent.executions, cooldownEvent) {
             event.set("character", character)
         }
 

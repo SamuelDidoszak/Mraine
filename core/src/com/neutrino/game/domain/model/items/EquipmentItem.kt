@@ -35,4 +35,47 @@ abstract class EquipmentItem: Item(), ItemType.EQUIPMENT {
         // TODO weighing implementation
         return modifierList[value.coerceAtMost(modifierList.size.toFloat()).toInt()] as StatsEnum
     }
+
+    fun isMelee(): Boolean {
+        if (this is INHAND) {
+            return when (this.handedItemType) {
+                HandedItemType.DAGGER,
+                HandedItemType.SWORD,
+                HandedItemType.AXE,
+                HandedItemType.LANCE ->
+                    true
+                else ->
+                    false
+            }
+        }
+        return true
+    }
+
+    fun isRanged(): Boolean {
+        if (this is INHAND) {
+            return when (this.handedItemType) {
+                HandedItemType.BOW,
+                HandedItemType.CROSSBOW,
+                HandedItemType.ARROW ->
+                    true
+                else ->
+                    false
+            }
+        }
+        return true
+    }
+
+    fun isMagicWeapon(): Boolean {
+        if (this is INHAND) {
+            return when (this.handedItemType) {
+                HandedItemType.WAND,
+                HandedItemType.STAFF,
+                HandedItemType.PARCHMENT ->
+                    true
+                else ->
+                    false
+            }
+        }
+        return true
+    }
 }

@@ -19,6 +19,7 @@ import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.CausesCooldown
 import com.neutrino.game.domain.model.systems.event.CausesEvents
 import com.neutrino.game.domain.model.systems.event.types.EventCooldown
@@ -243,8 +244,10 @@ object Turn {
                                 throw Exception("Skill cannot be used")
                             }
                         }
-                        if (action.skill.manaCost != null)
-                            Player.mp -= action.skill.manaCost!!
+                        if (action.skill.manaCost != null) {
+                            val multiplier = Player.getTag(CharacterTag.ReduceCooldown::class)?.reducePercent ?: 1f
+                            Player.mp -= action.skill.manaCost!! * multiplier
+                        }
                     }
 
                     is Action.WAIT -> {
@@ -290,8 +293,10 @@ object Turn {
                     }
                     is Action.SKILL -> {
                         println(character.name + " used a skill")
-                        if (action.skill.manaCost != null)
-                            character.mp -= action.skill.manaCost!!
+                        if (action.skill.manaCost != null) {
+                            val multiplier = character.getTag(CharacterTag.ReduceCooldown::class)?.reducePercent ?: 1f
+                            character.mp -= action.skill.manaCost!! * multiplier
+                        }
                     }
                     is Action.INTERACTION -> {
                         println(character.name + " interacted with ${action.entity.name}")

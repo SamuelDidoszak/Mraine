@@ -21,7 +21,7 @@ class IncreaseTwohandedDamage(override val character: Character, val increment: 
     override val printableData: List<Pair<String, Any>> = listOf(
         Pair("Additional damage %", (increment * 100) - 100)
     )
-    override val textureName: String = ""
+    override val textureName: String = "skillTeleportBackstab"
     override val manaCost: Float? = null
 
     override fun useStart() {

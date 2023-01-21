@@ -1,4 +1,4 @@
-package com.neutrino
+package com.neutrino.game.UI
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -19,7 +19,12 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataObserver
+import com.neutrino.GlobalDataType
+import com.neutrino.HudStage
 import com.neutrino.game.*
+import com.neutrino.game.UI.UIelements.Skills
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.items.EquipmentType
@@ -33,6 +38,7 @@ import com.neutrino.game.domain.model.systems.skills.SkillActor
 import com.neutrino.game.graphics.utility.ItemContextPopup
 import com.neutrino.game.graphics.utility.ItemDetailsPopup
 import com.neutrino.game.graphics.utility.SkillContextPopup
+import ktx.actors.setScrollFocus
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
@@ -128,7 +134,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                                                                     Other pages
     */
 
-    private val skills = Group()
+    private lateinit var skills: Skills
     private val quests = Group()
     private val map = Group()
 
@@ -140,7 +146,9 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     fun initialize() {
         addInventory()
         addEquipment()
-        addSkills()
+        skills = Skills(uiElements)
+        skills.initialize(border)
+        addActor(skills)
         addScreensTemp()
         equipment.isVisible = false
         addActor(border)
@@ -156,7 +164,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         openTabsGroup.name = "openTabsGroup"
         sortingTabsGroup.name = "sortingTabsGroup"
 
-        GlobalData.registerObserver(object: GlobalDataObserver {
+        GlobalData.registerObserver(object : GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERINVENTORYSIZE
             override fun update(data: Any?): Boolean {
                 val zIndex = inventory.zIndex
@@ -724,21 +732,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         return TextureRegionDrawable(uiElements["cellMiddle"])
     }
 
-    private fun getSkillsCellDrawable(cellNumber: Int, rows: Int): Drawable {
-        if (cellNumber == 0)
-            return TextureRegionDrawable(uiElements["cellTopLeft"])
-        if (cellNumber < 5)
-            return TextureRegionDrawable(uiElements["cellTop"])
-        val bottomRowNumber = cellNumber - (rows - 1) * 5
-        if (bottomRowNumber == 0 )
-            return TextureRegionDrawable(uiElements["cellBottomLeft"])
-        if (bottomRowNumber in 1..4 )
-            return TextureRegionDrawable(uiElements["cellBottom"])
-        if (cellNumber % 5 == 0)
-            return TextureRegionDrawable(uiElements["cellLeft"])
-        return TextureRegionDrawable(uiElements["cellMiddle"])
-    }
-
     private fun addInventory() {
         val borderWidth: Int = 12
         val borderHeight: Int = 12
@@ -986,65 +979,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             equipmentMap[type]!!.removeActorAt(0, false)
     }
 
-    /** ======================================================================================================================================================
-                                                                    Skills
-    */
-
-    private fun addSkills() {
-        skills.name = "skills"
-        skills.addActor(Image(uiElements["Background"]))
-
-        var rows = Player.skillList.size / 10 + if (Player.skillList.size % 10 != 0) 1 else 0
-        rows = if (rows < 6) 6 else rows
-
-        val table = scene2d.table {
-            this.setFillParent(false)
-            clip(true)
-            for (n in 0 until rows) {
-                for (i in 0 until 5) {
-                    add(container {
-                        val cellNumber = n * 5 + i
-                        name = (cellNumber).toString()
-                        background = getSkillsCellDrawable(cellNumber, cellNumber)
-                        align(Align.bottomLeft)
-                    }).size(84f, 84f).space(0f)
-                }
-                row().space(0f)
-            }
-        }
-        table.pack()
-
-        val skillsPane = ScrollPane(table)
-        skillsPane.name = "skillsPane"
-        // without this line, scrollPane generously adds idiotic and undeletable empty space for each column with children in it
-        skillsPane.setScrollingDisabled(true, false)
-        skillsPane.setOverscroll(false, false)
-        skillsPane.setScrollbarsVisible(false)
-        skillsPane.layout()
-
-        skills.addActor(skillsPane)
-        skillsPane.width = border.width / 2 - 10
-        skillsPane.height = border.height - 2 * 12 + 4
-        skillsPane.setPosition(skills.x + 12, skills.y + 12)
-
-        addActor(skills)
-        skills.width = border.width
-        skills.height = border.height
-        skills.isVisible = false
-
-        refreshSkills()
-    }
-
-
-    fun refreshSkills() {
-        (skills.findActor<ScrollPane>("skillsPane").actor as Table).children.forEach {
-            (it as Container<*>).actor = null
-            val cellNumber = it.name.toInt()
-            if (cellNumber < Player.skillList.size)
-                it.actor = SkillActor(Player.skillList[cellNumber])
-        }
-    }
-
 
 
     /** ======================================================================================================================================================
@@ -1085,6 +1019,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 "InventoryClosed" -> {
                     inventory.isVisible = true
                     currentScreen = inventory
+                    inventory.setScrollFocus(true)
                 }
                 "EquipmentClosed" -> {
                     equipment.isVisible = true
@@ -1095,6 +1030,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 "SkillsClosed" -> {
                     skills.isVisible = true
                     currentScreen = skills
+                    skills.scrollFocus()
                 }
                 "QuestsClosed" -> {
                     quests.isVisible = true
@@ -1349,7 +1285,10 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 }
             }
             skills -> {
-                if (button == Input.Buttons.RIGHT && clickedItem == null) {
+                if (skills.currentTab.name != "skills") {
+                    skills.parseClick(coord.x, coord.y)
+                }
+                else if (button == Input.Buttons.RIGHT && clickedItem == null) {
                     if (contextPopup != null) {
                         this.actors.removeValue(contextPopup, true)
                         contextPopup = null

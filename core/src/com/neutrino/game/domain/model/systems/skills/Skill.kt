@@ -13,6 +13,7 @@ import kotlin.reflect.KClass
 
 sealed interface Skill {
     val character: Character
+    val skillType: SkillType
 
     val name: String
     val description: String

@@ -1030,7 +1030,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 "SkillsClosed" -> {
                     skills.isVisible = true
                     currentScreen = skills
-                    skills.scrollFocus()
                 }
                 "QuestsClosed" -> {
                     quests.isVisible = true
@@ -1387,6 +1386,12 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 if (clickedItem != null)
                     clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * currentScale * 1.25f) / 2 - 6 * currentScale,
                         coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * currentScale * 1.25f) / 2 - 9 * currentScale)
+            }
+            skills -> {
+                if (skills.currentTab.name != "skills") {
+                    skills.scrollFocus(coord.x, coord.y)
+                    skills.onHover(coord.x, coord.y)
+                }
             }
         }
 

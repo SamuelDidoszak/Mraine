@@ -17,7 +17,9 @@ import com.neutrino.game.UI.utility.SkillActor
 import com.neutrino.game.UI.utility.SkillTreeActor
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.SkillTree
-import com.neutrino.game.domain.model.utility.ColorUtils
+import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.domain.model.systems.skills.SkillType
+import com.neutrino.game.graphics.utility.ColorUtils
 import ktx.actors.setScrollFocus
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
@@ -30,6 +32,8 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
     private lateinit var border: Image
     private val skillTable: ScrollPane = ScrollPane(getSkillTable())
     private val skillTrees: Group = Group()
+
+    private val detailsPane: ScrollPane = ScrollPane(Group())
 
     private val strengthTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.STRENGTH, 0))
     private val dexterityTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.DEXTERITY, 1))
@@ -44,12 +48,38 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
     var currentTab: Actor = skillTable
         private set
 
-    fun scrollFocus() {
-        if (currentTab == skillTable) {
-            skillTable.setScrollFocus(true)
+    private var currentlyFocused: Actor? = skillTable
+
+    fun scrollFocus(x: Float, y: Float) {
+        fun setCurrentScroll(actor: Actor) {
+            if (currentlyFocused == actor)
+                return
+
+            actor.setScrollFocus(true)
+            currentlyFocused = actor
+        }
+
+        val coord: Vector2 = stageToLocalCoordinates(
+            Vector2(x, y)
+        )
+
+        if (detailsPane.isIn(coord.x, coord.y)) {
+            setCurrentScroll(detailsPane)
             return
         }
-        treeList[currentTree].setScrollFocus(true)
+
+        if (currentTab == skillTable && skillTable.isIn(coord.x, coord.y)) {
+            setCurrentScroll(skillTable)
+            return
+        }
+
+        if (treeList[currentTree].isIn(coord.x, coord.y)) {
+            setCurrentScroll(treeList[currentTree])
+            return
+        }
+
+        currentlyFocused?.setScrollFocus(false)
+        currentlyFocused = null
     }
 
     fun changeTab() {
@@ -57,10 +87,12 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
         if (currentTab == skillTable) {
             currentTab = skillTrees
             treeList[currentTree].setScrollFocus(true)
+            currentlyFocused = treeList[currentTree]
         }
         else if (currentTab == skillTrees) {
             currentTab = skillTable
             skillTable.setScrollFocus(true)
+            currentlyFocused = skillTable
         }
         currentTab.isVisible = true
     }
@@ -88,6 +120,8 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
         treeChooseGroup.validate()
     }
 
+    private var currentlyViewedSkill: SkillTreeActor? = null
+
     fun parseClick(xClick: Float, yClick: Float) {
         val coord: Vector2 = stageToLocalCoordinates(
             Vector2(xClick, yClick)
@@ -97,11 +131,111 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
 
         val menuCoord = localToActorCoordinates(skillTrees.findActor("treeMoveGroup"), coord)
 
-        if (skillTrees.findActor<TextButton>("leftButton").isIn(menuCoord.x, menuCoord.y))
+        if (skillTrees.findActor<TextButton>("leftButton").isIn(menuCoord.x, menuCoord.y)) {
             changeTree(-1)
-
-        if (skillTrees.findActor<TextButton>("rightButton").isIn(menuCoord.x, menuCoord.y))
+            return
+        }
+        if (skillTrees.findActor<TextButton>("rightButton").isIn(menuCoord.x, menuCoord.y)) {
             changeTree(1)
+            return
+        }
+
+        val skillAt = getSkillAt(xClick, yClick, treeList[currentTree])
+        if (skillAt != null && skillAt is SkillTreeActor) {
+            showSkillDetails(skillAt.skill)
+            currentlyViewedSkill?.setHighlight(false)
+            if (currentlyViewedSkill == skillAt) {
+                currentlyViewedSkill = null
+                return
+            }
+            skillAt.setHighlight(true)
+            currentlyViewedSkill = skillAt
+        }
+        if (skillAt == null) {
+            currentlyViewedSkill?.setHighlight(false)
+            currentlyViewedSkill = null
+            detailsPane.actor = null
+        }
+    }
+
+    fun onHover(x: Float, y: Float) {
+        if (currentlyViewedSkill != null)
+            return
+        val skillAt = getSkillAt(x, y, treeList[currentTree])
+        if (skillAt != null && skillAt is SkillTreeActor)
+            showSkillDetails(skillAt.skill)
+        else
+            detailsPane.actor = null
+    }
+
+    fun showSkillDetails(skill: Skill) {
+        val skillDetailsImage = Image(TextureRegion(Constants.DefaultIconTexture.findRegion(skill.textureName)))
+        val skillName = TextraLabel(skill.name, Fonts.EQUIPMENT, getTreeColor(skill.skillType))
+        skillName.wrap = true
+        skillName.alignment = Align.center
+        val description = TextraLabel(skill.description, Fonts.MATCHUP, Color.BLACK)
+        description.wrap = true
+        description.alignment = Align.left
+
+        val skillDetailsTable: Table = scene2d.table {
+            add(skillDetailsImage).size(80f).colspan(10).padTop(8f)
+            row().space(16f)
+            add(skillName).growX().center().colspan(10)
+            row().space(16f)
+            add(description).growX().padLeft(16f).padRight(16f).colspan(10)
+
+            row().padTop(24f)
+            row().space(8f).padBottom(0f)
+
+            for (data in skill.printableData) {
+                val dataLabel = TextraLabel(data.first, Fonts.MATCHUP, Color.BLACK)
+                dataLabel.alignment = Align.left
+                dataLabel.wrap = true
+                val valueLabel = TextraLabel(data.second.toString(), Fonts.MATCHUP, Color.BLACK)
+                add(dataLabel).padLeft(16f).growX()
+                add(valueLabel).spaceRight(16f)
+                row().space(8f)
+            }
+
+            row().padTop(16f)
+            row().space(8f).padBottom(0f)
+
+            add(TextraLabel("Requirements", Fonts.EQUIPMENT, Color.BLACK)).expandX().center().colspan(10)
+
+            row().padTop(16f)
+            row().space(8f).padBottom(0f)
+
+            for (data in skill.requirement.getPrintable(true)) {
+                val dataLabel = TextraLabel(data.first, Fonts.MATCHUP, Color.BLACK)
+                dataLabel.alignment = Align.left
+                val valueLabel = TextraLabel(data.second, Fonts.MATCHUP, Color.BLACK)
+                add(dataLabel).padLeft(16f).growX()
+                add(valueLabel).spaceRight(16f)
+                row().space(8f)
+            }
+        }
+        skillDetailsTable.top()
+        skillDetailsTable.pack()
+        skillDetailsTable.layout()
+        skillDetailsTable.setSize(detailsPane.width, detailsPane.height)
+        detailsPane.actor = skillDetailsTable
+        detailsPane.scrollTo(0f, 10000f, 0f, 0f)
+    }
+
+    /**
+     * Returns the passive skill under the provided x y
+     * Provide parent stage coordinates
+     */
+    private fun getSkillAt(x: Float, y: Float, pane: ScrollPane): Actor? {
+        val coord = pane.actor.parentToLocalCoordinates(
+            pane.stageToLocalCoordinates(Vector2(x, y))
+        )
+
+        for (child in (pane.actor as Group).children.reversed()) {
+            if (child.isIn(coord.x, coord.y))
+                return child
+        }
+        return null
     }
 
     fun initialize(border: Image) {
@@ -118,6 +252,12 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
         prepareSkillTree(summoningTree, "summoningTreePane")
         strengthTree.isVisible = true
         addActor(skillTrees)
+
+        detailsPane.setPosition(skillTrees.width + 12f, 0f)
+        detailsPane.width = border.width - skillTrees.width - 24f
+        detailsPane.height = border.height - 24f
+        detailsPane.y = 12f
+        addActor(detailsPane)
 
         width = border.width
         height = border.height
@@ -243,13 +383,23 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
 
     private fun getTreeColor(currentTree: Int): Color {
         when (currentTree) {
-            0 -> return Color.FIREBRICK
-            1 -> return Color.GOLDENROD
-            2 -> return Color.ROYAL
-            3 -> return Color.MAROON
+            0 -> return ColorUtils.STRENGTH
+            1 -> return ColorUtils.DEXTERITY
+            2 -> return ColorUtils.INTELLIGENCE
+            3 -> return ColorUtils.SUMMONING
         }
         return Color.WHITE
     }
+
+    private fun getTreeColor(skillType: SkillType): Color {
+        return when (skillType) {
+            SkillType.STRENGTH -> ColorUtils.STRENGTH
+            SkillType.DEXTERITY -> ColorUtils.DEXTERITY
+            SkillType.INTELLIGENCE -> ColorUtils.INTELLIGENCE
+            SkillType.SUMMONING -> ColorUtils.SUMMONING
+        }
+    }
+
 
     private fun prepareSkillTree(skillTreeScroll: ScrollPane, name: String) {
         skillTreeScroll.name = name

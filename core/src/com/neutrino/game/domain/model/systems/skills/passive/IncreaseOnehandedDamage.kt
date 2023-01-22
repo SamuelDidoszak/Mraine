@@ -3,19 +3,32 @@ package com.neutrino.game.domain.model.systems.skills.passive
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasEquipment
+import com.neutrino.game.domain.model.characters.utility.SkillTree
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.domain.model.systems.skills.SkillType
 import kotlin.reflect.KClass
 
 class IncreaseOnehandedDamage(override val character: Character): Skill.PassiveSkill {
+    override val skillType: SkillType = SkillType.STRENGTH
     override val name: String = "Increase onehanded damage"
     override val description: String = "Increase onehanded damage"
-    override val requirement: RequirementPrintable = RequirementPrintable().add("Strength: 1") {
-        (character !is Player) || (character is Player && character.strength >= 1)
-    }
+    override val requirement: RequirementPrintable = RequirementPrintable()
+        .add(RequirementPrintable.PrintableReq("Strength", 2f) { Player.strength }) {
+            (character !is Player) || (character is Player && character.strength >= 2)
+        }
+        .add(RequirementPrintable.PrintableReq("Strength", 2f) { Player.strength }) {
+            (character !is Player) || (character is Player && character.strength >= 2)
+        }
+        .add(RequirementPrintable.PrintableReq("Strength", 2f) { Player.strength }) {
+            (character !is Player) || (character is Player && character.strength >= 2)
+        }
+        .add(RequirementPrintable.PrintableReq("Strength", 2f) { Player.strength }) {
+            (character !is Player) || (character is Player && character.strength >= 2)
+        }
 
     override val playerRequirements: List<Pair<KClass<Skill.PassiveSkill>, Boolean>> = listOf(
         Pair(IncreaseMeleeDamage::class as KClass<Skill.PassiveSkill>, true)
@@ -24,7 +37,10 @@ class IncreaseOnehandedDamage(override val character: Character): Skill.PassiveS
     private val increment: Float = 1.1f
 
     override val printableData: List<Pair<String, Any>> = listOf(
-        Pair("Additional damage %", (increment * 100) - 100)
+        Pair("Additional damage %", (increment * 100) - 100),
+        Pair("Additional damage %", (increment * 100) - 100),
+        Pair("Additional damage %", (increment * 100) - 100),
+        Pair("Additional damage %", (increment * 100) - 100),
     )
     override val textureName: String = "skillTeleportBackstab"
     override val manaCost: Float? = null

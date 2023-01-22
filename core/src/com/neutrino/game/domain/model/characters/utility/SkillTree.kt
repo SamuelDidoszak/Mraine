@@ -4,6 +4,7 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.domain.model.systems.skills.SkillType
 import com.neutrino.game.domain.model.systems.skills.passive.BerserkLowerHpHigherDmg
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseMeleeDamage
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseOnehandedDamage
@@ -60,6 +61,8 @@ enum class SkillTree(val skills: List<List<Skill.PassiveSkill>>) {
             throw NotImplementedError("Pad passiveSkill is only used in skill tree UI")
         }
 
+        override val skillType: SkillType
+            get() = throw NotImplementedError("Pad passiveSkill is only used in skill tree UI")
         override val playerRequirements: List<Pair<KClass<Skill.PassiveSkill>, Boolean>>
             get() = throw NotImplementedError("Pad passiveSkill is only used in skill tree UI")
         override val character: Character

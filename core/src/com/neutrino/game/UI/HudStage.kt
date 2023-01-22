@@ -24,8 +24,8 @@ import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.UI.utility.EqActor
-import com.neutrino.game.domain.model.utility.ColorUtils
-import com.neutrino.game.domain.model.utility.Diagnostics
+import com.neutrino.game.graphics.utility.ColorUtils
+import com.neutrino.game.UI.popups.Diagnostics
 import com.neutrino.game.UI.popups.ItemContextPopup
 import ktx.actors.alpha
 import ktx.scene2d.container

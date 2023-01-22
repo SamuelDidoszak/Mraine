@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.neutrino.game.Constants
-import com.neutrino.game.domain.model.utility.ColorUtils
+import com.neutrino.game.graphics.utility.ColorUtils
 import space.earlygrey.shapedrawer.ShapeDrawer
 
 class HpBar(

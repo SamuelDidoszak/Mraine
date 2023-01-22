@@ -11,23 +11,23 @@ import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.model.systems.skills.SkillType
 import kotlin.reflect.KClass
 
-class IncreaseTwohandedDamage(override val character: Character, val increment: Float = 1.1f): Skill.PassiveSkill {
+class IncreaseMeleeDamage(override val character: Character): Skill.PassiveSkill {
     override val skillType: SkillType = SkillType.STRENGTH
-    override val name: String = "Increase twohanded damage"
-    override val description: String = "Increase twohanded damage"
+    override val name: String = "Increase melee damage"
+    override val description: String = "Increase melee damage"
     override val requirement: RequirementPrintable = RequirementPrintable()
         .add(RequirementPrintable.PrintableReq("Strength", 1f) { Player.strength })
         { (character !is Player) || (character is Player && character.strength >= 1) }
 
-    override val playerRequirements: List<Pair<KClass<Skill.PassiveSkill>, Boolean>> = listOf()
-
-//    val increment: Float = 1.1f
+    private val increment: Float = 1.1f
 
     override val printableData: List<Pair<String, Any>> = listOf(
         Pair("Additional damage %", (increment * 100) - 100)
     )
     override val textureName: String = "skillTeleportBackstab"
     override val manaCost: Float? = null
+
+    override val playerRequirements: List<Pair<KClass<Skill.PassiveSkill>, Boolean>> = listOf()
 
     override fun useStart() {
         val hasEquipment = character is HasEquipment
@@ -38,7 +38,7 @@ class IncreaseTwohandedDamage(override val character: Character, val increment: 
                 character.equipment.unsetItem(previousItem, false)
         }
 
-        character.addTag(CharacterTag.IncreaseTwohandedDamage(increment))
+        character.addTag(CharacterTag.IncreaseMeleeDamage(increment))
 
         if (hasEquipment && previousItem != null)
             (character as HasEquipment).equipment.setItem(previousItem)
@@ -53,7 +53,7 @@ class IncreaseTwohandedDamage(override val character: Character, val increment: 
                 character.equipment.unsetItem(previousItem, false)
         }
 
-        character.removeTag(CharacterTag.IncreaseTwohandedDamage::class)
+        character.removeTag(CharacterTag.IncreaseMeleeDamage::class)
 
         if (hasEquipment && previousItem != null)
             (character as HasEquipment).equipment.setItem(previousItem)

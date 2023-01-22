@@ -12,4 +12,12 @@ object EventDispatcher {
             }
         }
     }
+
+    fun removeEvent(eventWrapper: EventWrapper) {
+        when (eventWrapper) {
+            is CharacterEvent -> {
+                Turn.eventArray.stopEvent(eventWrapper)
+            }
+        }
+    }
 }

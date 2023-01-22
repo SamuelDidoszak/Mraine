@@ -3,8 +3,10 @@ package com.neutrino.game.domain.model.systems.skills
 import com.neutrino.EventDispatcher
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.characters.utility.RangeType
+import com.neutrino.game.domain.model.characters.utility.SkillTree
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.AroundAttack
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
@@ -15,9 +17,13 @@ import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.turn.Turn
 
 class SkillCripplingSpin(override val character: Character): Skill.ActiveSkill, HasRange {
+    override val skillType: SkillType = SkillType.STRENGTH
     override val name: String = "Crippling spin"
-    override val description: String = "Spinning attack which slowes down nearby enemies"
-    override val requirement: RequirementPrintable = RequirementPrintable().add("Strength: 2") { character.strength >= 2 }
+    override val description: String = "Spinning attack which slows down nearby enemies"
+    override val requirement: RequirementPrintable = RequirementPrintable()
+        .add(RequirementPrintable.PrintableReq("Strength", 2f) { Player.strength }) {
+            character.strength >= 2
+        }
     override val textureName: String = "skillCripple"
 
     override val cooldownLength: Double = 20.0

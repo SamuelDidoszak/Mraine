@@ -22,11 +22,12 @@ import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.attack.BasicAttack
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.Attackable
+import com.neutrino.game.domain.model.systems.event.types.EventBerserk
 import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.domain.model.utility.ColorUtils
+import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
@@ -66,9 +67,48 @@ abstract class Character(
             field = value
             criticalChance += difference * 0.015f}
 
+    override var hpMax: Float = 0f
+    override var mpMax: Float = 0f
+
     // Stat initialization for character boilerplate reduction
     override var hp: Float = 0f
+        set(value) {
+            field = value
+            if (getTag(CharacterTag.BerserkLowerHpHigherDmg::class) != null) {
+                val tag = getTag(CharacterTag.BerserkLowerHpHigherDmg::class)
+                val event = eventArray.find { it.event is EventBerserk }
+                if ((hp / hpMax) >= tag!!.hpPercentThreshold) {
+                    if (event == null)
+                        return
+                    EventDispatcher.removeEvent(event)
+                    return
+                }
+                if (event != null)
+                    (event.event as EventBerserk).power = 1f + (tag.incrementPercent - 1) * (1 - (hp / (hpMax * tag.hpPercentThreshold)))
+                else {
+                    EventDispatcher.dispatchEvent(
+                        CharacterEvent(this, TimedEvent(0.0, 10.0, 100,
+                            EventBerserk(this, 1f + (tag.incrementPercent - 1) * (1 - (hp / (hpMax * tag.hpPercentThreshold))))
+                        ), Turn.turn)
+                    )
+                }
+            }
+        }
     override var mp: Float = 0f
+
+    override var damage: Float = 0f
+        get() {
+            if (getTag(CharacterTag.BerserkLowerHpHigherDmg::class) != null) {
+                val tag = getTag(CharacterTag.BerserkLowerHpHigherDmg::class)
+                if ((hp / hpMax) >= tag!!.hpPercentThreshold)
+                    return field
+                return field * (1f + (tag.incrementPercent - 1) * (1 - (hp / (hpMax * tag.hpPercentThreshold))))
+            }
+            return field
+        }
+    override var damageVariation: Float = 1f
+    override var defence: Float = 0f
+
     override var evasion: Float = 0f
     override var accuracy: Float = 1f
     override var attackSpeed: Double = 1.0

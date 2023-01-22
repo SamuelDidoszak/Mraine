@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.neutrino.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
@@ -16,32 +15,40 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.systems.CharacterTag
-import com.neutrino.game.domain.model.systems.event.types.EventManaRegen
-import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
-import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.*
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
 import com.neutrino.game.domain.model.turn.Turn
 import kotlin.reflect.KClass
 
 object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, HasPassives {
-    override var hp: Float = 0f
+    override var hp: Float
+        get() = super.hp
         set(value) {
             val previous = hp
-            field = value
+            super.hp = value
+            if (getTag(CharacterTag.BerserkLowerHpHigherDmg::class) != null) {
+                val tag = getTag(CharacterTag.BerserkLowerHpHigherDmg::class)
+                if (hp < hpMax * tag!!.hpPercentThreshold || previous < hpMax * tag.hpPercentThreshold)
+                    sendStatChangeData(StatsEnum.DAMAGE)
+            }
             // Send true if hp decreased, false otherwise
             GlobalData.notifyObservers(GlobalDataType.PLAYERHP, value.compareDelta(previous))}
-    override var mp: Float = 10f
+    override var mp: Float
+        get() = super.mp
         set(value) {
             val previous = mp
-            field = value
+            super.mp = value
             GlobalData.notifyObservers(GlobalDataType.PLAYERMANA, value.compareDelta(previous))}
 
-    override var hpMax: Float = 30f
-        set(value) {field = value
+    override var hpMax: Float
+        get() = super.hpMax
+        set(value) {
+            super.hpMax = value
             sendStatChangeData(StatsEnum.HPMAX)}
-    override var mpMax: Float = 10f
-        set(value) {field = value
+    override var mpMax: Float
+        get() = super.mpMax
+        set(value) {
+            super.mpMax = value
             sendStatChangeData(StatsEnum.MPMAX)}
     override var strength: Float
         get() = super.strength
@@ -58,14 +65,17 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         get() = super.luck
         set(value) { sendStatChangeData(StatsEnum.LUCK) }
 
-    override var damage: Float = 3f
-        set(value) {field = value
+    override var damage: Float
+        get() = super.damage
+        set(value) {super.damage = value
         sendStatChangeData(StatsEnum.DAMAGE)}
-    override var damageVariation: Float = 1f
-        set(value) {field = value
+    override var damageVariation: Float
+        get() = super.damageVariation
+        set(value) {super.damageVariation = value
         sendStatChangeData(StatsEnum.DAMAGEVARIATION)}
-    override var defence: Float = 0f
-        set(value) {field = value
+    override var defence: Float
+        get() = super.defence
+        set(value) {super.defence = value
         sendStatChangeData(StatsEnum.DEFENCE)}
 
     override var criticalChance: Float = 0.3f
@@ -161,11 +171,23 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
     override val passives: HashMap<KClass<out Skill.PassiveSkill>, Skill.PassiveSkill> = HashMap()
 
     init {
+        strength = 1f
+        hpMax = 30f
+        mpMax = 10f
+        damage = 3f
+        damageVariation = 1f
+        criticalChance = 0.05f
+        criticalDamage = 2f
+        movementSpeed = 1.0
+        attackSpeed = 1.0
+        range = 1
+
+
         initialize("Player")
         // TODO maybe delete it entirely. Each character would have to check if infogroup != null tho
         val infoGroup = findActor<Group>("infoGroup")
         infoGroup.isVisible = false
-        inventory.size = 30
+        inventory.size = 300
 
         skillList.add(SkillBleed(this))
         skillList.add(SkillCripplingSpin(this))
@@ -173,15 +195,26 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         skillList.add(SkillTeleportBackstab(this))
         skillList.add(SkillManaDrain(this))
         skillList.add(SkillMeteorite(this))
+        skillList.add(SkillShieldBash(this))
+        skillList.add(SkillTwoshot(this))
 
-        val manaRegen = CharacterEvent(Player, TimedEvent(0.0, 0.3, Int.MAX_VALUE, EventManaRegen(Player, 0.1f)), Turn.turn)
-        EventDispatcher.dispatchEvent(manaRegen)
+        for (i in 0 .. 100)
+            skillList.add(SkillMeteorite(this))
+
+        println("Skill size ${skillList.size}")
+
+//        val manaRegen = CharacterEvent(Player, TimedEvent(0.0, 0.3, Int.MAX_VALUE, EventManaRegen(Player, 0.1f)), Turn.turn)
+//        EventDispatcher.dispatchEvent(manaRegen)
 
         addTag(CharacterTag.IncreaseOnehandedDamage(400f))
         addTag(CharacterTag.IncreaseStealthDamage(1.5f))
-        addTag(CharacterTag.Lifesteal(1f))
 
         addPassive(IncreaseTwohandedDamage(this, 1.1f))
+
+        addTag(CharacterTag.BerserkLowerHpHigherDmg(0.8f, 2f))
+
+//        val event = (eventArray.find { it == manaRegen }?.event as EventManaRegen?)
+//        event?.power = 5f
     }
 
     override val description: String

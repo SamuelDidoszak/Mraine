@@ -2,6 +2,7 @@ package com.neutrino.game.domain.model.systems.skills
 
 import com.neutrino.EventDispatcher
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
@@ -12,9 +13,12 @@ import com.neutrino.game.domain.model.turn.Turn
 import squidpony.squidmath.Coord
 
 class SkillTeleport(override val character: Character): Skill.ActiveSkillTile {
+    override val skillType: SkillType = SkillType.INTELLIGENCE
     override val name: String = "Teleport"
     override val description: String = "Teleports you away"
-    override val requirement: RequirementPrintable = RequirementPrintable().add("Intelligence: 5") { character.intelligence >= 5 }
+    override val requirement: RequirementPrintable = RequirementPrintable()
+        .add(RequirementPrintable.PrintableReq("Intelligence", 5f) { Player.intelligence })
+        { character.intelligence >= 5 }
     override val textureName: String = "skillBleed"
 
     override val cooldownLength: Double = 2.0

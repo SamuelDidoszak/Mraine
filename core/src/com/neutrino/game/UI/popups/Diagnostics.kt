@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.utility
+package com.neutrino.game.UI.popups
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table

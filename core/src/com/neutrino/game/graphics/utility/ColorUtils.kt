@@ -1,10 +1,19 @@
-package com.neutrino.game.domain.model.utility
+package com.neutrino.game.graphics.utility
 
 import com.badlogic.gdx.graphics.Color
 import kotlin.math.max
 import kotlin.math.min
 
 object ColorUtils {
+
+    val STRENGTH: Color = Color.FIREBRICK
+    val DEXTERITY: Color = Color.GOLDENROD
+    val INTELLIGENCE: Color = Color.ROYAL
+    val SUMMONING: Color = Color.MAROON
+
+    val REQ_MET: Color = Color.FOREST
+    val REQ_UNMET: Color = applySaturation(Color.RED, 0.6f)
+
     fun colorInterpolation(colorA: Color, colorB: Color, t: Int): Color {
         val r = colorA.r + (colorB.r - colorA.r) * t
         val g = colorA.g + (colorB.g - colorA.g) * t
@@ -47,4 +56,6 @@ object ColorUtils {
     fun toHexadecimal(color: Color): String {
         return String.format("#%02x%02x%02x", (color.r * 255).toInt(), (color.g * 255).toInt(), (color.b * 255).toInt())
     }
+
+    fun Color.toHexaDecimal() = toHexadecimal(this)
 }

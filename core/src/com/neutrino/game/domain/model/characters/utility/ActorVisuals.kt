@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Pools
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.utility.ColorUtils
+import com.neutrino.game.graphics.utility.ColorUtils
 
 /**
  * Adds various visuals to provided actor groups

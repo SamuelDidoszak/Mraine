@@ -1,15 +1,16 @@
-package com.neutrino.game.domain.model.systems.skills
+package com.neutrino.game.UI.utility
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import com.neutrino.game.domain.model.systems.skills.Skill
 
 class SkillActor(val skill: Skill): Group(), TextureHaver {
     // needed for resize
-    private val ogWidth = 80f
-    private val ogHeight = 80f
+    private val ogWidth = 84f
+    private val ogHeight = 84f
     private var actorWidth: Float = ogWidth
     private var actorHeight: Float = ogHeight
 
@@ -39,7 +40,7 @@ class SkillActor(val skill: Skill): Group(), TextureHaver {
         batch?.setColor(color.r, color.g, color.b, color.a * parentAlpha)
 
         batch?.draw(backgroundTexture, this.x, this.y , actorWidth, actorHeight)
-        batch?.draw(texture, this.x + 8f, this.y + 8f, actorWidth * 0.8f, actorHeight * 0.8f)
+        batch?.draw(texture, this.x + 10f, this.y + 10f, actorWidth * 0.8f, actorHeight * 0.8f)
         super.draw(batch, parentAlpha)
 
         // required for fading

@@ -16,8 +16,8 @@ import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.graphics.shaders.Shaders
-import com.neutrino.game.graphics.utility.EntityLookupPopup
-import com.neutrino.game.graphics.utility.ItemDetailsPopup
+import com.neutrino.game.UI.popups.EntityLookupPopup
+import com.neutrino.game.UI.popups.ItemDetailsPopup
 import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
 import java.lang.Integer.max

@@ -1,10 +1,10 @@
 package com.neutrino.game.domain.model.characters.utility
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.utility.ColorUtils
 import space.earlygrey.shapedrawer.ShapeDrawer
 
@@ -12,7 +12,7 @@ class HpBar(
     private var currentHp: Float,
     private val maxHp: Float
 ): Actor() {
-    private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
+    private val textureRegion: TextureRegion = TextureRegion(Constants.WhitePixel, 0, 0, 1, 1)
     private var drawer: ShapeDrawer? = null
     init {
         name = "hpBar"

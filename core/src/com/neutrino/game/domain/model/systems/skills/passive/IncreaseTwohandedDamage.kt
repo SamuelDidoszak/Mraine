@@ -8,6 +8,7 @@ import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.skills.Skill
+import kotlin.reflect.KClass
 
 class IncreaseTwohandedDamage(override val character: Character, val increment: Float = 1.1f): Skill.PassiveSkill {
     override val name: String = "Increase onehanded damage"
@@ -15,6 +16,8 @@ class IncreaseTwohandedDamage(override val character: Character, val increment: 
     override val requirement: RequirementPrintable = RequirementPrintable().add("Strength: 1") {
         (character !is Player) || (character is Player && character.strength >= 1)
     }
+
+    override val playerRequirements: List<Pair<KClass<Skill.PassiveSkill>, Boolean>> = listOf()
 
 //    val increment: Float = 1.1f
 

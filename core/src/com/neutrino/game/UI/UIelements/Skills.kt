@@ -1,7 +1,9 @@
 package com.neutrino.game.UI.UIelements
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -11,14 +13,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.*
+import com.neutrino.game.UI.utility.SkillActor
+import com.neutrino.game.UI.utility.SkillTreeActor
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.SkillTree
-import com.neutrino.game.domain.model.systems.skills.SkillActor
+import com.neutrino.game.domain.model.utility.ColorUtils
 import ktx.actors.setScrollFocus
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
 import ktx.scene2d.textButton
+import space.earlygrey.shapedrawer.ShapeDrawer
 
 internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Group() {
 
@@ -26,11 +31,15 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
     private val skillTable: ScrollPane = ScrollPane(getSkillTable())
     private val skillTrees: Group = Group()
 
-    private val strengthTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.STRENGTH))
-    private val dexterityTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.DEXTERITY))
-    private val intelligenceTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.INTELLIGENCE))
-    var treeList = listOf(strengthTree, dexterityTree, intelligenceTree)
-    var treeNameList = listOf("STRENGTH", "DEXTERITY", "INTELLIGENCE")
+    private val strengthTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.STRENGTH, 0))
+    private val dexterityTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.DEXTERITY, 1))
+    private val intelligenceTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.INTELLIGENCE, 2))
+    private val summoningTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.INTELLIGENCE, 3))
+    var treeList = listOf(strengthTree, dexterityTree, intelligenceTree, summoningTree)
+    var treeNameList = listOf("[${ColorUtils.toHexadecimal(getTreeColor(0))}]STRENGTH",
+        "[${ColorUtils.toHexadecimal(getTreeColor(1))}]DEXTERITY",
+        "[${ColorUtils.toHexadecimal(getTreeColor(2))}]INTELLIGENCE",
+        "[${ColorUtils.toHexadecimal(getTreeColor(3))}]SUMMONING")
 
     var currentTab: Actor = skillTable
         private set
@@ -106,6 +115,7 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
         prepareSkillTree(strengthTree, "strengthTreePane")
         prepareSkillTree(dexterityTree, "dexterityTreePane")
         prepareSkillTree(intelligenceTree, "intelligenceTreePane")
+        prepareSkillTree(summoningTree, "summoningTreePane")
         strengthTree.isVisible = true
         addActor(skillTrees)
 
@@ -184,7 +194,7 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
         treeMoveGroup.name = "treeMoveGroup"
     }
 
-    private fun getSkillTree(skillTreeType: SkillTree): Group {
+    private fun getSkillTree(skillTreeType: SkillTree, index: Int): Group {
         val tree = Group()
         var treeY = 4f
         var treeX = 0f
@@ -194,8 +204,9 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
                 if (passive is SkillTree.Pad)
                     treeX += passive.get()
                 else {
-                    val actor = SkillActor(passive)
+                    val actor = SkillTreeActor(passive)
                     actor.setSize(84f, 84f)
+                    actor.name = passive::class.simpleName
                     tree.addActor(actor)
                     actor.setPosition(treeX, treeY)
                     treeX += 84f
@@ -205,7 +216,39 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
             treeX = 0f
         }
         tree.height = treeY - 42f
+
+        val treeLines = ArrayList<LinePoints>()
+
+        for (i in 1 until skillTreeType.skills.size) {
+            for (passive in skillTreeType.skills[i]) {
+                if (passive is SkillTree.Pad)
+                    continue
+
+                val actorTo = tree.findActor<SkillTreeActor>(passive::class.simpleName)
+                for (requirement in passive.playerRequirements) {
+                    val actorFrom = tree.findActor<SkillTreeActor>(requirement.first.simpleName)
+                    treeLines.add(LinePoints(actorFrom.fromX(), actorFrom.fromY(), actorTo.toX(), actorTo.toY() - 2f))
+                }
+            }
+        }
+
+        val treeLineActor = TreeLineActor(treeLines, getTreeColor(index))
+        treeLineActor.width = skillTrees.width
+        treeLineActor.height = tree.height
+        tree.addActor(treeLineActor)
+        treeLineActor.zIndex = 0
+
         return tree
+    }
+
+    private fun getTreeColor(currentTree: Int): Color {
+        when (currentTree) {
+            0 -> return Color.FIREBRICK
+            1 -> return Color.GOLDENROD
+            2 -> return Color.ROYAL
+            3 -> return Color.MAROON
+        }
+        return Color.WHITE
     }
 
     private fun prepareSkillTree(skillTreeScroll: ScrollPane, name: String) {
@@ -250,4 +293,33 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
 
     private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.widthScaled()) <= 0 &&
             y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.heightScaled()) <= 0)
+
+    private class TreeLineActor(private val lineList: ArrayList<LinePoints>, private val lineColor: Color): Actor() {
+        private val textureRegion: TextureRegion = TextureRegion(Constants.WhitePixel, 0, 0, 1, 1)
+        private var drawer: ShapeDrawer? = null
+        init {
+            name = "treeLines"
+        }
+
+        override fun draw(batch: Batch?, parentAlpha: Float) {
+            if (drawer == null) {
+                drawer = ShapeDrawer(batch, textureRegion)
+                drawer!!.setColor(lineColor)
+            }
+
+            for (points in lineList) {
+                drawer!!.line(points.from, points.to, 8f)
+            }
+        }
+    }
+
+    private class LinePoints(
+        private val fromX: Float,
+        private val fromY: Float,
+        private val toX: Float,
+        private val toY: Float
+    ) {
+        val from = Vector2(fromX, fromY)
+        val to = Vector2(toX, toY)
+    }
 }

@@ -8,6 +8,7 @@ import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.skills.Skill
+import kotlin.reflect.KClass
 
 class IncreaseOnehandedDamage(override val character: Character): Skill.PassiveSkill {
     override val name: String = "Increase onehanded damage"
@@ -16,12 +17,16 @@ class IncreaseOnehandedDamage(override val character: Character): Skill.PassiveS
         (character !is Player) || (character is Player && character.strength >= 1)
     }
 
-    val increment: Float = 1.1f
+    override val playerRequirements: List<Pair<KClass<Skill.PassiveSkill>, Boolean>> = listOf(
+        Pair(IncreaseMeleeDamage::class as KClass<Skill.PassiveSkill>, true)
+    )
+
+    private val increment: Float = 1.1f
 
     override val printableData: List<Pair<String, Any>> = listOf(
         Pair("Additional damage %", (increment * 100) - 100)
     )
-    override val textureName: String = ""
+    override val textureName: String = "skillTeleportBackstab"
     override val manaCost: Float? = null
 
     override fun useStart() {

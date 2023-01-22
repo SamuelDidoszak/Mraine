@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.utility
+package com.neutrino.game.UI.popups
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Value
@@ -7,6 +7,7 @@ import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.graphics.utility.BackgroundColor
 
 class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = true): Table() {
     init {

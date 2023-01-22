@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.utility
+package com.neutrino.game.UI.popups
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.math.Vector2
@@ -19,6 +19,7 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
+import com.neutrino.game.graphics.utility.BackgroundColor
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.scene2d
 import ktx.scene2d.table

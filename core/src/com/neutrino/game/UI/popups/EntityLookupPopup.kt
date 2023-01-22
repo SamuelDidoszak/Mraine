@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.utility
+package com.neutrino.game.UI.popups
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -6,6 +6,7 @@ import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.graphics.utility.BackgroundColor
 
 class EntityLookupPopup(entityList: MutableList<Entity>, character: Character?): Table() {
     init {

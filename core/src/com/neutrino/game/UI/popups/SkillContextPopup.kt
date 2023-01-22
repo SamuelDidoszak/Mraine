@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.utility
+package com.neutrino.game.UI.popups
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.math.Vector2
@@ -12,6 +12,7 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.graphics.utility.BackgroundColor
 import ktx.scene2d.Scene2DSkin
 
 class SkillContextPopup(skill: Skill, x: Float, y: Float, val customUseMethod: () -> Unit? = {}): Table() {

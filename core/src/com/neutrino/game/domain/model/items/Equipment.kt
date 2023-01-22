@@ -108,6 +108,15 @@ class Equipment(val character: Character) {
                         }
                     }
                 }
+                if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseMeleeDamage::class)) {
+                    item.modifierList.forEach {
+                        if (it.event is EventModifyStat && (it.event as EventModifyStat).stat == StatsEnum.DAMAGE) {
+                            val value = (it.event as EventModifyStat).value as Float * (character.getTag(CharacterTag.IncreaseMeleeDamage::class))!!.incrementPercent
+                            (it.event as EventModifyStat).value = value
+                            return@forEach
+                        }
+                    }
+                }
             }
             is ItemType.EQUIPMENT.TWOHAND -> {
                 val lHandItem = equipmentMap[EquipmentType.LHAND]
@@ -119,6 +128,15 @@ class Equipment(val character: Character) {
                     item.modifierList.forEach {
                         if (it.event is EventModifyStat && (it.event as EventModifyStat).stat == StatsEnum.DAMAGE) {
                             val value = (it.event as EventModifyStat).value as Float * (character.getTag(CharacterTag.IncreaseTwohandedDamage::class))!!.incrementPercent
+                            (it.event as EventModifyStat).value = value
+                            return@forEach
+                        }
+                    }
+                }
+                if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseMeleeDamage::class)) {
+                    item.modifierList.forEach {
+                        if (it.event is EventModifyStat && (it.event as EventModifyStat).stat == StatsEnum.DAMAGE) {
+                            val value = (it.event as EventModifyStat).value as Float * (character.getTag(CharacterTag.IncreaseMeleeDamage::class))!!.incrementPercent
                             (it.event as EventModifyStat).value = value
                             return@forEach
                         }
@@ -144,6 +162,16 @@ class Equipment(val character: Character) {
     fun unsetItem(item: EquipmentItem, addToInventory: Boolean = true) {
         unsetItemModifiers(item)
 
+
+        if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseMeleeDamage::class)) {
+            item.modifierList.forEach {
+                if (it.event is EventModifyStat && (it.event as EventModifyStat).stat == StatsEnum.DAMAGE) {
+                    val value = (it.event as EventModifyStat).value as Float * (character.getTag(CharacterTag.IncreaseMeleeDamage::class))!!.incrementPercent
+                    (it.event as EventModifyStat).value = value
+                    return@forEach
+                }
+            }
+        }
         if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseOnehandedDamage::class)) {
             item.modifierList.forEach {
                 if (it.event is EventModifyStat && (it.event as EventModifyStat).stat == StatsEnum.DAMAGE) {

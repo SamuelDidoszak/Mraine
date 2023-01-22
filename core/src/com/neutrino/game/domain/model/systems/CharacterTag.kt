@@ -4,6 +4,10 @@ sealed interface CharacterTag {
     /** ======================================================================================================================================================
                                                                     Strength based
     */
+    class IncreaseMeleeDamage(
+        var incrementPercent: Float
+    ): CharacterTag
+
     class IncreaseOnehandedDamage(
         var incrementPercent: Float
     ): CharacterTag
@@ -17,6 +21,11 @@ sealed interface CharacterTag {
     ): CharacterTag
 
     class IncreaseDefence(
+        var incrementPercent: Float
+    ): CharacterTag
+
+    class BerserkLowerHpHigherDmg(
+        var hpPercentThreshold: Float,
         var incrementPercent: Float
     ): CharacterTag
 

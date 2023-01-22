@@ -9,6 +9,7 @@ import com.neutrino.game.domain.model.systems.event.types.EventCooldown
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.turn.Turn
 import squidpony.squidmath.Coord
+import kotlin.reflect.KClass
 
 sealed interface Skill {
     val character: Character
@@ -73,5 +74,7 @@ sealed interface Skill {
     interface PassiveSkill: Skill {
         fun useStart()
         fun useStop()
+
+        val playerRequirements: List<Pair<KClass<PassiveSkill>, Boolean>>
     }
 }

@@ -15,8 +15,7 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.systems.CharacterTag
-import com.neutrino.game.domain.model.systems.skills.*
-import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
+import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.model.turn.Turn
 import kotlin.reflect.KClass
 
@@ -57,29 +56,39 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
             sendStatChangeData(StatsEnum.STRENGTH)}
     override var dexterity: Float
         get() = super.dexterity
-        set(value) { sendStatChangeData(StatsEnum.DEXTERITY) }
+        set(value) {
+            super.dexterity = value
+            sendStatChangeData(StatsEnum.DEXTERITY) }
     override var intelligence: Float
         get() = super.intelligence
-        set(value) { sendStatChangeData(StatsEnum.INTELLIGENCE) }
+        set(value) {
+            super.intelligence = value
+            sendStatChangeData(StatsEnum.INTELLIGENCE) }
     override var luck: Float
         get() = super.luck
-        set(value) { sendStatChangeData(StatsEnum.LUCK) }
+        set(value) {
+            super.luck = value
+            sendStatChangeData(StatsEnum.LUCK) }
 
     override var damage: Float
         get() = super.damage
-        set(value) {super.damage = value
-        sendStatChangeData(StatsEnum.DAMAGE)}
+        set(value) {
+            super.damage = value
+            sendStatChangeData(StatsEnum.DAMAGE)}
     override var damageVariation: Float
         get() = super.damageVariation
-        set(value) {super.damageVariation = value
-        sendStatChangeData(StatsEnum.DAMAGEVARIATION)}
+        set(value) {
+            super.damageVariation = value
+            sendStatChangeData(StatsEnum.DAMAGEVARIATION)}
     override var defence: Float
         get() = super.defence
-        set(value) {super.defence = value
-        sendStatChangeData(StatsEnum.DEFENCE)}
+        set(value) {
+            super.defence = value
+            sendStatChangeData(StatsEnum.DEFENCE)}
 
     override var criticalChance: Float = 0.3f
-        set(value) {field = value
+        set(value) {
+        field = value
         sendStatChangeData(StatsEnum.CRITICALCHANCE)}
     override var criticalDamage: Float = 2f
         set(value) {field = value
@@ -172,6 +181,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
 
     init {
         strength = 1f
+        intelligence = 10f
         hpMax = 30f
         mpMax = 10f
         damage = 3f
@@ -189,29 +199,29 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         infoGroup.isVisible = false
         inventory.size = 300
 
-        skillList.add(SkillBleed(this))
-        skillList.add(SkillCripplingSpin(this))
-        skillList.add(SkillTeleport(this))
-        skillList.add(SkillTeleportBackstab(this))
-        skillList.add(SkillManaDrain(this))
-        skillList.add(SkillMeteorite(this))
-        skillList.add(SkillShieldBash(this))
-        skillList.add(SkillTwoshot(this))
-
-        for (i in 0 .. 100)
-            skillList.add(SkillMeteorite(this))
-
-        println("Skill size ${skillList.size}")
-
-//        val manaRegen = CharacterEvent(Player, TimedEvent(0.0, 0.3, Int.MAX_VALUE, EventManaRegen(Player, 0.1f)), Turn.turn)
-//        EventDispatcher.dispatchEvent(manaRegen)
-
-        addTag(CharacterTag.IncreaseOnehandedDamage(400f))
-        addTag(CharacterTag.IncreaseStealthDamage(1.5f))
-
-        addPassive(IncreaseTwohandedDamage(this, 1.1f))
-
-        addTag(CharacterTag.BerserkLowerHpHigherDmg(0.8f, 2f))
+//        skillList.add(SkillBleed(this))
+//        skillList.add(SkillCripplingSpin(this))
+//        skillList.add(SkillTeleport(this))
+//        skillList.add(SkillTeleportBackstab(this))
+//        skillList.add(SkillManaDrain(this))
+//        skillList.add(SkillMeteorite(this))
+//        skillList.add(SkillShieldBash(this))
+//        skillList.add(SkillTwoshot(this))
+//
+//        for (i in 0 .. 100)
+//            skillList.add(SkillMeteorite(this))
+//
+//        println("Skill size ${skillList.size}")
+//
+////        val manaRegen = CharacterEvent(Player, TimedEvent(0.0, 0.3, Int.MAX_VALUE, EventManaRegen(Player, 0.1f)), Turn.turn)
+////        EventDispatcher.dispatchEvent(manaRegen)
+//
+//        addTag(CharacterTag.IncreaseOnehandedDamage(400f))
+//        addTag(CharacterTag.IncreaseStealthDamage(1.5f))
+//
+//        addPassive(IncreaseTwohandedDamage(this, 1.1f))
+//
+//        addTag(CharacterTag.BerserkLowerHpHigherDmg(0.8f, 2f))
 
 //        val event = (eventArray.find { it == manaRegen }?.event as EventManaRegen?)
 //        event?.power = 5f

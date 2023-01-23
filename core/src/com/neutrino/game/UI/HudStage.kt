@@ -21,12 +21,12 @@ import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.*
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.UI.utility.EqActor
-import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.UI.popups.Diagnostics
 import com.neutrino.game.UI.popups.ItemContextPopup
+import com.neutrino.game.UI.utility.EqActor
+import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.graphics.utility.ColorUtils
 import ktx.actors.alpha
 import ktx.scene2d.container
 import ktx.scene2d.horizontalGroup
@@ -184,32 +184,32 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERHP
             override fun update(data: Any?): Boolean {
                 if (data == 0)
-                    return true
+                    return false
 
                 if (hpMpBarStatus == 1 && Player.hp.equalsDelta(Player.hpMax))
                     hideBarsOnTimeout()
 
                 if (hpMpBarGroup.hasActions() || !Player.mp.equalsDelta(Player.mpMax))
-                    return true
+                    return false
 
                 updateHpMpBarPosition(1)
-                return true
+                return false
             }
         })
         GlobalData.registerObserver(object : GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERMANA
             override fun update(data: Any?): Boolean {
                 if (data == 0)
-                    return true
+                    return false
 
                 if (hpMpBarStatus == 2 && Player.mp.equalsDelta(Player.mpMax))
                     hideBarsOnTimeout()
 
                 if (Player.mp.equalsDelta(Player.mpMax) || hpMpBarGroup.hasActions())
-                    return true
+                    return false
 
                 updateHpMpBarPosition(2)
-                return true
+                return false
             }
         })
     }

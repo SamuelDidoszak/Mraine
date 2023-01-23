@@ -148,6 +148,7 @@ class Equipment(val character: Character) {
                 equipmentType = EquipmentType.RHAND
             }
         }
+
         if (character is HasInventory)
             character.inventory.itemList.remove(
                 character.inventory.itemList.find { it.item == item })
@@ -159,9 +160,13 @@ class Equipment(val character: Character) {
         return equipmentType
     }
 
-    fun unsetItem(item: EquipmentItem, addToInventory: Boolean = true) {
-        unsetItemModifiers(item)
+    fun unequipItem(item: EquipmentItem, addToInventory: Boolean = true) {
+        equipmentMap[item.getEquipmentType()] = null
+        unsetItem(item, addToInventory)
+    }
 
+    private fun unsetItem(item: EquipmentItem, addToInventory: Boolean = true) {
+        unsetItemModifiers(item)
 
         if (item.isMelee() && character.tags.contains(CharacterTag.IncreaseMeleeDamage::class)) {
             item.modifierList.forEach {
@@ -193,8 +198,6 @@ class Equipment(val character: Character) {
 
         if (item is INHAND)
             character.primaryAttack = character.basicAttack
-
-        equipmentMap[item.getEquipmentType()] = null
 
         if (!addToInventory)
             return

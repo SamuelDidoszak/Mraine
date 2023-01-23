@@ -3,7 +3,6 @@ package com.neutrino.game.domain.model.systems.skills.passive
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasEquipment
-import com.neutrino.game.domain.model.characters.utility.SkillTree
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.systems.CharacterTag
@@ -51,7 +50,7 @@ class IncreaseOnehandedDamage(override val character: Character): Skill.PassiveS
         if (hasEquipment) {
             previousItem = (character as HasEquipment).equipment.getEquipped(EquipmentType.RHAND)
             if (previousItem != null)
-                character.equipment.unsetItem(previousItem, false)
+                character.equipment.unequipItem(previousItem, false)
         }
 
         character.addTag(CharacterTag.IncreaseOnehandedDamage(increment))
@@ -66,7 +65,7 @@ class IncreaseOnehandedDamage(override val character: Character): Skill.PassiveS
         if (hasEquipment) {
             previousItem = (character as HasEquipment).equipment.getEquipped(EquipmentType.RHAND)
             if (previousItem != null)
-                character.equipment.unsetItem(previousItem, false)
+                character.equipment.unequipItem(previousItem, false)
         }
 
         character.removeTag(CharacterTag.IncreaseOnehandedDamage::class)

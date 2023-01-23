@@ -35,7 +35,7 @@ class IncreaseTwohandedDamage(override val character: Character, val increment: 
         if (hasEquipment) {
             previousItem = (character as HasEquipment).equipment.getEquipped(EquipmentType.RHAND)
             if (previousItem != null)
-                character.equipment.unsetItem(previousItem, false)
+                character.equipment.unequipItem(previousItem, false)
         }
 
         character.addTag(CharacterTag.IncreaseTwohandedDamage(increment))
@@ -50,7 +50,7 @@ class IncreaseTwohandedDamage(override val character: Character, val increment: 
         if (hasEquipment) {
             previousItem = (character as HasEquipment).equipment.getEquipped(EquipmentType.RHAND)
             if (previousItem != null)
-                character.equipment.unsetItem(previousItem, false)
+                character.equipment.unequipItem(previousItem, false)
         }
 
         character.removeTag(CharacterTag.IncreaseTwohandedDamage::class)

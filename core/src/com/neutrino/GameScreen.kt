@@ -113,12 +113,12 @@ class GameScreen: KtxScreen {
             Gdx.input.inputProcessor = uiInputMultiplexer
             hudStage.darkenScreen(true)
             isEqVisible = true
-            uiStage.showInventory()
+            uiStage.tabs.showInventory()
             // refresh inventory
-            if (uiStage.forceRefreshInventory) {
-                uiStage.refreshInventory()
+            if (uiStage.inventory.forceRefreshInventory) {
+                uiStage.inventory.refreshInventory()
                 hudStage.refreshHotBar()
-                uiStage.forceRefreshInventory = false
+                uiStage.inventory.forceRefreshInventory = false
             }
         }
     }
@@ -173,6 +173,13 @@ class GameScreen: KtxScreen {
     }
 
     override fun resize(width: Int, height: Int) {
+        Constants.fonts.get("equipment").setCrispness(30f).resizeDistanceField(width, height)
+        Constants.fonts.get("matchup").resizeDistanceField(width, height)
+        Constants.fonts.get("munro").setCrispness(30f).resizeDistanceField(width, height)
+        Constants.fonts.get("schmal").setCrispness(30f).resizeDistanceField(width, height)
+        Constants.fonts.get("outline").resizeDistanceField(width, height)
+        Constants.fonts.get("gothic").resizeDistanceField(width, height)
+
         extendViewport.update(width, height)
         uiViewport.update(width, height, true)
         hudViewport.update(width, height, true)
@@ -212,7 +219,7 @@ class GameScreen: KtxScreen {
                 else
                     Player.inventory.itemList.remove(itemInEq)
 
-                uiStage.forceRefreshInventory = true
+                uiStage.inventory.forceRefreshInventory = true
                 hudStage.refreshHotBar()
             }
 
@@ -440,9 +447,9 @@ class GameScreen: KtxScreen {
             override val dataType: GlobalDataType = GlobalDataType.PICKUP
             override fun update(data: Any?): Boolean {
                 if (gameStage.showEq && uiStage.clickedItem == null)
-                    uiStage.refreshInventory()
+                    uiStage.inventory.refreshInventory()
                 else
-                    uiStage.forceRefreshInventory = true
+                    uiStage.inventory.forceRefreshInventory = true
 
                 if (data is Item) {
                     hudStage.parsePickedUpItem(data)
@@ -456,8 +463,8 @@ class GameScreen: KtxScreen {
             override val dataType: GlobalDataType = GlobalDataType.EQUIPMENT
             override fun update(data: Any?): Boolean {
                 if (data is EquipmentType || data == null) {
-                    uiStage.refreshEquipment(data as EquipmentType)
-                    uiStage.refreshInventory()
+                    uiStage.equipment.refreshEquipment(data as EquipmentType)
+                    uiStage.inventory.refreshInventory()
                     hudStage.refreshHotBar()
                 }
                 return true

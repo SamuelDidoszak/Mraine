@@ -12,7 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.*
+import com.neutrino.game.Constants
+import com.neutrino.game.Fonts
 import com.neutrino.game.UI.utility.SkillActor
 import com.neutrino.game.UI.utility.SkillTreeActor
 import com.neutrino.game.domain.model.characters.Player
@@ -20,6 +21,8 @@ import com.neutrino.game.domain.model.characters.utility.SkillTree
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.model.systems.skills.SkillType
 import com.neutrino.game.graphics.utility.ColorUtils
+import com.neutrino.game.isIn
+import com.neutrino.game.roundPosition
 import ktx.actors.setScrollFocus
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
@@ -27,7 +30,7 @@ import ktx.scene2d.table
 import ktx.scene2d.textButton
 import space.earlygrey.shapedrawer.ShapeDrawer
 
-internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Group() {
+class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Group() {
 
     private lateinit var border: Image
     private val skillTable: ScrollPane = ScrollPane(getSkillTable())
@@ -261,7 +264,6 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
 
         width = border.width
         height = border.height
-        isVisible = false
         roundPosition()
 
         refreshSkills()
@@ -440,9 +442,6 @@ internal class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegi
             return TextureRegionDrawable(uiElements["cellLeft"])
         return TextureRegionDrawable(uiElements["cellMiddle"])
     }
-
-    private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.widthScaled()) <= 0 &&
-            y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.heightScaled()) <= 0)
 
     private class TreeLineActor(private val lineList: ArrayList<LinePoints>, private val lineColor: Color): Actor() {
         private val textureRegion: TextureRegion = TextureRegion(Constants.WhitePixel, 0, 0, 1, 1)

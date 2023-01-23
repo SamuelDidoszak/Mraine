@@ -35,7 +35,7 @@ class IncreaseMeleeDamage(override val character: Character): Skill.PassiveSkill
         if (hasEquipment) {
             previousItem = (character as HasEquipment).equipment.getEquipped(EquipmentType.RHAND)
             if (previousItem != null)
-                character.equipment.unsetItem(previousItem, false)
+                character.equipment.unequipItem(previousItem, false)
         }
 
         character.addTag(CharacterTag.IncreaseMeleeDamage(increment))
@@ -50,7 +50,7 @@ class IncreaseMeleeDamage(override val character: Character): Skill.PassiveSkill
         if (hasEquipment) {
             previousItem = (character as HasEquipment).equipment.getEquipped(EquipmentType.RHAND)
             if (previousItem != null)
-                character.equipment.unsetItem(previousItem, false)
+                character.equipment.unequipItem(previousItem, false)
         }
 
         character.removeTag(CharacterTag.IncreaseMeleeDamage::class)

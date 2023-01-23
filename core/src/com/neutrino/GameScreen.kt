@@ -446,7 +446,7 @@ class GameScreen: KtxScreen {
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PICKUP
             override fun update(data: Any?): Boolean {
-                if (gameStage.showEq && uiStage.clickedItem == null)
+                if (gameStage.showEq && uiStage.inventoryManager.clickedItem == null)
                     uiStage.inventory.refreshInventory()
                 else
                     uiStage.inventory.forceRefreshInventory = true

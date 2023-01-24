@@ -48,7 +48,7 @@ class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Gro
         "[${ColorUtils.toHexadecimal(getTreeColor(2))}]INTELLIGENCE",
         "[${ColorUtils.toHexadecimal(getTreeColor(3))}]SUMMONING")
 
-    var currentTab: Actor = skillTable
+    var currentTab: Actor = skillTrees
         private set
 
     private var currentlyFocused: Actor? = skillTable

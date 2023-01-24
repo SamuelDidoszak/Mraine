@@ -1,293 +1,89 @@
-
 ui.png
-size: 2048, 1024
-format: RGBA8888
-filter: Nearest, Nearest
-repeat: none
+	size: 2048, 1024
+	repeat: none
 EquipmentClosed
-  rotate: false
-  xy: 1519, 416
-  size: 104, 52
-  orig: 104, 52
-  offset: 0, 0
-  index: -1
+	bounds: 1519, 416, 104, 52
 EquipmentOpen
-  rotate: false
-  xy: 1932, 880
-  size: 116, 56
-  orig: 116, 56
-  offset: 0, 0
-  index: -1
+	bounds: 1720, 648, 116, 56
 EquipmentScreen
-  rotate: false
-  xy: 0, 468
-  size: 860, 524
-  orig: 860, 524
-  offset: 0, 0
-  index: -1
+	bounds: 0, 468, 860, 524
 Background
-  rotate: false
-  xy: 0, 468
-  size: 860, 524
-  orig: 860, 524
-  offset: 0, 0
-  index: -1
+	bounds: 0, 468, 860, 524
 InventoryBorder
-  rotate: false
-  xy: 860, 468
-  size: 860, 524
-  orig: 860, 524
-  offset: 0, 0
-  index: -1
+	bounds: 860, 468, 860, 524
 InventoryClosed
-  rotate: false
-  xy: 1000, 416
-  size: 192, 52
-  orig: 192, 52
-  offset: 0, 0
-  index: -1
+	bounds: 1000, 416, 192, 52
 InventoryOpen
-  rotate: false
-  xy: 0, 404
-  size: 212, 64
-  orig: 212, 64
-  offset: 0, 0
-  index: -1
+	bounds: 0, 404, 212, 64
 MapClosed
-  rotate: false
-  xy: 808, 416
-  size: 192, 52
-  orig: 192, 52
-  offset: 0, 0
-  index: -1
+	bounds: 808, 416, 192, 52
 MapOpen
-  rotate: false
-  xy: 1720, 928
-  size: 212, 64
-  orig: 212, 64
-  offset: 0, 0
-  index: -1
+	bounds: 1720, 928, 212, 64
+OptionsSkillsClosed
+	bounds: 1415, 416, 104, 52
+OptionsSkillsOpen
+	bounds: 1932, 936, 116, 56
+OptionsSortingClosed
+	bounds: 1623, 416, 104, 52
+OptionsSortingOpen
+	bounds: 1932, 880, 116, 56
 QuestsClosed
-  rotate: false
-  xy: 616, 416
-  size: 192, 52
-  orig: 192, 52
-  offset: 0, 0
-  index: -1
+	bounds: 616, 416, 192, 52
 QuestsOpen
-  rotate: false
-  xy: 212, 412
-  size: 212, 56
-  orig: 212, 56
-  offset: 0, 0
-  index: -1
+	bounds: 212, 412, 212, 56
 SkillsClosed
-  rotate: false
-  xy: 424, 416
-  size: 192, 52
-  orig: 192, 52
-  offset: 0, 0
-  index: -1
+	bounds: 424, 416, 192, 52
 SkillsOpen
-  rotate: false
-  xy: 0, 348
-  size: 212, 56
-  orig: 212, 56
-  offset: 0, 0
-  index: -1
+	bounds: 0, 348, 212, 56
 SortingAsc
-  rotate: false
-  xy: 1720, 480
-  size: 112, 56
-  orig: 112, 56
-  offset: 0, 0
-  index: -1
-SortingClosed
-  rotate: false
-  xy: 1415, 416
-  size: 104, 52
-  orig: 104, 52
-  offset: 0, 0
-  index: -1
+	bounds: 1192, 412, 112, 56
 SortingClosedOld
-  rotate: false
-  xy: 1304, 416
-  size: 111, 52
-  orig: 111, 52
-  offset: 0, 0
-  index: -1
+	bounds: 1304, 416, 111, 52
 SortingCustom
-  rotate: false
-  xy: 0, 180
-  size: 188, 56
-  orig: 188, 56
-  offset: 0, 0
-  index: -1
+	bounds: 0, 180, 188, 56
 SortingCustomOpen
-  rotate: false
-  xy: 1720, 704
-  size: 188, 56
-  orig: 188, 56
-  offset: 0, 0
-  index: -1
+	bounds: 1720, 704, 188, 56
 SortingDate
-  rotate: false
-  xy: 0, 236
-  size: 188, 56
-  orig: 188, 56
-  offset: 0, 0
-  index: -1
+	bounds: 0, 236, 188, 56
 SortingDateOpen
-  rotate: false
-  xy: 1720, 816
-  size: 188, 56
-  orig: 188, 56
-  offset: 0, 0
-  index: -1
+	bounds: 1720, 816, 188, 56
 SortingDesc
-  rotate: false
-  xy: 1192, 412
-  size: 112, 56
-  orig: 112, 56
-  offset: 0, 0
-  index: -1
-SortingOpen
-  rotate: false
-  xy: 1932, 936
-  size: 116, 56
-  orig: 116, 56
-  offset: 0, 0
-  index: -1
+	bounds: 1720, 592, 112, 56
 SortingType
-  rotate: false
-  xy: 1720, 872
-  size: 188, 56
-  orig: 188, 56
-  offset: 0, 0
-  index: -1
+	bounds: 1720, 872, 188, 56
 SortingTypeOpen
-  rotate: false
-  xy: 0, 292
-  size: 188, 56
-  orig: 188, 56
-  offset: 0, 0
-  index: -1
+	bounds: 0, 292, 188, 56
 SortingValue
-  rotate: false
-  xy: 212, 356
-  size: 188, 56
-  orig: 188, 56
-  offset: 0, 0
-  index: -1
+	bounds: 212, 356, 188, 56
 SortingValueOpen
-  rotate: false
-  xy: 1720, 760
-  size: 188, 56
-  orig: 188, 56
-  offset: 0, 0
-  index: -1
+	bounds: 1720, 760, 188, 56
 cellBottom
-  rotate: false
-  xy: 1804, 620
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 1908, 712, 84, 84
 cellBottomLeft
-  rotate: false
-  xy: 1908, 796
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 1920, 628, 84, 84
 cellBottomRight
-  rotate: false
-  xy: 96, 96
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 1720, 508, 84, 84
 cellLeft
-  rotate: false
-  xy: 1832, 452
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 1811, 424, 84, 84
 cellMiddle
-  rotate: false
-  xy: 1623, 384
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 1804, 508, 84, 84
 cellRight
-  rotate: false
-  xy: 272, 272
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 272, 272, 84, 84
 cellTop
-  rotate: false
-  xy: 0, 0
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 96, 96, 84, 84
 cellTopLeft
-  rotate: false
-  xy: 1720, 536
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 1908, 796, 84, 84
 cellTopRight
-  rotate: false
-  xy: 1720, 620
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 0, 0, 84, 84
 cellUnavailable
-  rotate: false
-  xy: 1804, 536
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 1836, 620, 84, 84
 equipmentDefault
-  rotate: false
-  xy: 0, 84
-  size: 96, 96
-  orig: 96, 96
-  offset: 0, 0
-  index: -1
+	bounds: 0, 84, 96, 96
 skillBackground
-  rotate: false
-  xy: 188, 264
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 188, 264, 84, 84
 skillBackgroundCooldown
-  rotate: false
-  xy: 180, 96
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 180, 96, 84, 84
 skillDarken
-  rotate: false
-  xy: 1908, 712
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 1727, 424, 84, 84
 skillHighlight
-  rotate: false
-  xy: 188, 180
-  size: 84, 84
-  orig: 84, 84
-  offset: 0, 0
-  index: -1
+	bounds: 188, 180, 84, 84

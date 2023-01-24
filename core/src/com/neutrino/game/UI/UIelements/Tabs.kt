@@ -1,5 +1,6 @@
 package com.neutrino.game.UI.UIelements
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -22,50 +23,59 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
     lateinit var currentSorting: Actor
     var isSortAscending: Boolean = false
 
+    private val optionsMap: MutableMap<String, Image> = mutableMapOf()
+    lateinit var currentOptionsOpen: Image
+    lateinit var currentOptionsClosed: Image
+
     fun activateTab() {
         // Don't change the screen if sorting was clicked
-        if (!hoveredTab!!.name.startsWith("Sorting")) {
+        if (!hoveredTab!!.name.startsWith("Options")) {
             when (activeTab.name) {
-                "InventoryOpen" -> uiStage.inventory.isVisible = false
                 "EquipmentOpen" -> uiStage.equipment.isVisible = false
+                "InventoryOpen" -> uiStage.inventory.isVisible = false
                 "SkillsOpen" -> uiStage.skills.isVisible = false
                 "QuestsOpen" -> uiStage.quests.isVisible = false
                 "MapOpen" -> uiStage.map.isVisible = false
             }
 
             when (hoveredTab!!.name) {
-                "InventoryClosed" -> {
-                    uiStage.inventory.isVisible = true
-                    uiStage.currentScreen = uiStage.inventory
-                    uiStage.inventory.setScrollFocus(true)
-                }
                 "EquipmentClosed" -> {
                     uiStage.equipment.isVisible = true
                     uiStage.currentScreen = uiStage.equipment
                     uiStage.equipment.refreshGoldInEquipment()
                     uiStage.equipment.stats.refreshStats()
+                    changeOptions("Sorting")
+                }
+                "InventoryClosed" -> {
+                    uiStage.inventory.isVisible = true
+                    uiStage.currentScreen = uiStage.inventory
+                    uiStage.inventory.setScrollFocus(true)
+                    changeOptions("Sorting")
                 }
                 "SkillsClosed" -> {
                     uiStage.skills.isVisible = true
                     uiStage.currentScreen = uiStage.skills
+                    changeOptions("Skills")
                 }
                 "QuestsClosed" -> {
                     uiStage.quests.isVisible = true
                     uiStage.currentScreen = uiStage.quests
+                    changeOptions("Sorting")
                 }
                 "MapClosed" -> {
                     uiStage.map.isVisible = true
                     uiStage.currentScreen = uiStage.map
+                    changeOptions("Sorting")
                 }
             }
         }
 
         /** ======================================================================================================================================================
-        Sorting and tabs
-         */
+                                                                        Options and tabs
+        */
 
-        if (activeTab.name == "SortingOpen") {
-            if (hoveredTab!!.name == "SortingClosed") {
+        if (activeTab.name == "OptionsSortingOpen") {
+            if (hoveredTab!!.name == "OptionsSortingClosed") {
                 // force asc/desc tab to original position
                 val sortingTabActive = sortingTabsGroup.children.find { it.name == "Sorting" + if (isSortAscending) "Asc" else "Desc" }!!
                 val yPositionReference = sortingTabsGroup.children.find { it.name == "SortingCustom" }!!.y
@@ -111,15 +121,43 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
             currentSorting.moveTab(false)
             return
         }
+
+        if (activeTab.name == "SkillsOpen" && hoveredTab!!.name == "OptionsSkillsClosed") {
+            uiStage.skills.changeTab()
+            activeTab = currentOptionsOpen
+            activeTab.isVisible = true
+            return
+        }
+
+        if (activeTab.name == "OptionsSkillsOpen") {
+            uiStage.skills.changeTab()
+            if (hoveredTab!!.name == "OptionsSkillsClosed") {
+                activeTab.isVisible = false
+                activeTab = openTabsGroup.children.find { it.name == "SkillsOpen" }!!
+                return
+            }
+            openTabsGroup.children.find { it.name == "SkillsOpen" }!!.isVisible = false
+        }
+
+
         activeTab.isVisible = false
         activeTab = openTabsGroup.children.find { it.name == hoveredTab!!.name.replace("Closed", "Open") }!!
         activeTab.isVisible = true
 
-        if (activeTab.name == "SortingOpen") {
+        if (activeTab.name == "OptionsSortingOpen") {
             mainTabsGroup.isVisible = false
             sortingTabsGroup.isVisible = true
             hoveredTab = null
         }
+    }
+
+    private fun changeOptions(name: String) {
+        mainTabsGroup.removeActorAt(0, false)
+        openTabsGroup.removeActorAt(0, false)
+        currentOptionsClosed = optionsMap["Options${name}Closed"]!!
+        currentOptionsOpen = optionsMap["Options${name}Open"]!!
+        mainTabsGroup.addActorAt(0, currentOptionsClosed)
+        openTabsGroup.addActorAt(0, currentOptionsOpen)
     }
 
     fun showInventory() {
@@ -133,7 +171,7 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
      * */
     fun getTabByPosition(stageCoord: Vector2): Actor? {
         return try {
-            if (activeTab.name == "SortingOpen")
+            if (activeTab.name == "OptionsSortingOpen")
                 sortingTabsGroup.children.first { it.isInUnscaled(stageCoord.x - sortingTabsGroup.x, stageCoord.y - sortingTabsGroup.y, uiStage.currentScale) }
             else
                 mainTabsGroup.children.first { it.isInUnscaled(stageCoord.x - mainTabsGroup.x, stageCoord.y - mainTabsGroup.y, uiStage.currentScale) }
@@ -191,13 +229,29 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
         mapOpen.setPosition(xPos - 10, yPos + 10 - 8)
         mapOpen.isVisible = false
         xPos += 170f
-        val sortingClosed = Image(uiElements["SortingClosed"])
-        sortingClosed.name = "SortingClosed"
-        sortingClosed.setPosition(xPos, yPos)
-        val sortingOpen = Image(uiElements["SortingOpen"])
-        sortingOpen.name = "SortingOpen"
-        sortingOpen.setPosition(xPos - 12, yPos + 10)
-        sortingOpen.isVisible = false
+
+        /** ======================================================================================================================================================
+                                                                        Initialize options
+        */
+        val optionsSortingClosed = Image(uiElements["OptionsSortingClosed"])
+        optionsSortingClosed.name = "OptionsSortingClosed"
+        optionsSortingClosed.setPosition(xPos, yPos)
+        val optionsSortingOpen = Image(uiElements["OptionsSortingOpen"])
+        optionsSortingOpen.name = "OptionsSortingOpen"
+        optionsSortingOpen.setPosition(xPos - 12, yPos + 10)
+        optionsSortingOpen.isVisible = false
+        val optionsSkillsClosed = Image(uiElements["OptionsSkillsClosed"])
+        optionsSkillsClosed.name = "OptionsSkillsClosed"
+        optionsSkillsClosed.setPosition(xPos, yPos)
+        val optionsSkillsOpen = Image(uiElements["OptionsSkillsOpen"])
+        optionsSkillsOpen.name = "OptionsSkillsOpen"
+        optionsSkillsOpen.setPosition(xPos - 12, yPos + 10)
+        optionsSkillsOpen.isVisible = false
+
+        optionsMap[optionsSortingClosed.name] = optionsSortingClosed
+        optionsMap[optionsSortingOpen.name] = optionsSortingOpen
+        optionsMap[optionsSkillsClosed.name] = optionsSkillsClosed
+        optionsMap[optionsSkillsOpen.name] = optionsSkillsOpen
 
         // Sorting tabs
         xPos = 0f
@@ -240,8 +294,12 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
         sortingDesc.name = "SortingDesc"
         sortingDesc.setPosition(xPos, yPos)
 
+        // Options tabs
+        currentOptionsClosed = optionsSortingClosed
+        currentOptionsOpen = optionsSortingOpen
+
         // Adding tabs
-        mainTabsGroup.addActor(sortingClosed)
+        mainTabsGroup.addActor(currentOptionsClosed)
         mainTabsGroup.addActor(mapClosed)
         mainTabsGroup.addActor(questsClosed)
         mainTabsGroup.addActor(skillsClosed)
@@ -249,7 +307,7 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
         mainTabsGroup.addActor(equipmentClosed)
 
         // Adding open tabs
-        openTabsGroup.addActor(sortingOpen)
+        openTabsGroup.addActor(currentOptionsOpen)
         openTabsGroup.addActor(mapOpen)
         openTabsGroup.addActor(questsOpen)
         openTabsGroup.addActor(skillsOpen)
@@ -286,6 +344,15 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
             sortingAsc.isVisible = false
             sortingDesc.isVisible = true
             sortingDesc.zIndex = 0
+        }
+    }
+
+    fun touchUp(coord: Vector2, pointer: Int, button: Int) {
+        // New tab was clicked
+        if (currentOptionsOpen.isInUnscaled(coord.x - openTabsGroup.x, coord.y - openTabsGroup.y, uiStage.currentScale))
+            hoveredTab = currentOptionsClosed
+        if (hoveredTab != activeTab && hoveredTab != null && button == Input.Buttons.LEFT) {
+            activateTab()
         }
     }
 }

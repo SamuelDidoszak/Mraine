@@ -57,9 +57,11 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         "QuestsOpen" to uiAtlas.findRegion("QuestsOpen"),
         "MapClosed" to uiAtlas.findRegion("MapClosed"),
         "MapOpen" to uiAtlas.findRegion("MapOpen"),
-            "SortingClosed" to uiAtlas.findRegion("SortingClosed"),
+            "OptionsSortingClosed" to uiAtlas.findRegion("OptionsSortingClosed"),
+            "OptionsSortingOpen" to uiAtlas.findRegion("OptionsSortingOpen"),
+            "OptionsSkillsClosed" to uiAtlas.findRegion("OptionsSkillsClosed"),
+            "OptionsSkillsOpen" to uiAtlas.findRegion("OptionsSkillsOpen"),
             "SortingClosedCentered" to uiAtlas.findRegion("SortingClosedCentered"),
-        "SortingOpen" to uiAtlas.findRegion("SortingOpen"),
         "SortingCustom" to uiAtlas.findRegion("SortingCustom"),
         "SortingCustomOpen" to uiAtlas.findRegion("SortingCustomOpen"),
         "SortingType" to uiAtlas.findRegion("SortingType"),
@@ -269,6 +271,11 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                     }
                     return callback == 1
                 }
+
+                if (inventory.forceRefreshInventory) {
+                    inventory.refreshInventory()
+                    inventory.forceRefreshInventory = false
+                }
             }
             skills -> {
                 if (skills.currentTab.name != "skills") {
@@ -304,17 +311,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             }
         }
 
-        // New tab was clicked
-        if (tabs.openTabsGroup.children.find { it.name == "SortingOpen" }?.isInUnscaled(coord.x - tabs.openTabsGroup.x, coord.y - tabs.openTabsGroup.y, currentScale) == true)
-            tabs.hoveredTab = tabs.mainTabsGroup.children.find { it.name == "SortingClosed" }
-        if (tabs.hoveredTab != tabs.activeTab && tabs.hoveredTab != null && button == Input.Buttons.LEFT) {
-            tabs.activateTab()
-        }
-
-        if (inventory.forceRefreshInventory) {
-            inventory.refreshInventory()
-            inventory.forceRefreshInventory = false
-        }
+        tabs.touchUp(coord, pointer, button)
 
         return super.touchUp(screenX, screenY, pointer, button)
     }
@@ -341,8 +338,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 inventoryManager.mouseMoved(coord)
             }
             skills -> {
-                if (skills.currentTab.name != "skills") {
-                    skills.scrollFocus(coord.x, coord.y)
+                skills.scrollFocus(coord.x, coord.y)
+                if (skills.currentTab.name != "skillTable") {
                     skills.onHover(coord.x, coord.y)
                 }
             }

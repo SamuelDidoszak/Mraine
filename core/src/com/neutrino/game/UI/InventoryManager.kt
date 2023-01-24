@@ -16,7 +16,6 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
 import kotlin.math.ceil
-import kotlin.math.sign
 
 class InventoryManager(private val uiStage: UiStage) {
 
@@ -27,12 +26,13 @@ class InventoryManager(private val uiStage: UiStage) {
     // possibly change to EqActor
     var clickedItem: Actor? = null
     private var dragItem: Boolean? = null
+    private var draggingStacking: Boolean = false
     /** Original item split into a stack. Null signifies that no stack was taken */
-    var originalStackItem: EqActor? = null
+    private var originalStackItem: EqActor? = null
     /** Value decreases when dragging upwards and decreases when dragging downwards */
-    var previousDragPosition: Int = -2137
+    private var previousDragPosition: Int = 2137
     // required for drag and drop
-    var timeClicked: Long = 0
+    private var timeClicked: Long = 0
 
     private var displayedItem: Item? = null
     private var detailsPopup: Table? = null
@@ -74,44 +74,65 @@ class InventoryManager(private val uiStage: UiStage) {
             return 0
 
         if (dragItem == null && originalContainer == null) {
-            dragItem = TimeUtils.millis() - timeClicked >= 650
-            if (dragItem!!)
+            dragItem = TimeUtils.millis() - timeClicked >= 450
+            if (dragItem!!) {
                 pickUpItem()
-        }
 
-        if (dragItem == true) {
-            if (detailsPopup != null)
-                uiStage.actors.removeValue(detailsPopup, true)
+                if (detailsPopup != null)
+                    uiStage.actors.removeValue(detailsPopup, true)
 
-            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * 2, coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * 2)
-            return 1
-        }
-
-        // TODO change this behavior to manage amount sizes
-        //      dragItem false means that click-hold was quick. Null means that an item was previously picked up
-
-        // An item was previously picked up. Adjust its stack size
-        if (dragItem == null) {
-            // Initialize the value
-            if (previousDragPosition == -2137) {
-                previousDragPosition = screenY
-                return if (draggedSuper.invoke()) 1 else 0
+                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * 2, coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * 2)
+                return 1
             }
-            // Negative values mean upwards drag, positive downwards
-            val dragStrength = previousDragPosition - screenY
+        }
+
+        // Adjust the stack of an item
+        if (dragItem != true) {
+            // Initialize the value
+            if (!draggingStacking) {
+                previousDragPosition = screenY
+            }
 
             if ((clickedItem as EqActor).item.amount != null) {
-                println((clickedItem as EqActor).item.amount!! - dragStrength.sign)
+                draggingStacking = true
+
+                var dragStrength = (previousDragPosition - screenY)
+
+                // threshold
+                if (dragStrength in -30 .. 30 && originalStackItem == null)
+                    return -1
+
+                if (originalStackItem == null) {
+                    if (originalContainer == null) {
+                        if (detailsPopup != null)
+                            uiStage.actors.removeValue(detailsPopup, true)
+
+                        originalContainer = clickedItem!!.parent as Container<*>
+                        createStack()
+                        originalContainer!!.actor = null
+                        clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
+                            coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
+
+                    }
+                    else {
+                        createStack()
+                        originalContainer!!.actor = originalStackItem
+                        originalStackItem!!.setScale(1f, 1f)
+                    }
+                    dragStrength = 0
+                }
+
+                val amount = originalStackItem!!.item.amount!! + (clickedItem as EqActor).item.amount!!
+
+                var stackAmount = ((dragStrength / -125f) * amount).toInt()
+                if (stackAmount < 1)
+                    stackAmount = 1
+                if (stackAmount >= amount - 1)
+                    stackAmount = amount - 1
+
+                setStackAmount(amount - stackAmount)
             }
             return -1
-        }
-
-        if (dragItem != true) {
-            if (originalContainer != null) {
-                clickedItem!!.setScale(1f, 1f)
-                originalContainer!!.actor = clickedItem
-                itemPassedToHud()
-            }
         }
         return -1
     }
@@ -137,6 +158,16 @@ class InventoryManager(private val uiStage: UiStage) {
             if (detailsPopup != null)
                 uiStage.actors.removeValue(detailsPopup, true)
 
+            if (draggingStacking) {
+                if (originalContainer?.actor == null) {
+                    originalContainer?.actor = originalStackItem
+                    originalStackItem?.setScale(1f, 1f)
+                }
+                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
+                    coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
+                draggingStacking = false
+            }
+
             if (dragItem == true) {
                 parseItemDrop(coord.x, coord.y)
                 clickedItem = null
@@ -144,17 +175,14 @@ class InventoryManager(private val uiStage: UiStage) {
                 dragItem = null
                 originalStackItem = null
             }
-            // TODO potential bugs i guess
-            else if (dragItem == false) {
-                clickedItem = null
-                dragItem = null
-            }
 
             // Dropping the clicked item
             if (originalContainer != null && clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 parseItemDrop(coord.x, coord.y)
                 clickedItem = null
                 originalContainer = null
+                originalStackItem = null
+                dragItem = null
             }
 
             // The item was clicked
@@ -224,7 +252,7 @@ class InventoryManager(private val uiStage: UiStage) {
 //                  hudStage.passedItemToUi()
 //              }
 
-        if (clickedItem != null)
+        if (clickedItem != null && (dragItem == true || originalContainer != null))
             clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
                 coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
     }
@@ -233,17 +261,57 @@ class InventoryManager(private val uiStage: UiStage) {
                                                                     Item handling
     */
 
+    private fun createStack() {
+        val itemPosition = Vector2(clickedItem!!.x, clickedItem!!.y)
+        val item = (clickedItem as EqActor).item.clone() as Item
+        originalStackItem = clickedItem as EqActor
+        item.amount = 0
+        clickedItem = EqActor(item)
+        uiStage.addActor(clickedItem)
+        clickedItem!!.setPosition(itemPosition.x, itemPosition.y)
+        clickedItem!!.setScale(uiStage.currentScale * 1.25f, uiStage.currentScale * 1.25f)
+    }
+
+    /**
+     * Sets the clickedItem amount to the provided value
+     * clickedItem becomes a new stack with passed value
+     * If the original stack becomes 0, originalStackContainer actor is removed
+     */
+    private fun setStackAmount(value: Int) {
+        if (originalStackItem == null)
+            return
+
+        val totalAmount = (clickedItem as EqActor).item.amount!! + originalStackItem!!.item.amount!!
+        (clickedItem as EqActor).item.amount = value
+        originalStackItem!!.item.amount = totalAmount - value
+        (clickedItem as EqActor).refreshAmount()
+        originalStackItem!!.refreshAmount()
+        if (originalStackItem!!.item.amount == 0)
+            originalContainer!!.actor = null
+    }
+
+    /**
+     * Subtracts stack amount from the originalStackItem
+     * clickedItem becomes a new stack with passed value
+     * If the original stack becomes 0, originalStackContainer actor is removed
+     */
+    private fun changeStackAmount(value: Int) {
+        if (originalStackItem == null)
+            return
+        (clickedItem as EqActor).item.amount = (clickedItem as EqActor).item.amount!!.plus(value)
+        originalStackItem!!.item.amount = originalStackItem!!.item.amount!!.minus(value)
+        (clickedItem as EqActor).refreshAmount()
+        originalStackItem!!.refreshAmount()
+        if (originalStackItem!!.item.amount == 0)
+            originalContainer!!.actor = null
+    }
+
     private fun pickUpItem() {
         // Create a new stack of the item
         if (dragItem == true && (clickedItem as EqActor).item.amount != null) {
             originalContainer = clickedItem!!.parent as Container<*>
-            val item = (clickedItem as EqActor).item.clone() as Item
-            originalStackItem = clickedItem as EqActor
-            item.amount = 0
-            clickedItem = EqActor(item)
-            changeStackAmount(ceil(originalStackItem!!.item.amount!! / 2f).toInt())
-            uiStage.addActor(clickedItem)
-            clickedItem!!.setScale(uiStage.currentScale * 1.25f, uiStage.currentScale * 1.25f)
+            createStack()
+            setStackAmount(ceil(originalStackItem!!.item.amount!! / 2f).toInt())
             return
         }
 
@@ -383,29 +451,13 @@ class InventoryManager(private val uiStage: UiStage) {
         return clickedChild
     }
 
-    /**
-     * clickedItem becomes a new stack with passed value
-     * Subtracts stack amount from the originalStackItem
-     * If the original stack becomes 0, originalStackContainer actor is removed
-     */
-    private fun changeStackAmount(value: Int) {
-        if (originalStackItem == null)
-            return
-        (clickedItem as EqActor).item.amount = (clickedItem as EqActor).item.amount!!.plus(value)
-        originalStackItem!!.item.amount = originalStackItem!!.item.amount!!.minus(value)
-        (clickedItem as EqActor).refreshAmount()
-        originalStackItem!!.refreshAmount()
-        if (originalStackItem!!.item.amount == 0)
-            originalContainer!!.actor = null
-    }
-
     /** ======================================================================================================================================================
                                                                     Cleanup and pass to HUD
     */
 
     /** Sets all values to null */
     fun nullifyAllValues() {
-        if (originalStackItem != null) {
+        if (originalStackItem != null && clickedItem != null) {
             changeStackAmount((clickedItem as EqActor).item.amount!! * -1)
             uiStage.actors.removeValue(clickedItem, true)
             clickedItem = originalStackItem

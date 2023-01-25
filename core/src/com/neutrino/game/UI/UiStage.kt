@@ -7,9 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.GlobalData
@@ -21,6 +19,8 @@ import com.neutrino.game.UI.UIelements.Equipment
 import com.neutrino.game.UI.UIelements.Skills
 import com.neutrino.game.UI.UIelements.Tabs
 import com.neutrino.game.UI.utility.EqActor
+import com.neutrino.game.UI.utility.ManagedElement
+import com.neutrino.game.UI.utility.ManagerType
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.skills.Skill
 
@@ -131,7 +131,9 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         scrollFocus = inventory
         currentScreen = inventory
 
-        inventoryManager.inventories.add(inventory)
+        inventoryManager.elements.add(ManagedElement(inventory, this.root, ManagerType.INVENTORY))
+        inventoryManager.elements.add(ManagedElement(skills.skillTable, skills, ManagerType.SKILLS))
+        inventoryManager.setElement(inventory)
 
         GlobalData.registerObserver(object : GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERINVENTORYSIZE
@@ -212,7 +214,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         )
 
         when (currentScreen) {
-            inventory -> {
+            inventory, skills -> {
                 val callback =
                 inventoryManager.touchDown(coord, pointer, button) {
                     super.touchDown(screenX, screenY, pointer, button)
@@ -220,9 +222,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
                 if (callback != -1)
                     return callback == 1
-            }
-            skills -> {
-//                clickedItem = getSkillCell(coord.x, coord.y)
             }
         }
 
@@ -238,7 +237,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         )
 
         when (currentScreen) {
-            inventory -> {
+            inventory, skills -> {
                 val callback =
                 inventoryManager.touchDragged(screenX, screenY, coord, pointer) {
                     super.touchDragged(screenX, screenY, pointer)
@@ -278,36 +277,13 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 }
             }
             skills -> {
-                if (skills.currentTab.name != "skills") {
+                if (skills.currentTab.name != "skillTable") {
                     skills.parseClick(coord.x, coord.y)
+                } else {
+                    inventoryManager.touchUp(coord, button) {
+                        super.touchUp(screenX, screenY, pointer, button)
+                    }
                 }
-
-//                else if (button == Input.Buttons.RIGHT && clickedItem == null) {
-//                    if (contextPopup != null) {
-//                        this.actors.removeValue(contextPopup, true)
-//                        contextPopup = null
-//                    }
-//                    else {
-//                        clickedItem = getSkillCell(coord.x, coord.y)
-//                        if (clickedItem != null && (clickedItem as Container<*>).actor != null) {
-//                            val skill = ((clickedItem as Container<*>).actor as SkillActor).skill
-//                            contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
-//                                usedSkill = skill
-//                                showInventory = false
-//                                clickedItem = null
-//                                nullifyAllValues()
-//                                inventoryManager.nullifyAllValues()
-//                            }
-//                            if (contextPopup != null) {
-//                                if (detailsPopup != null)
-//                                    this.actors.removeValue(detailsPopup, true)
-//                                addActor(contextPopup)
-//                                contextPopup?.setPosition(coord.x, coord.y)
-//                            }
-//                        }
-//                    }
-//                }
-//                clickedItem = null
             }
         }
 
@@ -341,7 +317,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 skills.scrollFocus(coord.x, coord.y)
                 if (skills.currentTab.name != "skillTable") {
                     skills.onHover(coord.x, coord.y)
-                }
+                } else
+                    inventoryManager.mouseMoved(coord)
             }
         }
 
@@ -378,25 +355,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     }
 
     /** ======================================================================================================================================================
-                                                                    Item related methods
+                                                                    Cleanup
     */
-
-    private fun getSkillCell(x: Float, y: Float): Container<*>? {
-        val coord: Vector2 = skills.stageToLocalCoordinates(
-            Vector2(x, y)
-        )
-
-        var clickedChild = skills.hit(coord.x, coord.y, false)
-
-        // space between cells was hit
-        if (clickedChild is Table)
-            return null
-
-        if (clickedChild !is Container<*>)
-            return null
-
-        return clickedChild
-    }
 
     fun refreshHotBar() {
         hudStage.refreshHotBar()

@@ -3,6 +3,7 @@ package com.neutrino.game.UI
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
@@ -10,16 +11,26 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.TimeUtils
 import com.neutrino.game.UI.popups.ItemContextPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
-import com.neutrino.game.UI.utility.EqActor
+import com.neutrino.game.UI.popups.SkillContextPopup
+import com.neutrino.game.UI.utility.*
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
+import com.neutrino.game.isIn
 import kotlin.math.ceil
 
 class InventoryManager(private val uiStage: UiStage) {
 
-    val inventories: ArrayList<ScrollPane> = ArrayList(2)
+    val elements: ArrayList<ManagedElement> = ArrayList(2)
+    private var currentElement: ManagedElement? = null
+
+    fun setElement(group: Group) {
+        if (group == uiStage.inventory)
+            currentElement = elements[0]
+        if (group == uiStage.skills)
+            currentElement = elements[1]
+    }
     
     private var originalContainer: Container<*>? = null
     private var originalInventory: Inventory? = null
@@ -54,15 +65,20 @@ class InventoryManager(private val uiStage: UiStage) {
         }
         
         // gets the eq ui and sets the originalEq
-        val clickedInv = getInvClicked(coord.x, coord.y)
-        if (clickedInv != null) {
-            if (clickedInv.name == "inventory")
+        currentElement = getInvClicked(coord.x, coord.y)
+        when (currentElement?.pane) {
+            null -> return -1
+            uiStage.inventory -> {
                 originalInventory = Player.inventory
-            // Sets the clicked item for drag handling
-            clickedItem = getInventoryCell(coord.x, coord.y, clickedInv)?.actor
-            if (clickedItem != null)
-                timeClicked = TimeUtils.millis()
+            }
+            uiStage.skills.skillTable -> {
+
+            }
         }
+        // Sets the clicked item for drag handling
+        clickedItem = getInventoryCell(coord.x, coord.y, currentElement!!.pane)?.actor
+        if (clickedItem != null)
+            timeClicked = TimeUtils.millis()
         return -1
     }
 
@@ -80,10 +96,11 @@ class InventoryManager(private val uiStage: UiStage) {
 
                 if (detailsPopup != null)
                     uiStage.actors.removeValue(detailsPopup, true)
-
-                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * 2, coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * 2)
-                return 1
             }
+        }
+
+        if (dragItem == true) {
+            clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth / 2, coord.y - (clickedItem!! as PickupActor).ogHeight / 2)
         }
 
         // Adjust the stack of an item
@@ -91,11 +108,13 @@ class InventoryManager(private val uiStage: UiStage) {
             // Initialize the value
             if (!draggingStacking) {
                 previousDragPosition = screenY
+                draggingStacking = true
             }
 
-            if ((clickedItem as EqActor).item.amount != null) {
-                draggingStacking = true
+            if (clickedItem !is EqActor)
+                return -1
 
+            if ((clickedItem as EqActor).item.amount != null) {
                 var dragStrength = (previousDragPosition - screenY)
 
                 // threshold
@@ -110,8 +129,8 @@ class InventoryManager(private val uiStage: UiStage) {
                         originalContainer = clickedItem!!.parent as Container<*>
                         createStack()
                         originalContainer!!.actor = null
-                        clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
-                            coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
+                        clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * (uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
+                            coord.y - (clickedItem!! as PickupActor).ogHeight * (uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
 
                     }
                     else {
@@ -159,12 +178,15 @@ class InventoryManager(private val uiStage: UiStage) {
                 uiStage.actors.removeValue(detailsPopup, true)
 
             if (draggingStacking) {
-                if (originalContainer?.actor == null) {
+                if (originalContainer?.actor == null && clickedItem is EqActor) {
                     originalContainer?.actor = originalStackItem
                     originalStackItem?.setScale(1f, 1f)
                 }
-                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
-                    coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
+                if (originalContainer == null)
+                    pickUpItem()
+
+                clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * (uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
+                    coord.y - (clickedItem!! as PickupActor).ogHeight * (uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
                 draggingStacking = false
             }
 
@@ -178,7 +200,8 @@ class InventoryManager(private val uiStage: UiStage) {
 
             // Dropping the clicked item
             if (originalContainer != null && clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
-                parseItemDrop(coord.x, coord.y)
+                if (!parseItemDrop(coord.x, coord.y))
+                    return -1
                 clickedItem = null
                 originalContainer = null
                 originalStackItem = null
@@ -188,8 +211,9 @@ class InventoryManager(private val uiStage: UiStage) {
             // The item was clicked
             if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 pickUpItem()
-                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
-                    coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
+
+                clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * (uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
+                    coord.y - (clickedItem!! as PickupActor).ogHeight * (uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
                 return if (touchSuper.invoke()) 1 else 0
             }
         }
@@ -201,9 +225,22 @@ class InventoryManager(private val uiStage: UiStage) {
             else {
                 val hoveredInv = getInvClicked(coord.x, coord.y)
                 if (hoveredInv != null) {
-                    val hoveredItem: Actor? = getInventoryCell(coord.x, coord.y, hoveredInv)?.actor
-                    if (hoveredItem != null) {
-                        contextPopup = itemContextPopup.createContextMenu((hoveredItem as EqActor).item, coord.x, coord.y)
+                    val hoveredActor: Actor? = getInventoryCell(coord.x, coord.y, hoveredInv.pane)?.actor
+                    if (hoveredActor != null) {
+                        when (hoveredInv.type) {
+                            ManagerType.INVENTORY, ManagerType.EQUIPMENT ->
+                                contextPopup = itemContextPopup.createContextMenu((hoveredActor as EqActor).item, coord.x, coord.y)
+                            ManagerType.SKILLS -> {
+                                val skill = (hoveredActor as SkillActor).skill
+                                contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
+                                    uiStage.usedSkill = skill
+                                    uiStage.showInventory = false
+                                    clickedItem = null
+                                    nullifyAllValues()
+                                    uiStage.inventoryManager.nullifyAllValues()
+                                }
+                            }
+                        }
                         if (contextPopup != null) {
                             if (detailsPopup != null)
                                 uiStage.actors.removeValue(detailsPopup, true)
@@ -222,26 +259,40 @@ class InventoryManager(private val uiStage: UiStage) {
         val hoveredInv = getInvClicked(coord.x, coord.y)
         var hoveredItem: Actor? = null
         if (hoveredInv != null && contextPopup == null) {
-            hoveredItem = getInventoryCell(coord.x, coord.y, hoveredInv)?.actor
-            if (hoveredItem != null && (hoveredItem as EqActor).item != displayedItem) {
-                if (detailsPopup != null)
-                    uiStage.actors.removeValue(detailsPopup, true)
-                detailsPopup = ItemDetailsPopup(hoveredItem.item, true)
-                detailsPopup!!.setPosition(coord.x, coord.y)
-                displayedItem = hoveredItem.item
-                uiStage.addActor(detailsPopup)
-                detailsPopup!!.setPosition(coord.x, coord.y)
-                (detailsPopup!! as ItemDetailsPopup).assignBg(coord.x, coord.y)
+            hoveredItem = getInventoryCell(coord.x, coord.y, hoveredInv.pane)?.actor
+            when (hoveredInv.type) {
+                ManagerType.INVENTORY, ManagerType.EQUIPMENT -> {
+                    if (hoveredItem != null && (hoveredItem as EqActor).item != displayedItem) {
+                        if (detailsPopup != null)
+                            uiStage.actors.removeValue(detailsPopup, true)
+                        detailsPopup = ItemDetailsPopup(hoveredItem.item, true)
+                        detailsPopup!!.setPosition(coord.x, coord.y)
+                        displayedItem = hoveredItem.item
+                        uiStage.addActor(detailsPopup)
+                        detailsPopup!!.setPosition(coord.x, coord.y)
+                        (detailsPopup!! as ItemDetailsPopup).assignBg(coord.x, coord.y)
+                    }
+                }
+                ManagerType.SKILLS -> {}
             }
         }
 
-        // delete or move the popup
-        if (hoveredInv == null || hoveredItem == null) {
-            displayedItem = null
-            uiStage.actors.removeValue(detailsPopup, true)
-            detailsPopup = null
-        } else {
-            detailsPopup!!.setPosition(coord.x, coord.y)
+        when (currentElement?.type) {
+            ManagerType.INVENTORY -> {
+                // delete or move the popup
+                if ((hoveredInv == null || hoveredItem == null)) {
+                    displayedItem = null
+                    uiStage.actors.removeValue(detailsPopup, true)
+                    detailsPopup = null
+                } else {
+                    detailsPopup!!.setPosition(coord.x, coord.y)
+                }
+            }
+            ManagerType.SKILLS -> {
+                if (clickedItem == null)
+                    uiStage.skills.showSkillDetails((hoveredItem as SkillActor?)?.skill)
+            }
+            else -> {}
         }
 
         // TODO pass item from hud
@@ -253,8 +304,8 @@ class InventoryManager(private val uiStage: UiStage) {
 //              }
 
         if (clickedItem != null && (dragItem == true || originalContainer != null))
-            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
-                coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
+            clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * (uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
+                coord.y - (clickedItem!! as PickupActor).ogHeight * (uiStage.currentScale * 1.25f) / 2 - 9 * uiStage.currentScale)
     }
 
     /** ======================================================================================================================================================
@@ -308,7 +359,7 @@ class InventoryManager(private val uiStage: UiStage) {
 
     private fun pickUpItem() {
         // Create a new stack of the item
-        if (dragItem == true && (clickedItem as EqActor).item.amount != null) {
+        if (dragItem == true && clickedItem is EqActor && (clickedItem as EqActor).item.amount != null) {
             originalContainer = clickedItem!!.parent as Container<*>
             createStack()
             setStackAmount(ceil(originalStackItem!!.item.amount!! / 2f).toInt())
@@ -325,11 +376,38 @@ class InventoryManager(private val uiStage: UiStage) {
      * Interprets where the item was dropped.
      * Either drops it out of the inventory, adds to a different inventory, makes a new stack or combines stacks
      */
-    private fun parseItemDrop(x: Float, y: Float) {
+    private fun parseItemDrop(x: Float, y: Float): Boolean {
         if (clickedItem == null)
-            return
+            return false
 
         val clickedInv = getInvClicked(x, y)
+
+        if (currentElement?.type == ManagerType.SKILLS) {
+            clickedItem!!.setScale(1f, 1f)
+            if (clickedInv == null) {
+                originalContainer!!.actor = clickedItem
+                return true
+            }
+            val container = getInventoryCell(x, y, clickedInv!!.pane)
+            if (container == null) {
+                originalContainer!!.actor = clickedItem
+                return true
+
+            }
+
+            uiStage.actors.removeValue(clickedItem, true)
+
+            if (container.hasChildren())
+                originalContainer!!.actor = container.actor as SkillActor
+
+            container.actor = clickedItem
+            return true
+        }
+
+        val isEqActor = currentElement?.type == ManagerType.INVENTORY || currentElement?.type == ManagerType.EQUIPMENT
+        if (!isEqActor)
+            return false
+
         if (clickedInv == null) {
             // Dropping the item
             if (clickedItem != null) {
@@ -350,21 +428,21 @@ class InventoryManager(private val uiStage: UiStage) {
                 // Refresh hotBar after dropping the item
                 uiStage.refreshHotBar()
             }
-            return
+            return true
         }
         clickedItem!!.setScale(1f, 1f)
         // if the area between cells was clicked, reset the item position
-        val container = getInventoryCell(x, y, clickedInv)
+        val container = getInventoryCell(x, y, clickedInv.pane)
         // TODO checking the Player inventorySize here can cause bugs when other inventories will be displayed
         if (container == null || container.name?.toInt()!! >= Player.inventory.size) {
             if (originalStackItem != null) {
                 originalStackItem!!.item.amount = originalStackItem!!.item.amount?.plus((clickedItem as EqActor).item.amount!!)
                 originalStackItem!!.refreshAmount()
                 uiStage.actors.removeValue(clickedItem, true)
-                return
+                return true
             }
             originalContainer!!.actor = clickedItem
-            return
+            return true
         }
 
         uiStage.actors.removeValue(clickedItem, true)
@@ -389,7 +467,7 @@ class InventoryManager(private val uiStage: UiStage) {
 
                 (container.actor as EqActor).refreshAmount()
                 uiStage.refreshHotBar()
-                return
+                return true
                 // Item was dropped onto another item, position is reset
             } else if (originalStackItem != null) {
                 // If original stack is 0 and container's actor was removed, create a new one
@@ -399,7 +477,7 @@ class InventoryManager(private val uiStage: UiStage) {
                 originalStackItem!!.refreshAmount()
                 uiStage.actors.removeValue(clickedItem, true)
                 uiStage.refreshHotBar()
-                return
+                return true
             } else
                 originalContainer!!.actor = container.actor as EqActor
         }
@@ -418,31 +496,47 @@ class InventoryManager(private val uiStage: UiStage) {
             }
 
             uiStage.refreshHotBar()
-            return
+            return true
         }
         container.actor = clickedItem
+        return true
     }
 
     /** Returns the eq ui and sets the originalEq */
-    private fun getInvClicked(x: Float, y: Float): ScrollPane? {
-        val inPlayerInventory = (x in inventories[0].x .. inventories[0].x + inventories[0].width * uiStage.currentScale - 1 &&
-                y in inventories[0].y .. inventories[0].y + inventories[0].height * uiStage.currentScale - 1)
-        if (inPlayerInventory) {
-            return inventories[0]
+    private fun getInvClicked(x: Float, y: Float): ManagedElement? {
+        for (inventory in elements) {
+            val coord = inventory.boundsActor.stageToLocalCoordinates(Vector2(x, y))
+            val pane = inventory.pane
+            if (!pane.isVisible || !inventory.boundsActor.isVisible)
+                continue
+            if (pane.name == "skillTable") {
+                if (pane.isIn(coord.x, coord.y))
+                    return inventory
+            }
+
+            if (coord.x in pane.x .. pane.x + pane.width * uiStage.currentScale - 1 &&
+                coord.y in pane.y .. pane.y + pane.height * uiStage.currentScale - 1)
+                return inventory
         }
-        else
-            return null
+        return null
     }
 
     private fun getInventoryCell(x: Float, y: Float, clickedEq: ScrollPane): Container<*>? {
-        val coord: Vector2 = clickedEq.stageToLocalCoordinates(
+        var coord: Vector2 = clickedEq.stageToLocalCoordinates(
             Vector2(x, y)
         )
+
+        if (clickedEq.name == "skillTable")
+            coord = uiStage.skills.stageToLocalCoordinates(Vector2(x, y))
 
         var clickedChild = clickedEq.hit(coord.x, coord.y, false)
 
         // space between cells was hit
         if (clickedChild is Table)
+            return null
+
+        // Skills require it for some reason
+        if (clickedChild !is Container<*>)
             return null
 
         while (clickedChild !is Container<*>) {

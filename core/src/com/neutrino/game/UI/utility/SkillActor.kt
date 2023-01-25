@@ -7,10 +7,10 @@ import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.systems.skills.Skill
 
-class SkillActor(val skill: Skill): Group(), TextureHaver {
+class SkillActor(val skill: Skill): Group(), TextureHaver, PickupActor {
     // needed for resize
-    private val ogWidth = 84f
-    private val ogHeight = 84f
+    override val ogWidth = 84f
+    override val ogHeight = 84f
     private var actorWidth: Float = ogWidth
     private var actorHeight: Float = ogHeight
 

@@ -51,11 +51,13 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
                     uiStage.currentScreen = uiStage.inventory
                     uiStage.inventory.setScrollFocus(true)
                     changeOptions("Sorting")
+                    uiStage.inventoryManager.setElement(uiStage.inventory)
                 }
                 "SkillsClosed" -> {
                     uiStage.skills.isVisible = true
                     uiStage.currentScreen = uiStage.skills
                     changeOptions("Skills")
+                    uiStage.inventoryManager.setElement(uiStage.skills)
                 }
                 "QuestsClosed" -> {
                     uiStage.quests.isVisible = true

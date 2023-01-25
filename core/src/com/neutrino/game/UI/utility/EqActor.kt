@@ -9,10 +9,10 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.items.Item
 
-class EqActor(val item: Item): Group() {
+class EqActor(val item: Item): Group(), PickupActor {
     // needed for resize
-    private val ogWidth = item.texture.regionWidth * 4f
-    private val ogHeight = item.texture.regionWidth * 4f
+    override val ogWidth = item.texture.regionWidth * 4f
+    override val ogHeight = item.texture.regionWidth * 4f
     private var actorWidth: Float = ogWidth
     private var actorHeight: Float = ogHeight
 

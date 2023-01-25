@@ -33,7 +33,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer
 class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Group() {
 
     private lateinit var border: Image
-    private val skillTable: ScrollPane = ScrollPane(getSkillTable())
+    val skillTable: ScrollPane = ScrollPane(getSkillTable())
     private val skillTrees: Group = Group()
 
     private val detailsPane: ScrollPane = ScrollPane(Group())
@@ -42,8 +42,8 @@ class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Gro
     private val dexterityTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.DEXTERITY, 1))
     private val intelligenceTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.INTELLIGENCE, 2))
     private val summoningTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.INTELLIGENCE, 3))
-    var treeList = listOf(strengthTree, dexterityTree, intelligenceTree, summoningTree)
-    var treeNameList = listOf("[${ColorUtils.toHexadecimal(getTreeColor(0))}]STRENGTH",
+    private var treeList = listOf(strengthTree, dexterityTree, intelligenceTree, summoningTree)
+    private var treeNameList = listOf("[${ColorUtils.toHexadecimal(getTreeColor(0))}]STRENGTH",
         "[${ColorUtils.toHexadecimal(getTreeColor(1))}]DEXTERITY",
         "[${ColorUtils.toHexadecimal(getTreeColor(2))}]INTELLIGENCE",
         "[${ColorUtils.toHexadecimal(getTreeColor(3))}]SUMMONING")
@@ -171,7 +171,12 @@ class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Gro
             detailsPane.actor = null
     }
 
-    fun showSkillDetails(skill: Skill) {
+    fun showSkillDetails(skill: Skill?) {
+        if (skill == null) {
+            detailsPane.actor = null
+            return
+        }
+
         val skillDetailsImage = Image(TextureRegion(Constants.DefaultIconTexture.findRegion(skill.textureName)))
         val skillName = TextraLabel(skill.name, Fonts.EQUIPMENT, getTreeColor(skill.skillType))
         skillName.wrap = true

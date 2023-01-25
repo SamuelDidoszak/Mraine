@@ -331,6 +331,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 showInventory = false
                 inventoryManager.nullifyAllValues()
                 nullifyAllValues()
+                hudStage.nullifyAllValues()
             }
         }
         return true

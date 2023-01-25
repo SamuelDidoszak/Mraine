@@ -58,6 +58,8 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     private val darkenBackground = Image(TextureRegion(Texture("UI/blackBg.png")))
     val diagnostics = Diagnostics()
 
+    var uiMode: Boolean = false
+
     /** Stage required for passing items into the hotBar */
     private lateinit var uiStage: UiStage
 
@@ -322,7 +324,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             return false
 
         if (dragItem == null) {
-            dragItem = TimeUtils.millis() - timeClicked >= 650
+            dragItem = TimeUtils.millis() - timeClicked >= 450
             if (dragItem!!)
                 pickUpItem()
         }
@@ -363,7 +365,12 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             val itemFromUi: Actor? = uiStage.inventoryManager.originalStackItem?:uiStage.inventoryManager.clickedItem
             if (itemFromUi != null) {
                 val clickedActor = actorAtGroup(coord.x, coord.y)
-                if (clickedActor != null && clickedActor is Container<*>) {
+                // Handle passing items in hud
+                if (originalContainer != null) {
+                    clickedItem = itemFromUi
+                    parseItemDrop(coord.x, coord.y)
+                }
+                else if (clickedActor != null && clickedActor is Container<*>) {
                     itemFromUi.setScale(1f, 1f)
                     var previousPosition: Int? = null
                     if (itemFromUi is SkillActor) {
@@ -401,14 +408,13 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             }
 
             // Dropping the clicked item
-            // TODO possibly change to "originalContainer != null && clickedItem != null" and remove itemClicked
             if (itemClicked == true && TimeUtils.millis() - timeClicked <= 200) {
                 parseItemDrop(coord.x, coord.y)
                 clickedItem = null
             }
 
             // The item was clicked
-            if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
+            if (uiMode && clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 pickUpItem()
                 itemClicked = true
                 clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 6,
@@ -450,12 +456,9 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         itemClicked = null
         dragItem = null
 
-        if (passClickToGame && actorAtGroup(coord.x, coord.y) == null) {
+        if (passClickToGame && actorAtGroup(coord.x, coord.y) == null)
             return super.touchUp(screenX, screenY, pointer, button)
-        } else {
-//            println("Clicked an actor: ${clickedActor.name}")
-            return true
-        }
+        return true
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
@@ -484,14 +487,14 @@ class HudStage(viewport: Viewport): Stage(viewport) {
 
     /** ============================================================     Item related methods     =============================================================================*/
 
-    fun passedItemToUi() {
-        actors.removeValue(clickedItem, true)
-        clickedItem = null
-    }
-
     private fun pickUpItem() {
         originalContainer = clickedItem!!.parent as Container<*>
         setItemToPosition(originalContainer!!.name.toInt(), null)
+        if (uiMode) {
+            uiStage.inventoryManager.itemFromHud(clickedItem!!)
+            return
+        }
+
         addActor(clickedItem)
         clickedItem!!.setScale(clickedItem!!.scaleX * 1.25f, clickedItem!!.scaleY * 1.25f)
     }
@@ -513,6 +516,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             if (clickedItem != null) {
                 setItemToPosition(originalContainer!!.name.toInt(), null)
                 clickedItem!!.remove()
+                uiStage.inventoryManager.itemPassedToHud()
             }
             return
         }
@@ -521,12 +525,17 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         this.actors.removeValue(clickedItem, true)
         // check if the cell is ocupied and act accordingly
         if (clickedActor.hasChildren()) {
+            if (clickedActor.actor is SkillActor)
+                setSkillToPosition(originalContainer!!.name.toInt(), clickedActor.actor as SkillActor)
+            else
+
             // sum item amounts
             if ((clickedItem as EqActor).item.name == (clickedActor.actor as EqActor).item.name
                 && (clickedActor.actor as EqActor).item.amount != null) {
                 (clickedActor.actor as EqActor).item.amount =
                     (clickedActor.actor as EqActor).item.amount?.plus((clickedItem as EqActor).item.amount!!
                     )
+                uiStage.inventoryManager.itemPassedToHud()
                 return
             } else {
                 setItemToPosition(originalContainer!!.name.toInt(), null, clickedActor.actor as EqActor)
@@ -537,10 +546,13 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             setItemToPosition(clickedActor.name.toInt(), null, clickedItem as EqActor)
         if (clickedItem is SkillActor)
             setSkillToPosition(clickedActor.name.toInt(), clickedItem as SkillActor)
+
+        uiStage.inventoryManager.itemPassedToHud()
+        nullifyAllValues()
     }
 
     /** Sets all values to null */
-    private fun nullifyAllValues() {
+    fun nullifyAllValues() {
 //        clickedItem?.addAction(Actions.removeActor())
         clickedItem = null
         originalContainer = null

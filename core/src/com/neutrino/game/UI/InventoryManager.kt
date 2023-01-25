@@ -65,7 +65,7 @@ class InventoryManager(private val uiStage: UiStage) {
         }
         
         // gets the eq ui and sets the originalEq
-        currentElement = getInvClicked(coord.x, coord.y)
+        currentElement = getInvClicked(coord.x, coord.y) ?: currentElement
         when (currentElement?.pane) {
             null -> return -1
             uiStage.inventory -> {
@@ -182,7 +182,7 @@ class InventoryManager(private val uiStage: UiStage) {
                     originalContainer?.actor = originalStackItem
                     originalStackItem?.setScale(1f, 1f)
                 }
-                if (originalContainer == null)
+                if (originalContainer == null && !itemFromHud)
                     pickUpItem()
 
                 clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * (uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
@@ -209,7 +209,7 @@ class InventoryManager(private val uiStage: UiStage) {
             }
 
             // The item was clicked
-            if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
+            if (!itemFromHud && clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 pickUpItem()
 
                 clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * (uiStage.currentScale * 1.25f) / 2 - 6 * uiStage.currentScale,
@@ -251,6 +251,9 @@ class InventoryManager(private val uiStage: UiStage) {
                 }
             }
         }
+        if (itemFromHud)
+            itemPassedToHud()
+
         return -1
     }
 
@@ -563,6 +566,8 @@ class InventoryManager(private val uiStage: UiStage) {
         originalInventory = null
         dragItem = null
         originalStackItem = null
+        draggingStacking = false
+        itemFromHud = false
 
         if (detailsPopup != null) {
             uiStage.actors.removeValue(detailsPopup, true)
@@ -589,6 +594,17 @@ class InventoryManager(private val uiStage: UiStage) {
         originalContainer = null
         originalInventory = null
         dragItem = null
+        draggingStacking = false
+        itemFromHud = false
         timeClicked = 0 // TODO delete after making touchDragged working as intended
     }
+
+    fun itemFromHud(actor: Actor) {
+        clickedItem = actor
+        itemFromHud = true
+        dragItem = false
+        uiStage.addActor(clickedItem)
+        clickedItem!!.setScale(1.25f)
+    }
+    var itemFromHud: Boolean = false
 }

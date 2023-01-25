@@ -147,12 +147,14 @@ class GameScreen: KtxScreen {
             uiStage.viewport.apply()
             uiStage.act(delta)
             uiStage.draw()
+            hudStage.uiMode = true
             if (!uiStage.showInventory) {
                 // show normal stuff
                 selectInput(showEq = false)
                 // cleanup
                 gameStage.showEq = false
                 uiStage.showInventory = true
+                hudStage.uiMode = false
             }
         }
 

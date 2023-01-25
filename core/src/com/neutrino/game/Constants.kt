@@ -35,6 +35,9 @@ fun Actor.heightScaled() = this.height * this.scaleY
 fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.width) <= 0 &&
         y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.height) <= 0)
 
+fun Actor.isInSized(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.widthScaled()) <= 0 &&
+        y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.heightScaled()) <= 0)
+
 fun Actor.isInUnscaled(x: Float, y: Float, scale: Float) = (x.compareDelta(this.x * scale) >= 0 && x.compareDelta(this.x * scale + this.width * scale) <= 0 &&
         y.compareDelta(this.y * scale) >= 0 && y.compareDelta(this.y * scale + this.height * scale) <= 0)
 

@@ -39,7 +39,7 @@ class InventoryManager(private val uiStage: UiStage) {
     private var dragItem: Boolean? = null
     private var draggingStacking: Boolean = false
     /** Original item split into a stack. Null signifies that no stack was taken */
-    private var originalStackItem: EqActor? = null
+    var originalStackItem: EqActor? = null
     /** Value decreases when dragging upwards and decreases when dragging downwards */
     private var previousDragPosition: Int = 2137
     // required for drag and drop

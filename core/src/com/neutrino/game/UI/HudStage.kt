@@ -23,9 +23,13 @@ import com.neutrino.game.*
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.UI.popups.Diagnostics
 import com.neutrino.game.UI.popups.ItemContextPopup
+import com.neutrino.game.UI.popups.SkillContextPopup
 import com.neutrino.game.UI.utility.EqActor
+import com.neutrino.game.UI.utility.PickupActor
+import com.neutrino.game.UI.utility.SkillActor
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.graphics.utility.ColorUtils
 import ktx.actors.alpha
 import ktx.scene2d.container
@@ -214,9 +218,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         })
     }
 
-    /** ======================================================================================================================================================
-                                                                    Status related methods
-     */
+    /** ============================================================     Status related methods     =============================================================================*/
 
     fun addStatusIcon() {
         val statusIcon = Image(Constants.DefaultItemTexture.findRegion("meat"))
@@ -227,12 +229,11 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         statusIcons.setDebug(true, true)
     }
 
-    /** ======================================================================================================================================================
-                                                                    HotBar and item parsing related variables
-     */
+    /** ============================================================     HotBar and item parsing related variables     =============================================================================*/
 
     private var hotBarDesignatedItems: MutableList<Item?> = MutableList(10) {null}
     private var hotBarItemList: MutableList<Item?> = MutableList(10) {null}
+    private var hotBarSkillList: MutableList<Skill?> = MutableList(10) {null}
 
     private var dragItem: Boolean? = false
     private var itemClicked: Boolean? = false
@@ -245,9 +246,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     val usedItemList: ArrayDeque<Item> = ArrayDeque()
     private val itemContextPopup = ItemContextPopup(usedItemList, ::nullifyAllValues)
 
-    /** ======================================================================================================================================================
-                                                                    HotBar related method
-    */
+    /** ============================================================     HotBar related methods     =============================================================================*/
 
     /** Adds the picked up item into its designated position. Pass an item from player inventory */
     fun parsePickedUpItem(item: Item) {
@@ -262,6 +261,8 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     /** Refreshes the hotBar fetching each item from inventory */
     fun refreshHotBar() {
         for (i in 0 until hotBar.children.size) {
+            if (hotBarItemList[i] == null)
+                continue
             hotBarItemList[i] = hotBarItemList[i]?.let { getItemFromInventory(it) }
             (hotBar.children[i] as Container<*>).actor = hotBarItemList[i]?.let { EqActor(it) }
         }
@@ -273,6 +274,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     }
 
     private fun setItemToPosition(position: Int, item: Item?, eqActor: EqActor? = null) {
+        hotBarSkillList[position] = null
         hotBarItemList[position] = eqActor?.item ?: item
         hotBarDesignatedItems[position] = eqActor?.item ?: item
         (hotBar.children[position] as Container<*>).actor =
@@ -280,9 +282,14 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             else null
     }
 
-    /** ======================================================================================================================================================
-                                                                    Input handling
-    */
+    private fun setSkillToPosition(position: Int, skillActor: SkillActor?) {
+        hotBarItemList[position] = null
+        hotBarDesignatedItems[position] = null
+        hotBarSkillList[position] = skillActor?.skill
+        (hotBar.children[position] as Container<*>).actor = if (skillActor != null) SkillActor(skillActor.skill) else null
+    }
+
+    /** ============================================================     Input handling     =============================================================================*/
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0) return false
@@ -324,7 +331,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             val coord: Vector2 = screenToStageCoordinates(
                 Vector2(screenX.toFloat(), screenY.toFloat())
             )
-            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * 2, coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * 2)
+            clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth / 2, coord.y - (clickedItem!! as PickupActor).ogWidth / 2)
             return true
         }
 
@@ -353,23 +360,40 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                 parseItemDrop(coord.x, coord.y)
 
             // Handle the item pass from uiStage
-            val itemFromUi: Actor? = uiStage.originalStackItem?:uiStage.inventoryManager.clickedItem
+            val itemFromUi: Actor? = uiStage.inventoryManager.originalStackItem?:uiStage.inventoryManager.clickedItem
             if (itemFromUi != null) {
                 val clickedActor = actorAtGroup(coord.x, coord.y)
                 if (clickedActor != null && clickedActor is Container<*>) {
-                    (itemFromUi as EqActor).setScale(1f, 1f)
+                    itemFromUi.setScale(1f, 1f)
                     var previousPosition: Int? = null
-                    for (i in 0 .. 9) {
-                        if (hotBarItemList[i] == itemFromUi.item) {
-                            setItemToPosition(i, null)
-                            previousPosition = i
+                    if (itemFromUi is SkillActor) {
+                        for (i in 0 .. 9) {
+                            if (hotBarSkillList[i] == itemFromUi.skill) {
+                                setItemToPosition(i, null)
+                                previousPosition = i
+                            }
                         }
+
+                        // Swaps skills
+                        if (previousPosition != null && hotBarItemList[clickedActor.name.toInt()] != null)
+                            setSkillToPosition(previousPosition, (hotBar.children[clickedActor.name.toInt()] as Container<*>).actor as SkillActor)
+                        setSkillToPosition(clickedActor.name.toInt(), itemFromUi)
                     }
+
+                    if (itemFromUi is EqActor) {
+                        for (i in 0 .. 9) {
+                            if (hotBarItemList[i] == itemFromUi.item) {
+                                setItemToPosition(i, null)
+                                previousPosition = i
+                            }
+                        }
+                        // Swaps items
+                        if (previousPosition != null && hotBarItemList[clickedActor.name.toInt()] != null)
+                            setItemToPosition(previousPosition, hotBarItemList[clickedActor.name.toInt()])
+                        setItemToPosition(clickedActor.name.toInt(), itemFromUi.item)
+                    }
+
                     uiStage.inventoryManager.itemPassedToHud()
-                    // Swaps items
-                    if (previousPosition != null && hotBarItemList[clickedActor.name.toInt()] != null)
-                        setItemToPosition(previousPosition, hotBarItemList[clickedActor.name.toInt()])
-                    setItemToPosition(clickedActor.name.toInt(), itemFromUi.item)
 
                     clickedItem = null
                     itemClicked = null
@@ -387,8 +411,8 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
                 pickUpItem()
                 itemClicked = true
-                clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f) / 2 - 6,
-                    coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f) / 2 - 9)
+                clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 6,
+                    coord.y - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 9)
                 return true
             }
         }
@@ -401,8 +425,18 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             else {
                 val clickedActor = actorAtGroup(coord.x, coord.y)
                 if (clickedActor != null && clickedActor is Container<*> && clickedActor.actor != null) {
-                    contextPopup = itemContextPopup.createContextMenu((clickedActor.actor as EqActor).item, coord.x, coord.y)
-                    if (contextPopup != null) {
+                    if (clickedActor.actor is EqActor) {
+                        contextPopup = itemContextPopup.createContextMenu((clickedActor.actor as EqActor).item, coord.x, coord.y)
+                        if (contextPopup != null) {
+                            addActor(contextPopup)
+                            contextPopup?.setPosition(coord.x, coord.y)
+                        }
+                    } else {
+                        val skill = (clickedActor.actor as SkillActor).skill
+                        contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
+                            uiStage.usedSkill = skill
+                            nullifyAllValues()
+                        }
                         addActor(contextPopup)
                         contextPopup?.setPosition(coord.x, coord.y)
                     }
@@ -433,8 +467,8 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         )
 
         if (clickedItem != null)
-            clickedItem!!.setPosition(coord.x - (clickedItem!! as EqActor).item.texture.regionWidth * (4f * 1.25f) / 2 - 6,
-                coord.y - (clickedItem!! as EqActor).item.texture.regionHeight * (4f * 1.25f) / 2 - 9)
+            clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 6,
+                coord.y - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 9)
         return super.mouseMoved(screenX, screenY)
     }
 
@@ -448,9 +482,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         return super.keyDown(keyCode)
     }
 
-    /** ======================================================================================================================================================
-                                                                    Item related methods
-    */
+    /** ============================================================     Item related methods     =============================================================================*/
 
     fun passedItemToUi() {
         actors.removeValue(clickedItem, true)
@@ -461,7 +493,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         originalContainer = clickedItem!!.parent as Container<*>
         setItemToPosition(originalContainer!!.name.toInt(), null)
         addActor(clickedItem)
-        clickedItem!!.setScale(1.25f, 1.25f)
+        clickedItem!!.setScale(clickedItem!!.scaleX * 1.25f, clickedItem!!.scaleY * 1.25f)
     }
 
     private fun parseItemDrop(x: Float, y: Float) {
@@ -500,12 +532,16 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                 setItemToPosition(originalContainer!!.name.toInt(), null, clickedActor.actor as EqActor)
             }
         }
-        setItemToPosition(clickedActor.name.toInt(), null, clickedItem as EqActor)
+
+        if (clickedItem is EqActor)
+            setItemToPosition(clickedActor.name.toInt(), null, clickedItem as EqActor)
+        if (clickedItem is SkillActor)
+            setSkillToPosition(clickedActor.name.toInt(), clickedItem as SkillActor)
     }
 
     /** Sets all values to null */
     private fun nullifyAllValues() {
-        clickedItem?.addAction(Actions.removeActor())
+//        clickedItem?.addAction(Actions.removeActor())
         clickedItem = null
         originalContainer = null
         itemClicked = false
@@ -516,15 +552,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         }
     }
 
-    /** ======================================================================================================================================================
-                                                                    Actor related methods
-    */
-
-    private fun Actor.isIn(x: Float, y: Float) = (x.compareDelta(this.x) >= 0 && x.compareDelta(this.x + this.widthScaled()) <= 0 &&
-            y.compareDelta(this.y) >= 0 && y.compareDelta(this.y + this.heightScaled()) <= 0)
-
-    private fun Actor.isInUnscaled(x: Float, y: Float) = (x.compareDelta(this.x * currentScale) >= 0 && x.compareDelta(this.x * currentScale + this.width * currentScale) <= 0 &&
-            y.compareDelta(this.y * currentScale) >= 0 && y.compareDelta(this.y * currentScale + this.height * currentScale) <= 0)
+    /** ============================================================     Actor related methods     =============================================================================*/
 
     override fun addActor(actor: Actor?) {
         actor?.setScale(currentScale)
@@ -538,7 +566,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             actor = stageActor
             if (actor == darkenBackground)
                 continue
-            if (actor.isIn(x, y)) {
+            if (actor.isInSized(x, y)) {
                 while (actor is Group) {
                     val groupX = x - actor.x
                     val groupY = y - actor.y
@@ -546,7 +574,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                         println("$groupX, $groupY")
                     var changedActor: Boolean = false
                     for (child in (actor as Group).children) {
-                        if (child.isInUnscaled(groupX, groupY)) {
+                        if (child.isInUnscaled(groupX, groupY, currentScale)) {
                             if (child is Group) {
                                 actor = child
                                 changedActor = true

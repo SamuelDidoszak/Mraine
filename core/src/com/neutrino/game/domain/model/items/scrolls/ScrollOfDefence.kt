@@ -2,19 +2,18 @@ package com.neutrino.game.domain.model.items.scrolls
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.systems.event.CausesCooldown
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
-import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.ItemType
 
 class ScrollOfDefence: Item(), ItemType.USABLE, CausesCooldown {
     override val name: String = "Scroll of defence"
     override val description: String = "Makes your skin harder and more resistant to physical attacks"
     override var amount: Int? = 1
-    override val causesCooldown: Int = 1
     override val itemTier: Int = 2
 
     override val textureNames: List<String> = listOf("scrollOfDefence")

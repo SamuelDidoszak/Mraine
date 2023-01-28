@@ -12,6 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataObserver
+import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
 import com.neutrino.game.Fonts
 import com.neutrino.game.UI.utility.SkillActor
@@ -205,6 +208,9 @@ class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Gro
                 row().space(8f)
             }
 
+            if (skill !is Skill.PassiveSkill)
+                return@table
+
             row().padTop(16f)
             row().space(8f).padBottom(0f)
 
@@ -273,6 +279,14 @@ class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Gro
 
         refreshSkills()
         changeTab()
+
+        GlobalData.registerObserver(object : GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.PLAYERNEWSKILL
+            override fun update(data: Any?): Boolean {
+                refreshSkillTable()
+                return true
+            }
+        })
     }
 
     private fun getSkillTable(): Table {
@@ -296,6 +310,16 @@ class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Gro
         }
         table.pack()
         return table
+    }
+
+
+    fun refreshSkillTable() {
+        if (Player.skillList.size > (skillTable.actor as Table).children.size)
+            skillTable.actor = getSkillTable()
+
+        for (i in 0 until Player.skillList.size) {
+            ((skillTable.actor as Table).children[i] as Container<*>).actor = SkillActor(Player.skillList[i])
+        }
     }
 
     private fun addSkills() {

@@ -10,11 +10,10 @@ abstract class Item: ItemType, TextureHaver, Cloneable {
     override var mirrored: Boolean = false
     /** Amount of items in stack. Null means that it's not stackable */
     open var amount: Int? = null
-    /** Specifies if the item causes cooldown. -1 means no, 0 means player and 1 means every use type */
-    open val causesCooldown: Int = -1
     /** Determines containers in which the item will spawn */
     abstract val itemTier: Int
 
+    /** If 0, item won't be compared if it's better or worse */
     open var goldValueOg: Int = 0
     open var goldValue: Int = 0
 

@@ -5,8 +5,8 @@ import kotlin.reflect.KClass
 
 class EntityPositionRequirement {
     var requirementType: EntityPositionRequirementType
-    private var requiredEntity: KClass<Entity>? = null
-    var requirementList: List<Pair<Int, KClass<Entity>>>
+    private var requiredEntity: KClass<out Entity>? = null
+    var requirementList: List<Pair<Int, KClass<out Entity>>>
 
     /** Use this constructor to interpret next values as grouped with requirementType group type */
     constructor(requirementType: EntityPositionRequirementType) {
@@ -15,13 +15,13 @@ class EntityPositionRequirement {
     }
 
     constructor(requirementType: EntityPositionRequirementType,
-                requiredEntity: KClass<Entity>, list: List<Int>) {
+                requiredEntity: KClass<out Entity>, list: List<Int>) {
         this.requirementType = requirementType
         this.requiredEntity = requiredEntity
         requirementList = list.map { Pair(it, requiredEntity) }
     }
 
-    constructor(requirementType: EntityPositionRequirementType, list: List<Pair<Int, KClass<Entity>>>) {
+    constructor(requirementType: EntityPositionRequirementType, list: List<Pair<Int, KClass<out Entity>>>) {
         this.requirementType = requirementType
         requirementList = list
     }

@@ -11,7 +11,7 @@ import squidpony.squidmath.Coord
 
 class SkillTwoshot(override val character: Character): Skill.ActiveSkillTile {
     override val skillType: SkillType = SkillType.DEXTERITY
-    override val name: String = "Shoot your weapon twice"
+    override val name: String = "Twoshot"
     override val description: String = "Uses your primary attack twice"
     override val requirement: RequirementPrintable = RequirementPrintable()
         .add(RequirementPrintable.PrintableReq("Dexterity", 3f) { Player.dexterity })

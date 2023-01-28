@@ -2,12 +2,12 @@ package com.neutrino.game.domain.model.items.edible
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
-import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
-import com.neutrino.game.domain.model.systems.event.types.CooldownType
-import com.neutrino.game.domain.model.systems.event.types.EventHeal
-import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.systems.event.types.CooldownType
+import com.neutrino.game.domain.model.systems.event.types.EventHeal
+import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 
 class SmallHealingPotion: Item(), ItemType.EDIBLE {
     override var name: String = "Small healing potion"
@@ -19,7 +19,6 @@ class SmallHealingPotion: Item(), ItemType.EDIBLE {
 
     override val itemTier: Int = 2
 
-    override val isFood: Boolean = false
     override val powerOg: Float = 20f
     override val timeoutOg: Double = 0.0
     override val executionsOg: Int = 1

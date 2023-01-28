@@ -16,6 +16,7 @@ import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
 import com.neutrino.game.domain.model.turn.Turn
 import kotlin.reflect.KClass
 
@@ -157,7 +158,13 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         set(value) {field = value
         GlobalData.registerData(GlobalDataType.PLAYERSTAT, "level")}
 
-    override val skillList: ArrayList<Skill> = ArrayList(5)
+    override val skillList: ArrayList<Skill> = object : ArrayList<Skill>(5) {
+        override fun add(element: Skill): Boolean {
+            super.add(element)
+            GlobalData.notifyObservers(GlobalDataType.PLAYERNEWSKILL)
+            return true
+        }
+    }
 
     /** Determines the maximum number of concurrently used skills that do not use mana */
     override var maxSkills: Int = 3
@@ -197,7 +204,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         // TODO maybe delete it entirely. Each character would have to check if infogroup != null tho
         val infoGroup = findActor<Group>("infoGroup")
         infoGroup.isVisible = false
-        inventory.size = 300
+        inventory.size = 30
 
 //        skillList.add(SkillBleed(this))
 //        skillList.add(SkillCripplingSpin(this))

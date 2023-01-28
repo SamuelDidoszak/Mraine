@@ -8,8 +8,8 @@ import kotlin.reflect.KClass
 
 class TagInterpretation(val tagList: List<MapTags>) {
     lateinit var entityParams: EntityParams
-    lateinit var  characterList: List<KClass<Character>>
-    lateinit var  itemList: List<Pair<KClass<Item>, Float>>
+    lateinit var  characterList: List<KClass<out Character>>
+    lateinit var  itemList: List<Pair<KClass<out Item>, Float>>
     val generationParams: GenerationParams = tagList[0].generationParams
 
     init {
@@ -18,8 +18,8 @@ class TagInterpretation(val tagList: List<MapTags>) {
             characterList = tagList[0].characterList
             itemList = tagList[0].itemList
         } else {
-            val characterList: ArrayList<KClass<Character>> = ArrayList()
-            val itemList: ArrayList<Pair<KClass<Item>, Float>> = ArrayList()
+            val characterList: ArrayList<KClass<out Character>> = ArrayList()
+            val itemList: ArrayList<Pair<KClass<out Item>, Float>> = ArrayList()
             for (tag in tagList) {
                 // Add characters
                 for (character in tag.characterList) {

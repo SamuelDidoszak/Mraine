@@ -2,37 +2,39 @@ items.png
 	size: 128, 128
 	repeat: none
 basicFireWand
-	bounds: 18, 18, 16, 16
+	bounds: 35, 35, 16, 16
 basicPoisonWand
-	bounds: 86, 69, 16, 16
+	bounds: 103, 86, 16, 16
 bigBow
 	bounds: 52, 103, 16, 16
+book
+	bounds: 69, 86, 16, 16
 brokenSword
-	bounds: 52, 35, 16, 16
-cuffedLinenPants
-	bounds: 18, 1, 16, 16
-curvedBow
-	bounds: 1, 1, 16, 16
-dagger
 	bounds: 69, 52, 16, 16
+cuffedLinenPants
+	bounds: 35, 18, 16, 16
+curvedBow
+	bounds: 18, 18, 16, 16
+dagger
+	bounds: 86, 69, 16, 16
 extinguishedFireWand
 	bounds: 1, 86, 16, 16
 fireStaff
 	bounds: 1, 18, 16, 16
 gold1
-	bounds: 86, 52, 16, 16
+	bounds: 103, 69, 16, 16
 gold2
-	bounds: 35, 35, 16, 16
+	bounds: 52, 52, 16, 16
 gold3
 	bounds: 1, 52, 16, 16
 gold4
-	bounds: 35, 18, 16, 16
+	bounds: 52, 35, 16, 16
 gold5
 	bounds: 52, 69, 16, 16
 gold6
 	bounds: 18, 103, 16, 16
 gold7
-	bounds: 52, 52, 16, 16
+	bounds: 69, 69, 16, 16
 gold8
 	bounds: 1, 35, 16, 16
 knife
@@ -44,17 +46,17 @@ leatherCap
 leatherJacket
 	bounds: 18, 69, 16, 16
 leatherSocks
-	bounds: 103, 69, 16, 16
+	bounds: 52, 1, 16, 16
 linenShirt
-	bounds: 86, 86, 16, 16
+	bounds: 103, 103, 16, 16
 meat
-	bounds: 103, 86, 16, 16
+	bounds: 35, 1, 16, 16
 pocketKnife
 	bounds: 52, 86, 16, 16
 reinforcedLeatherBoots
 	bounds: 35, 69, 16, 16
 reinforcedLeatherCap
-	bounds: 35, 1, 16, 16
+	bounds: 52, 18, 16, 16
 rippedPants
 	bounds: 18, 86, 16, 16
 rockWand
@@ -68,14 +70,14 @@ scrollOfTeleportation
 smallBackpack
 	bounds: 35, 103, 16, 16
 smallBag
-	bounds: 103, 103, 16, 16
+	bounds: 18, 1, 16, 16
 smallBow
-	bounds: 52, 18, 16, 16
-smallHealingPotion
-	bounds: 69, 86, 16, 16
-sword
-	bounds: 69, 69, 16, 16
-tornShirt
-	bounds: 86, 103, 16, 16
-woodenFlipFlops
 	bounds: 69, 35, 16, 16
+smallHealingPotion
+	bounds: 86, 103, 16, 16
+sword
+	bounds: 86, 86, 16, 16
+tornShirt
+	bounds: 1, 1, 16, 16
+woodenFlipFlops
+	bounds: 86, 52, 16, 16

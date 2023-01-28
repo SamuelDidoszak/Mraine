@@ -17,6 +17,7 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.items.SkillBook
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.graphics.utility.BackgroundColor
@@ -58,6 +59,50 @@ class ItemContextPopup(
                         }
                     })
                     add(eatButton).prefWidth(90f).prefHeight(40f)
+                }
+                is SkillBook -> {
+                    val learnButton = TextraButton("[%150][@Cozette]Learn", Scene2DSkin.defaultSkin)
+                    learnButton.addListener(object: ClickListener() {
+                        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                            if (event?.button != Input.Buttons.LEFT)
+                                return
+                            super.clicked(event, x, y)
+
+                            if (item.skill.requirement.data.containsKey("character"))
+                                (item.skill.requirement.data["character"] as Data<Character>).setData(Player)
+                            if (!item.skill.requirement.checkAll()) {
+                                val requirementLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
+                                requirementLabel.name = "requirements"
+                                parent.addActor(requirementLabel)
+                                val coords = localToParentCoordinates(Vector2(x, y))
+                                requirementLabel.setPosition(coords.x, coords.y + 8f)
+                                requirementLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                                requirementLabel.addAction(
+                                    Actions.sequence(
+                                        Actions.fadeOut(1.25f),
+                                        Actions.removeActor()))
+                                return
+                            }
+                            if (Player.skillList.find { it::class == item.skill::class } != null) {
+                                val skillLearntLabel = TextraLabel("[@Cozette][%600][*]Skill is already learnt", KnownFonts.getStandardFamily())
+                                skillLearntLabel.name = "skillLearnt"
+                                parent.addActor(skillLearntLabel)
+                                val coords = localToParentCoordinates(Vector2(x, y))
+                                skillLearntLabel.setPosition(coords.x, coords.y + 8f)
+                                skillLearntLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                                skillLearntLabel.addAction(
+                                    Actions.sequence(
+                                        Actions.fadeOut(1.25f),
+                                        Actions.removeActor()))
+                                return
+                            }
+
+                            usedItemList.add(item)
+                            customUseMethod.invoke()
+                        }
+                    })
+
+                    add(learnButton).prefWidth(90f).prefHeight(40f)
                 }
                 is ItemType.MISC -> return null
                 is ItemType.KEY -> return null

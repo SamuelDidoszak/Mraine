@@ -10,8 +10,7 @@ import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 sealed interface ItemType {
     interface USABLE: ItemType, CausesEvents
 
-    interface EDIBLE: ItemType, CausesEvents, CausesCooldown {
-        val isFood: Boolean
+    interface EDIBLE: USABLE, CausesCooldown {
         val powerOg: Float
         val timeoutOg: Double
         val executionsOg: Int

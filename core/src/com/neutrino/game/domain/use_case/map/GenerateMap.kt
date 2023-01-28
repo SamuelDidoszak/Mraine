@@ -41,19 +41,20 @@ class GenerateMap(
 
         squidGeneration.generateDungeon()
         squidGeneration.setWalls(map, interpretedTags.entityParams.wall)
-        addEntities(interpretedTags.entityParams.floor, listOf(),1f)
+//        addEntities(interpretedTags.entityParams.floor, listOf(),1f)
+        addEntities(CleanDungeonFloor::class, listOf(), 1f)
 
-        addEntities(StonePillar::class as KClass<Entity>, listOf(
+        addEntities(StonePillar::class, listOf(
             EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(7, 8, 9)),
             EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 2, 3, 4, 6))
         ), 6f, assertAmount = true)
 
-        addEntities(StonePillar::class as KClass<Entity>, listOf(
+        addEntities(StonePillar::class, listOf(
             EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(1, 2, 3)),
             EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(4, 6, 7, 8, 9))
         ), 2f, assertAmount = true)
 
-        addEntities(WoodenDoor::class as KClass<Entity>, listOf(
+        addEntities(WoodenDoor::class, listOf(
             EntityPositionRequirement(EntityPositionRequirementType.AND),
             EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(1, 2, 3, 8)),
             EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(4, 7, 6, 9)),
@@ -81,7 +82,7 @@ class GenerateMap(
         ), 10f, assertAmount = true)
 
         addEntities(
-            WoodenDoorArched::class as KClass<Entity>, listOf(
+            WoodenDoorArched::class, listOf(
                 EntityPositionRequirement(EntityPositionRequirementType.AND),
                 EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(1, 2, 3, 8)),
                 EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(4, 7, 6, 9)),
@@ -109,7 +110,7 @@ class GenerateMap(
         ), 8f, assertAmount = true)
 
         addEntities(
-            CrateDoor::class as KClass<Entity>, listOf(
+            CrateDoor::class, listOf(
                 EntityPositionRequirement(EntityPositionRequirementType.AND),
                 EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(4, 6)),
                 EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(8, 1, 2, 3)),
@@ -119,7 +120,7 @@ class GenerateMap(
             ), 5f, assertAmount = true)
 
         addEntities(
-            Torch::class as KClass<Entity>, listOf(
+            Torch::class, listOf(
                 EntityPositionRequirement(EntityPositionRequirementType.AND),
                 EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(7, 8, 9)),
                 EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 2, 3)),
@@ -133,61 +134,61 @@ class GenerateMap(
         )
 
         addEntities(
-            StandingTorch::class as KClass<Entity>, listOf(
+            StandingTorch::class, listOf(
                 EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 2, 3, 4, 6, 7, 8, 9))
             ), 6f, assertAmount = true
         )
 
         addEntities(
-            CandleSingle::class as KClass<Entity>, requirementNearWall(), 15f, assertAmount = true
+            CandleSingle::class, requirementNearWall(), 15f, assertAmount = true
         )
 
         addEntities(
-            CandlesMultiple::class as KClass<Entity>, listOf(
+            CandlesMultiple::class, listOf(
                 EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 2, 3, 4, 6, 7, 8, 9))
             ), 3f, assertAmount = true
         )
 
         addEntities(
-            CandlesMultiple::class as KClass<Entity>, listOf(
-                EntityPositionRequirement(EntityPositionRequirementType.OR, CandlesMultiple::class as KClass<Entity>, listOf(1, 2, 3, 4, 6, 7, 8, 9)),
+            CandlesMultiple::class, listOf(
+                EntityPositionRequirement(EntityPositionRequirementType.OR, CandlesMultiple::class, listOf(1, 2, 3, 4, 6, 7, 8, 9)),
                 EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 2, 3, 4, 6, 7, 8, 9))
             ), 0.15f
         )
 
         addEntities(
-            CandleSingle::class as KClass<Entity>, listOf(
-                EntityPositionRequirement(EntityPositionRequirementType.OR, CandlesMultiple::class as KClass<Entity>, listOf(1, 2, 3, 4, 6, 7, 8, 9)),
+            CandleSingle::class, listOf(
+                EntityPositionRequirement(EntityPositionRequirementType.OR, CandlesMultiple::class, listOf(1, 2, 3, 4, 6, 7, 8, 9)),
                 EntityPositionRequirement(EntityPositionRequirementType.NOR, interpretedTags.entityParams.wall, listOf(1, 2, 3, 4, 6, 7, 8, 9))
             ), 0.25f
         )
 
-        addEntities(Barrel::class as KClass<Entity>, requirementNearWall(), 0.0085f)
-        addEntities(CrateSmall::class as KClass<Entity>, requirementNearWall(), 0.005f)
+        addEntities(Barrel::class, requirementNearWall(), 0.0085f)
+        addEntities(CrateSmall::class, requirementNearWall(), 0.005f)
 
-        addEntities(CrateBigger::class as KClass<Entity>, listOf(
-            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
-            EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class as KClass<Entity>, listOf(4, 6)),
-            EntityPositionRequirement(EntityPositionRequirementType.NAND, CrateBigger::class as KClass<Entity>, listOf(4)),
+        addEntities(CrateBigger::class, listOf(
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class, listOf(7, 8, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class, listOf(4, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.NAND, CrateBigger::class, listOf(4)),
         ), 0.01f)
 
-        addEntities(WoodenChest::class as KClass<Entity>, listOf(
+        addEntities(WoodenChest::class, listOf(
             EntityPositionRequirement(EntityPositionRequirementType.AND),
-            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(1, 4, 7)),
-            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class as KClass<Entity>, listOf(2, 3, 6, 8, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class, listOf(1, 4, 7)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class, listOf(2, 3, 6, 8, 9)),
             EntityPositionRequirement(EntityPositionRequirementType.AND),
-            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(7, 8, 9)),
-            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class as KClass<Entity>, listOf(4, 1, 2, 3, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class, listOf(7, 8, 9)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class, listOf(4, 1, 2, 3, 6)),
             EntityPositionRequirement(EntityPositionRequirementType.AND),
-            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(9, 6, 3)),
-            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class as KClass<Entity>, listOf(7, 8, 4, 1, 2)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class, listOf(9, 6, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class, listOf(7, 8, 4, 1, 2)),
             EntityPositionRequirement(EntityPositionRequirementType.AND),
-            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class as KClass<Entity>, listOf(1, 2, 3)),
-            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class as KClass<Entity>, listOf(4, 7, 8, 9, 6)),
+            EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class, listOf(1, 2, 3)),
+            EntityPositionRequirement(EntityPositionRequirementType.NOR, DungeonWall::class, listOf(4, 7, 8, 9, 6)),
         ), 3f, assertAmount = true)
 
-        addEntities(ClayPot::class as KClass<Entity>, requirementNearWall(), 0.01f)
-        addEntities(ClayPotMultiple::class as KClass<Entity>, requirementNearWall(), 0.005f)
+        addEntities(ClayPot::class, requirementNearWall(), 0.01f)
+        addEntities(ClayPotMultiple::class, requirementNearWall(), 0.005f)
 
         GenerateItems(map, interpretedTags.itemList, interpretedTags.generationParams)()
 
@@ -196,22 +197,22 @@ class GenerateMap(
 
     private fun requirementNearWall(canBlockPassage: Boolean = false): List<EntityPositionRequirement> {
         var requirementList = listOf(
-            EntityPositionRequirement(EntityPositionRequirementType.OR, DungeonWall::class as KClass<Entity>,
+            EntityPositionRequirement(EntityPositionRequirementType.OR, DungeonWall::class,
                 listOf(2, 4, 6, 8))
         )
 
         if (!canBlockPassage) {
             requirementList = requirementList.plus(listOf(
-                EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class as KClass<Entity>,
+                EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class,
                     listOf(4, 6)),
-                EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class as KClass<Entity>,
+                EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class,
                     listOf(2, 8))
             ))
         }
         return requirementList
     }
 
-    private fun addEntities(entity: KClass<Entity>, entityPositionRequirementList: List<EntityPositionRequirement>, probability: Float,
+    private fun addEntities(entity: KClass<out Entity>, entityPositionRequirementList: List<EntityPositionRequirement>, probability: Float,
                             replaceUnderneath: Boolean = false, assertAmount: Boolean = false) {
         val fulfillingTileList: MutableList<Pair<Int, Int>> = ArrayList()
         for (y in 0 until level.sizeY) {
@@ -395,7 +396,7 @@ class GenerateMap(
         }
     }
 
-    private fun checkMapForEntity(y: Int, x: Int, requiredEntity: KClass<Entity>): Boolean {
+    private fun checkMapForEntity(y: Int, x: Int, requiredEntity: KClass<out Entity>): Boolean {
         for (mapEntity in map[y][x]) {
             if (mapEntity::class == requiredEntity)
                 return true

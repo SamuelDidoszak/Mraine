@@ -22,9 +22,11 @@ import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.CausesCooldown
 import com.neutrino.game.domain.model.systems.event.CausesEvents
+import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventCooldown
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
+import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
@@ -211,6 +213,12 @@ object Turn {
                                                 action.character, wrapper, turn
                                         ))
                                     }
+                                    is OnOffEvent -> {
+                                        eventArray.startEvent(
+                                            CharacterEvent(
+                                                action.character, wrapper, turn
+                                            ))
+                                    }
                                     is CharacterEvent -> {
                                         eventArray.startEvent(wrapper)
                                     }
@@ -218,7 +226,7 @@ object Turn {
                             }
                             updateBatch.addFirst(Action.EVENT)
                         }
-                        if (action.item is CausesCooldown) {
+                        if (action.item is CausesCooldown && action.item.cooldownType != CooldownType.NONE) {
                             println("Causes cooldown!")
                             eventArray.startEvent(
                                 CharacterEvent(

@@ -7,7 +7,6 @@ import com.neutrino.game.domain.model.utility.RandomizationTypes
 
 abstract class EquipmentItem: Item(), ItemType.EQUIPMENT {
     override var amount: Int? = null
-    override val causesCooldown: Int = -1
     /** Parses only ModifyStat, ModifyStatPercent and Event */
     abstract val modifierList: ArrayList<EventWrapper>
     override val itemTier: Int = 3

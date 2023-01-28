@@ -13,7 +13,7 @@ import kotlin.reflect.full.createInstance
 
 class GenerateItems(
     private val map: List<List<MutableList<Entity>>>,
-    private val itemList: List<Pair<KClass<Item>, Float>>,
+    private val itemList: List<Pair<KClass<out Item>, Float>>,
     private val generationParams: GenerationParams
 ) {
     /**
@@ -26,7 +26,7 @@ class GenerateItems(
 
     operator fun invoke() {
         this.itemList.sortedWith(compareBy {it.second})
-        val itemList = ArrayList<Pair<KClass<Item>, Float>>()
+        val itemList = ArrayList<Pair<KClass<out Item>, Float>>()
         var sum = 0f
         for (item in this.itemList) {
             sum += item.second

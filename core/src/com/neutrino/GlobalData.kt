@@ -66,6 +66,7 @@ enum class GlobalDataType {
     EVENT,
     PLAYERSTAT,
     PLAYERINVENTORYSIZE,
+    PLAYERNEWSKILL,
 
     CHARACTERDIED
 }

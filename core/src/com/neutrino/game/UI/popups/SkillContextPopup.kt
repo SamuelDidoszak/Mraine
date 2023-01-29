@@ -48,7 +48,8 @@ class SkillContextPopup(skill: Skill, x: Float, y: Float, val customUseMethod: (
                             Actions.fadeOut(1.25f),
                             Actions.removeActor()))
                     return
-                } else if (skill.manaCost == null && Player.eventArray.skillsOnCooldown == Player.maxSkills) {
+                }
+                if (skill.manaCost == null && Player.eventArray.skillsOnCooldown == Player.maxSkills) {
                     val cooldownLabel = TextraLabel("[@Cozette][%600][*]Used too many skills", KnownFonts.getStandardFamily())
                     cooldownLabel.name = "tooManySkills"
                     parent.addActor(cooldownLabel)

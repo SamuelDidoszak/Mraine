@@ -19,6 +19,8 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.github.tommyettinger.textra.KnownFonts
+import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.*
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.UI.popups.Diagnostics
@@ -27,8 +29,14 @@ import com.neutrino.game.UI.popups.SkillContextPopup
 import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.UI.utility.PickupActor
 import com.neutrino.game.UI.utility.SkillActor
+import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.items.SkillBook
+import com.neutrino.game.domain.model.systems.event.Data
+import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.graphics.utility.ColorUtils
 import ktx.actors.alpha
@@ -246,6 +254,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     private var originalContainer: Container<*>? = null
 
     val usedItemList: ArrayDeque<Item> = ArrayDeque()
+    var usedSkill: Skill? = null
     private val itemContextPopup = ItemContextPopup(usedItemList, ::nullifyAllValues)
 
     /** ============================================================     HotBar related methods     =============================================================================*/
@@ -348,11 +357,13 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         // Stop contextMenu click from propagating
         if (contextPopup != null && button == Input.Buttons.LEFT) {
             val clickedInMenu = super.touchUp(screenX, screenY, pointer, button)
-            if (!clickedInMenu) {
-                this.actors.removeValue(contextPopup, true)
-                contextPopup = null
-                return true
+
+            if (clickedItem != null) {
+                clickedItem = null
+                originalContainer = null
             }
+            actors.removeValue(contextPopup, true)
+            contextPopup = null
 
             return clickedInMenu
         }
@@ -361,69 +372,26 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             if (dragItem == true)
                 parseItemDrop(coord.x, coord.y)
 
-            // Handle the item pass from uiStage
-            val itemFromUi: Actor? = uiStage.inventoryManager.originalStackItem?:uiStage.inventoryManager.clickedItem
-            if (itemFromUi != null) {
+            if (uiMode) {
+                uiModeLeftClick(coord)
+
+                // The item was clicked
+                if (clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
+                    pickUpItem()
+                    itemClicked = true
+                    clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 6,
+                        coord.y - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 9)
+                    return true
+                }
+            }
+            else if (clickedItem != null) {
+                // Check if mouse is still on the item
                 val clickedActor = actorAtGroup(coord.x, coord.y)
-                // Handle passing items in hud
-                if (originalContainer != null) {
-                    clickedItem = itemFromUi
-                    parseItemDrop(coord.x, coord.y)
-                }
-                else if (clickedActor != null && clickedActor is Container<*>) {
-                    itemFromUi.setScale(1f, 1f)
-                    var previousPosition: Int? = null
-                    if (itemFromUi is SkillActor) {
-                        for (i in 0 .. 9) {
-                            if (hotBarSkillList[i] == itemFromUi.skill) {
-                                setItemToPosition(i, null)
-                                previousPosition = i
-                            }
-                        }
-
-                        // Swaps skills
-                        if (previousPosition != null && hotBarItemList[clickedActor.name.toInt()] != null)
-                            setSkillToPosition(previousPosition, (hotBar.children[clickedActor.name.toInt()] as Container<*>).actor as SkillActor)
-                        setSkillToPosition(clickedActor.name.toInt(), itemFromUi)
-                    }
-
-                    if (itemFromUi is EqActor) {
-                        for (i in 0 .. 9) {
-                            if (hotBarItemList[i] == itemFromUi.item) {
-                                setItemToPosition(i, null)
-                                previousPosition = i
-                            }
-                        }
-                        // Swaps items
-                        if (previousPosition != null && hotBarItemList[clickedActor.name.toInt()] != null)
-                            setItemToPosition(previousPosition, hotBarItemList[clickedActor.name.toInt()])
-                        setItemToPosition(clickedActor.name.toInt(), itemFromUi.item)
-                    }
-
-                    uiStage.inventoryManager.itemPassedToHud()
-
-                    clickedItem = null
-                    itemClicked = null
-                }
-            }
-
-            // Dropping the clicked item
-            if (itemClicked == true && TimeUtils.millis() - timeClicked <= 200) {
-                parseItemDrop(coord.x, coord.y)
-                clickedItem = null
-            }
-
-            // The item was clicked
-            if (uiMode && clickedItem != null && TimeUtils.millis() - timeClicked <= 200) {
-                pickUpItem()
-                itemClicked = true
-                clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 6,
-                    coord.y - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 9)
-                return true
+                if (clickedActor != null && clickedActor is Container<*> && clickedItem == clickedActor.actor)
+                    useActorFromHudBar(coord)
             }
         }
         else if (button == Input.Buttons.RIGHT && clickedItem == null) {
-            println("Right click is in HUD")
             if (contextPopup != null) {
                 this.actors.removeValue(contextPopup, true)
                 contextPopup = null
@@ -440,7 +408,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                     } else {
                         val skill = (clickedActor.actor as SkillActor).skill
                         contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
-                            uiStage.usedSkill = skill
+                            usedSkill = skill
                             nullifyAllValues()
                         }
                         addActor(contextPopup)
@@ -459,6 +427,60 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         if (passClickToGame && actorAtGroup(coord.x, coord.y) == null)
             return super.touchUp(screenX, screenY, pointer, button)
         return true
+    }
+
+    private fun uiModeLeftClick(coord: Vector2) {
+        // Handle the item pass from uiStage
+        val itemFromUi: Actor? = uiStage.inventoryManager.originalStackItem?:uiStage.inventoryManager.clickedItem
+        if (itemFromUi != null) {
+            val clickedActor = actorAtGroup(coord.x, coord.y)
+            // Handle passing items in hud
+            if (originalContainer != null) {
+                clickedItem = itemFromUi
+                parseItemDrop(coord.x, coord.y)
+            }
+            else if (clickedActor != null && clickedActor is Container<*>) {
+                itemFromUi.setScale(1f, 1f)
+                var previousPosition: Int? = null
+                if (itemFromUi is SkillActor) {
+                    for (i in 0 .. 9) {
+                        if (hotBarSkillList[i] == itemFromUi.skill) {
+                            setItemToPosition(i, null)
+                            previousPosition = i
+                        }
+                    }
+
+                    // Swaps skills
+                    if (previousPosition != null && hotBarItemList[clickedActor.name.toInt()] != null)
+                        setSkillToPosition(previousPosition, (hotBar.children[clickedActor.name.toInt()] as Container<*>).actor as SkillActor)
+                    setSkillToPosition(clickedActor.name.toInt(), itemFromUi)
+                }
+
+                if (itemFromUi is EqActor) {
+                    for (i in 0 .. 9) {
+                        if (hotBarItemList[i] == itemFromUi.item) {
+                            setItemToPosition(i, null)
+                            previousPosition = i
+                        }
+                    }
+                    // Swaps items
+                    if (previousPosition != null && hotBarItemList[clickedActor.name.toInt()] != null)
+                        setItemToPosition(previousPosition, hotBarItemList[clickedActor.name.toInt()])
+                    setItemToPosition(clickedActor.name.toInt(), itemFromUi.item)
+                }
+
+                uiStage.inventoryManager.itemPassedToHud()
+
+                clickedItem = null
+                itemClicked = null
+            }
+        }
+
+        // Dropping the clicked item
+        if (itemClicked == true && TimeUtils.millis() - timeClicked <= 200) {
+            parseItemDrop(coord.x, coord.y)
+            clickedItem = null
+        }
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
@@ -549,6 +571,91 @@ class HudStage(viewport: Viewport): Stage(viewport) {
 
         uiStage.inventoryManager.itemPassedToHud()
         nullifyAllValues()
+    }
+
+    private fun useActorFromHudBar(coord: Vector2) {
+        if (clickedItem is SkillActor) {
+            val skill = (clickedItem as SkillActor).skill
+
+            if (Player.eventArray.hasCooldown(CooldownType.SKILL(skill))) {
+                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Skill is on cooldown", KnownFonts.getStandardFamily())
+                addCooldownLabel(cooldownLabel, coord)
+                return
+            }
+            if (skill.manaCost != null && skill.manaCost!! > Player.mp) {
+                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Not enough mana", KnownFonts.getStandardFamily())
+                addCooldownLabel(cooldownLabel, coord)
+                return
+            }
+            if (skill.manaCost == null && Player.eventArray.skillsOnCooldown == Player.maxSkills) {
+                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Used too many skills", KnownFonts.getStandardFamily())
+                addCooldownLabel(cooldownLabel, coord)
+                return
+            }
+            usedSkill = skill
+            nullifyAllValues()
+            return
+        }
+
+        when (val item = (clickedItem as EqActor).item) {
+            is ItemType.EDIBLE -> {
+                if (Player.eventArray.hasCooldown(CooldownType.FOOD)) {
+                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]Food is on cooldown", KnownFonts.getStandardFamily())
+                    addCooldownLabel(cooldownLabel, coord)
+                    return
+                }
+                usedItemList.add(item)
+                nullifyAllValues()
+            }
+            is SkillBook -> {
+                if (item.skill.requirement.data.containsKey("character"))
+                    (item.skill.requirement.data["character"] as Data<Character>).setData(Player)
+                if (!item.skill.requirement.checkAll()) {
+                    val requirementLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
+                    addCooldownLabel(requirementLabel, coord)
+                    return
+                }
+                if (Player.skillList.find { it::class == item.skill::class } != null) {
+                    val skillLearntLabel = TextraLabel("[@Cozette][%600][*]Skill is already learnt", KnownFonts.getStandardFamily())
+                    addCooldownLabel(skillLearntLabel, coord)
+                    return
+                }
+                usedItemList.add(item)
+                nullifyAllValues()
+            }
+            is ItemType.EQUIPMENT -> {
+                if ((item as EquipmentItem).requirements.data.containsKey("character"))
+                    (item.requirements.data["character"] as Data<Character>).setData(Player)
+                if (!item.requirements.checkAll()) {
+                    val requirementsLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
+                    addCooldownLabel(requirementsLabel, coord)
+                    return
+                }
+
+                val itemType = Player.equipment.setItem(item as EquipmentItem)
+                GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, itemType)
+                nullifyAllValues()
+            }
+            is ItemType.USABLE -> {
+                if (Player.eventArray.hasCooldown(CooldownType.ITEM(item.name))) {
+                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]This item is on cooldown", KnownFonts.getStandardFamily())
+                    addCooldownLabel(cooldownLabel, coord)
+                    return
+                }
+                usedItemList.add(item)
+                nullifyAllValues()
+            }
+        }
+    }
+
+    private fun addCooldownLabel(label: TextraLabel, coord: Vector2) {
+        addActor(label)
+        label.setPosition(coord.x, coord.y + 8f)
+        label.addAction(Actions.moveBy(0f, 36f, 1f))
+        label.addAction(
+            Actions.sequence(
+                Actions.fadeOut(1.25f),
+                Actions.removeActor()))
     }
 
     /** Sets all values to null */

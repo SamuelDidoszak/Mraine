@@ -226,7 +226,7 @@ class GameScreen: KtxScreen {
             }
 
             // use skill
-            val usedSkill = uiStage.usedSkill
+            val usedSkill = hudStage.usedSkill ?: uiStage.usedSkill
             if (usedSkill != null) {
                 val used = useSkill(usedSkill)
                 if (!used)
@@ -425,6 +425,7 @@ class GameScreen: KtxScreen {
         gameStage.highlighting.deHighlight()
         gameStage.clickedCoordinates = null
         uiStage.usedSkill = null
+        hudStage.usedSkill = null
 
         gameStage.skillRange = null
     }

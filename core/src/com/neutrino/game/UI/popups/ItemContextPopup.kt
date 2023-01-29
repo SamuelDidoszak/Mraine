@@ -117,13 +117,13 @@ class ItemContextPopup(
                             if ((item as EquipmentItem).requirements.data.containsKey("character"))
                                 (item.requirements.data["character"] as Data<Character>).setData(Player)
                             if (!item.requirements.checkAll()) {
-                                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
-                                cooldownLabel.name = "requirements"
-                                parent.addActor(cooldownLabel)
+                                val requirementsLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
+                                requirementsLabel.name = "requirements"
+                                parent.addActor(requirementsLabel)
                                 val coords = localToParentCoordinates(Vector2(x, y))
-                                cooldownLabel.setPosition(coords.x, coords.y + 8f)
-                                cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
-                                cooldownLabel.addAction(
+                                requirementsLabel.setPosition(coords.x, coords.y + 8f)
+                                requirementsLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                                requirementsLabel.addAction(
                                     Actions.sequence(
                                         Actions.fadeOut(1.25f),
                                         Actions.removeActor()))
@@ -132,6 +132,7 @@ class ItemContextPopup(
 
                             val itemType = Player.equipment.setItem(item as EquipmentItem)
                             GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, itemType)
+                            customUseMethod.invoke()
                         }
                     })
 

@@ -68,4 +68,26 @@
       background: default-pane, wrapWidth: 150
     }
   },
+  com.ray3k.tenpatch.TenPatchDrawable: {
+    stretchableCell: {
+      region: stretchableCell
+      horizontalStretchAreas: [ 24, 231 ]
+      verticalStretchAreas: [ 24, 231 ]
+      tiling: false
+      minWidth: 48
+      minHeight: 48
+      rightWidth: 20
+      leftWidth: 20
+      bottomHeight: 20
+      topHeight: 20
+      offsetX: 0
+      offsetY: 0
+      offsetXspeed: 0
+      offsetYspeed: 0
+      frameDuration: 0.03
+      regions: []
+      playMode: 2
+      crushMode: 0
+    }
+  },
 }

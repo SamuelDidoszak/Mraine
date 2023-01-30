@@ -23,8 +23,8 @@ class BerserkLowerHpHigherDmg(override val character: Character): Skill.PassiveS
         .add(RequirementPrintable.PrintableReq("Strength", 5f) { Player.strength})
         { (character !is Player) || (character is Player && character.strength >= 5) }
 
-    override val printableData: List<Pair<String, Any>> = listOf(
-        Pair("Additional damage %", (incrementPercent * 100) - 100)
+    override val printableData: List<Pair<String, () -> Any>> = listOf(
+        Pair("Additional damage %") { (incrementPercent * 100) - 100 }
     )
     override val textureName: String = "skillTeleportBackstab"
     override val manaCost: Float? = null

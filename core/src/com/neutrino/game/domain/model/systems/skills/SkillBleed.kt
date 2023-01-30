@@ -31,10 +31,10 @@ class SkillBleed(override val character: Character): Skill.ActiveSkillCharacter 
     override var range: Int = 1
     override var rangeType: RangeType = RangeType.SQUARE
 
-    override val printableData: List<Pair<String, Any>> = listOf(
-        Pair("Bleed damage", bleedDamage),
-        Pair("Bleeding length", bleedingLength),
-        Pair("Range", range)
+    override val printableData: List<Pair<String, () -> Any>> = listOf(
+        Pair("Bleed damage") { bleedDamage },
+        Pair("Bleeding length") { bleedingLength },
+        Pair("Cooldown") {cooldownLength}
     )
 
     override fun use(target: Character) {

@@ -39,11 +39,11 @@ class SkillMeteorite(override val character: Character): Skill.ActiveSkillArea {
     override var range: Int = 10
     override var rangeType: RangeType = RangeType.CIRCLE
 
-    override val printableData: List<Pair<String, Any>> = listOf(
-        Pair("Fire damage", fireDamage),
-        Pair("Burn damage", burnDamage),
-        Pair("Burn length", burnLength),
-        Pair("Range", range)
+    override val printableData: List<Pair<String, () -> Any>> = listOf(
+        Pair("Fire damage") { fireDamage },
+        Pair("Burn damage") { burnDamage },
+        Pair("Burn length") { burnLength },
+        Pair("Range") { range }
     )
 
     override fun use(tile: Coord) {

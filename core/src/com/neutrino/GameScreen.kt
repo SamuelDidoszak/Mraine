@@ -112,6 +112,8 @@ class GameScreen: KtxScreen {
         } else {
             Gdx.input.inputProcessor = uiInputMultiplexer
             hudStage.darkenScreen(true)
+            hudStage.actors.removeValue(hudStage.clickedItem, true)
+            hudStage.nullifyAllValues()
             isEqVisible = true
             uiStage.tabs.showInventory()
             // refresh inventory

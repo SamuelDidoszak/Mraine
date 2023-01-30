@@ -273,7 +273,6 @@ class InventoryManager(private val uiStage: UiStage) {
                         displayedItem = hoveredItem.item
                         uiStage.addActor(detailsPopup)
                         detailsPopup!!.setPosition(coord.x, coord.y)
-                        (detailsPopup!! as ItemDetailsPopup).assignBg(coord.x, coord.y)
                     }
                 }
                 ManagerType.SKILLS -> {}

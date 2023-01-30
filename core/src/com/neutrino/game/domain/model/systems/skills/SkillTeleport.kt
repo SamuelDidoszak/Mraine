@@ -28,8 +28,8 @@ class SkillTeleport(override val character: Character): Skill.ActiveSkillTile {
     override var range: Int = 20
     override var rangeType: RangeType = RangeType.SQUARE
 
-    override val printableData: List<Pair<String, Any>> = listOf(
-        Pair("Range", range)
+    override val printableData: List<Pair<String, () -> Any>> = listOf(
+        Pair("Range") { range }
     )
 
     override fun use(tile: Coord) {

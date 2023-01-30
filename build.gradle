@@ -135,8 +135,9 @@ project(":core") {
         api 'com.squidpony:squidlib-util:3.0.4'
         api 'com.squidpony:squidlib-extra:3.0.4'
 
-        // textraTypist
-        implementation "com.github.tommyettinger:textratypist:0.7.3"
+        // libGDX improvements
+        implementation "com.github.tommyettinger:textratypist:0.7.5"
+        implementation "com.github.raeleus.TenPatch:tenpatch:5.2.3"
 
         // shapeDrawer
         api "space.earlygrey:shapedrawer:2.5.0"

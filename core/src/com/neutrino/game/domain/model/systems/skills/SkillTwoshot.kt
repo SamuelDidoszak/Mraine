@@ -3,8 +3,6 @@ package com.neutrino.game.domain.model.systems.skills
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.RangeType
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.systems.attack.BasicAttack
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import squidpony.squidmath.Coord
@@ -22,15 +20,18 @@ class SkillTwoshot(override val character: Character): Skill.ActiveSkillTile {
     override val cooldownType: CooldownType = CooldownType.SKILL(this)
 
     override val manaCost: Float? = null
-    override var range: Int = character.range
+    override var range: Int = 0
+        get() = character.range
     override var rangeType: RangeType = character.rangeType
+        get() = character.rangeType
 
-    override val printableData: List<Pair<String, Any>> = listOf(
-
+    override val printableData: List<Pair<String, () -> Any>> = listOf(
+        Pair("Damage") {character.damage * 2f},
+        Pair("Cooldown") {cooldownLength}
     )
 
     override fun use(tile: Coord) {
-        val attack = BasicAttack(mapOf(StatsEnum.DAMAGE to 0f))
+        val attack = character.primaryAttack
         attack.attack(character, tile)
         attack.attack(character, tile)
         causeCooldown()

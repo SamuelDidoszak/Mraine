@@ -7,12 +7,13 @@ import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
-import com.neutrino.game.graphics.utility.BackgroundColor
+import ktx.scene2d.Scene2DSkin
 
 class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = true): Table() {
     init {
         this.width = 360f
         align(Align.left)
+        background = Scene2DSkin.defaultSkin.getDrawable("stretchableCell")
         pad(8f)
         add(TextraLabel("[%125]" + item.name + if (item.amount != null && item.amount!! > 1) " x ${item.amount}" else "", KnownFonts.getStandardFamily())).colspan(3).expandX().center()
         if (showDescription) {
@@ -41,12 +42,5 @@ class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = tr
         this.name = "itemDetails"
         this.pack()
         this.width = 360f
-    }
-
-    /** Made as a separate function in order to create the texture in the right place. Otherwise, it shows up for a split second at 0, 0 screen coordinates */
-    fun assignBg(x: Float, y: Float) {
-        val bgColor: BackgroundColor = BackgroundColor("UI/whiteColorTexture.png", x, y, width, height)
-        bgColor.setColor(0, 0, 0, 160)
-        this.background = bgColor
     }
 }

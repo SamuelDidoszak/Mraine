@@ -13,7 +13,7 @@ import com.neutrino.game.domain.model.turn.Turn
 
 class SkillManaDrain(override val character: Character): Skill.ActiveSkillCharacter {
     override val skillType: SkillType = SkillType.INTELLIGENCE
-    override val name: String = "ManaDrain"
+    override val name: String = "Mana drain"
     override val description: String = "Drain mana from the enemy"
     override val requirement: RequirementPrintable = RequirementPrintable()
         .add(RequirementPrintable.PrintableReq("Intelligence", 5f) { Player.intelligence })
@@ -28,9 +28,9 @@ class SkillManaDrain(override val character: Character): Skill.ActiveSkillCharac
     override var rangeType: RangeType = RangeType.CIRCLE
     var manaDrain = 15f
 
-    override val printableData: List<Pair<String, Any>> = listOf(
-        Pair("Mana drain", manaDrain),
-        Pair("Range", range)
+    override val printableData: List<Pair<String, () -> Any>> = listOf(
+        Pair("Mana drain") { manaDrain },
+        Pair("Range") { range }
     )
 
     override fun use(target: Character) {

@@ -34,7 +34,7 @@ enum class MapTags(val entityParams: EntityParams, val characterList: List<KClas
             Pair(ScrollOfDefence::class, 0.3f),
 
             Pair(PocketKnife::class, 5f),
-            Pair(BrokenSword::class, 5f),
+            Pair(BrokenSword::class, 50f),
 
             Pair(SmallBow::class, 5f),
             Pair(CurvedBow::class, 5f),

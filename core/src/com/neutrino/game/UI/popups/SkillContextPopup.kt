@@ -15,7 +15,7 @@ import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.graphics.utility.BackgroundColor
 import ktx.scene2d.Scene2DSkin
 
-class SkillContextPopup(skill: Skill, x: Float, y: Float, val customUseMethod: () -> Unit? = {}): Table() {
+class SkillContextPopup(val skill: Skill, x: Float, y: Float, val customUseMethod: () -> Unit? = {}): Table() {
     init {
         val useButton = TextraButton("[%150][@Cozette]Use", Scene2DSkin.defaultSkin)
         useButton.addListener(object: ClickListener() {

@@ -198,3 +198,16 @@ white
   orig: 3, 3
   offset: 0, 0
   index: -1
+
+stretchableCell.png
+size: 512, 512
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+stretchableCell
+  rotate: false
+  xy: 1, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1

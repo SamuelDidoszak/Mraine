@@ -18,7 +18,7 @@ sealed interface Skill {
     val name: String
     val description: String
     val requirement: RequirementPrintable
-    val printableData: List<Pair<String, Any>>
+    val printableData: List<Pair<String, () -> Any?>>
     val textureName: String
 
     val manaCost: Float?

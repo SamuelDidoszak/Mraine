@@ -6,7 +6,6 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.characters.utility.RangeType
-import com.neutrino.game.domain.model.characters.utility.SkillTree
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.AroundAttack
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
@@ -36,12 +35,12 @@ class SkillCripplingSpin(override val character: Character): Skill.ActiveSkill, 
     override var range: Int = 2
     override var rangeType: RangeType = RangeType.SQUARE
 
-    override val printableData: List<Pair<String, Any>> = listOf(
-        Pair("Damage", damage),
-        Pair("Slowdown %", slowDownStrength),
-        Pair("Slowdown time", slowDownTime),
-        Pair("Range", range),
-        Pair("Range type", rangeType)
+    override val printableData: List<Pair<String, () -> Any>> = listOf(
+        Pair("Damage") { damage },
+        Pair("Slowdown %") { slowDownStrength },
+        Pair("Slowdown time") { slowDownTime },
+        Pair("Range") { range },
+        Pair("Range type") { rangeType }
     )
 
     override fun use() {

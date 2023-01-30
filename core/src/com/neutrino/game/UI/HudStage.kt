@@ -13,7 +13,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
@@ -26,6 +29,7 @@ import com.neutrino.game.UI.UiStage
 import com.neutrino.game.UI.popups.Diagnostics
 import com.neutrino.game.UI.popups.ItemContextPopup
 import com.neutrino.game.UI.popups.SkillContextPopup
+import com.neutrino.game.UI.popups.SkillDetailsPopup
 import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.UI.utility.PickupActor
 import com.neutrino.game.UI.utility.SkillActor
@@ -249,7 +253,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     private var itemClicked: Boolean? = false
     private var timeClicked: Long = 0
     var clickedItem: Actor? = null
-    private var contextPopup: Table? = null
+    private var contextPopup: Actor? = null
 
     private var originalContainer: Container<*>? = null
 
@@ -337,6 +341,8 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             if (dragItem!!)
                 pickUpItem()
         }
+
+        removeContextPopup()
 
         if (dragItem!!) {
             val coord: Vector2 = screenToStageCoordinates(
@@ -484,12 +490,37 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        if (clickedItem == null)
-            return super.mouseMoved(screenX, screenY)
-
         val coord: Vector2 = screenToStageCoordinates(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
+        if (clickedItem == null && !hotBar.isInSized(coord.x, coord.y)) {
+            removeContextPopup()
+            return super.mouseMoved(screenX, screenY)
+        }
+
+        var hoveredActor = actorAtGroup(coord.x, coord.y)
+        if (!uiMode && hoveredActor != null && hoveredActor is Container<*>) {
+            hoveredActor = hoveredActor.actor
+            if (hoveredActor != null) {
+                val popupChild = (contextPopup as Group?)?.getChild(0)
+
+                if (hoveredActor is SkillActor && ((contextPopup == null || popupChild !is SkillDetailsPopup) ||
+                    (popupChild.skill != hoveredActor.skill))) {
+                    removeContextPopup()
+                    val group = Group()
+                    val popup = SkillDetailsPopup(hoveredActor.skill)
+                    group.setSize(popup.width, popup.height)
+                    group.addActor(popup)
+                    contextPopup = group
+                    addActor(contextPopup)
+                    val popupCoord = hoveredActor.localToStageCoordinates(Vector2(hoveredActor.x, hoveredActor.y))
+                    contextPopup!!.setPosition(
+                        popupCoord.x + hoveredActor.width * currentScale / 2 - contextPopup!!.widthScaled() / 2f,
+                        hotBarBorder.heightScaled() + 16f * currentScale)
+                }
+            } else
+                removeContextPopup()
+        }
 
         if (clickedItem != null)
             clickedItem!!.setPosition(coord.x - (clickedItem!! as PickupActor).ogWidth * 1.25f / 2 - 6,
@@ -665,8 +696,12 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         originalContainer = null
         itemClicked = false
         dragItem = null
+        removeContextPopup()
+    }
+
+    private fun removeContextPopup() {
         if (contextPopup != null) {
-            this.actors.removeValue(contextPopup, true)
+            actors.removeValue(contextPopup, true)
             contextPopup = null
         }
     }

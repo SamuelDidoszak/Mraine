@@ -21,8 +21,8 @@ class IncreaseMeleeDamage(override val character: Character): Skill.PassiveSkill
 
     private val increment: Float = 1.1f
 
-    override val printableData: List<Pair<String, Any>> = listOf(
-        Pair("Additional damage %", (increment * 100) - 100)
+    override val printableData: List<Pair<String, () -> Any>> = listOf(
+        Pair("Additional damage %") { (increment * 100) - 100}
     )
     override val textureName: String = "skillTeleportBackstab"
     override val manaCost: Float? = null

@@ -15,7 +15,7 @@ class SkillShieldBash(override val character: Character): Skill.ActiveSkillTile 
     override val description: String = "Bash your shield into the enemy. Damage is based on DEF"
     override val requirement: RequirementPrintable = RequirementPrintable()
         .add(RequirementPrintable.PrintableReq("Strength", 3f) { Player.strength })
-        { character.intelligence >= 3 }
+        { character.strength >= 0 }
     override val textureName: String = "skillBleed"
 
     override val cooldownLength: Double = 20.0
@@ -26,9 +26,9 @@ class SkillShieldBash(override val character: Character): Skill.ActiveSkillTile 
     override var range: Int = 1
     override var rangeType: RangeType = RangeType.SQUARE
 
-    override val printableData: List<Pair<String, Any>> = listOf(
-        Pair("Damage", character.defence + damage),
-        Pair("Range", range)
+    override val printableData: List<Pair<String, () -> Any>> = listOf(
+        Pair("Damage") { character.defence + damage },
+        Pair("Range") { range }
     )
 
     override fun use(tile: Coord) {

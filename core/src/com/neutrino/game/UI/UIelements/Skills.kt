@@ -22,7 +22,6 @@ import com.neutrino.game.UI.utility.SkillTreeActor
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.SkillTree
 import com.neutrino.game.domain.model.systems.skills.Skill
-import com.neutrino.game.domain.model.systems.skills.SkillType
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.isIn
 import com.neutrino.game.roundPosition
@@ -181,7 +180,7 @@ class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Gro
         }
 
         val skillDetailsImage = Image(TextureRegion(Constants.DefaultIconTexture.findRegion(skill.textureName)))
-        val skillName = TextraLabel(skill.name, Fonts.EQUIPMENT, getTreeColor(skill.skillType))
+        val skillName = TextraLabel(skill.name, Fonts.EQUIPMENT, ColorUtils.getSkillTypeColor(skill.skillType))
         skillName.wrap = true
         skillName.alignment = Align.center
         val description = TextraLabel(skill.description, Fonts.MATCHUP, Color.BLACK)
@@ -202,7 +201,7 @@ class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Gro
                 val dataLabel = TextraLabel(data.first, Fonts.MATCHUP, Color.BLACK)
                 dataLabel.alignment = Align.left
                 dataLabel.wrap = true
-                val valueLabel = TextraLabel(data.second.toString(), Fonts.MATCHUP, Color.BLACK)
+                val valueLabel = TextraLabel(data.second.invoke().toString(), Fonts.MATCHUP, Color.BLACK)
                 add(dataLabel).padLeft(16f).growX()
                 add(valueLabel).spaceRight(16f)
                 row().space(8f)
@@ -421,16 +420,6 @@ class Skills(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Gro
         }
         return Color.WHITE
     }
-
-    private fun getTreeColor(skillType: SkillType): Color {
-        return when (skillType) {
-            SkillType.STRENGTH -> ColorUtils.STRENGTH
-            SkillType.DEXTERITY -> ColorUtils.DEXTERITY
-            SkillType.INTELLIGENCE -> ColorUtils.INTELLIGENCE
-            SkillType.SUMMONING -> ColorUtils.SUMMONING
-        }
-    }
-
 
     private fun prepareSkillTree(skillTreeScroll: ScrollPane, name: String) {
         skillTreeScroll.name = name

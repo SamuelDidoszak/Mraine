@@ -38,4 +38,8 @@ class EventHeal(): Event() {
             character.hp += power
         character.findActor<HpBar>("hpBar").update(character.hp)
     }
+
+    override fun toString(): String {
+        return "Heal ${power}hp"
+    }
 }

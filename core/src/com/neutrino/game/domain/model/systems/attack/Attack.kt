@@ -16,11 +16,11 @@ abstract class Attack(
      */
     constructor(): this(mapOf(
         StatsEnum.DAMAGE to 0f,
-        StatsEnum.FIREDAMAGE to 0f,
-        StatsEnum.WATERDAMAGE to 0f,
-        StatsEnum.EARTHDAMAGE to 0f,
-        StatsEnum.AIRDAMAGE to 0f,
-        StatsEnum.POISONDAMAGE to 0f))
+        StatsEnum.FIRE_DAMAGE to 0f,
+        StatsEnum.WATER_DAMAGE to 0f,
+        StatsEnum.EARTH_DAMAGE to 0f,
+        StatsEnum.AIR_DAMAGE to 0f,
+        StatsEnum.POISON_DAMAGE to 0f))
 
     abstract fun attack(character: Character, target: Coord)
 
@@ -50,13 +50,13 @@ abstract class Attack(
         return AttackData(
             if (acceptedDamageTypes.contains(StatsEnum.DAMAGE))
                 character.damage + acceptedDamageTypes[StatsEnum.DAMAGE]!! - character.damageVariation + Random.nextFloat() * character.damageVariation else 0f,
-            if (acceptedDamageTypes.contains(StatsEnum.FIREDAMAGE)) character.fireDamage + acceptedDamageTypes[StatsEnum.FIREDAMAGE]!! else 0f,
-            if (acceptedDamageTypes.contains(StatsEnum.WATERDAMAGE)) character.waterDamage + acceptedDamageTypes[StatsEnum.WATERDAMAGE]!! else 0f,
-            if (acceptedDamageTypes.contains(StatsEnum.EARTHDAMAGE)) character.earthDamage + acceptedDamageTypes[StatsEnum.EARTHDAMAGE]!! else 0f,
-            if (acceptedDamageTypes.contains(StatsEnum.AIRDAMAGE)) character.airDamage + acceptedDamageTypes[StatsEnum.AIRDAMAGE]!! else 0f,
-            if (acceptedDamageTypes.contains(StatsEnum.POISONDAMAGE)) character.poisonDamage + acceptedDamageTypes[StatsEnum.POISONDAMAGE]!! else 0f,
-            if (acceptedDamageTypes.contains(StatsEnum.CRITICALCHANCE)) character.criticalChance + acceptedDamageTypes[StatsEnum.CRITICALCHANCE]!! else character.criticalChance,
-            if (acceptedDamageTypes.contains(StatsEnum.CRITICALDAMAGE)) character.criticalDamage + acceptedDamageTypes[StatsEnum.CRITICALDAMAGE]!! else character.criticalDamage,
+            if (acceptedDamageTypes.contains(StatsEnum.FIRE_DAMAGE)) character.fireDamage + acceptedDamageTypes[StatsEnum.FIRE_DAMAGE]!! else 0f,
+            if (acceptedDamageTypes.contains(StatsEnum.WATER_DAMAGE)) character.waterDamage + acceptedDamageTypes[StatsEnum.WATER_DAMAGE]!! else 0f,
+            if (acceptedDamageTypes.contains(StatsEnum.EARTH_DAMAGE)) character.earthDamage + acceptedDamageTypes[StatsEnum.EARTH_DAMAGE]!! else 0f,
+            if (acceptedDamageTypes.contains(StatsEnum.AIR_DAMAGE)) character.airDamage + acceptedDamageTypes[StatsEnum.AIR_DAMAGE]!! else 0f,
+            if (acceptedDamageTypes.contains(StatsEnum.POISON_DAMAGE)) character.poisonDamage + acceptedDamageTypes[StatsEnum.POISON_DAMAGE]!! else 0f,
+            if (acceptedDamageTypes.contains(StatsEnum.CRITICAL_CHANCE)) character.criticalChance + acceptedDamageTypes[StatsEnum.CRITICAL_CHANCE]!! else character.criticalChance,
+            if (acceptedDamageTypes.contains(StatsEnum.CRITICAL_DAMAGE)) character.criticalDamage + acceptedDamageTypes[StatsEnum.CRITICAL_DAMAGE]!! else character.criticalDamage,
             character.accuracy,
 
             character = character

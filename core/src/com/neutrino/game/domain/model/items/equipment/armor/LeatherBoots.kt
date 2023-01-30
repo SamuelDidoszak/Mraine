@@ -3,13 +3,13 @@ package com.neutrino.game.domain.model.items.equipment.armor
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.domain.model.items.EquipmentItem
+import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.systems.event.Data
-import com.neutrino.game.domain.model.systems.event.Requirement
+import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
-import com.neutrino.game.domain.model.items.EquipmentItem
-import com.neutrino.game.domain.model.items.ItemType
 import kotlin.math.roundToInt
 
 class LeatherBoots: EquipmentItem(), ItemType.EQUIPMENT.FEET {
@@ -21,7 +21,7 @@ class LeatherBoots: EquipmentItem(), ItemType.EQUIPMENT.FEET {
 
     override var goldValueOg: Int = 30
 
-    override var requirements: Requirement = Requirement(mutableMapOf(Pair("character", Data<Character>())))
+    override var requirements: RequirementPrintable = RequirementPrintable(mutableMapOf(Pair("character", Data<Character>())))
 
     override val modifierList: ArrayList<EventWrapper> = arrayListOf(
         OnOffEvent(EventModifyStat(StatsEnum.DEFENCE, 10.0f)),

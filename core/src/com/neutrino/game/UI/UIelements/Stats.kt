@@ -449,35 +449,35 @@ class Stats: Table() {
 
     private fun setStatLabelText(stat: StatsEnum) {
         when (stat) {
-            StatsEnum.HPMAX -> findActor<TextraLabel>("hpMax").setTextSameWidth("${Player.hpMax.roundOneDecimal()}")
-            StatsEnum.MPMAX -> findActor<TextraLabel>("mpMax").setTextSameWidth("${Player.mpMax.roundOneDecimal()}")
+            StatsEnum.HP_MAX -> findActor<TextraLabel>("hpMax").setTextSameWidth("${Player.hpMax.roundOneDecimal()}")
+            StatsEnum.MP_MAX -> findActor<TextraLabel>("mpMax").setTextSameWidth("${Player.mpMax.roundOneDecimal()}")
             StatsEnum.STRENGTH -> findActor<TextraLabel>("strength").setTextSameWidth("${Player.strength.roundOneDecimal()}")
             StatsEnum.DEXTERITY -> findActor<TextraLabel>("dexterity").setTextSameWidth("${Player.dexterity.roundOneDecimal()}")
             StatsEnum.INTELLIGENCE -> findActor<TextraLabel>("intelligence").setTextSameWidth("${Player.intelligence.roundOneDecimal()}")
             StatsEnum.LUCK -> findActor<TextraLabel>("luck").setTextSameWidth("${Player.luck.roundOneDecimal()}")
-            StatsEnum.DAMAGE, StatsEnum.DAMAGEVARIATION -> refreshDamageLabelText()
+            StatsEnum.DAMAGE, StatsEnum.DAMAGE_VARIATION -> refreshDamageLabelText()
             StatsEnum.DEFENCE -> findActor<TextraLabel>("defence").setTextSameWidth("${Player.defence.roundOneDecimal()}")
             StatsEnum.EVASION -> findActor<TextraLabel>("evasion").setTextSameWidth("${(Player.evasion * 100).roundToInt()}%")
             StatsEnum.ACCURACY -> findActor<TextraLabel>("accuracy").setTextSameWidth("${(Player.accuracy * 100).roundToInt()}%")
-            StatsEnum.CRITICALCHANCE -> findActor<TextraLabel>("critChance").setTextSameWidth("${(Player.criticalChance * 100).roundToInt()}%")
-            StatsEnum.CRITICALDAMAGE -> findActor<TextraLabel>("critDamage").setTextSameWidth("${(Player.criticalDamage * 100).roundToInt()}%")
-            StatsEnum.MOVEMENTSPEED -> findActor<TextraLabel>("movementSpeed").setTextSameWidth("${Player.movementSpeed.roundOneDecimal()}")
-            StatsEnum.ATTACKSPEED -> findActor<TextraLabel>("attackSpeed").setTextSameWidth("${Player.attackSpeed.roundOneDecimal()}")
+            StatsEnum.CRITICAL_CHANCE -> findActor<TextraLabel>("critChance").setTextSameWidth("${(Player.criticalChance * 100).roundToInt()}%")
+            StatsEnum.CRITICAL_DAMAGE -> findActor<TextraLabel>("critDamage").setTextSameWidth("${(Player.criticalDamage * 100).roundToInt()}%")
+            StatsEnum.MOVEMENT_SPEED -> findActor<TextraLabel>("movementSpeed").setTextSameWidth("${Player.movementSpeed.roundOneDecimal()}")
+            StatsEnum.ATTACK_SPEED -> findActor<TextraLabel>("attackSpeed").setTextSameWidth("${Player.attackSpeed.roundOneDecimal()}")
 
-            StatsEnum.FIREDAMAGE -> refreshDamageLabelText()
-            StatsEnum.WATERDAMAGE -> refreshDamageLabelText()
-            StatsEnum.EARTHDAMAGE -> refreshDamageLabelText()
-            StatsEnum.AIRDAMAGE -> refreshDamageLabelText()
-            StatsEnum.POISONDAMAGE -> refreshDamageLabelText()
+            StatsEnum.FIRE_DAMAGE -> refreshDamageLabelText()
+            StatsEnum.WATER_DAMAGE -> refreshDamageLabelText()
+            StatsEnum.EARTH_DAMAGE -> refreshDamageLabelText()
+            StatsEnum.AIR_DAMAGE -> refreshDamageLabelText()
+            StatsEnum.POISON_DAMAGE -> refreshDamageLabelText()
 
-            StatsEnum.FIREDEFENCE -> findActor<TextraLabel>("fireDefence").setTextSameWidth("${(Player.fireDefence * 100).roundToInt()}%")
-            StatsEnum.WATERDEFENCE -> findActor<TextraLabel>("waterDefence").setTextSameWidth("${(Player.waterDefence * 100).roundToInt()}%")
-            StatsEnum.EARTHDEFENCE -> findActor<TextraLabel>("earthDefence").setTextSameWidth("${(Player.earthDefence * 100).roundToInt()}%")
-            StatsEnum.AIRDEFENCE -> findActor<TextraLabel>("airDefence").setTextSameWidth("${(Player.airDefence * 100).roundToInt()}%")
-            StatsEnum.POISONDEFENCE -> findActor<TextraLabel>("poisonDefence").setTextSameWidth("${(Player.poisonDefence * 100).roundToInt()}%")
+            StatsEnum.FIRE_DEFENCE -> findActor<TextraLabel>("fireDefence").setTextSameWidth("${(Player.fireDefence * 100).roundToInt()}%")
+            StatsEnum.WATER_DEFENCE -> findActor<TextraLabel>("waterDefence").setTextSameWidth("${(Player.waterDefence * 100).roundToInt()}%")
+            StatsEnum.EARTH_DEFENCE -> findActor<TextraLabel>("earthDefence").setTextSameWidth("${(Player.earthDefence * 100).roundToInt()}%")
+            StatsEnum.AIR_DEFENCE -> findActor<TextraLabel>("airDefence").setTextSameWidth("${(Player.airDefence * 100).roundToInt()}%")
+            StatsEnum.POISON_DEFENCE -> findActor<TextraLabel>("poisonDefence").setTextSameWidth("${(Player.poisonDefence * 100).roundToInt()}%")
 
             StatsEnum.RANGE -> {}
-            StatsEnum.RANGETYPE -> {}
+            StatsEnum.RANGE_TYPE -> {}
             StatsEnum.STEALTH -> {}
         }
     }

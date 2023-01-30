@@ -9,65 +9,65 @@ enum class RandomizationTypes(val types: List<StatsEnum>) {
         StatsEnum.STRENGTH,
         StatsEnum.LUCK,
         StatsEnum.DAMAGE,
-        StatsEnum.DAMAGEVARIATION,
-        StatsEnum.HPMAX,
+        StatsEnum.DAMAGE_VARIATION,
+        StatsEnum.HP_MAX,
         StatsEnum.ACCURACY,
-        StatsEnum.CRITICALCHANCE,
-        StatsEnum.CRITICALDAMAGE
+        StatsEnum.CRITICAL_CHANCE,
+        StatsEnum.CRITICAL_DAMAGE
     )),
     WEAPON(listOf(
         StatsEnum.STRENGTH,
         StatsEnum.LUCK,
         StatsEnum.DAMAGE,
-        StatsEnum.DAMAGEVARIATION,
+        StatsEnum.DAMAGE_VARIATION,
         StatsEnum.ACCURACY,
         StatsEnum.EVASION,
-        StatsEnum.CRITICALCHANCE,
-        StatsEnum.CRITICALDAMAGE,
-        StatsEnum.ATTACKSPEED
+        StatsEnum.CRITICAL_CHANCE,
+        StatsEnum.CRITICAL_DAMAGE,
+        StatsEnum.ATTACK_SPEED
     )),
     DEXWEAPON(listOf(
         StatsEnum.DEXTERITY,
         StatsEnum.LUCK,
         StatsEnum.DAMAGE,
-        StatsEnum.DAMAGEVARIATION,
+        StatsEnum.DAMAGE_VARIATION,
         StatsEnum.ACCURACY,
         StatsEnum.EVASION,
-        StatsEnum.CRITICALCHANCE,
-        StatsEnum.CRITICALDAMAGE,
-        StatsEnum.ATTACKSPEED
+        StatsEnum.CRITICAL_CHANCE,
+        StatsEnum.CRITICAL_DAMAGE,
+        StatsEnum.ATTACK_SPEED
     )),
     STAFF(listOf(
         StatsEnum.INTELLIGENCE,
         StatsEnum.LUCK,
-        StatsEnum.DAMAGEVARIATION,
-        StatsEnum.CRITICALCHANCE,
-        StatsEnum.CRITICALDAMAGE
+        StatsEnum.DAMAGE_VARIATION,
+        StatsEnum.CRITICAL_CHANCE,
+        StatsEnum.CRITICAL_DAMAGE
     )),
     DEXSTAFF(listOf(
         StatsEnum.INTELLIGENCE,
         StatsEnum.LUCK,
-        StatsEnum.DAMAGEVARIATION,
+        StatsEnum.DAMAGE_VARIATION,
         StatsEnum.EVASION,
-        StatsEnum.CRITICALCHANCE,
-        StatsEnum.CRITICALDAMAGE,
-        StatsEnum.ATTACKSPEED
+        StatsEnum.CRITICAL_CHANCE,
+        StatsEnum.CRITICAL_DAMAGE,
+        StatsEnum.ATTACK_SPEED
     )),
     ARMOR(listOf(
-        StatsEnum.HPMAX,
+        StatsEnum.HP_MAX,
         StatsEnum.DEFENCE,
 
     )),
     DEXARMOR(listOf(
-        StatsEnum.HPMAX,
+        StatsEnum.HP_MAX,
         StatsEnum.DEFENCE,
         StatsEnum.EVASION
     )),
     BOOTS(listOf(
-        StatsEnum.HPMAX,
+        StatsEnum.HP_MAX,
         StatsEnum.DEFENCE,
         StatsEnum.EVASION,
-        StatsEnum.MOVEMENTSPEED
+        StatsEnum.MOVEMENT_SPEED
     )),
 
 
@@ -78,18 +78,18 @@ enum class RandomizationTypes(val types: List<StatsEnum>) {
         StatsEnum.INTELLIGENCE
     )),
     ELEMENTALDAMAGE(listOf(
-        StatsEnum.FIREDAMAGE,
-        StatsEnum.WATERDAMAGE,
-        StatsEnum.EARTHDAMAGE,
-        StatsEnum.AIRDAMAGE,
-        StatsEnum.POISONDAMAGE
+        StatsEnum.FIRE_DAMAGE,
+        StatsEnum.WATER_DAMAGE,
+        StatsEnum.EARTH_DAMAGE,
+        StatsEnum.AIR_DAMAGE,
+        StatsEnum.POISON_DAMAGE
     )),
     ELEMENTALDEFENCE(listOf(
-        StatsEnum.FIREDEFENCE,
-        StatsEnum.WATERDEFENCE,
-        StatsEnum.EARTHDEFENCE,
-        StatsEnum.AIRDEFENCE,
-        StatsEnum.POISONDEFENCE
+        StatsEnum.FIRE_DEFENCE,
+        StatsEnum.WATER_DEFENCE,
+        StatsEnum.EARTH_DEFENCE,
+        StatsEnum.AIR_DEFENCE,
+        StatsEnum.POISON_DEFENCE
     ));
 
     /** Returns a list with a random elementalDamage stat */

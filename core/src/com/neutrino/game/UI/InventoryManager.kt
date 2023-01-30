@@ -9,11 +9,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.TimeUtils
+import com.neutrino.game.UI.popups.EquipmentComparisonPopup
 import com.neutrino.game.UI.popups.ItemContextPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
 import com.neutrino.game.UI.popups.SkillContextPopup
 import com.neutrino.game.UI.utility.*
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
@@ -270,7 +272,11 @@ class InventoryManager(private val uiStage: UiStage) {
                             uiStage.actors.removeValue(detailsPopup, true)
 
                         val group = Group()
-                        val popup = ItemDetailsPopup(hoveredItem.item)
+                        val popup =
+                            if (hoveredItem.item is EquipmentItem)
+                                EquipmentComparisonPopup(hoveredItem.item as EquipmentItem)
+                            else
+                                ItemDetailsPopup(hoveredItem.item)
                         group.setSize(popup.width, popup.height)
                         group.setScale(uiStage.currentScale)
                         group.addActor(popup)

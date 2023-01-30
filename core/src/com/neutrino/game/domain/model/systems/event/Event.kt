@@ -18,4 +18,6 @@ abstract class Event: DataMap {
         return dataAttached
     }
 
+    abstract override fun toString(): String
+
 }

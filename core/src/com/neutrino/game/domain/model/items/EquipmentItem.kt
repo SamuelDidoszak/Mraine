@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.items
 
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.systems.event.Requirement
+import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.utility.RandomizationTypes
 
@@ -10,7 +10,8 @@ abstract class EquipmentItem: Item(), ItemType.EQUIPMENT {
     /** Parses only ModifyStat, ModifyStatPercent and Event */
     abstract val modifierList: ArrayList<EventWrapper>
     override val itemTier: Int = 3
-    open var requirements: Requirement = Requirement().add { true }
+    open var requirements: RequirementPrintable = RequirementPrintable()
+        .add(RequirementPrintable.PrintableReq("", "") {true}) { true }
 
     fun statRandomization(energy: Float, variationSkew: Float = 0.5f, energyCanIncrease: Boolean = false, randomizationType: RandomizationTypes? = null) {
 //        modifierList.sortBy { (it as ModifyStat).value as Float }

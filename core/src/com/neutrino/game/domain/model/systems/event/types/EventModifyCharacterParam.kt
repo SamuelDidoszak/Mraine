@@ -62,4 +62,8 @@ class EventModifyCharacterParam(): Event() {
             }
         }
     }
+
+    override fun toString(): String {
+        return "$param: $value"
+    }
 }

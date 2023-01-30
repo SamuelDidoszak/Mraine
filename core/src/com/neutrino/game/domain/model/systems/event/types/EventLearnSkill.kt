@@ -40,4 +40,8 @@ class EventLearnSkill(): Event() {
 
         (character as HasSkills).skillList.add(skill.primaryConstructor!!.call(character))
     }
+
+    override fun toString(): String {
+        return "Learn ${skill.simpleName?.replace("Skill", "")} skill"
+    }
 }

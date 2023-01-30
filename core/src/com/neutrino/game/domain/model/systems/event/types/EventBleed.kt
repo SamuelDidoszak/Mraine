@@ -33,4 +33,8 @@ class EventBleed(): Event() {
 
         character.getDamage(power, "bleeding")
     }
+
+    override fun toString(): String {
+        return "Bleed damage: $power"
+    }
 }

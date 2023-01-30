@@ -6,7 +6,7 @@ import com.neutrino.game.graphics.utility.ColorUtils.toTextraColor
 
 class ValueComparison {
     private companion object {
-        private     val equalsColor = "[BLACK]"
+        private val equalsColor = "[BLACK]"
         private val lesserColor = ColorUtils.REQ_UNMET.toTextraColor()
         private val biggerColor = ColorUtils.REQ_MET.toTextraColor()
     }
@@ -39,6 +39,6 @@ class ValueComparison {
                 1 -> return biggerColor
             }
         }
-        return "WHITE"
+        return "[BLACK]"
     }
 }

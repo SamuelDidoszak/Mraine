@@ -12,7 +12,7 @@ import com.neutrino.game.domain.model.items.utility.Projectile
 import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.attack.ProjectileAttack
 import com.neutrino.game.domain.model.systems.event.Data
-import com.neutrino.game.domain.model.systems.event.Requirement
+import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
@@ -32,18 +32,21 @@ class CurvedBow: EquipmentItemRanged(), ItemType.EQUIPMENT.RHAND {
     override var rangeType: RangeType = RangeType.SQUARE
     override val projectileType: Projectile.ProjectileType = Projectile.ProjectileType.WOODENARROW
 
-    override var requirements: Requirement = Requirement(mutableMapOf(Pair("character", Data<Character>())))
+    override var requirements: RequirementPrintable = RequirementPrintable(mutableMapOf(Pair("character", Data<Character>())))
 
     override val modifierList: ArrayList<EventWrapper> = arrayListOf(
         OnOffEvent(EventModifyStat(StatsEnum.DAMAGE, 3f)),
-        OnOffEvent(EventModifyStat(StatsEnum.DAMAGEVARIATION, 2f)),
+        OnOffEvent(EventModifyStat(StatsEnum.DAMAGE_VARIATION, 2f)),
         OnOffEvent(EventModifyStat(StatsEnum.RANGE, range))
     )
 
     override var attack: Attack = ProjectileAttack(this, getDamageTypesFromModifiers(modifierList))
 
     init {
-        requirements.add { requirements.get("character", Character::class)!!.dexterity.compareDelta(2f) >= 0  }
+        requirements
+            .add(RequirementPrintable.PrintableReq("Dexterity", 2f)
+            { requirements.get("character", Character::class)!!.dexterity })
+            { requirements.get("character", Character::class)!!.dexterity.compareDelta(2f) >= 0 }
 
         goldValue = goldValueOg
         realValue = (goldValue * 1.2).roundToInt()

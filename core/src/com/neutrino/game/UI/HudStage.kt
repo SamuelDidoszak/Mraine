@@ -519,7 +519,11 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                     (popupChild.item != hoveredActor.item))) {
                     removeContextPopup()
                     val group = Group()
-                    val popup = ItemDetailsPopup(hoveredActor.item)
+                    val popup =
+                        if (hoveredActor.item is EquipmentItem)
+                            EquipmentComparisonPopup(hoveredActor.item as EquipmentItem)
+                        else
+                            ItemDetailsPopup(hoveredActor.item)
                     group.setSize(popup.width, popup.height)
                     group.addActor(popup)
                     contextPopup = group

@@ -10,6 +10,7 @@ import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import kotlin.math.roundToInt
 
 class ReinforcedLeatherCap: EquipmentItem(), ItemType.EQUIPMENT.HEAD {
@@ -21,7 +22,7 @@ class ReinforcedLeatherCap: EquipmentItem(), ItemType.EQUIPMENT.HEAD {
 
     override var goldValueOg: Int = 30
 
-    override var requirements: Requirement = Requirement(mutableMapOf(Pair("character", Data<Character>())))
+    override var requirements: RequirementPrintable = RequirementPrintable(mutableMapOf(Pair("character", Data<Character>())))
 
     override val modifierList: ArrayList<EventWrapper> = arrayListOf(
         OnOffEvent(EventModifyStat(StatsEnum.DEFENCE, 10f)),

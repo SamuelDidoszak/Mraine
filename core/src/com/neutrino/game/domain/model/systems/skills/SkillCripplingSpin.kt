@@ -48,7 +48,7 @@ class SkillCripplingSpin(override val character: Character): Skill.ActiveSkill, 
         attack.attack(character)
         for (coord in getTilesInRange(character.getPosition(), true)) {
             val characterAt = LevelArrays.getCharacterAt(coord) ?: continue
-            val event = CharacterEvent(characterAt, TimedEvent(slowDownTime, EventModifyStat(StatsEnum.MOVEMENTSPEED, slowDownStrength, true)), Turn.turn)
+            val event = CharacterEvent(characterAt, TimedEvent(slowDownTime, EventModifyStat(StatsEnum.MOVEMENT_SPEED, slowDownStrength, true)), Turn.turn)
             EventDispatcher.dispatchEvent(event)
         }
         causeCooldown()

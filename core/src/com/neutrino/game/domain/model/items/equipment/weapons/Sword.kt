@@ -10,7 +10,7 @@ import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.attack.BasicAttack
 import com.neutrino.game.domain.model.systems.event.Data
-import com.neutrino.game.domain.model.systems.event.Requirement
+import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
@@ -26,7 +26,7 @@ class Sword: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
 
     override var goldValueOg: Int = 30
 
-    override var requirements: Requirement = Requirement(mutableMapOf(Pair("character", Data<Character>())))
+    override var requirements: RequirementPrintable = RequirementPrintable(mutableMapOf(Pair("character", Data<Character>())))
 
     override val modifierList: ArrayList<EventWrapper> = arrayListOf(
         OnOffEvent(EventModifyStat(StatsEnum.DAMAGE, 3.25f)),
@@ -37,7 +37,10 @@ class Sword: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
     override var attack: Attack = BasicAttack(getDamageTypesFromModifiers(modifierList))
 
     init {
-        requirements.add { requirements.get("character", Character::class)!!.strength.compareDelta(1f) >= 0  }
+        requirements
+            .add(RequirementPrintable.PrintableReq("Strength", 1f)
+            { requirements.get("character", Character::class)!!.strength })
+            { requirements.get("character", Character::class)!!.strength.compareDelta(1f) >= 0 }
 //        statRandomization(1f)
 
         goldValue = goldValueOg

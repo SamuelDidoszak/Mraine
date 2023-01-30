@@ -36,4 +36,8 @@ class EventBerserk(): Event() {
 
         // This class is only for displaying information
     }
+
+    override fun toString(): String {
+        return "Berserk"
+    }
 }

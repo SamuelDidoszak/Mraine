@@ -36,4 +36,8 @@ class EventManaRegen(): Event() {
         else
             character.mp += power
     }
+
+    override fun toString(): String {
+        return "Regenerate ${power}mp"
+    }
 }

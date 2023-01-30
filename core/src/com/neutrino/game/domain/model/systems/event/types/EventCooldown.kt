@@ -45,6 +45,10 @@ class EventCooldown(): Event(), Timed {
     override var turnDelay: Double = 0.0
     override val cooldown: Double = 0.0
     override var executions: Int = 1
+
+    override fun toString(): String {
+        return "Cooldown"
+    }
 }
 
 sealed class CooldownType {

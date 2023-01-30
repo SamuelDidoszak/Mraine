@@ -11,7 +11,7 @@ import com.neutrino.game.domain.model.items.utility.Projectile
 import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.attack.ProjectileAttack
 import com.neutrino.game.domain.model.systems.event.Data
-import com.neutrino.game.domain.model.systems.event.Requirement
+import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
@@ -31,11 +31,11 @@ class ExtinguishedFireWand: EquipmentItemRanged(), ItemType.EQUIPMENT.RHAND {
     override var rangeType: RangeType = RangeType.SQUARE
     override val projectileType: Projectile.ProjectileType = Projectile.ProjectileType.FIREPROJECTILE
 
-    override var requirements: Requirement = Requirement(mutableMapOf(Pair("character", Data<Character>())))
+    override var requirements: RequirementPrintable = RequirementPrintable(mutableMapOf(Pair("character", Data<Character>())))
 
     override val modifierList: ArrayList<EventWrapper> = arrayListOf(
-        OnOffEvent(EventModifyStat(StatsEnum.FIREDAMAGE, 2f)),
-        OnOffEvent(EventModifyStat(StatsEnum.DAMAGEVARIATION, 1f)),
+        OnOffEvent(EventModifyStat(StatsEnum.FIRE_DAMAGE, 2f)),
+        OnOffEvent(EventModifyStat(StatsEnum.DAMAGE_VARIATION, 1f)),
         OnOffEvent(EventModifyStat(StatsEnum.RANGE, range))
     )
 

@@ -8,7 +8,7 @@ import kotlin.math.roundToInt
 
 class Gold: Item(), ItemType.MISC {
     override val name: String = "Gold"
-    override val description: String = "Money"
+    override val description: String = ""
     override var amount: Int? = 1
         set(value) {
             field = value

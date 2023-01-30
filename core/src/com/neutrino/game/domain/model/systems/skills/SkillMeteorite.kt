@@ -48,7 +48,7 @@ class SkillMeteorite(override val character: Character): Skill.ActiveSkillArea {
 
     override fun use(tile: Coord) {
         for (tile in area.getTilesInRange(tile)) {
-            val attack = BasicAttack(mapOf(StatsEnum.FIREDAMAGE to fireDamage))
+            val attack = BasicAttack(mapOf(StatsEnum.FIRE_DAMAGE to fireDamage))
             attack.attack(character, tile)
             val enemy = LevelArrays.getCharacterAt(tile)
             if (enemy != null) {

@@ -39,4 +39,8 @@ class EventTeleport(): Event() {
         Turn.fov.updateFov(coord.x, coord.y, character.ai.fov, character.viewDistance)
         character.move(coord.x, coord.y, 0f)
     }
+
+    override fun toString(): String {
+        return "Teleport"
+    }
 }

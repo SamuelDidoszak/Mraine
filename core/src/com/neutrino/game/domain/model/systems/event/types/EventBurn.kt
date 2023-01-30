@@ -33,4 +33,8 @@ class EventBurn(): Event() {
 
         character.getDamage(power, "fire")
     }
+
+    override fun toString(): String {
+        return "Burn damage: $power"
+    }
 }

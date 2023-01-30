@@ -12,10 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.UI.popups.EntityLookupPopup
+import com.neutrino.game.UI.popups.EquipmentComparisonPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.characters.utility.HasRange
+import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.utility.Highlighting
@@ -160,8 +162,12 @@ class GameStage(
 
             val popup: Table
             if (level!!.getTopItem(tile.x, tile.y) != null) {
-                popup = ItemDetailsPopup(level!!.getTopItem(tile.x, tile.y)!!, false)
-                popup.width = 300f
+                val item = level!!.getTopItem(tile.x, tile.y)!!
+                popup =
+                    if (item is EquipmentItem)
+                        EquipmentComparisonPopup(item)
+                    else
+                        ItemDetailsPopup(item)
             }
             else
                 popup = EntityLookupPopup(level!!.map.map[tile.y][tile.x], level!!.characterMap[tile.y][tile.x])

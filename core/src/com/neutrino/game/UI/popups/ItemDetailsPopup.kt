@@ -22,7 +22,7 @@ class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = tr
         }
 
         val goldImage = Image(Constants.DefaultIconTexture.findRegion("gold"))
-        val goldValue = TextraLabel( "[%75]" + Color.GOLDENROD.toTextraColor() + item.goldValue, Fonts.EQUIPMENT)
+        val goldValue = TextraLabel( "[%75]" + Color.BLACK.toTextraColor() + item.goldValue, Fonts.EQUIPMENT)
         goldValue.alignment = Align.bottom
         val goldGroup = Table()
         goldGroup.add(goldImage).size(24f)
@@ -47,16 +47,13 @@ class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = tr
         description.alignment = Align.left
 
         add(itemName).growX().center().colspan(10)
-        if (item.amount != null && item.amount!! > 1) {
-            val amount = TextraLabel(" x ${item.amount}", Fonts.MATCHUP, Color.BLACK)
-            amount.wrap = true
-            amount.alignment = Align.center
-            row().space(8f)
-            add(amount).growX().colspan(10)
-        }
+        if (item.amount != null && item.amount!! > 1)
+            itemName.setText(itemName.storedText + " x${item.amount}")
 
-        row().space(12f)
-        add(description).growX().colspan(10)
+        if (item.description.isNotEmpty()) {
+            row().space(12f)
+            add(description).growX().colspan(10)
+        }
 
         row().padTop(8f).padBottom(0f)
 

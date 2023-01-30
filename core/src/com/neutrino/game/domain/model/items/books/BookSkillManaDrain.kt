@@ -5,7 +5,6 @@ import com.neutrino.game.domain.model.items.SkillBook
 import com.neutrino.game.domain.model.systems.skills.SkillManaDrain
 
 class BookSkillManaDrain: SkillBook(SkillManaDrain(Player)) {
-    override val name: String = "Mana drain skill book"
     override val description: String = skill.description
 
     override var goldValue: Int = 20

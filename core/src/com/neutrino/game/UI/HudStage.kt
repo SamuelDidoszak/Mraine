@@ -26,10 +26,7 @@ import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.*
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.UI.popups.Diagnostics
-import com.neutrino.game.UI.popups.ItemContextPopup
-import com.neutrino.game.UI.popups.SkillContextPopup
-import com.neutrino.game.UI.popups.SkillDetailsPopup
+import com.neutrino.game.UI.popups.*
 import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.UI.utility.PickupActor
 import com.neutrino.game.UI.utility.SkillActor
@@ -509,6 +506,20 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                     removeContextPopup()
                     val group = Group()
                     val popup = SkillDetailsPopup(hoveredActor.skill)
+                    group.setSize(popup.width, popup.height)
+                    group.addActor(popup)
+                    contextPopup = group
+                    addActor(contextPopup)
+                    val popupCoord = hoveredActor.localToStageCoordinates(Vector2(hoveredActor.x, hoveredActor.y))
+                    contextPopup!!.setPosition(
+                        popupCoord.x + hoveredActor.width * currentScale / 2 - contextPopup!!.widthScaled() / 2f,
+                        hotBarBorder.heightScaled() + 16f * currentScale)
+                }
+                if (hoveredActor is EqActor && ((contextPopup == null || popupChild !is EqActor) ||
+                    (popupChild.item != hoveredActor.item))) {
+                    removeContextPopup()
+                    val group = Group()
+                    val popup = ItemDetailsPopup(hoveredActor.item)
                     group.setSize(popup.width, popup.height)
                     group.addActor(popup)
                     contextPopup = group

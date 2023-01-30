@@ -2,8 +2,10 @@ package com.neutrino.game.domain.model.items.edible
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
+import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.items.UseOn
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
@@ -16,6 +18,9 @@ class Meat: Item(), ItemType.EDIBLE {
 
     override val textureNames: List<String> = listOf("meat")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
+
+    override val useOn: UseOn = UseOn.SELF_AND_OTHERS
+    override val hasRange: HasRange? = null
 
     override val itemTier: Int = 1
 

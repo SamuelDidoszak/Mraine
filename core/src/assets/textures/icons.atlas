@@ -3,6 +3,8 @@ icons.png
 	repeat: none
 exclamationMark
 	bounds: 80, 0, 16, 16
+gold
+	bounds: 160, 11, 5, 5
 heart
 	bounds: 16, 0, 16, 16
 itemBetter

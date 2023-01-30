@@ -5,7 +5,6 @@ import com.neutrino.game.domain.model.items.SkillBook
 import com.neutrino.game.domain.model.systems.skills.SkillMeteorite
 
 class BookSkillMeteorite: SkillBook(SkillMeteorite(Player)) {
-    override val name: String = "Meteorite skill book"
     override val description: String = skill.description
 
     override var goldValue: Int = 20

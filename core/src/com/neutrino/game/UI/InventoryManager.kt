@@ -46,8 +46,8 @@ class InventoryManager(private val uiStage: UiStage) {
     private var timeClicked: Long = 0
 
     private var displayedItem: Item? = null
-    private var detailsPopup: Table? = null
-    private var contextPopup: Table? = null
+    private var detailsPopup: Actor? = null
+    private var contextPopup: Actor? = null
     private val itemContextPopup = ItemContextPopup(uiStage.usedItemList) {
         uiStage.showInventory = false
         nullifyAllValues()
@@ -268,7 +268,13 @@ class InventoryManager(private val uiStage: UiStage) {
                     if (hoveredItem != null && (hoveredItem as EqActor).item != displayedItem) {
                         if (detailsPopup != null)
                             uiStage.actors.removeValue(detailsPopup, true)
-                        detailsPopup = ItemDetailsPopup(hoveredItem.item, true)
+
+                        val group = Group()
+                        val popup = ItemDetailsPopup(hoveredItem.item)
+                        group.setSize(popup.width, popup.height)
+                        group.setScale(uiStage.currentScale)
+                        group.addActor(popup)
+                        detailsPopup = group
                         detailsPopup!!.setPosition(coord.x, coord.y)
                         displayedItem = hoveredItem.item
                         uiStage.addActor(detailsPopup)

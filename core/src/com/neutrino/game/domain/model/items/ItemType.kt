@@ -1,5 +1,6 @@
 package com.neutrino.game.domain.model.items
 
+import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.event.CausesCooldown
@@ -8,7 +9,11 @@ import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 
 sealed interface ItemType {
-    interface USABLE: ItemType, CausesEvents
+    interface USABLE: ItemType, CausesEvents {
+        val useOn: UseOn
+        /** If null, using on others will have a default 1 SQUARE range */
+        val hasRange: HasRange?
+    }
 
     interface EDIBLE: USABLE, CausesCooldown {
         val powerOg: Float
@@ -66,4 +71,10 @@ enum class HandedItemType {
     WAND,
     STAFF,
     PARCHMENT
+}
+
+enum class UseOn {
+    SELF_ONLY,
+    OTHERS_ONLY,
+    SELF_AND_OTHERS
 }

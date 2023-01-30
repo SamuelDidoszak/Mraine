@@ -136,7 +136,7 @@ project(":core") {
         api 'com.squidpony:squidlib-extra:3.0.4'
 
         // libGDX improvements
-        implementation "com.github.tommyettinger:textratypist:0.7.5"
+        implementation "com.github.tommyettinger:textratypist:0.7.3"
         implementation "com.github.raeleus.TenPatch:tenpatch:5.2.3"
 
         // shapeDrawer

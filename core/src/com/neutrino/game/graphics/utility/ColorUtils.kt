@@ -1,18 +1,24 @@
 package com.neutrino.game.graphics.utility
 
 import com.badlogic.gdx.graphics.Color
+import com.neutrino.game.domain.model.systems.skills.SkillType
 import kotlin.math.max
 import kotlin.math.min
 
 object ColorUtils {
 
+    // Skills
     val STRENGTH: Color = Color.FIREBRICK
     val DEXTERITY: Color = Color.GOLDENROD
     val INTELLIGENCE: Color = Color.ROYAL
     val SUMMONING: Color = Color.MAROON
 
+    // Requirements
     val REQ_MET: Color = Color.FOREST
     val REQ_UNMET: Color = applySaturation(Color.RED, 0.6f)
+
+    // Items
+    val GOLD: Color = Color.GOLD
 
     fun colorInterpolation(colorA: Color, colorB: Color, t: Int): Color {
         val r = colorA.r + (colorB.r - colorA.r) * t
@@ -58,4 +64,15 @@ object ColorUtils {
     }
 
     fun Color.toHexaDecimal() = toHexadecimal(this)
+
+    fun Color.toTextraColor() = "[" + toHexadecimal(this) + "]"
+
+    fun getSkillTypeColor(skillType: SkillType): Color {
+        return when (skillType) {
+            SkillType.STRENGTH -> STRENGTH
+            SkillType.DEXTERITY -> DEXTERITY
+            SkillType.INTELLIGENCE -> INTELLIGENCE
+            SkillType.SUMMONING -> SUMMONING
+        }
+    }
 }

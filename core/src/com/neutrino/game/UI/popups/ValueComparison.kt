@@ -1,11 +1,15 @@
 package com.neutrino.game.UI.popups
 
 import com.neutrino.game.equalsDelta
+import com.neutrino.game.graphics.utility.ColorUtils
+import com.neutrino.game.graphics.utility.ColorUtils.toTextraColor
 
 class ValueComparison {
-    private val equalsColor = "[WHITE]"
-    private val lesserColor = "[RED]"
-    private val biggerColor = "[GREEN]"
+    private companion object {
+        private     val equalsColor = "[BLACK]"
+        private val lesserColor = ColorUtils.REQ_UNMET.toTextraColor()
+        private val biggerColor = ColorUtils.REQ_MET.toTextraColor()
+    }
 
     /**
      * Compares both stats and returns adequate color as a string value formatted inside of [] for textraLabel's use

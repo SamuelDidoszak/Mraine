@@ -2,8 +2,10 @@ package com.neutrino.game.domain.model.items.edible
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
+import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.items.UseOn
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
@@ -11,11 +13,14 @@ import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 
 class SmallHealingPotion: Item(), ItemType.EDIBLE {
     override var name: String = "Small healing potion"
-    override val description: String = "It's gonna heal you instantly"
+    override val description: String = "Heals you instantly"
     override var amount: Int? = 1
 
     override val textureNames: List<String> = listOf("smallHealingPotion")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
+
+    override val useOn: UseOn = UseOn.SELF_AND_OTHERS
+    override val hasRange: HasRange? = null
 
     override val itemTier: Int = 2
 

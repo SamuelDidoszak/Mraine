@@ -227,10 +227,9 @@ object Turn {
                             updateBatch.addFirst(Action.EVENT)
                         }
                         if (action.item is CausesCooldown && action.item.cooldownType != CooldownType.NONE) {
-                            println("Causes cooldown!")
                             eventArray.startEvent(
                                 CharacterEvent(
-                                Player, turn, action.item.cooldownLength, 1,
+                                action.character, turn, action.item.cooldownLength, 1,
                                 EventCooldown(action.character, action.item.cooldownType, action.item.cooldownLength)
                             )
                             )

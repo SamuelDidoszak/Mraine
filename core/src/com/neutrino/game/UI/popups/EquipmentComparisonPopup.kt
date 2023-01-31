@@ -22,7 +22,6 @@ class EquipmentComparisonPopup(val item: EquipmentItem): Table() {
             add(addItemScreen(equippedItem, item)).width(256f).top()
         add(addItemScreen(item, equippedItem)).width(256f).top()
         layout()
-        println("Heights")
         var maxHeight = 0f
         children.forEach { maxHeight = max(maxHeight, (it as Table).minHeight) }
         height = maxHeight

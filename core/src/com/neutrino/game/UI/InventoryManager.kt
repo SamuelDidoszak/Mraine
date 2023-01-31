@@ -50,7 +50,7 @@ class InventoryManager(private val uiStage: UiStage) {
     private var displayedItem: Item? = null
     private var detailsPopup: Actor? = null
     private var contextPopup: Actor? = null
-    private val itemContextPopup = ItemContextPopup(uiStage.usedItemList) {
+    private val itemContextPopup = ItemContextPopup(uiStage.usedItemList, { item: Item -> uiStage.useItemOn = item})  {
         uiStage.showInventory = false
         nullifyAllValues()
         uiStage.nullifyAllValues()

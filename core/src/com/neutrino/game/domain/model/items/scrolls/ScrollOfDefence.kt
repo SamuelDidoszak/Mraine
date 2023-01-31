@@ -36,7 +36,7 @@ class ScrollOfDefence: Item(), ItemType.USABLE, CausesCooldown {
     }
 
     override val cooldownLength: Double = timeout
-    override val cooldownType: CooldownType = CooldownType.ITEM(name)
+    override val cooldownType: CooldownType = CooldownType.ITEM(this::class)
 
     override var goldValueOg: Int = 30
     override var goldValue: Int = goldValueOg

@@ -14,12 +14,9 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.items.EquipmentItem
-import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.ItemType
-import com.neutrino.game.domain.model.items.SkillBook
+import com.neutrino.game.domain.model.items.*
+import com.neutrino.game.domain.model.systems.event.CausesCooldown
 import com.neutrino.game.domain.model.systems.event.Data
-import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.graphics.utility.BackgroundColor
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.scene2d
@@ -27,6 +24,7 @@ import ktx.scene2d.table
 
 class ItemContextPopup(
     val usedItemList:  ArrayDeque<Item>,
+    val useOnSetter: (item: Item) -> Unit,
     val customUseMethod: () -> Unit? = {}
 ) {
     fun createContextMenu(item: Item, x: Float, y: Float): Table? {
@@ -41,7 +39,7 @@ class ItemContextPopup(
                             if (event?.button != Input.Buttons.LEFT)
                                 return
                             super.clicked(event, x, y)
-                            if (Player.eventArray.hasCooldown(CooldownType.FOOD)) {
+                            if (Player.eventArray.hasCooldown((item as? CausesCooldown)?.cooldownType)) {
                                 val cooldownLabel = TextraLabel("[@Cozette][%600][*]Food is on cooldown", KnownFonts.getStandardFamily())
                                 cooldownLabel.name = "cooldown"
                                 parent.addActor(cooldownLabel)
@@ -58,7 +56,10 @@ class ItemContextPopup(
                             customUseMethod.invoke()
                         }
                     })
-                    add(eatButton).prefWidth(90f).prefHeight(40f)
+                    if (item.useOn != UseOn.OTHERS_ONLY)
+                        add(eatButton).prefWidth(90f).prefHeight(40f)
+
+                    addUseOn(item, this)
                 }
                 is SkillBook -> {
                     val learnButton = TextraButton("[%150][@Cozette]Learn", Scene2DSkin.defaultSkin)
@@ -102,7 +103,8 @@ class ItemContextPopup(
                         }
                     })
 
-                    add(learnButton).prefWidth(90f).prefHeight(40f)
+                    if (item.useOn != UseOn.OTHERS_ONLY)
+                        add(learnButton).prefWidth(90f).prefHeight(40f)
                 }
                 is ItemType.MISC -> return null
                 is ItemType.KEY -> return null
@@ -136,7 +138,8 @@ class ItemContextPopup(
                         }
                     })
 
-                    add(equipButton).prefWidth(90f).prefHeight(40f)
+                    if (item !is ItemType.USABLE || item.useOn != UseOn.OTHERS_ONLY)
+                        add(equipButton).prefWidth(90f).prefHeight(40f)
                 }
                 is ItemType.USABLE -> {
                     val useButton = TextraButton("[%150][@Cozette]Use", Scene2DSkin.defaultSkin)
@@ -146,7 +149,7 @@ class ItemContextPopup(
                                 return
                             super.clicked(event, x, y)
                             Player.eventArray.forEach { println(it) }
-                            if (Player.eventArray.hasCooldown(CooldownType.ITEM(item.name))) {
+                            if (Player.eventArray.hasCooldown((item as? CausesCooldown)?.cooldownType)) {
                                 val cooldownLabel = TextraLabel("[@Cozette][%600][*]This item is on cooldown", KnownFonts.getStandardFamily())
                                 cooldownLabel.name = "cooldown"
                                 parent.addActor(cooldownLabel)
@@ -163,7 +166,11 @@ class ItemContextPopup(
                             customUseMethod.invoke()
                         }
                     })
-                    add(useButton).prefWidth(90f).prefHeight(40f)
+
+                    if (item.useOn != UseOn.OTHERS_ONLY)
+                        add(useButton).prefWidth(90f).prefHeight(40f)
+
+                    addUseOn(item, this)
                 }
             }
             pack()
@@ -175,5 +182,23 @@ class ItemContextPopup(
         table.name = "itemContextPopup"
 
         return table
+    }
+
+    private fun addUseOn(item: Item, table: Table) {
+        val canUseOn = (item as ItemType.USABLE).useOn == UseOn.SELF_AND_OTHERS || item.useOn == UseOn.TILE || item.useOn == UseOn.OTHERS_ONLY
+        if (!canUseOn)
+            return
+
+        val useOnButton = TextraButton("[%150][@Cozette]Use on", Scene2DSkin.defaultSkin)
+        useOnButton.addListener(object: ClickListener() {
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                if (event?.button != Input.Buttons.LEFT)
+                    return
+                super.clicked(event, x, y)
+                useOnSetter.invoke(item)
+                customUseMethod.invoke()
+            }
+        })
+        table.add(useOnButton).prefWidth(90f).prefHeight(40f)
     }
 }

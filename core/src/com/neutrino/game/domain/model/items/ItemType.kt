@@ -76,5 +76,7 @@ enum class HandedItemType {
 enum class UseOn {
     SELF_ONLY,
     OTHERS_ONLY,
-    SELF_AND_OTHERS
+    SELF_AND_OTHERS,
+    /** When useOn is tile, item can implement HasRange to have effect spreading on a certain range */
+    TILE
 }

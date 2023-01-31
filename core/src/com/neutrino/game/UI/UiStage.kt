@@ -16,11 +16,12 @@ import com.neutrino.GlobalDataType
 import com.neutrino.HudStage
 import com.neutrino.game.*
 import com.neutrino.game.UI.UIelements.Equipment
+import com.neutrino.game.UI.UIelements.Shop
 import com.neutrino.game.UI.UIelements.Skills
 import com.neutrino.game.UI.UIelements.Tabs
-import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.UI.utility.ManagedElement
 import com.neutrino.game.UI.utility.ManagerType
+import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.skills.Skill
 
@@ -32,6 +33,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
     /** FIFO of used item actions */
     val usedItemList: ArrayDeque<Item> = ArrayDeque()
+    /** Item to use on another character / tile */
+    var useItemOn: Item? = null
 
     var showInventory: Boolean = true
 
@@ -227,9 +230,6 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
         return super.touchDown(screenX, screenY, pointer, button)
     }
-
-    /** Original item split into a stack. Null signifies that no stack was taken */
-    var originalStackItem: EqActor? = null
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         val coord: Vector2 = screenToStageCoordinates(

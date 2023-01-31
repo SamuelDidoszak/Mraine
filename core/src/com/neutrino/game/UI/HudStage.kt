@@ -32,10 +32,8 @@ import com.neutrino.game.UI.utility.PickupActor
 import com.neutrino.game.UI.utility.SkillActor
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.items.EquipmentItem
-import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.ItemType
-import com.neutrino.game.domain.model.items.SkillBook
+import com.neutrino.game.domain.model.items.*
+import com.neutrino.game.domain.model.systems.event.CausesCooldown
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.skills.Skill
@@ -256,8 +254,9 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     private var originalContainer: Container<*>? = null
 
     val usedItemList: ArrayDeque<Item> = ArrayDeque()
+    var useItemOn: Item? = null
     var usedSkill: Skill? = null
-    private val itemContextPopup = ItemContextPopup(usedItemList, ::nullifyAllValues)
+    private val itemContextPopup = ItemContextPopup(usedItemList, { item: Item -> useItemOn = item}, ::nullifyAllValues)
 
     /** ============================================================     HotBar related methods     =============================================================================*/
 
@@ -645,9 +644,17 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             return
         }
 
-        when (val item = (clickedItem as EqActor).item) {
+        val item = (clickedItem as EqActor).item
+
+        // use on others as primary action
+        if (item is ItemType.USABLE && (item.useOn == UseOn.TILE || item.useOn == UseOn.OTHERS_ONLY)) {
+            useItemOn = item
+            return
+        }
+
+        when (item) {
             is ItemType.EDIBLE -> {
-                if (Player.eventArray.hasCooldown(CooldownType.FOOD)) {
+                if (Player.eventArray.hasCooldown((item as? CausesCooldown)?.cooldownType)) {
                     val cooldownLabel = TextraLabel("[@Cozette][%600][*]Food is on cooldown", KnownFonts.getStandardFamily())
                     addCooldownLabel(cooldownLabel, coord)
                     return
@@ -685,8 +692,8 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                 nullifyAllValues()
             }
             is ItemType.USABLE -> {
-                if (Player.eventArray.hasCooldown(CooldownType.ITEM(item.name))) {
-                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]This item is on cooldown", KnownFonts.getStandardFamily())
+                if (Player.eventArray.hasCooldown((item as? CausesCooldown)?.cooldownType)) {
+                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]Item is on cooldown", KnownFonts.getStandardFamily())
                     addCooldownLabel(cooldownLabel, coord)
                     return
                 }

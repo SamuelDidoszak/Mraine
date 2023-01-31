@@ -8,12 +8,16 @@ class CharacterEventArray: ArrayList<CharacterEvent>() {
     /** Number of skills that don't use mana and are on cooldown */
     var skillsOnCooldown: Int = 0
 
-    fun hasCooldown(cooldownType: CooldownType): Boolean {
+    fun hasCooldown(cooldownType: CooldownType?): Boolean {
+        if (cooldownType == null || cooldownType is CooldownType.NONE)
+            return false
+
         return this.find {
             it.event is EventCooldown && it.event.cooldownType == cooldownType &&
                     when (it.event.cooldownType) {
                         is CooldownType.SKILL -> (it.event.cooldownType as CooldownType.SKILL).skill::class == (cooldownType as CooldownType.SKILL).skill::class
-                        is CooldownType.ITEM -> (it.event.cooldownType as CooldownType.ITEM).itemName == (cooldownType as CooldownType.ITEM).itemName
+                        is CooldownType.ITEM -> (it.event.cooldownType as CooldownType.ITEM)::class == (cooldownType as CooldownType.ITEM)::class
+                        is CooldownType.NONE -> false
                         else -> true
                     }
         } != null

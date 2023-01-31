@@ -1,11 +1,13 @@
 package com.neutrino.game.domain.model.systems.event.types
 
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.Event
 import com.neutrino.game.domain.model.systems.event.Timed
 import com.neutrino.game.domain.model.systems.skills.Skill
+import kotlin.reflect.KClass
 
 class EventCooldown(): Event(), Timed {
     constructor(character: Character, cooldownType: CooldownType, cooldownLength: Double) : this() {
@@ -55,6 +57,6 @@ sealed class CooldownType {
     object FOOD: CooldownType()
     data class SKILL(val skill: Skill): CooldownType()
     /** Cooldown for a specific item */
-    data class ITEM(val itemName: String): CooldownType()
+    data class ITEM(val item: KClass<out Item>): CooldownType()
     object NONE: CooldownType()
 }

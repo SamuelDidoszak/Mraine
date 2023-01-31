@@ -571,7 +571,10 @@ class InventoryManager(private val uiStage: UiStage) {
             clickedItem = originalStackItem
             originalStackItem = null
         }
-        clickedItem?.addAction(Actions.removeActor())
+        if (clickedItem != null && originalContainer != null)
+            originalContainer!!.actor = clickedItem
+        else
+            clickedItem?.addAction(Actions.removeActor())
         clickedItem = null
         originalContainer = null
         originalInventory = null

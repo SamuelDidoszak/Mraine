@@ -251,6 +251,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     private var timeClicked: Long = 0
     var clickedItem: Actor? = null
     private var contextPopup: Actor? = null
+    private var detailsPopup: Actor? = null
 
     private var originalContainer: Container<*>? = null
 
@@ -340,6 +341,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         }
 
         removeContextPopup()
+        removeDetailsPopup()
 
         if (dragItem!!) {
             val coord: Vector2 = screenToStageCoordinates(
@@ -491,7 +493,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
         if (clickedItem == null && !hotBar.isInSized(coord.x, coord.y)) {
-            removeContextPopup()
+            removeDetailsPopup()
             return super.mouseMoved(screenX, screenY)
         }
 
@@ -499,25 +501,25 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         if (!uiMode && hoveredActor != null && hoveredActor is Container<*>) {
             hoveredActor = hoveredActor.actor
             if (hoveredActor != null) {
-                val popupChild = (contextPopup as Group?)?.getChild(0)
+                val popupChild = (detailsPopup as Group?)?.getChild(0)
 
-                if (hoveredActor is SkillActor && ((contextPopup == null || popupChild !is SkillDetailsPopup) ||
+                if (hoveredActor is SkillActor && ((detailsPopup == null || popupChild !is SkillDetailsPopup) ||
                     (popupChild.skill != hoveredActor.skill))) {
-                    removeContextPopup()
+                    removeDetailsPopup()
                     val group = Group()
                     val popup = SkillDetailsPopup(hoveredActor.skill)
                     group.setSize(popup.width, popup.height)
                     group.addActor(popup)
-                    contextPopup = group
-                    addActor(contextPopup)
+                    detailsPopup = group
+                    addActor(detailsPopup)
                     val popupCoord = hoveredActor.localToStageCoordinates(Vector2(hoveredActor.x, hoveredActor.y))
-                    contextPopup!!.setPosition(
-                        popupCoord.x + hoveredActor.width * currentScale / 2 - contextPopup!!.widthScaled() / 2f,
+                    detailsPopup!!.setPosition(
+                        popupCoord.x + hoveredActor.width * currentScale / 2 - detailsPopup!!.widthScaled() / 2f,
                         hotBarBorder.heightScaled() + 16f * currentScale)
                 }
-                if (hoveredActor is EqActor && ((contextPopup == null || popupChild !is EqActor) ||
+                if (hoveredActor is EqActor && ((detailsPopup == null || popupChild !is EqActor) ||
                     (popupChild.item != hoveredActor.item))) {
-                    removeContextPopup()
+                    removeDetailsPopup()
                     val group = Group()
                     val popup =
                         if (hoveredActor.item is EquipmentItem)
@@ -526,15 +528,15 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                             ItemDetailsPopup(hoveredActor.item)
                     group.setSize(popup.width, popup.height)
                     group.addActor(popup)
-                    contextPopup = group
-                    addActor(contextPopup)
+                    detailsPopup = group
+                    addActor(detailsPopup)
                     val popupCoord = hoveredActor.localToStageCoordinates(Vector2(hoveredActor.x, hoveredActor.y))
-                    contextPopup!!.setPosition(
-                        popupCoord.x + hoveredActor.width * currentScale / 2 - contextPopup!!.widthScaled() / 2f,
+                    detailsPopup!!.setPosition(
+                        popupCoord.x + hoveredActor.width * currentScale / 2 - detailsPopup!!.widthScaled() / 2f,
                         hotBarBorder.heightScaled() + 16f * currentScale)
                 }
             } else
-                removeContextPopup()
+                removeDetailsPopup()
         }
 
         if (clickedItem != null)
@@ -712,12 +714,20 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         itemClicked = false
         dragItem = null
         removeContextPopup()
+        removeDetailsPopup()
     }
 
     private fun removeContextPopup() {
         if (contextPopup != null) {
             actors.removeValue(contextPopup, true)
             contextPopup = null
+        }
+    }
+
+    private fun removeDetailsPopup() {
+        if (detailsPopup != null) {
+            actors.removeValue(detailsPopup, true)
+            detailsPopup = null
         }
     }
 

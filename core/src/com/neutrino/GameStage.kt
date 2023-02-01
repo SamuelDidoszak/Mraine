@@ -188,6 +188,8 @@ class GameStage(
         return true
     }
 
+    var moveDirection: Int? = null
+
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.TAB -> {
@@ -197,28 +199,79 @@ class GameStage(
                 if (level != null)
                     level!!.drawFovFow += 1
             }
-            Input.Keys.LEFT -> {
-//                Player.move(Player.xPos - 1, Player.yPos)
-                camera.position.set(camera.position.x - 64, camera.position.y, 0f)
-            }
-            Input.Keys.RIGHT -> {
-//                Player.move(Player.xPos + 1, Player.yPos)
-                camera.position.set(camera.position.x + 64, camera.position.y, 0f)
-            }
-            Input.Keys.UP -> {
-//                Player.move(Player.xPos, Player.yPos - 1)
-                camera.position.set(camera.position.x, camera.position.y + 64, 0f)
-            }
-            Input.Keys.DOWN -> {
-//                Player.move(Player.xPos, Player.yPos + 1)
-                camera.position.set(camera.position.x, camera.position.y - 64, 0f)
-            }
             Input.Keys.ESCAPE -> {
                 if (highlightMode != Highlighting.Companion.HighlightModes.NORMAL)
                     cancelSkill.invoke()
             }
+            // Movement
+            Input.Keys.W, Input.Keys.UP -> {
+                moveDirection = when (moveDirection) {
+                    4 -> 7
+                    6 -> 9
+                    else -> 8
+                }
+            }
+            Input.Keys.S, Input.Keys.DOWN -> {
+                moveDirection = when (moveDirection) {
+                    4 -> 1
+                    6 -> 3
+                    else -> 2
+                }
+            }
+            Input.Keys.D, Input.Keys.RIGHT -> {
+                moveDirection = when (moveDirection) {
+                    8 -> 9
+                    2 -> 3
+                    else -> 6
+                }
+            }
+            Input.Keys.A, Input.Keys.LEFT -> {
+                moveDirection = when (moveDirection) {
+                    8 -> 7
+                    2 -> 1
+                    else -> 4
+                }
+            }
         }
         return true
+    }
+
+    override fun keyUp(keyCode: Int): Boolean {
+        when (keyCode) {
+            Input.Keys.W, Input.Keys.UP -> {
+                moveDirection = when (moveDirection) {
+                    8 -> null
+                    7 -> 4
+                    9 -> 6
+                    else -> moveDirection
+                }
+            }
+            Input.Keys.S, Input.Keys.DOWN -> {
+                moveDirection = when (moveDirection) {
+                    2 -> null
+                    1 -> 4
+                    3 -> 6
+                    else -> moveDirection
+                }
+            }
+            Input.Keys.D, Input.Keys.RIGHT -> {
+                moveDirection = when (moveDirection) {
+                    6 -> null
+                    3 -> 2
+                    9 -> 8
+                    else -> moveDirection
+                }
+            }
+            Input.Keys.A, Input.Keys.LEFT -> {
+                moveDirection = when (moveDirection) {
+                    4 -> null
+                    1 -> 2
+                    7 -> 8
+                    else -> moveDirection
+                }
+            }
+        }
+        return super.keyUp(keyCode)
     }
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean {

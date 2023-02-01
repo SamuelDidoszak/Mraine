@@ -243,6 +243,26 @@ class GameScreen: KtxScreen {
                 }
             }
 
+            // WASD movement
+            if (Player.ai.action is Action.NOTHING && gameStage.moveDirection != null && !Player.hasActions()) {
+                val yChange = when (gameStage.moveDirection) {
+                    7, 8, 9 -> -1
+                    1, 2, 3 -> 1
+                    else -> 0
+                }
+                val xChange = when (gameStage.moveDirection) {
+                    1, 4, 7 -> -1
+                    3, 6, 9 -> 1
+                    else -> 0
+                }
+
+                val wasdCoord = Coord.get(Player.xPos + xChange, Player.yPos + yChange)
+                if (!Turn.currentLevel.allowsCharacter(wasdCoord.x, wasdCoord.y) || LevelArrays.getCharacterAt(wasdCoord) != null)
+                    return
+
+                Player.ai.moveTo(wasdCoord.x, wasdCoord.y, Turn.dijkstraMap, LevelArrays.getImpassableList())
+            }
+
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
             // Add the move action if the movement animation has ended
             if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && gameStage.clickedCoordinates == null && Player.ai.action is Action.NOTHING) {

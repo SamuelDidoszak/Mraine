@@ -1,7 +1,6 @@
 package com.neutrino.game.domain.model.items.edible
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
@@ -10,6 +9,7 @@ import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
+import kotlin.random.Random
 
 class SmallHealingPotion: Item(), ItemType.EDIBLE {
     override var name: String = "Small healing potion"
@@ -39,9 +39,9 @@ class SmallHealingPotion: Item(), ItemType.EDIBLE {
     override val cooldownType: CooldownType = CooldownType.NONE
     override val cooldownLength: Double = 0.0
 
-    init {
+    override fun randomize(randomGenerator: Random): Item {
         goldValue = goldValueOg
-        val randomizedValue = Constants.RandomGenerator.nextDouble()
+        val randomizedValue = randomGenerator.nextDouble()
         randomizedValue.let {
             when {
                 it < 0.6 -> {
@@ -57,5 +57,6 @@ class SmallHealingPotion: Item(), ItemType.EDIBLE {
             }
         }
         realValue = goldValue + 5
+        return this
     }
 }

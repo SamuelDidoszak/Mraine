@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.graphics.shaders.ShaderParametered
+import kotlin.random.Random
 
 abstract class Entity: TextureHaver, Shaderable {
     abstract val name: String
@@ -15,7 +16,7 @@ abstract class Entity: TextureHaver, Shaderable {
 
     override var shaders: ArrayList<ShaderParametered?> = ArrayList(1)
 
-    abstract fun pickTexture(onMapPosition: OnMapPosition)
+    abstract fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random)
 
     override fun getTexture(name: String): TextureAtlas.AtlasRegion {
         try {

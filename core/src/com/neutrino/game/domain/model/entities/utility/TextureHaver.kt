@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.entities.utility
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
+import kotlin.random.Random
 
 interface TextureHaver {
     val textureNames: List<String>
@@ -16,8 +16,8 @@ interface TextureHaver {
     fun mirror() {
         mirrored = !mirrored
     }
-    fun mirror(probability: Float) {
-        if (Constants.RandomGenerator.nextFloat() * 100 < probability)
+    fun mirror(probability: Float, randomGenerator: Random) {
+        if (randomGenerator.nextFloat() * 100 < probability)
             mirrored = !mirrored
     }
 }

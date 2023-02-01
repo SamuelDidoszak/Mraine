@@ -6,12 +6,14 @@ import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.items.Gold
+import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.map.utility.GenerationParams
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 class GenerateItems(
+    private val level: Level,
     private val map: List<List<MutableList<Entity>>>,
     private val itemList: List<Pair<KClass<out Item>, Float>>,
     private val generationParams: GenerationParams
@@ -36,13 +38,13 @@ class GenerateItems(
         // Generate items and add them to the pool
         var valuePool = generationParams.getTotalItemValue()
         while (valuePool > 0) {
-            var random = Constants.RandomGenerator.nextFloat() * sum / generationParams.itemRarityMultiplier
+            var random = level.randomGenerator.nextFloat() * sum / generationParams.itemRarityMultiplier
             if (random >= sum)
                 random = sum - 0.000001f
             for (item in itemList) {
                 if (random < item.second) {
                     val generatedItem = item.first.createInstance()
-                    generatedItem.randomize(generationParams.itemQuality, generationParams.difficulty)
+                    generatedItem.randomize(level.randomGenerator, generationParams.itemQuality, generationParams.difficulty)
                     itemPool[generatedItem.itemTier].add(generatedItem)
                     valuePool -= generatedItem.realValue
                     break
@@ -62,9 +64,9 @@ class GenerateItems(
             if (itemPool[i].isEmpty())
                 continue
             for (container in containerList[i]) {
-                val generationProbability = Constants.RandomGenerator.nextFloat()
+                val generationProbability = level.randomGenerator.nextFloat()
                 if (generationProbability < container.itemTiers.find { it.first == i }!!.second) {
-                    val index = Constants.RandomGenerator.nextInt(itemPool[i].size)
+                    val index = level.randomGenerator.nextInt(itemPool[i].size)
                     container.itemList.add(itemPool[i][index])
                     itemPool[i].removeAt(index)
                     if (itemPool[i].isEmpty())
@@ -157,8 +159,8 @@ class GenerateItems(
     private fun addItem(item: Item) {
         var tries = 0
         while (true) {
-            val x = (Constants.RandomGenerator.nextFloat() * (map[0].size - 1)).roundToInt()
-            val y = (Constants.RandomGenerator.nextFloat() * (map.size - 1)).roundToInt()
+            val x = (level.randomGenerator.nextFloat() * (map[0].size - 1)).roundToInt()
+            val y = (level.randomGenerator.nextFloat() * (map.size - 1)).roundToInt()
             if (map[y][x].isNotEmpty() && map[y][x][map[y][x].size - 1].allowOnTop) {
                 map[y][x].add(ItemEntity(item))
                 break
@@ -191,7 +193,7 @@ class GenerateItems(
                 if (map[y][x].isNotEmpty() && !map[y][x][map[y][x].size - 1].allowOnTop)
                     allowGeneration = false
 
-                if(allowGeneration && Constants.RandomGenerator.nextFloat() < probability)
+                if(allowGeneration && level.randomGenerator.nextFloat() < probability)
                     map[y][x].add(ItemEntity(item.createInstance()) as Entity)
             }
         }
@@ -208,7 +210,7 @@ class GenerateItems(
                 if (map[y][x].isNotEmpty() && !map[y][x][map[y][x].size - 1].allowOnTop)
                     allowGeneration = false
 
-                if(allowGeneration && Constants.RandomGenerator.nextFloat() < probability)
+                if(allowGeneration && level.randomGenerator.nextFloat() < probability)
                     map[y][x].add(ItemEntity(item.createInstance()) as Entity)
             }
         }

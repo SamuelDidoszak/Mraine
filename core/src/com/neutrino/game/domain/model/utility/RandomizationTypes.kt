@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.model.utility
 
-import com.neutrino.game.Constants
+import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 
 enum class RandomizationTypes(val types: List<StatsEnum>) {
@@ -94,16 +94,16 @@ enum class RandomizationTypes(val types: List<StatsEnum>) {
 
     /** Returns a list with a random elementalDamage stat */
     fun typeWithElementalDamage(type: RandomizationTypes): List<StatsEnum> {
-        return type.types.plus(ELEMENTALDAMAGE.types[Constants.RandomGenerator.nextInt(ELEMENTALDAMAGE.types.size)])
+        return type.types.plus(ELEMENTALDAMAGE.types[LevelArrays.getLevel().randomGenerator.nextInt(ELEMENTALDAMAGE.types.size)])
     }
 
     /** Returns a list with a random elementalDefence stat */
     fun typeWithElementalDefence(type: RandomizationTypes): List<StatsEnum> {
-        return type.types.plus(ELEMENTALDEFENCE.types[Constants.RandomGenerator.nextInt(ELEMENTALDEFENCE.types.size)])
+        return type.types.plus(ELEMENTALDEFENCE.types[LevelArrays.getLevel().randomGenerator.nextInt(ELEMENTALDEFENCE.types.size)])
     }
 
     /** Returns a list with a random elementalDefence stat */
     fun typeWithBaseStat(type: RandomizationTypes): List<StatsEnum> {
-        return type.types.plus(BASESTATS.types[Constants.RandomGenerator.nextInt(BASESTATS.types.size)])
+        return type.types.plus(BASESTATS.types[LevelArrays.getLevel().randomGenerator.nextInt(BASESTATS.types.size)])
     }
 }

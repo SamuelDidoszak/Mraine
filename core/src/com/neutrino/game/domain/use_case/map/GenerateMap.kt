@@ -1,6 +1,5 @@
 package com.neutrino.game.domain.use_case.map
 
-import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.*
 import com.neutrino.game.domain.model.entities.containers.*
 import com.neutrino.game.domain.model.entities.lightSources.CandleSingle
@@ -23,7 +22,7 @@ import kotlin.reflect.full.createInstance
 class GenerateMap(
     private val level: Level
 ) {
-    private val squidGeneration = SquidGeneration(level.sizeX, level.sizeY)
+    private val squidGeneration = SquidGeneration(level)
 
     val map: List<List<MutableList<Entity>>> = List(level.sizeY) {
         List(level.sizeX) {
@@ -43,6 +42,8 @@ class GenerateMap(
         squidGeneration.setWalls(map, interpretedTags.entityParams.wall)
 //        addEntities(interpretedTags.entityParams.floor, listOf(),1f)
         addEntities(CleanDungeonFloor::class, listOf(), 1f)
+
+        squidGeneration.setEntrances(map, DungeonStairsDown::class, DungeonStairsUp::class)
 
         addEntities(StonePillar::class, listOf(
             EntityPositionRequirement(EntityPositionRequirementType.AND, interpretedTags.entityParams.wall, listOf(7, 8, 9)),
@@ -190,7 +191,7 @@ class GenerateMap(
         addEntities(ClayPot::class, requirementNearWall(), 0.01f)
         addEntities(ClayPotMultiple::class, requirementNearWall(), 0.005f)
 
-        GenerateItems(map, interpretedTags.itemList, interpretedTags.generationParams)()
+        GenerateItems(level, map, interpretedTags.itemList, interpretedTags.generationParams)()
 
         return map
     }
@@ -373,7 +374,7 @@ class GenerateMap(
                 }
 
                 // Generate entity if allowed with a probability
-                else if (generationAllowed && RandomGenerator.nextFloat().lessThanDelta(probability)) {
+                else if (generationAllowed && level.randomGenerator.nextFloat().lessThanDelta(probability)) {
                     if (replaceUnderneath)
                         map[y][x].removeAll { true }
                     // Assert that the entity wasn't added already
@@ -388,7 +389,7 @@ class GenerateMap(
             var generatedAmount = 0
             val max = if (probability >= fulfillingTileList.size) fulfillingTileList.size else probability.roundToInt()
             while (generatedAmount < max) {
-                val index = RandomGenerator.nextInt(fulfillingTileList.size)
+                val index = level.randomGenerator.nextInt(fulfillingTileList.size)
                 map[fulfillingTileList[index].first][fulfillingTileList[index].second].add(entity.createInstance())
                 fulfillingTileList.removeAt(index)
                 generatedAmount++

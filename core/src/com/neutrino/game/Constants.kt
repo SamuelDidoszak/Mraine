@@ -74,9 +74,9 @@ object Constants {
 
     val maxItemTier: Int = 4
 
-    const val IsSeeded: Boolean = false
-    const val Seed: Long = 2137213721372137
-    val RandomGenerator: Random = if (IsSeeded) Random(Seed) else Random.Default
+    const val IsSeeded: Boolean = true
+    val Seed: Long = if (IsSeeded) 2137213721372137 else Random.Default.nextLong()
+    val RandomGenerator: Random = Random(Seed)
 
     val fonts = ConstInits().getFontFamily()
 }

@@ -1,7 +1,6 @@
 package com.neutrino.game.domain.model.items.edible
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
@@ -10,6 +9,7 @@ import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
+import kotlin.random.Random
 
 class Meat: Item(), ItemType.EDIBLE {
     override var name: String = "Meat"
@@ -39,9 +39,9 @@ class Meat: Item(), ItemType.EDIBLE {
     override val cooldownType: CooldownType = CooldownType.FOOD
     override val cooldownLength: Double = (eventWrappers[0] as TimedEvent).getEventLength()
 
-    init {
+    override fun randomize(randomGenerator: Random): Item {
         goldValue = goldValueOg
-        val randomizedValue = Constants.RandomGenerator.nextDouble()
+        val randomizedValue = randomGenerator.nextDouble()
         randomizedValue.let {
             when {
                 it < 0.2 -> {
@@ -60,5 +60,6 @@ class Meat: Item(), ItemType.EDIBLE {
             }
         }
         realValue = goldValue + 2
+        return this
     }
 }

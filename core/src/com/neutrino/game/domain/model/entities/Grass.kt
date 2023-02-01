@@ -1,10 +1,10 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants.RandomGenerator
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.Flammable
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import kotlin.random.Random
 
 class Grass(
     override val isBurnt: Boolean = false
@@ -22,8 +22,8 @@ class Grass(
     override val fireResistance: Float = 0f
     override val burningTime: Float = 1f
 
-    override fun pickTexture(onMapPosition: OnMapPosition) {
-        val randVal = RandomGenerator.nextFloat() * 100
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
+        val randVal = randomGenerator.nextFloat() * 100
         val textureName = if (!isBurnt) {
             getTextureFromEqualRange(randVal, until = 88f, textures = textureNames.subList(0, 2)) ?:
             getTextureFromEqualRange(randVal, 88f, until = 100f, textures = textureNames.subList(2, 4))

@@ -1,9 +1,9 @@
 package com.neutrino.game.domain.model.entities.lightSources
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import kotlin.random.Random
 
 class CandleSingle: Entity() {
     override val name: String = "Candle"
@@ -16,13 +16,13 @@ class CandleSingle: Entity() {
     )
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
-    override fun pickTexture(onMapPosition: OnMapPosition) {
-        val randVal = Constants.RandomGenerator.nextFloat() * 100
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
+        val randVal = randomGenerator.nextFloat() * 100
 
         val textureName =
             getTextureFromEqualRange(randVal, textures = textureNames.filter { it.startsWith("candleSingle$") }) ?:
             textureNames[0]
         texture = getTexture(textureName)
-        mirror(20f)
+        mirror(20f, randomGenerator)
     }
 }

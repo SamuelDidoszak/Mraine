@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.LevelArrays
 import com.neutrino.game.Constants.IsSeeded
 import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
@@ -12,6 +11,7 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.ActorVisuals
 import com.neutrino.game.domain.model.characters.utility.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.Fov
+import com.neutrino.game.domain.model.characters.utility.HasDrops
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interaction
@@ -363,8 +363,10 @@ object Turn {
         Player.experience += character.experience
         characterArray.remove(character)
         // Drop its items
-        character.dropItems().forEach {
-            LevelArrays.getEntitiesAt(character.getPosition()).add(ItemEntity(it))
+        if (character is HasDrops) {
+            character.dropItems().forEach {
+                currentLevel.map.map[character.yPos][character.xPos].add(ItemEntity(it))
+            }
         }
 
         eventArray.remove(character)

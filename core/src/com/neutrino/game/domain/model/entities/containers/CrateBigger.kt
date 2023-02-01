@@ -3,6 +3,7 @@ package com.neutrino.game.domain.model.entities.containers
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
+import kotlin.random.Random
 
 class CrateBigger: Entity(), ChangesImpassable, Destructable, Container {
     override var allowOnTop = false
@@ -19,9 +20,9 @@ class CrateBigger: Entity(), ChangesImpassable, Destructable, Container {
 
     override val textureNames: List<String> = listOf("crateBiggerDark")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
-    override fun pickTexture(onMapPosition: OnMapPosition) {
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         texture = getTexture(textureNames[0])
-        mirror(20f)
+        mirror(20f, randomGenerator)
     }
 
     override val interactionList: List<Interaction> = List(1) {

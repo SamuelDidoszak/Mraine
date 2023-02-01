@@ -3,6 +3,8 @@ package com.neutrino.game.domain.model.entities.containers
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
+import java.util.*
+import kotlin.random.Random
 
 class WoodenChest: Entity(), ChangesImpassable, Container, Interactable {
     override val name: String = "Wooden chest"
@@ -18,7 +20,7 @@ class WoodenChest: Entity(), ChangesImpassable, Container, Interactable {
         Pair(2, 1f),
         Pair(3, 1f)
     )
-    override fun pickTexture(onMapPosition: OnMapPosition) {
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         texture = getTexture(textureNames[0])
     }
 

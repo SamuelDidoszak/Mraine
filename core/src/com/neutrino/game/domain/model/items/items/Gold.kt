@@ -1,10 +1,10 @@
 package com.neutrino.game.domain.model.items.items
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 class Gold: Item(), ItemType.MISC {
     override val name: String = "Gold"
@@ -24,9 +24,9 @@ class Gold: Item(), ItemType.MISC {
     override var texture: TextureAtlas.AtlasRegion = pickTexture()
     override val itemTier: Int = 1
 
-    override fun randomize(quality: Float, difficulty: Float): Item {
+    override fun randomize(randomGenerator: Random, quality: Float, difficulty: Float): Item {
         val randomAmount =
-            Constants.RandomGenerator.nextFloat() * (difficulty * 5) * quality
+            randomGenerator.nextFloat() * (difficulty * 5) * quality
         amount = randomAmount.roundToInt()
         if (amount == 0)
             amount = 1

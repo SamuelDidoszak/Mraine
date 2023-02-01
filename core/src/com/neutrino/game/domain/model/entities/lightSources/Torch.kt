@@ -9,6 +9,7 @@ import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import kotlin.random.Random
 
 class Torch: Entity(), Animated {
     override val name: String = "Torch"
@@ -27,7 +28,7 @@ class Torch: Entity(), Animated {
     override var texture: TextureAtlas.AtlasRegion = setTexture()
     override var textureList: List<TextureAtlas.AtlasRegion> = setTextureList(Constants.DefaultEntityTexture)
 
-    override fun pickTexture(onMapPosition: OnMapPosition) {
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         val textureName =
             if (EntityChecker(onMapPosition, "DungeonWall").checkAllTiles(listOf(7, 8, 9), tileSkipList = listOf(4, 6)))
                 "torchFront#1"

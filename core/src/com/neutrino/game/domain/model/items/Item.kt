@@ -3,6 +3,7 @@ package com.neutrino.game.domain.model.items
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import kotlin.random.Random
 
 abstract class Item: ItemType, TextureHaver, Cloneable {
     abstract val name: String
@@ -29,7 +30,13 @@ abstract class Item: ItemType, TextureHaver, Cloneable {
 
     /** Randomize item parameters
      * @return this for chaining */
-    open fun randomize(quality: Float, difficulty: Float): Item {
+    open fun randomize(randomGenerator: Random): Item {
+        return this
+    }
+
+    /** Randomize item parameters
+     * @return this for chaining */
+    open fun randomize(randomGenerator: Random, quality: Float, difficulty: Float): Item {
         return this
     }
 

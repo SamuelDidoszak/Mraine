@@ -11,12 +11,10 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.Constants
 import com.neutrino.game.Constants.MoveSpeed
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
-import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.attack.BasicAttack
@@ -27,14 +25,13 @@ import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
+import com.neutrino.game.graphics.utility.ColorUtils
 import squidpony.squidmath.Coord
 import kotlin.random.Random
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
 
 abstract class Character(
     var xPos: Int,
@@ -148,9 +145,6 @@ abstract class Character(
 
     open var characterAlignment: CharacterAlignment = CharacterAlignment.ENEMY
 
-    /** List of item drops */
-    open val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf()
-    private val itemtemDropList: MutableList<Item> = ArrayList()
     init {
         val infoGroup = Group()
         this.addActor(infoGroup)
@@ -181,10 +175,12 @@ abstract class Character(
 
         // TODO if unkillable characters will be added, add this::class check
 
-        possibleItemDropList.forEach {
-            if (Constants.RandomGenerator.nextDouble() < it.second)
-                itemtemDropList.add(it.first.createInstance())
-        }
+
+    }
+
+    open fun randomize(randomGenerator: Random) {
+        if (this is HasDrops)
+            generateDropList(randomGenerator)
     }
 
     abstract val description: String
@@ -391,10 +387,6 @@ abstract class Character(
             GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this)
         }
         this.findActor<HpBar>("hpBar").update(hp)
-    }
-
-    fun dropItems(): MutableList<Item> {
-        return itemtemDropList
     }
 
     fun isAlive(): Boolean {

@@ -1,9 +1,9 @@
 package com.neutrino.game.domain.model.entities.containers
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
+import kotlin.random.Random
 
 class ClayPot: Entity(), ChangesImpassable, Destructable, Container {
     override var allowOnTop = false
@@ -19,11 +19,11 @@ class ClayPot: Entity(), ChangesImpassable, Destructable, Container {
         "clayPot$1", "clayPot$2", "clayPot$3", "clayPot$4",
     )
     override var texture: TextureAtlas.AtlasRegion = setTexture()
-    override fun pickTexture(onMapPosition: OnMapPosition) {
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         texture = getTexture(
-            getTextureFromEqualRange(Constants.RandomGenerator.nextFloat() * 100, textures = textureNames.filter { it.startsWith("clayPot$") })!!
+            getTextureFromEqualRange(randomGenerator.nextFloat() * 100, textures = textureNames.filter { it.startsWith("clayPot$") })!!
         )
-        mirror(20f)
+        mirror(20f, randomGenerator)
     }
 
     override val interactionList: List<Interaction> = List(1) {

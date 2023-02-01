@@ -5,13 +5,14 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.utility.EnemyAi
+import com.neutrino.game.domain.model.characters.utility.HasDrops
 import com.neutrino.game.domain.model.characters.utility.Randomization
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.edible.Meat
 import kotlin.reflect.KClass
 
-class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Randomization {
+class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Randomization, HasDrops {
     override var hpMax: Float = 13f
     override var mpMax: Float = 10f
     override var strength: Float = 2f
@@ -28,8 +29,9 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ran
 
     override val randomizationProbability: Float = 1f
 
-    override val possibleItemDropList: List<Pair<KClass<Item>, Double>> = listOf(
-        Pair(Meat::class as KClass<Item>, 0.25)
+    override val itemDropList: MutableList<Item> = ArrayList()
+    override val possibleItemDropList: List<Pair<KClass<out Item>, Double>> = listOf(
+        Pair(Meat::class, 0.25)
     )
 
     override val ai = EnemyAi(this)

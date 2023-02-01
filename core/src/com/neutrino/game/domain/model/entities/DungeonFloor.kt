@@ -1,9 +1,9 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.Floor
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import kotlin.random.Random
 
 class DungeonFloor: Floor() {
     override var allowOnTop = true
@@ -21,8 +21,8 @@ class DungeonFloor: Floor() {
         )
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
-    override fun pickTexture(onMapPosition: OnMapPosition) {
-        val randVal = Constants.RandomGenerator.nextFloat() * 100
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
+        val randVal = randomGenerator.nextFloat() * 100
 
         // new
         val textureName: String =

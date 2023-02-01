@@ -1,10 +1,10 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import kotlin.random.Random
 
 class StonePillar: Entity() {
     override val name: String = "Stone pillar"
@@ -17,8 +17,8 @@ class StonePillar: Entity() {
     )
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
-    override fun pickTexture(onMapPosition: OnMapPosition) {
-        val randVal = Constants.RandomGenerator.nextFloat() * 100
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
+        val randVal = randomGenerator.nextFloat() * 100
 
         val textureName =
             if (EntityChecker(onMapPosition, "DungeonWall").checkAllTiles(listOf(1, 2, 3), tileSkipList = listOf(4, 6, 7, 8, 9)))
@@ -28,6 +28,6 @@ class StonePillar: Entity() {
                 getTextureFromEqualRange(randVal, 80f, textures = listOf("stonePillarCracked")) ?:
                 textureNames[0]
         texture = getTexture(textureName)
-        mirror(20f)
+        mirror(20f, randomGenerator)
     }
 }

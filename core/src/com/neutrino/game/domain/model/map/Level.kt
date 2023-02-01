@@ -31,6 +31,7 @@ import com.neutrino.game.domain.use_case.map.MapUseCases
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.utility.Blurring
 import com.neutrino.game.graphics.utility.Pixel
+import kotlin.random.Random
 import kotlin.reflect.KClass
 
 
@@ -49,6 +50,7 @@ class Level(
     characterArray: CharacterArray? = null
 ): Group() {
     val id: Int = "$xPosition-$yPosition-$zPosition".hashCode()
+    val randomGenerator = Random(Constants.Seed + id)
     val textureList: ArrayList<TextureAtlas> = ArrayList()
 
     val tagList: List<MapTags> = listOf(MapTags.STARTING_AREA)
@@ -70,7 +72,7 @@ class Level(
     val characterArray: CharacterArray = characterArray?:GenerateCharacters(this)()
     // Map of character locations
     val characterMap: List<MutableList<Character?>> = List(sizeY) {
-        ArrayList<Character?>(sizeX)
+        MutableList<Character?>(sizeX) {null}
     }
 
     /**
@@ -98,11 +100,8 @@ class Level(
         setName("Level")
 
         // initialize characterMap
-        for (y in 0 until sizeY) {
-            for (x in 0 until sizeX) {
-                characterMap[y].add(this.characterArray.find { it.yPos == y && it.xPos == x })
-            }
-        }
+        for (character in this.characterArray)
+            characterMap[character.yPos][character.xPos] = character
 
 //        // initialize fog of war
         fogOfWarFBO.begin()
@@ -139,7 +138,7 @@ class Level(
                     if (map.map[y][x][z] is ItemEntity)
                         continue
 
-                    map.map[y][x][z].pickTexture(OnMapPosition(map.map, x, y, z))
+                    map.map[y][x][z].pickTexture(OnMapPosition(map.map, x, y, z), randomGenerator)
                     if (map.map[y][x][z] is Animated) {
                         (map.map[y][x][z] as Animated).setDefaultAnimation()
                         addAnimatedToList(map.map[y][x][z])

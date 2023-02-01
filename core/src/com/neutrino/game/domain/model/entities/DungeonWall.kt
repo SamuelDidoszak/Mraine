@@ -1,10 +1,10 @@
 package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.model.entities.utility.Wall
+import kotlin.random.Random
 
 class DungeonWall: Wall() {
     override var allowOnTop = false
@@ -24,8 +24,8 @@ class DungeonWall: Wall() {
         )
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
-    override fun pickTexture(onMapPosition: OnMapPosition) {
-        val randVal = Constants.RandomGenerator.nextFloat() * 100
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
+        val randVal = randomGenerator.nextFloat() * 100
 
         val entityChecker = EntityChecker(onMapPosition, "DungeonWall", skipList = listOf(7, 9))
 

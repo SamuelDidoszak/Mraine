@@ -484,6 +484,7 @@ class GameScreen: KtxScreen {
             is Skill.ActiveSkill -> {
                 Player.ai.action = Action.SKILL(usedSkill)
                 uiStage.usedSkill = null
+                hudStage.usedSkill = null
             }
             is Skill.ActiveSkillCharacter -> {
                 if (!waitForAdditionalClick) {

@@ -2,6 +2,7 @@ package com.neutrino.game.domain.model.entities
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.entities.utility.*
+import kotlin.random.Random
 
 class CrateDoor: Entity(), ChangesImpassable, Interactable {
     override val name: String = "Crate door"
@@ -13,7 +14,7 @@ class CrateDoor: Entity(), ChangesImpassable, Interactable {
     )
     override var texture: TextureAtlas.AtlasRegion = setTexture()
 
-    override fun pickTexture(onMapPosition: OnMapPosition) {
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         val entityChecker = EntityChecker(onMapPosition, "DungeonWall", skipList = listOf(1, 3, 7, 9))
 
         val textureName =

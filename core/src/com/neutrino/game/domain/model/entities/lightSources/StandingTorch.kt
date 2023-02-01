@@ -8,6 +8,7 @@ import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import kotlin.random.Random
 
 class StandingTorch: Entity(), Animated {
     override val name: String = "Standing torch"
@@ -26,15 +27,15 @@ class StandingTorch: Entity(), Animated {
     override var texture: TextureAtlas.AtlasRegion = setTexture()
     override var textureList: List<TextureAtlas.AtlasRegion> = setTextureList(Constants.DefaultEntityTexture)
 
-    override fun pickTexture(onMapPosition: OnMapPosition) {
-        val randVal = Constants.RandomGenerator.nextFloat() * 100
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
+        val randVal = randomGenerator.nextFloat() * 100
 
         val textureName =
             getTextureFromEqualRange(randVal, 0f, 65f, listOf("standingTorch$1#1")) ?:
             getTextureFromEqualRange(randVal, 65f, textures = listOf("standingTorch$2#1")) ?:
             textureNames[0]
         texture = getTexture(textureName)
-        mirror(20f)
+        mirror(20f, randomGenerator)
         defaultAnimationName = textureName.substringBefore('#')
     }
 }

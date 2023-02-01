@@ -73,7 +73,7 @@ enum class SkillTree(val skills: List<List<Skill.PassiveSkill>>) {
             get() = throw NotImplementedError("Pad passiveSkill is only used in skill tree UI")
         override val requirement: RequirementPrintable
             get() = throw NotImplementedError("Pad passiveSkill is only used in skill tree UI")
-        override val printableData: List<Pair<String, Any>>
+        override val printableData: List<Pair<String, () -> Any>>
             get() = throw NotImplementedError("Pad passiveSkill is only used in skill tree UI")
         override val textureName: String
             get() = throw NotImplementedError("Pad passiveSkill is only used in skill tree UI")

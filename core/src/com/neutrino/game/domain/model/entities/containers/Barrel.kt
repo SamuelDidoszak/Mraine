@@ -3,6 +3,8 @@ package com.neutrino.game.domain.model.entities.containers
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
+import java.util.*
+import kotlin.random.Random
 
 class Barrel: Entity(), ChangesImpassable, Destructable, Container {
     override var allowOnTop = false
@@ -16,7 +18,7 @@ class Barrel: Entity(), ChangesImpassable, Destructable, Container {
 
     override val textureNames: List<String> = listOf("barrel", "barrelDestroyed")
     override var texture: TextureAtlas.AtlasRegion = setTexture()
-    override fun pickTexture(onMapPosition: OnMapPosition) {
+    override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         texture = getTexture(textureNames[0])
     }
 

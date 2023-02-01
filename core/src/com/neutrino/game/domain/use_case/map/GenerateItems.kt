@@ -8,6 +8,7 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.items.Gold
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.map.utility.GenerationParams
+import com.neutrino.game.utility.Probability
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -15,7 +16,7 @@ import kotlin.reflect.full.createInstance
 class GenerateItems(
     private val level: Level,
     private val map: List<List<MutableList<Entity>>>,
-    private val itemList: List<Pair<KClass<out Item>, Float>>,
+    private val itemList: List<Probability<KClass<out Item>>>,
     private val generationParams: GenerationParams
 ) {
     /**
@@ -27,12 +28,11 @@ class GenerateItems(
     private val containerList = getContainerList()
 
     operator fun invoke() {
-        this.itemList.sortedWith(compareBy {it.second})
-        val itemList = ArrayList<Pair<KClass<out Item>, Float>>()
+        val itemList = ArrayList<Probability<KClass<out Item>>>()
         var sum = 0f
-        for (item in this.itemList) {
-            sum += item.second
-            itemList.add(Pair(item.first, sum))
+        for (item in this.itemList.sortedWith(compareBy {it.probability})) {
+            sum += item.probability
+            itemList.add(Probability(item.value, sum))
         }
 
         // Generate items and add them to the pool
@@ -42,8 +42,8 @@ class GenerateItems(
             if (random >= sum)
                 random = sum - 0.000001f
             for (item in itemList) {
-                if (random < item.second) {
-                    val generatedItem = item.first.createInstance()
+                if (random < item.probability) {
+                    val generatedItem = item.value.createInstance()
                     generatedItem.randomize(level.randomGenerator, generationParams.itemQuality, generationParams.difficulty)
                     itemPool[generatedItem.itemTier].add(generatedItem)
                     valuePool -= generatedItem.realValue

@@ -5,7 +5,7 @@ import com.neutrino.game.domain.model.entities.utility.Floor
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import kotlin.random.Random
 
-class CleanDungeonFloor: Floor() {
+class DungeonFloorClean: Floor() {
     override var allowOnTop = true
     override var allowCharacterOnTop = true
     override val name = "Dungeon floor"

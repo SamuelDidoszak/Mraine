@@ -1,7 +1,6 @@
 package com.neutrino.game.domain.use_case.map.utility
 
 import com.neutrino.game.domain.model.entities.CrateDoor
-import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.WoodenDoor
 import com.neutrino.game.domain.model.entities.WoodenDoorArched
 import com.neutrino.game.domain.model.entities.containers.WoodenChest
@@ -24,15 +23,15 @@ object GenerationRequirements {
 
     fun requirementNearWall(canBlockPassage: Boolean = false): List<EntityPositionRequirement> {
         var requirementList = listOf(
-            EntityPositionRequirement(EntityPositionRequirementType.OR, DungeonWall::class,
+            EntityPositionRequirement(EntityPositionRequirementType.OR, Wall::class,
                 listOf(2, 4, 6, 8))
         )
 
         if (!canBlockPassage) {
             requirementList = requirementList.plus(listOf(
-                EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class,
+                EntityPositionRequirement(EntityPositionRequirementType.NAND, Wall::class,
                     listOf(4, 6)),
-                EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class,
+                EntityPositionRequirement(EntityPositionRequirementType.NAND, Wall::class,
                     listOf(2, 8))
             ))
         }

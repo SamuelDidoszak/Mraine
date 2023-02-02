@@ -67,8 +67,8 @@ class MazeA(level: Level, interpretedTags: TagInterpretation): MapGenerator(leve
         addEntities(CrateSmall::class, GenerationRequirements.requirementNearWall(), 0.005f)
         addEntities(
             CrateBigger::class, listOf(
-                EntityPositionRequirement(EntityPositionRequirementType.AND, DungeonWall::class, listOf(7, 8, 9)),
-                EntityPositionRequirement(EntityPositionRequirementType.NAND, DungeonWall::class, listOf(4, 6)),
+                EntityPositionRequirement(EntityPositionRequirementType.AND, Wall::class, listOf(7, 8, 9)),
+                EntityPositionRequirement(EntityPositionRequirementType.NAND, Wall::class, listOf(4, 6)),
                 EntityPositionRequirement(EntityPositionRequirementType.NAND, CrateBigger::class, listOf(4)),
             ), 0.01f)
 

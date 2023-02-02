@@ -4,14 +4,14 @@ import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.Constants.IsSeeded
-import com.neutrino.game.Constants.Seed
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.ActorVisuals
 import com.neutrino.game.domain.model.characters.utility.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.characters.utility.HasDrops
+import com.neutrino.game.domain.model.entities.DungeonStairsDown
+import com.neutrino.game.domain.model.entities.DungeonStairsUp
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interaction
@@ -30,7 +30,9 @@ import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
+import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.domain.use_case.level.LevelUseCases
+import com.neutrino.game.has
 import com.neutrino.game.lessThanDelta
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
@@ -72,10 +74,6 @@ object Turn {
      * A list of current level characters. Should be changed / added to when entering a new Level
      */
     var characterArray: CharacterArray = CharacterArray(Player)
-        set(value) {
-            field = value
-            charactersUseCases = CharactersUseCases(characterArray)
-        }
 
     lateinit var characterMap: List<MutableList<Character?>>
     lateinit var currentLevel: Level
@@ -95,15 +93,21 @@ object Turn {
     lateinit var levelUseCases: LevelUseCases
     var charactersUseCases: CharactersUseCases = CharactersUseCases(characterArray)
 
-    private val seed = if (IsSeeded) GWTRNG(Seed) else GWTRNG()
-    var dijkstraMap: DijkstraMap = DijkstraMap(seed)
+    var dijkstraMap: DijkstraMap = DijkstraMap(GWTRNG())
 
     var mapImpassableList: ArrayList<Coord> = ArrayList()
 
+    fun unsetLevel() {
+        currentLevel.characterArray.clear()
+        currentLevel.characterArray.addAll(characterArray)
+        currentLevel.characterArray.remove(Player)
+    }
+
     fun setLevel(level: Level) {
-        characterArray = level.characterArray
-        characterMap = level.characterMap
         currentLevel = level
+        characterArray = level.characterArray
+        charactersUseCases = CharactersUseCases(characterArray)
+        characterMap = level.characterMap
         levelUseCases = LevelUseCases(level)
         mapImpassableList = levelUseCases.getImpassable() as ArrayList<Coord>
         // terrain cost can be easily added by calling the initializeCost method.
@@ -141,6 +145,18 @@ object Turn {
                         fov.updateFov(action.x, action.y, Player.ai.fov, Player.viewDistance)
                         character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
+                        if (currentLevel.map.map[action.y][action.x] has DungeonStairsDown::class)
+                            GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, LevelChunkCoords(
+                                currentLevel.levelChunkCoords.x,
+                                currentLevel.levelChunkCoords.y,
+                                currentLevel.levelChunkCoords.z - 1
+                            ))
+                        if (currentLevel.map.map[action.y][action.x] has DungeonStairsUp::class)
+                            GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, LevelChunkCoords(
+                                currentLevel.levelChunkCoords.x,
+                                currentLevel.levelChunkCoords.y,
+                                currentLevel.levelChunkCoords.z + 1
+                            ))
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)!!

@@ -26,6 +26,7 @@ import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
+import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
 import com.neutrino.game.domain.use_case.map.MapUseCases
 import com.neutrino.game.graphics.shaders.Shaders
@@ -37,9 +38,7 @@ import kotlin.reflect.KClass
 
 class Level(
     name: String,
-    val xPosition: Int,
-    val yPosition: Int,
-    val zPosition: Int,
+    val levelChunkCoords: LevelChunkCoords,
     val description: String?,
     val sizeX: Int = LevelChunkSize,
     val sizeY: Int = LevelChunkSize,
@@ -49,7 +48,7 @@ class Level(
     movementMap: Array<out CharArray>? = null,
     characterArray: CharacterArray? = null
 ): Group() {
-    val id: Int = "$xPosition-$yPosition-$zPosition".hashCode()
+    val id: Int = levelChunkCoords.toHash()
     val randomGenerator = Random(Constants.Seed + id)
     val textureList: ArrayList<TextureAtlas> = ArrayList()
 
@@ -58,22 +57,22 @@ class Level(
     private val mapUsecases = MapUseCases(this)
 
     val map: Map = Map(id,
-        name = "$name $zPosition",
+        name = "$name ${levelChunkCoords.z}",
         xMax = sizeX,
         yMax = sizeY,
         map = mapUsecases.getMap()
     )
+
+    private val generateCharacters = GenerateCharacters(this)
 
     val movementMap: Array<out CharArray> = movementMap?:mapUsecases.getMovementMap()
     /**
      * A list of current level characters.
      */
     // Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
-    val characterArray: CharacterArray = characterArray?:GenerateCharacters(this)()
+    val characterArray: CharacterArray = characterArray?:generateCharacters.generate()
     // Map of character locations
-    val characterMap: List<MutableList<Character?>> = List(sizeY) {
-        MutableList<Character?>(sizeX) {null}
-    }
+    val characterMap: List<MutableList<Character?>> = generateCharacters.characterMap
 
     /**
      * Map of discovered and undiscovered tiles
@@ -93,15 +92,12 @@ class Level(
 
     private val darkenedColor = Color(0.50f, 0.45f, 0.60f, 1.0f)
     private val backgroundColor = Color((21f / 255f) * darkenedColor.r, (21f / 255f) * darkenedColor.g, (23f / 255f) * darkenedColor.b, 1f)
+    private lateinit var movementObserver: GlobalDataObserver
 
     init {
         setBounds(xScreen, yScreen, sizeX * 64f, sizeY * 64f)
         // scene2d name
         setName("Level")
-
-        // initialize characterMap
-        for (character in this.characterArray)
-            characterMap[character.yPos][character.xPos] = character
 
 //        // initialize fog of war
         fogOfWarFBO.begin()
@@ -111,13 +107,14 @@ class Level(
         fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, 100f, 100f)
         fboBatch.disableBlending()
 
-        GlobalData.registerObserver(object: GlobalDataObserver {
+        movementObserver = object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERMOVED
             override fun update(data: Any?): Boolean {
                 updateVisibility()
                 return true
             }
-        })
+        }
+        GlobalData.registerObserver(movementObserver)
     }
 
     fun initialize() {
@@ -565,4 +562,12 @@ class Level(
             (parent?.stage as GameStage?)?.animatedArray?.remove(entity)
     }
 
+    fun dispose() {
+        GlobalData.unregisterObserver(movementObserver)
+        fogOfWarFBO.dispose()
+        fovOverlayFBO.dispose()
+        blurredFogOfWar.dispose()
+        blurredFov.dispose()
+        fboBatch.dispose()
+    }
 }

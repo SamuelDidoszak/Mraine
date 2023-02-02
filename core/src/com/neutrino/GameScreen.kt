@@ -15,8 +15,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.Constants
-import com.neutrino.game.Constants.LevelChunkSize
-import com.neutrino.game.Initialize
+import com.neutrino.game.LevelInitialization
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
@@ -32,17 +31,15 @@ import com.neutrino.game.domain.model.systems.event.CausesCooldown
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.utility.Highlighting
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
 import squidpony.squidmath.Coord
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 
 class GameScreen: KtxScreen {
-    private val initialize: Initialize = Initialize()
-    private val startXPosition = 0f
-    private val startYPosition = LevelChunkSize * 64f
-
     /** Viewport for the game */
     private val extendViewport: ExtendViewport = ExtendViewport(1600f, 900f)
     private val gameStage = GameStage(extendViewport)
@@ -59,6 +56,8 @@ class GameScreen: KtxScreen {
     // Input multiplexers
     private val gameInputMultiplexer: InputMultiplexer = InputMultiplexer()
     private val uiInputMultiplexer: InputMultiplexer = InputMultiplexer()
+
+    private val levelInitialization: LevelInitialization = LevelInitialization(gameStage)
 
     init {
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
@@ -80,18 +79,7 @@ class GameScreen: KtxScreen {
         uiInputMultiplexer.addProcessor(uiStage)
         Gdx.input.inputProcessor = gameInputMultiplexer
 
-        // level initialization
-        initialize.initialize()
-        Turn.setLevel(initialize.level)
-        gameStage.addActor(initialize.level)
-        initialize.level.initialize()
-        gameStage.level = initialize.level
-        gameStage.startXPosition = startXPosition
-        gameStage.startYPosition = startYPosition
-
-        gameStage.animatedArray.addAll(initialize.level.characterArray)
-        gameStage.camera.position.set(Player.x, Player.y, gameStage.camera.position.z)
-        initialize.level.prepareLights()
+        levelInitialization.initializeLevel(LevelChunkCoords(0, 0, 0), null)
 
         gameStage.cancelSkill = this::cancelSkill
 
@@ -101,6 +89,8 @@ class GameScreen: KtxScreen {
 
         // Player related methods
         registerPlayerObservers()
+        // General observers
+        registerObservers()
 
 //        val textureSizeLocation = shaderProgram.getUniformLocation("u_textureSize")
 //        val outlineColorLocation = shaderProgram.getUniformLocation("u_outlineColor")
@@ -617,6 +607,20 @@ class GameScreen: KtxScreen {
                     uiStage.inventory.refreshInventory()
                     hudStage.refreshHotBar()
                 }
+                return true
+            }
+        })
+    }
+
+    private fun registerObservers() {
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.LEVELCHANGED
+            override fun update(data: Any?): Boolean {
+                if (data !is LevelChunkCoords)
+                    return false
+
+                levelInitialization.initializeLevel(data, Player.getPosition())
+                hudStage.diagnostics.dungeonTypeLabel.setText("Dungeon depth ${Turn.currentLevel.levelChunkCoords.z.absoluteValue}")
                 return true
             }
         })

@@ -7,10 +7,13 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.github.tommyettinger.textra.Font
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.graphics.utility.PixelData
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.random.Random
+import kotlin.reflect.KClass
+import kotlin.reflect.full.superclasses
 
 fun Double.equalsDelta(other: Double) = abs(this - other) <= 0.005
 fun Double.lessThanDelta(other: Double) = (this - other) < -0.0000001
@@ -53,6 +56,11 @@ fun Float.compareDelta(other: Float) = if (this.equalsDelta(other)) 0
 /** Returns 0 if the values are the same. Returns -1 if the value is smaller than other and 1 if it's bigger */
 fun Double.compareDelta(other: Double) = if (this.equalsDelta(other)) 0
     else if (this.lessThanDelta(other)) -1 else 1
+
+infix fun MutableList<Entity>.has(other: KClass<out Entity>): Boolean = this.any { it::class == other }
+infix fun MutableList<Entity>.hasSuper(other: KClass<out Entity>): Boolean = this.any { it::class == other || it isSuper other }
+
+infix fun Entity.isSuper(other: KClass<out Entity>): Boolean = this::class.superclasses.any { it == other }
 
 object Constants {
     const val AnimationSpeed: Float = 0.1666666666666666f

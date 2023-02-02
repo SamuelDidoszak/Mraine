@@ -3,6 +3,7 @@ package com.neutrino.game.domain.use_case.map.utility
 import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.map.TagInterpretation
+import com.neutrino.game.isSuper
 import com.neutrino.game.lessThanDelta
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
@@ -207,7 +208,7 @@ abstract class MapGenerator(val level: Level, val interpretedTags: TagInterpreta
 
     fun checkMapForEntity(y: Int, x: Int, requiredEntity: KClass<out Entity>): Boolean {
         for (mapEntity in map[y][x]) {
-            if (mapEntity::class == requiredEntity)
+            if (mapEntity::class == requiredEntity || mapEntity isSuper requiredEntity)
                 return true
         }
         return false

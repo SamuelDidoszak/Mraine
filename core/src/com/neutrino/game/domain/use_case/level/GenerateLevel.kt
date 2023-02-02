@@ -8,18 +8,16 @@ import kotlin.math.max
 class GenerateLevel(
 
 ) {
-    operator fun invoke(xIndex: Int, yIndex: Int, zIndex: Int): Level {
+    operator fun invoke(chunkCoords: LevelChunkCoords): Level {
         val level: Level = Level(
             "test level",
-            xIndex,
-            yIndex,
-            zIndex,
+            chunkCoords,
             "A level for testing map generation",
             sizeX = LevelChunkSize,
             sizeY = LevelChunkSize,
             0f,
             0f,
-            getDifficultyFromDistance(xIndex, yIndex).toFloat(),
+            getDifficultyFromDistance(chunkCoords.x, chunkCoords.y).toFloat(),
             null,
             null
         )

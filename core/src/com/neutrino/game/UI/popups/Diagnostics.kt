@@ -13,7 +13,7 @@ class Diagnostics: Table() {
     private var time = System.nanoTime()
     private var totalTime: Long = 0
 
-    private val dungeonTypeLabel = TextraLabel("current dungeon", KnownFonts.getStandardFamily())
+    val dungeonTypeLabel = TextraLabel("current dungeon", KnownFonts.getStandardFamily())
     private val fpsLabel = TextraLabel("fps", KnownFonts.getStandardFamily())
     private val memoryLabel = TextraLabel("memory", KnownFonts.getStandardFamily())
     private val renderLabel = TextraLabel("render time", KnownFonts.getStandardFamily())

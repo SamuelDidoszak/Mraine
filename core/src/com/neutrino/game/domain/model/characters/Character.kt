@@ -172,10 +172,6 @@ abstract class Character(
 
         val turnBar = TurnBar(turn, movementSpeed)
         this.findActor<Group>("infoGroup").addActor(turnBar)
-
-        // TODO if unkillable characters will be added, add this::class check
-
-
     }
 
     open fun randomize(randomGenerator: Random) {
@@ -209,8 +205,8 @@ abstract class Character(
         texture = getTexture(name)
         setBounds(xPos * 64f, parent.height - yPos * 64f, textureHaver.texture.regionWidth.toFloat() * 4, textureHaver.texture.regionHeight.toFloat() * 4)
         // Has to be positioned after the initial drawing, so the label knows its size
-        val nameLabel = (this.getChild(0) as Group).getChild(0)
-        nameLabel.setPosition(nameLabel.x + 32 - nameLabel.width / 2, nameLabel.y)
+        val nameLabel = (getChild(0) as Group?)?.findActor<TextraLabel>("name")
+        nameLabel?.setPosition(nameLabel.x + 32 - nameLabel.width / 2, nameLabel.y)
     }
 
     fun updateTurnBar(forceUpdateMovementColor: Boolean = false) {
@@ -219,7 +215,6 @@ abstract class Character(
     }
 
     val outlineColor = Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), 1f)
-
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         // required for fading
@@ -248,6 +243,10 @@ abstract class Character(
             mirrored = xPos < this.xPos
         this.xPos = xPos
         this.yPos = yPos
+    }
+
+    fun move(coord: Coord) {
+        move(coord.x, coord.y)
     }
 
     fun getDamage(damage: Float, type: String): Float {
@@ -386,7 +385,7 @@ abstract class Character(
             hp = 0f
             GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this)
         }
-        this.findActor<HpBar>("hpBar").update(hp)
+        this.findActor<HpBar>("hpBar")?.update(hp)
     }
 
     fun isAlive(): Boolean {

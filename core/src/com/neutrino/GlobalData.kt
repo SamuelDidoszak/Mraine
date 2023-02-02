@@ -45,17 +45,24 @@ object GlobalData {
     fun notifyObservers(dataType: GlobalDataType, data: Any? = null) {
         if (data != null)
             registerData(dataType, data)
-        for (observer in observerList) {
-            if (observer.dataType == dataType) {
-                val unregister = observer.update(data)
-                if (unregister)
-                    unregisterData(dataType, data)
+        val iterator = observerList.iterator()
+        while (iterator.hasNext()) {
+            try {
+                val observer = iterator.next()
+                if (observer.dataType == dataType) {
+                    val unregister = observer.update(data)
+                    if (unregister)
+                        unregisterData(dataType, data)
+                }
+            } catch (e: ConcurrentModificationException) {
+                return
             }
         }
     }
 }
 
 enum class GlobalDataType {
+    // Character related
     PLAYERHP,
     PLAYERMANA,
     PLAYEREXP,
@@ -68,5 +75,8 @@ enum class GlobalDataType {
     PLAYERINVENTORYSIZE,
     PLAYERNEWSKILL,
 
-    CHARACTERDIED
+    CHARACTERDIED,
+
+    // Game
+    LEVELCHANGED,
 }

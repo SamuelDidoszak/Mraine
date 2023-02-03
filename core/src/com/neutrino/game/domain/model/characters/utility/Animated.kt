@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.Constants.AnimationSpeed
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import com.neutrino.game.utility.serialization.AtlasRegion
 
 interface Animated {
     var animation: Animation<TextureRegion>?
@@ -13,7 +14,7 @@ interface Animated {
     val defaultAnimationName: String
     val textureHaver: TextureHaver
 
-    var textureList:  List<TextureAtlas.AtlasRegion>
+    var textureList: List<AtlasRegion>
 
     fun setAnimation(name: String, looping: Boolean = true) {
         val regex = "${name.replace("$", "\\$")}#[0-9]+".toRegex()

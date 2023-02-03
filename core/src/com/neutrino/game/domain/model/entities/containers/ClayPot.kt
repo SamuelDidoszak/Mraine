@@ -1,10 +1,13 @@
 package com.neutrino.game.domain.model.entities.containers
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.utility.serialization.AtlasRegion
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
+@Serializable
 class ClayPot: Entity(), ChangesImpassable, Destructable, Container {
     override var allowOnTop = false
     override var allowCharacterOnTop = false
@@ -18,7 +21,7 @@ class ClayPot: Entity(), ChangesImpassable, Destructable, Container {
     override val textureNames: List<String> = listOf(
         "clayPot$1", "clayPot$2", "clayPot$3", "clayPot$4",
     )
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
     override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         texture = getTexture(
             getTextureFromEqualRange(randomGenerator.nextFloat() * 100, textures = textureNames.filter { it.startsWith("clayPot$") })!!

@@ -1,6 +1,7 @@
 package com.neutrino.game.domain.model.entities.utility
 
 import com.neutrino.LevelArrays
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord

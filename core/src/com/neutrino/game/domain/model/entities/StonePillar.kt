@@ -1,11 +1,12 @@
 package com.neutrino.game.domain.model.entities
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import com.neutrino.game.utility.serialization.AtlasRegion
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
+@Serializable
 class StonePillar: Entity() {
     override val name: String = "Stone pillar"
     override var allowOnTop: Boolean = false
@@ -15,7 +16,7 @@ class StonePillar: Entity() {
     override val textureNames: List<String> = listOf(
         "stonePillar", "stonePillarCracked", "stonePillarTop"
     )
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         val randVal = randomGenerator.nextFloat() * 100

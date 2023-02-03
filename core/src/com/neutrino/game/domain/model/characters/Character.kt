@@ -29,6 +29,8 @@ import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.utility.ColorUtils
+import com.neutrino.game.utility.serialization.AtlasRegion
+import kotlinx.serialization.Serializable
 import squidpony.squidmath.Coord
 import kotlin.random.Random
 import kotlin.reflect.KClass
@@ -189,7 +191,7 @@ abstract class Character(
 
     override val tags: HashMap<KClass<out CharacterTag>, CharacterTag> = HashMap()
 
-    override var textureList:  List<TextureAtlas.AtlasRegion> = listOf()
+    override var textureList: List<AtlasRegion> = listOf()
     override fun loadTextures(atlas: TextureAtlas) {
         textureList = buildList {
             for (name in textureNames) {

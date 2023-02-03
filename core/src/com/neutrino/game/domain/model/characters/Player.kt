@@ -1,7 +1,6 @@
 package com.neutrino.game.domain.model.characters
 
 import com.badlogic.gdx.graphics.g2d.Animation
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.GlobalData
@@ -21,6 +20,7 @@ import com.neutrino.game.domain.model.systems.skills.SkillCripplingSpin
 import com.neutrino.game.domain.model.systems.skills.SkillTeleport
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.utility.serialization.AtlasRegion
 import kotlin.reflect.KClass
 
 object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, HasPassives {
@@ -244,7 +244,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
     override val textureNames: List<String> = listOf(
         "buddy#1", "buddy#2", "buddy#3", "buddy#4", "buddy#5"
     )
-    override var texture: TextureAtlas.AtlasRegion = Constants.DefaultItemTexture.findRegion("knife")
+    override var texture: AtlasRegion = Constants.DefaultItemTexture.findRegion("knife")
 
     override val defaultAnimationName: String = "buddy"
     override lateinit var defaultAnimation: Animation<TextureRegion>

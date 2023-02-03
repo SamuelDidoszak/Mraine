@@ -6,6 +6,8 @@ import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.domain.use_case.level.GetLevel
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
+import com.neutrino.game.utility.serialization.Serializers
+import kotlinx.serialization.encodeToString
 import squidpony.squidmath.Coord
 
 class LevelInitialization (
@@ -18,6 +20,8 @@ class LevelInitialization (
     fun initializeLevel(levelChunkCoords: LevelChunkCoords, playerCoords: Coord?) {
         val previousLevel = gameStage.level
         if (previousLevel != null) {
+            println(Serializers.format.encodeToString(previousLevel))
+
             gameStage.actors.removeAll { true }
             Turn.unsetLevel()
             previousLevel.dispose()

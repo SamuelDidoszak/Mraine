@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.turn
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.Interaction
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.skills.Skill

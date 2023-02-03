@@ -1,7 +1,15 @@
 package com.neutrino.game.domain.model.entities.utility
 
+import com.neutrino.game.domain.model.entities.Entity
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
+
+@Serializable
 sealed class Interaction(var requiredDistance: Int, var isPrimary: Boolean, var actionIcon: String, var turnCost: Double = 0.0) {
+
     open fun act() {}
+
+    @Polymorphic
     open class DOOR(val entity: Entity): Interaction(1, true,"", turnCost = 1.0) {
         private var open = false
         override fun act() {
@@ -14,9 +22,12 @@ sealed class Interaction(var requiredDistance: Int, var isPrimary: Boolean, var 
         }
     }
 
+    @Serializable
     class ITEM: Interaction(0, true, "", turnCost = 1.0)
 
+    @Polymorphic
     class DESTROY(val entity: Entity): Interaction(1, true, "", 1.0)
 
+    @Serializable
     class OPEN: Interaction(1, true, "", 1.0)
 }

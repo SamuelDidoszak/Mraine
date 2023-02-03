@@ -1,18 +1,20 @@
 package com.neutrino.game.domain.model.entities.containers
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
-import java.util.*
+import com.neutrino.game.utility.serialization.AtlasRegion
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
+@Serializable
 class WoodenChest: Entity(), ChangesImpassable, Container, Interactable {
     override val name: String = "Wooden chest"
     override var allowOnTop: Boolean = false
     override var allowCharacterOnTop: Boolean = false
 
     override val textureNames: List<String> = listOf("woodenChest")
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     override val itemList: MutableList<Item> = ArrayList()
     override val itemTiers: List<Pair<Int, Float>> = listOf(

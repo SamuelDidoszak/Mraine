@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.entities.Entity
 import ktx.scene2d.Scene2DSkin
 
 class EntityLookupPopup(entityList: MutableList<Entity>, character: Character?): Table() {

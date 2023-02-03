@@ -5,6 +5,7 @@ import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.HasRange
+import com.neutrino.game.domain.model.entities.Floor
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.systems.attack.utility.Attackable
 import com.neutrino.game.domain.use_case.Shaderable

@@ -23,6 +23,7 @@ import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Animated
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
@@ -32,46 +33,50 @@ import com.neutrino.game.domain.use_case.map.MapUseCases
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.utility.Blurring
 import com.neutrino.game.graphics.utility.Pixel
+import com.neutrino.game.utility.serialization.ColorSerializer
+import com.neutrino.game.utility.serialization.FBOSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
-
+@Serializable
 class Level(
-    name: String,
     val levelChunkCoords: LevelChunkCoords,
     val description: String?,
     val sizeX: Int = LevelChunkSize,
-    val sizeY: Int = LevelChunkSize,
-    val xScreen: Float = 0f,
-    val yScreen: Float = 0f,
-    val difficulty: Float,
-    movementMap: Array<out CharArray>? = null,
-    characterArray: CharacterArray? = null
+    val sizeY: Int = LevelChunkSize
 ): Group() {
+
     val id: Int = levelChunkCoords.toHash()
+    @Transient
     val randomGenerator = Random(Constants.Seed + id)
+    @Transient
     val textureList: ArrayList<TextureAtlas> = ArrayList()
 
     val tagList: List<MapTags> = listOf(MapTags.STARTING_AREA)
 
+    @Transient
     private val mapUsecases = MapUseCases(this)
 
-    val map: Map = Map(id,
-        name = "$name ${levelChunkCoords.z}",
+    val map: Map = Map(
         xMax = sizeX,
         yMax = sizeY,
         map = mapUsecases.getMap()
     )
 
+    @Transient
     private val generateCharacters = GenerateCharacters(this)
 
-    val movementMap: Array<out CharArray> = movementMap?:mapUsecases.getMovementMap()
+    val movementMap: Array<out CharArray> = mapUsecases.getMovementMap()
     /**
      * A list of current level characters.
      */
     // Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
-    val characterArray: CharacterArray = characterArray?:generateCharacters.generate()
+    @Transient
+    val characterArray: CharacterArray = generateCharacters.generate()
     // Map of character locations
+    @Transient
     val characterMap: List<MutableList<Character?>> = generateCharacters.characterMap
 
     /**
@@ -84,22 +89,34 @@ class Level(
      */
     var drawFovFow: Int = 0
 
+    @Serializable(with = FBOSerializer::class)
     private val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
+    @Serializable(with = FBOSerializer::class)
     private val fovOverlayFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
+
+    @Transient
     private val blurredFogOfWar = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
+    @Transient
     private val blurredFov = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
+    @Transient
     private val fboBatch = SpriteBatch(128)
 
+    @Serializable(with = ColorSerializer::class)
     private val darkenedColor = Color(0.50f, 0.45f, 0.60f, 1.0f)
+    @Serializable(with = ColorSerializer::class)
     private val backgroundColor = Color((21f / 255f) * darkenedColor.r, (21f / 255f) * darkenedColor.g, (23f / 255f) * darkenedColor.b, 1f)
     private lateinit var movementObserver: GlobalDataObserver
 
     init {
-        setBounds(xScreen, yScreen, sizeX * 64f, sizeY * 64f)
+        // Bounds can be provided in the constructor or externally. Their purpose is to place level next to others in gameStage
+//        xScreen: Float = 0f,
+//        yScreen: Float = 0f
+
+        setBounds(0f, 0f, sizeX * 64f, sizeY * 64f)
         // scene2d name
         setName("Level")
 
-//        // initialize fog of war
+        // initialize fog of war
         fogOfWarFBO.begin()
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
@@ -217,6 +234,7 @@ class Level(
         return null
     }
 
+    @Transient
     private val lights: ArrayList<Pair<Pair<Float, Float>, Color>> = arrayListOf()
 
     fun prepareLights() {

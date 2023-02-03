@@ -10,16 +10,10 @@ class GenerateLevel(
 ) {
     operator fun invoke(chunkCoords: LevelChunkCoords): Level {
         val level: Level = Level(
-            "test level",
             chunkCoords,
             "A level for testing map generation",
             sizeX = LevelChunkSize,
-            sizeY = LevelChunkSize,
-            0f,
-            0f,
-            getDifficultyFromDistance(chunkCoords.x, chunkCoords.y).toFloat(),
-            null,
-            null
+            sizeY = LevelChunkSize
         )
 
         return level

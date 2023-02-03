@@ -5,9 +5,11 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.Attackable
+import kotlinx.serialization.Serializable
 import squidpony.squidmath.Coord
 import kotlin.random.Random
 
+@Serializable
 abstract class Attack(
     val acceptedDamageTypes: Map<StatsEnum, Float>
 ) {

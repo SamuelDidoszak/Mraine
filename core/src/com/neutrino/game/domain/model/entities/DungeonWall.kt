@@ -1,11 +1,13 @@
 package com.neutrino.game.domain.model.entities
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
-import com.neutrino.game.domain.model.entities.utility.Wall
+import com.neutrino.game.utility.serialization.AtlasRegion
+import com.neutrino.game.utility.serialization.AtlasRegionSerializer
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
+@Serializable
 class DungeonWall: Wall() {
     override var allowOnTop = false
     override var allowCharacterOnTop = false
@@ -22,7 +24,8 @@ class DungeonWall: Wall() {
         "dungeonWallSingle$1","dungeonWallSingle$2",
         "dungeonWallSingleHorizontal$1","dungeonWallSingleHorizontal$2","dungeonWallSingleHorizontal$3","dungeonWallSingleHorizontal$4","dungeonWallSingleHorizontal$5",
         )
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    @Serializable(with = AtlasRegionSerializer::class)
+    override var texture: AtlasRegion = setTexture()
 
     override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         val randVal = randomGenerator.nextFloat() * 100

@@ -1,9 +1,8 @@
 package com.neutrino.game.domain.model.entities
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.Flammable
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import com.neutrino.game.utility.serialization.AtlasRegion
 import kotlin.random.Random
 
 class DungeonGrass(
@@ -16,7 +15,7 @@ class DungeonGrass(
 
     // Textures
     override val textureNames: List<String> = listOf("basicFloorGrass", "basicFloorGrass2", "basicFloorGrassBurnt", "basicFloorGrassBurnt2")
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     // Flammable values
     override val fireResistance: Float = 0f

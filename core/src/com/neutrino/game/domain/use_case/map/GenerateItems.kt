@@ -1,8 +1,8 @@
 package com.neutrino.game.domain.use_case.map
 
 import com.neutrino.game.Constants
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.Container
-import com.neutrino.game.domain.model.entities.utility.Entity
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.items.Gold

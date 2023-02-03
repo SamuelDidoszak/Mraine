@@ -1,10 +1,11 @@
 package com.neutrino.game.domain.model.entities
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.domain.model.entities.utility.Floor
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
+import com.neutrino.game.utility.serialization.AtlasRegion
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
+@Serializable
 class DungeonFloor: Floor() {
     override var allowOnTop = true
     override var allowCharacterOnTop = true
@@ -19,7 +20,7 @@ class DungeonFloor: Floor() {
         "dungeonFloorLights$1","dungeonFloorLights$2","dungeonFloorLights$3","dungeonFloorLights$4","dungeonFloorLights$5",
         "dungeonFloorSmaller$1","dungeonFloorSmaller$2","dungeonFloorSmaller$3","dungeonFloorSmaller$4","dungeonFloorSmaller$5","dungeonFloorSmaller$6"
         )
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         val randVal = randomGenerator.nextFloat() * 100

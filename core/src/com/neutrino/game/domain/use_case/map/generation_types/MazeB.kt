@@ -6,8 +6,7 @@ import com.neutrino.game.domain.model.entities.lightSources.CandleSingle
 import com.neutrino.game.domain.model.entities.lightSources.CandlesMultiple
 import com.neutrino.game.domain.model.entities.lightSources.StandingTorch
 import com.neutrino.game.domain.model.entities.lightSources.Torch
-import com.neutrino.game.domain.model.entities.utility.Entity
-import com.neutrino.game.domain.model.entities.utility.Wall
+import com.neutrino.game.domain.model.entities.Wall
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.domain.use_case.map.utility.*

@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.use_case.map.utility
 
-import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.isSuper

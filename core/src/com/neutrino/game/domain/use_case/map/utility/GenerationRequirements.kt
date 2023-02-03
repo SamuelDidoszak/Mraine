@@ -1,13 +1,9 @@
 package com.neutrino.game.domain.use_case.map.utility
 
-import com.neutrino.game.domain.model.entities.CrateDoor
-import com.neutrino.game.domain.model.entities.WoodenDoor
-import com.neutrino.game.domain.model.entities.WoodenDoorArched
+import com.neutrino.game.domain.model.entities.*
 import com.neutrino.game.domain.model.entities.containers.WoodenChest
 import com.neutrino.game.domain.model.entities.lightSources.StandingTorch
 import com.neutrino.game.domain.model.entities.lightSources.Torch
-import com.neutrino.game.domain.model.entities.utility.Entity
-import com.neutrino.game.domain.model.entities.utility.Wall
 import kotlin.reflect.KClass
 
 object GenerationRequirements {

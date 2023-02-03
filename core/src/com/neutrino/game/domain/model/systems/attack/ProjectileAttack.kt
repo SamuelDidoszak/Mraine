@@ -4,11 +4,13 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord
+import kotlinx.serialization.Serializable
 import squidpony.squidmath.Coord
 
 //class ProjectileAttack(
 //    val hasProjectile: HasProjectile
 //): Attack() {
+@Serializable
 class ProjectileAttack: Attack {
 
     constructor(hasProjectile: HasProjectile, acceptedDamageTypes: Map<StatsEnum, Float>) : super(acceptedDamageTypes) {

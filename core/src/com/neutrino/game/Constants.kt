@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.github.tommyettinger.textra.Font
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.domain.model.entities.utility.Entity
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.graphics.utility.PixelData
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -68,6 +68,9 @@ object Constants {
 
     //  Global textures for items and entities
 
+    /** Stores hashcodes of every texture */
+    val textureHashCodes: HashMap<Int, TextureAtlas> = HashMap()
+
     val DefaultItemTexture: TextureAtlas = TextureAtlas("textures/items.atlas")
     val DefaultEntityTexture: TextureAtlas = TextureAtlas("textures/entities.atlas")
     val DefaultProjectileTexture: TextureAtlas = TextureAtlas("textures/projectiles.atlas")
@@ -87,6 +90,16 @@ object Constants {
     val RandomGenerator: Random = Random(Seed)
 
     val fonts = ConstInits().getFontFamily()
+
+    init {
+        // Store hash codes
+        DefaultItemTexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultItemTexture }
+        DefaultEntityTexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultEntityTexture }
+        DefaultProjectileTexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultProjectileTexture }
+        DefaultIconTexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultIconTexture }
+        DefaultUITexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultUITexture }
+//        textureHashCodes[WhitePixel.hashCode()] = WhitePixel
+    }
 }
 
 class ConstInits {

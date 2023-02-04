@@ -1,6 +1,5 @@
 package com.neutrino.game.domain.model.items.equipment.misc
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.CharacterParamsEnum
 import com.neutrino.game.domain.model.items.EquipmentItem
@@ -10,6 +9,7 @@ import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventModifyCharacterParam
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
+import com.neutrino.game.utility.serialization.AtlasRegion
 import kotlin.math.roundToInt
 
 class SmallBag: EquipmentItem(), ItemType.EQUIPMENT.BAG {
@@ -17,7 +17,7 @@ class SmallBag: EquipmentItem(), ItemType.EQUIPMENT.BAG {
     override val description: String = "A small bag"
 
     override val textureNames: List<String> = listOf("smallBag")
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     override var goldValueOg: Int = 30
 

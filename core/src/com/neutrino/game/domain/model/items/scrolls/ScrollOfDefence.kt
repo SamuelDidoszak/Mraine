@@ -1,6 +1,5 @@
 package com.neutrino.game.domain.model.items.scrolls
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
@@ -12,7 +11,10 @@ import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
+import com.neutrino.game.utility.serialization.AtlasRegion
+import kotlinx.serialization.Serializable
 
+@Serializable
 class ScrollOfDefence: Item(), ItemType.USABLE, CausesCooldown {
     override val name: String = "Scroll of defence"
     override val description: String = "Makes your skin harder and more resistant to physical attacks"
@@ -26,7 +28,7 @@ class ScrollOfDefence: Item(), ItemType.USABLE, CausesCooldown {
     }
 
     override val textureNames: List<String> = listOf("scrollOfDefence")
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     private val power: Float = 15f
     private val timeout: Double = 20.0

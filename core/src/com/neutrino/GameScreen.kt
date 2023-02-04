@@ -23,7 +23,10 @@ import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.entities.Entity
-import com.neutrino.game.domain.model.entities.utility.*
+import com.neutrino.game.domain.model.entities.utility.Destructable
+import com.neutrino.game.domain.model.entities.utility.Interactable
+import com.neutrino.game.domain.model.entities.utility.Interaction
+import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
@@ -167,6 +170,8 @@ class GameScreen: KtxScreen {
     override fun dispose() {
         /** Here, dispose of every static state and every thread, because they can survive restarting the application */
         gameStage.batch.dispose()
+
+        Gdx.files.local("saves/").emptyDirectory()
     }
 
     override fun resume() {

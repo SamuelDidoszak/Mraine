@@ -1,6 +1,5 @@
 package com.neutrino.game.domain.model.items.equipment.weapons
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.RangeType
@@ -16,6 +15,7 @@ import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
+import com.neutrino.game.utility.serialization.AtlasRegion
 import kotlin.math.roundToInt
 
 class FireStaff: EquipmentItemRanged(), ItemType.EQUIPMENT.RHAND {
@@ -24,7 +24,7 @@ class FireStaff: EquipmentItemRanged(), ItemType.EQUIPMENT.RHAND {
     override val description: String = "Proper magical staff"
 
     override val textureNames: List<String> = listOf("fireStaff")
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     override var goldValueOg: Int = 65
 

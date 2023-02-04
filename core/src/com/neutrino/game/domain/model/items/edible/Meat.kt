@@ -1,6 +1,5 @@
 package com.neutrino.game.domain.model.items.edible
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
@@ -9,6 +8,7 @@ import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
+import com.neutrino.game.utility.serialization.AtlasRegion
 import kotlin.random.Random
 
 class Meat: Item(), ItemType.EDIBLE {
@@ -17,7 +17,7 @@ class Meat: Item(), ItemType.EDIBLE {
     override var amount: Int? = 1
 
     override val textureNames: List<String> = listOf("meat")
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     override val useOn: UseOn = UseOn.SELF_AND_OTHERS
     override val hasRange: HasRange? = null

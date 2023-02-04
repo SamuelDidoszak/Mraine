@@ -3,6 +3,7 @@ package com.neutrino.game.domain.model.items
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
+import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
 abstract class Item: ItemType, TextureHaver, Cloneable {

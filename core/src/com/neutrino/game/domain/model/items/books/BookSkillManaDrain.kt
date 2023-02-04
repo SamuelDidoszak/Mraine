@@ -3,7 +3,9 @@ package com.neutrino.game.domain.model.items.books
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.SkillBook
 import com.neutrino.game.domain.model.systems.skills.SkillManaDrain
+import kotlinx.serialization.Serializable
 
+@Serializable
 class BookSkillManaDrain: SkillBook(SkillManaDrain(Player)) {
     override val description: String = skill.description
 

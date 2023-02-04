@@ -1,6 +1,5 @@
 package com.neutrino.game.domain.model.items.equipment.weapons
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
@@ -14,6 +13,7 @@ import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
+import com.neutrino.game.utility.serialization.AtlasRegion
 import kotlin.math.roundToInt
 
 class Sword: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
@@ -22,7 +22,7 @@ class Sword: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
     override val description: String = "Sword with a bit dull blade"
 
     override val textureNames: List<String> = listOf("sword")
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     override var goldValueOg: Int = 30
 

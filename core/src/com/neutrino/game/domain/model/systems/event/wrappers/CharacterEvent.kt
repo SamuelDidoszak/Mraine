@@ -3,17 +3,20 @@ package com.neutrino.game.domain.model.systems.event.wrappers
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.systems.event.Event
 import com.neutrino.game.domain.model.systems.event.types.EventCooldown
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CharacterEvent(
-    val character: Character,
+    @Polymorphic val character: Character,
     /** Turn of execution */
     var turn: Double,
     /** Length of delay before the next execution */
     val timeout: Double,
     /** How many times the event will occur */
     var executions: Int,
-    override val event: Event
-): EventWrapper(event) {
+    @Polymorphic override val event: Event
+): EventWrapper() {
     var curRepeat: Int = 0
 
     constructor(character: Character, timedEvent: TimedEvent, turn: Double) :

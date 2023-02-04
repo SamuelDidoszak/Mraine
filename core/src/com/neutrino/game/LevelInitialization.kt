@@ -1,5 +1,6 @@
 package com.neutrino.game
 
+import com.badlogic.gdx.Gdx
 import com.neutrino.GameStage
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
@@ -20,7 +21,8 @@ class LevelInitialization (
     fun initializeLevel(levelChunkCoords: LevelChunkCoords, playerCoords: Coord?) {
         val previousLevel = gameStage.level
         if (previousLevel != null) {
-            println(Serializers.format.encodeToString(previousLevel))
+            val file = Gdx.files.local("saves/${previousLevel.id}")
+            file.writeString(Serializers.format.encodeToString(previousLevel), false)
 
             gameStage.actors.removeAll { true }
             Turn.unsetLevel()

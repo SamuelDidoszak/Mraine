@@ -10,7 +10,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-class FBOSerializer: KSerializer<FrameBuffer> {
+class PixmapSerializer: KSerializer<FrameBuffer> {
     override val descriptor: SerialDescriptor = FrameBufferSurrogate.serializer().descriptor
 
     override fun serialize(encoder: Encoder, value: FrameBuffer) {

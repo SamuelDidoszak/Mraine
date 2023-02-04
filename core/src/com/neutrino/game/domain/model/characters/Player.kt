@@ -14,10 +14,7 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.systems.CharacterTag
-import com.neutrino.game.domain.model.systems.skills.Skill
-import com.neutrino.game.domain.model.systems.skills.SkillBleed
-import com.neutrino.game.domain.model.systems.skills.SkillCripplingSpin
-import com.neutrino.game.domain.model.systems.skills.SkillTeleport
+import com.neutrino.game.domain.model.systems.skills.*
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.utility.serialization.AtlasRegion
@@ -212,6 +209,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         skillList.add(SkillBleed(this))
         skillList.add(SkillCripplingSpin(this))
         skillList.add(SkillTeleport(this))
+        skillList.add(SkillTeleportToStairs(this))
 //        skillList.add(SkillTeleportBackstab(this))
 //        skillList.add(SkillManaDrain(this))
 //        skillList.add(SkillMeteorite(this))

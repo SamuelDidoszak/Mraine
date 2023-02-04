@@ -34,7 +34,6 @@ import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.utility.Blurring
 import com.neutrino.game.graphics.utility.Pixel
 import com.neutrino.game.utility.serialization.ColorSerializer
-import com.neutrino.game.utility.serialization.FBOSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlin.random.Random
@@ -68,6 +67,7 @@ class Level(
     @Transient
     private val generateCharacters = GenerateCharacters(this)
 
+    @Transient
     val movementMap: Array<out CharArray> = mapUsecases.getMovementMap()
     /**
      * A list of current level characters.
@@ -87,13 +87,13 @@ class Level(
     /**
      * DEBUG draw overlaying fog of war and FOV
      */
+    @Transient
     var drawFovFow: Int = 0
 
-    @Serializable(with = FBOSerializer::class)
+    @Transient
     private val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
-    @Serializable(with = FBOSerializer::class)
+    @Transient
     private val fovOverlayFBO = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax, map.yMax, false)
-
     @Transient
     private val blurredFogOfWar = FrameBuffer(Pixmap.Format.RGBA8888, map.xMax * 64, map.yMax * 64, false)
     @Transient
@@ -105,6 +105,7 @@ class Level(
     private val darkenedColor = Color(0.50f, 0.45f, 0.60f, 1.0f)
     @Serializable(with = ColorSerializer::class)
     private val backgroundColor = Color((21f / 255f) * darkenedColor.r, (21f / 255f) * darkenedColor.g, (23f / 255f) * darkenedColor.b, 1f)
+    @Transient
     private lateinit var movementObserver: GlobalDataObserver
 
     init {
@@ -123,6 +124,7 @@ class Level(
         fogOfWarFBO.end()
         fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, 100f, 100f)
         fboBatch.disableBlending()
+        initializeFogOfWar()
 
         movementObserver = object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERMOVED
@@ -314,6 +316,22 @@ class Level(
         batch?.shader = null
         batch?.color = Color(1f, 1f, 1f, 1f)
         batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+    }
+
+    private fun initializeFogOfWar() {
+        fogOfWarFBO.begin()
+        fboBatch.begin()
+        Gdx.gl.glColorMask(false, false, false, true)
+        for (y in 0 until map.yMax) {
+            for (x in 0 until map.xMax) {
+                if (discoveredMap[y][x]) {
+                    fboBatch.draw(Constants.TransparentPixel, x.toFloat(), y.toFloat(), 1f, 1f)
+                }
+            }
+        }
+        Gdx.gl.glColorMask(true, true, true, true)
+        fboBatch.end()
+        fogOfWarFBO.end()
     }
 
     /**

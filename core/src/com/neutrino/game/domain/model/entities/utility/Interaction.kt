@@ -9,8 +9,8 @@ sealed class Interaction(var requiredDistance: Int, var isPrimary: Boolean, var 
 
     open fun act() {}
 
-    @Polymorphic
-    open class DOOR(val entity: Entity): Interaction(1, true,"", turnCost = 1.0) {
+    @Serializable
+    open class DOOR(@Polymorphic val entity: Entity): Interaction(1, true,"", turnCost = 1.0) {
         private var open = false
         override fun act() {
             open = !open
@@ -25,8 +25,8 @@ sealed class Interaction(var requiredDistance: Int, var isPrimary: Boolean, var 
     @Serializable
     class ITEM: Interaction(0, true, "", turnCost = 1.0)
 
-    @Polymorphic
-    class DESTROY(val entity: Entity): Interaction(1, true, "", 1.0)
+    @Serializable
+    class DESTROY(@Polymorphic val entity: Entity): Interaction(1, true, "", 1.0)
 
     @Serializable
     class OPEN: Interaction(1, true, "", 1.0)

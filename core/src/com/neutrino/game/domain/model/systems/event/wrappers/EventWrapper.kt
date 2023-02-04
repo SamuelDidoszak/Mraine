@@ -1,7 +1,9 @@
 package com.neutrino.game.domain.model.systems.event.wrappers
 
 import com.neutrino.game.domain.model.systems.event.Event
+import kotlinx.serialization.Serializable
 
-open class EventWrapper (
-    open val event: Event
-)
+@Serializable
+abstract class EventWrapper {
+    abstract val event: Event
+}

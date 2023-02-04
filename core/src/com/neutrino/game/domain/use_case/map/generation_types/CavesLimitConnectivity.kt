@@ -1,12 +1,13 @@
 package com.neutrino.game.domain.use_case.map.generation_types
 
 import com.neutrino.game.domain.model.entities.*
-import com.neutrino.game.domain.model.entities.containers.*
+import com.neutrino.game.domain.model.entities.Wall
+import com.neutrino.game.domain.model.entities.containers.ClayPot
+import com.neutrino.game.domain.model.entities.containers.WoodenChest
 import com.neutrino.game.domain.model.entities.lightSources.CandleSingle
 import com.neutrino.game.domain.model.entities.lightSources.CandlesMultiple
 import com.neutrino.game.domain.model.entities.lightSources.StandingTorch
 import com.neutrino.game.domain.model.entities.lightSources.Torch
-import com.neutrino.game.domain.model.entities.Wall
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.domain.use_case.map.utility.*
@@ -33,9 +34,9 @@ class CavesLimitConnectivity(level: Level, interpretedTags: TagInterpretation): 
                 EntityPositionRequirement(EntityPositionRequirementType.NOR, Wall::class, listOf(4, 6, 7, 8, 9))
             ), 2f, assertAmount = true)
 
-        addEntities(WoodenDoor::class, GenerationRequirements.getDefaults(WoodenDoor::class), 10f, assertAmount = true)
-        addEntities(WoodenDoorArched::class, GenerationRequirements.getDefaults(WoodenDoorArched::class), 8f, assertAmount = true)
-        addEntities(CrateDoor::class, GenerationRequirements.getDefaults(WoodenDoorArched::class), 5f, assertAmount = true)
+//        addEntities(WoodenDoor::class, GenerationRequirements.getDefaults(WoodenDoor::class), 10f, assertAmount = true)
+//        addEntities(WoodenDoorArched::class, GenerationRequirements.getDefaults(WoodenDoorArched::class), 8f, assertAmount = true)
+//        addEntities(CrateDoor::class, GenerationRequirements.getDefaults(WoodenDoorArched::class), 5f, assertAmount = true)
 
         addEntities(Torch::class, GenerationRequirements.getDefaults(Torch::class), 20f, assertAmount = true)
         addEntities(
@@ -62,19 +63,19 @@ class CavesLimitConnectivity(level: Level, interpretedTags: TagInterpretation): 
             ), 0.25f
         )
 
-        addEntities(Barrel::class, GenerationRequirements.requirementNearWall(), 0.0085f)
-        addEntities(CrateSmall::class, GenerationRequirements.requirementNearWall(), 0.005f)
-        addEntities(
-            CrateBigger::class, listOf(
-                EntityPositionRequirement(EntityPositionRequirementType.AND, Wall::class, listOf(7, 8, 9)),
-                EntityPositionRequirement(EntityPositionRequirementType.NAND, Wall::class, listOf(4, 6)),
-                EntityPositionRequirement(EntityPositionRequirementType.NAND, CrateBigger::class, listOf(4)),
-            ), 0.01f)
+//        addEntities(Barrel::class, GenerationRequirements.requirementNearWall(), 0.0085f)
+//        addEntities(CrateSmall::class, GenerationRequirements.requirementNearWall(), 0.005f)
+//        addEntities(
+//            CrateBigger::class, listOf(
+//                EntityPositionRequirement(EntityPositionRequirementType.AND, Wall::class, listOf(7, 8, 9)),
+//                EntityPositionRequirement(EntityPositionRequirementType.NAND, Wall::class, listOf(4, 6)),
+//                EntityPositionRequirement(EntityPositionRequirementType.NAND, CrateBigger::class, listOf(4)),
+//            ), 0.01f)
 
         addEntities(WoodenChest::class, GenerationRequirements.getDefaults(WoodenChest::class), 3f, assertAmount = true)
 
         addEntities(ClayPot::class, GenerationRequirements.requirementNearWall(), 0.01f)
-        addEntities(ClayPotMultiple::class, GenerationRequirements.requirementNearWall(), 0.005f)
+//        addEntities(ClayPotMultiple::class, GenerationRequirements.requirementNearWall(), 0.005f)
 
         return map
     }

@@ -1,6 +1,5 @@
 package com.neutrino.game.domain.model.items.equipment.weapons
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
@@ -15,6 +14,7 @@ import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
+import com.neutrino.game.utility.serialization.AtlasRegion
 import kotlin.math.roundToInt
 
 class SmallBow: EquipmentItemRanged(), ItemType.EQUIPMENT.RHAND {
@@ -23,7 +23,7 @@ class SmallBow: EquipmentItemRanged(), ItemType.EQUIPMENT.RHAND {
     override val description: String = "Fisher price your first bow"
 
     override val textureNames: List<String> = listOf("smallBow")
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
+    override var texture: AtlasRegion = setTexture()
 
     override var range: Int = 6
     override var rangeType: RangeType = RangeType.SQUARE

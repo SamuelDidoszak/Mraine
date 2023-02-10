@@ -44,9 +44,11 @@ import kotlin.math.abs
 import kotlin.math.absoluteValue
 
 class GameScreen: KtxScreen {
+
+    private val levelDrawer: LevelDrawer = LevelDrawer()
     /** Viewport for the game */
     private val extendViewport: ExtendViewport = ExtendViewport(1600f, 900f)
-    private val gameStage = GameStage(extendViewport)
+    private val gameStage = GameStage(extendViewport, levelDrawer)
 
     /** Viewport for the HUD */
     private val hudViewport = ScreenViewport()
@@ -61,7 +63,7 @@ class GameScreen: KtxScreen {
     private val gameInputMultiplexer: InputMultiplexer = InputMultiplexer()
     private val uiInputMultiplexer: InputMultiplexer = InputMultiplexer()
 
-    private val levelInitialization: LevelInitialization = LevelInitialization(gameStage)
+    private val levelInitialization: LevelInitialization = LevelInitialization(gameStage, levelDrawer)
 
     init {
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
@@ -83,6 +85,7 @@ class GameScreen: KtxScreen {
         uiInputMultiplexer.addProcessor(uiStage)
         Gdx.input.inputProcessor = gameInputMultiplexer
 
+        gameStage.addActor(levelDrawer)
         levelInitialization.initializeLevel(LevelChunkCoords(0, 0, 0), null)
 
         gameStage.cancelSkill = this::cancelSkill
@@ -135,7 +138,7 @@ class GameScreen: KtxScreen {
         // game events such as player input and ai
         gameLoop()
 
-        gameStage.animateAll()
+        AnimatedActors.animateAll()
         gameStage.act(delta)
         gameStage.draw()
 

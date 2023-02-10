@@ -28,7 +28,8 @@ import kotlin.math.roundToInt
 import kotlin.math.sign
 
 class GameStage(
-    viewport: Viewport
+    viewport: Viewport,
+    val levelDrawer: LevelDrawer
 ): Stage(viewport,
     SpriteBatch(1000, Shaders.fragmentAlphas)) {
     init {
@@ -47,16 +48,6 @@ class GameStage(
 
     var showEq: Boolean = false
 
-    val animatedArray: ArrayList<Animated> = ArrayList()
-
-    private var stateTime: Float = 0f
-
-    fun animateAll() {
-        stateTime += Gdx.graphics.deltaTime
-        for (animated in animatedArray)
-            animated.setFrame(stateTime)
-    }
-
     fun isPlayerFocused(): Boolean {
         return (abs(camera.position.x - Player.xPos * 64f) < 16 &&
             abs(camera.position.y - (startYPosition - Player.yPos * 64)) < 16)
@@ -72,7 +63,7 @@ class GameStage(
 
     fun getCameraPosition(): Pair<Int, Int> {
         val gameCamera = camera as OrthographicCamera
-        val yPos = (level!!.height - gameCamera.position.y) / 64
+        val yPos = (levelDrawer.height - gameCamera.position.y) / 64
         val xPos = (gameCamera.position.x / 64)
 
         return Pair(xPos.roundToInt(), yPos.roundToInt())
@@ -81,8 +72,8 @@ class GameStage(
     fun isInCamera(tileX: Int, tileY: Int): Boolean {
         val gameCamera = camera as OrthographicCamera
 
-        var yBottom = MathUtils.ceil((level!!.height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 64) + 2
-        var yTop = MathUtils.floor((level!!.height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 64) + 1
+        var yBottom = MathUtils.ceil((levelDrawer.height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 64) + 2
+        var yTop = MathUtils.floor((levelDrawer.height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 64) + 1
         var xLeft: Int =
             MathUtils.floor((gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f) / 64)
         var xRight =
@@ -197,7 +188,7 @@ class GameStage(
             }
             Input.Keys.NUM_2 -> {
                 if (level != null)
-                    level!!.drawFovFow += 1
+                    (actors.first() as LevelDrawer).drawFovFow += 1
             }
             Input.Keys.ESCAPE -> {
                 if (highlightMode != Highlighting.Companion.HighlightModes.NORMAL)
@@ -355,7 +346,7 @@ class GameStage(
     override fun addActor(actor: Actor?) {
         super.addActor(actor)
         if (actor is Animated)
-            animatedArray.add(actor)
+            AnimatedActors.add(actor)
     }
 
 
@@ -365,7 +356,7 @@ class GameStage(
     inner class GameStageGroup: Group() {
         override fun removeActor(actor: Actor?, unfocus: Boolean): Boolean {
             if (actor is Animated)
-                animatedArray.remove(actor)
+                AnimatedActors.remove(actor)
             return super.removeActor(actor, unfocus)
         }
     }

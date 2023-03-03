@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.1'
-        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.16'
+//        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.16'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
     }
@@ -49,8 +49,8 @@ allprojects {
 configure(subprojects - project(':android')) {
     apply plugin: 'java-library'
     apply plugin: 'kotlin'
-    sourceCompatibility = JavaVersion.VERSION_1_9
-    targetCompatibility = JavaVersion.VERSION_1_9
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     compileJava {
         options.incremental = true
     }
@@ -59,8 +59,8 @@ configure(subprojects - project(':android')) {
 project(":desktop") {
     apply plugin: "kotlin"
 
-    sourceCompatibility = JavaVersion.VERSION_1_9
-    targetCompatibility = JavaVersion.VERSION_1_9
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     dependencies {
         implementation project(":core")
@@ -97,21 +97,18 @@ project(":android") {
     }
 }
 
-project(":ios") {
-    apply plugin: "kotlin"
-    apply plugin: "robovm"
-
-    dependencies {
-        implementation project(":core")
-        api "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
-        api "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
-        api "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-        api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
-        api "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
-        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    }
-}
+//project(":ios") {
+////    apply plugin: "kotlin"
+////    apply plugin: "robovm"
+//
+//    dependencies {
+//        implementation project(":core")
+//        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+//        api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
+//        api "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
+//        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+//    }
+//}
 
 project(":core") {
     apply plugin: "kotlin"
@@ -124,6 +121,8 @@ project(":core") {
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.0"
         implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC"
+        implementation "com.esotericsoftware.kryo:kryo5:5.4.0"
+        implementation "de.javakaffee:kryo-serializers:0.45"
 
         // libKTX
         api group: 'io.github.libktx', name: 'ktx-app', version: "$ktxVersion"

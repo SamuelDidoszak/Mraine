@@ -1,5 +1,7 @@
 package com.neutrino.game.domain.model.entities.utility
 
+import com.neutrino.game.domain.model.entities.Entity
+
 class EntityChecker (
     private val onMapPosition: OnMapPosition,
     private val requiredEntity: String? = null,
@@ -22,13 +24,38 @@ class EntityChecker (
                 mutableListOf() // can add a FalseEntity
     }
 
-    fun checkAllTiles(directionTrueList: List<Int>,
-                      tileRequiredEntity: String? = null,
-                      tileRequiredEntities: List<String>? = null,
-                      tileForbiddenEntity: String? = null,
-                      tileForbiddenEntities: List<String>? = null,
-                      tileSkipList: List<Int>? = null): Boolean {
-        val finalSkipList: List<Int> = listOfNotNull(*(skipList?:listOf()).toTypedArray(), *(tileSkipList?:listOf()).toTypedArray()).filter { directionTrueList.indexOf(it * -1) == -1 }
+    fun pickTextureName(optionsList: List<RequirementList>): String {
+        // sort by size of directionTrueList
+        // for elements containing the same textureName, call the CheckAllTilesCombinations function
+        // for each element in the sorted list call the checkAllTiles function and return the textureName when it returned true
+        return ""
+    }
+
+
+    fun checkAllTilesCombinations(combinationList: Set<Set<Int>>,
+                                  tileRequiredEntity: String? = null,
+                                  tileRequiredEntities: List<String>? = null,
+                                  tileForbiddenEntity: String? = null,
+                                  tileForbiddenEntities: List<String>? = null,
+                                  tileSkipList: List<Int>? = null) {
+        val distintValues: Set<Int> = combinationList.flatten().groupBy { it }.filter { it.value.size > combinationList.size - 1}.keys
+
+        val optionalList = combinationList.map {it.minus(distintValues)}
+//        checkAllTiles(distintValues, tileRequiredEntity, tileRequiredEntities, tileForbiddenEntity, tileForbiddenEntities, tileSkipList)
+    }
+
+    fun checkAllTiles(
+        directionTrueList: List<Int>,
+        tileRequiredEntity: String? = null,
+        tileRequiredEntities: List<String>? = null,
+        tileForbiddenEntity: String? = null,
+        tileForbiddenEntities: List<String>? = null,
+        tileSkipList: List<Int>? = null): Boolean {
+
+        // providing list of *.toTypedArray is faster than using .plus
+        val finalSkipList: List<Int> = listOfNotNull(*(skipList?:listOf()).toTypedArray(), *(tileSkipList?:listOf()).toTypedArray())
+                .filter { directionTrueList.indexOf(it * -1) == -1 }
+
         val finalRequiredList: List<String> = listOfNotNull(requiredEntity, tileRequiredEntity, *(requiredEntities?:listOf()).toTypedArray(), *(tileRequiredEntities?:listOf()).toTypedArray())
         val finalForbidList: List<String> = listOfNotNull(forbiddenEntity, tileForbiddenEntity, *(forbiddenEntities?:listOf()).toTypedArray(), *(tileForbiddenEntities?:listOf()).toTypedArray())
         for (i in 1 .. 9) {
@@ -44,6 +71,30 @@ class EntityChecker (
         return true
 
     }
+
+    // Old, using lists
+//    fun checkAllTiles(directionTrueList: List<Int>,
+//                      tileRequiredEntity: String? = null,
+//                      tileRequiredEntities: List<String>? = null,
+//                      tileForbiddenEntity: String? = null,
+//                      tileForbiddenEntities: List<String>? = null,
+//                      tileSkipList: List<Int>? = null): Boolean {
+//        val finalSkipList: List<Int> = listOfNotNull(*(skipList?:listOf()).toTypedArray(), *(tileSkipList?:listOf()).toTypedArray()).filter { directionTrueList.indexOf(it * -1) == -1 }
+//        val finalRequiredList: List<String> = listOfNotNull(requiredEntity, tileRequiredEntity, *(requiredEntities?:listOf()).toTypedArray(), *(tileRequiredEntities?:listOf()).toTypedArray())
+//        val finalForbidList: List<String> = listOfNotNull(forbiddenEntity, tileForbiddenEntity, *(forbiddenEntities?:listOf()).toTypedArray(), *(tileForbiddenEntities?:listOf()).toTypedArray())
+//        for (i in 1 .. 9) {
+//            if (i == 5 || (finalSkipList.indexOf(i) != -1 && directionTrueList.indexOf(i) == -1))
+//                continue
+//            val checkValue = checkTile(i, finalRequiredList, finalForbidList)
+////            println("$directionTrueList: " + (i) + ", " + (directionTrueList.indexOf(i) != -1).toString() + ", $checkValue")
+//            if ((directionTrueList.indexOf(i) != -1 ) != checkValue) {
+////                println("returned false")
+//                return false
+//            }
+//        }
+//        return true
+//
+//    }
 
     // possible bugs with forbidden list
     private fun checkTile(direction: Int,
@@ -109,3 +160,13 @@ class EntityChecker (
     }
 
 }
+
+data class RequirementList (
+    val directionTrueList: List<Int>,
+    val tileRequiredEntity: String? = null,
+    val tileRequiredEntities: List<String>? = null,
+    val tileForbiddenEntity: String? = null,
+    val tileForbiddenEntities: List<String>? = null,
+    val tileSkipList: List<Int>? = null,
+    val textureName: String
+)

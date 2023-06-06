@@ -71,9 +71,9 @@ class LevelDrawer: Group() {
         var screenX = 0f
         var screenY = height
 
-        for (y in 0 until level.map.yMax) {
-            for (x in 0 until level.map.xMax) {
-                for (entity in level.map.map[y][x]) {
+        for (y in 0 until level.sizeY) {
+            for (x in 0 until level.sizeX) {
+                for (entity in level.map[y][x]) {
                     if (entity !is ItemEntity)
                         addLightFromTexture(entity.texture, screenX, screenY, entity.mirrored)
                 }
@@ -154,8 +154,8 @@ class LevelDrawer: Group() {
         level.fogOfWarFBO.begin()
         fboBatch.begin()
         Gdx.gl.glColorMask(false, false, false, true)
-        for (y in 0 until level.map.yMax) {
-            for (x in 0 until level.map.xMax) {
+        for (y in 0 until level.sizeY) {
+            for (x in 0 until level.sizeX) {
                 if (level.discoveredMap[y][x]) {
                     fboBatch.draw(Constants.TransparentPixel, x.toFloat(), y.toFloat(), 1f, 1f)
                 }
@@ -233,17 +233,17 @@ class LevelDrawer: Group() {
         var xRight = MathUtils.ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f) / 64)
 
         // Make sure that values are in range
-        yBottom = if (yBottom <= 0) 0 else if (yBottom > currentLevel.map.map.size) currentLevel.map.map.size else yBottom
-        yTop = if (yTop <= 0) 0 else if (yTop > currentLevel.map.map.size) currentLevel.map.map.size else yTop
-        xLeft = if (xLeft <= 0) 0 else if (xLeft > currentLevel.map.map[0].size) currentLevel.map.map[0].size else xLeft
-        xRight = if (xRight <= 0) 0 else if (xRight > currentLevel.map.map[0].size) currentLevel.map.map[0].size else xRight
+        yBottom = if (yBottom <= 0) 0 else if (yBottom > currentLevel.map.size) currentLevel.map.size else yBottom
+        yTop = if (yTop <= 0) 0 else if (yTop > currentLevel.map.size) currentLevel.map.size else yTop
+        xLeft = if (xLeft <= 0) 0 else if (xLeft > currentLevel.map[0].size) currentLevel.map[0].size else xLeft
+        xRight = if (xRight <= 0) 0 else if (xRight > currentLevel.map[0].size) currentLevel.map[0].size else xRight
 
         var screenX = xLeft * 64f
         var screenY = height - (yTop * 64f)
 
         for (y in yTop until yBottom) {
             for (x in xLeft until xRight) {
-                for (entity in currentLevel.map.map[y][x]) {
+                for (entity in currentLevel.map[y][x]) {
                     batch!!.draw(entity.texture, if (!entity.mirrored) screenX else screenX + entity.texture.regionWidth * 4f, screenY,
                         entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
 
@@ -285,7 +285,7 @@ class LevelDrawer: Group() {
                         val movingChar = currentLevel.characterMap[y - 1][x]!!
                         movingChar.draw(batch, parentAlpha)
 
-                        for (entity in currentLevel.map.map[y][x]) {
+                        for (entity in currentLevel.map[y][x]) {
                             if (entity.texture.regionHeight > 16) {
                                 batch!!.draw(entity.texture,
                                     if (!entity.mirrored) movingChar.xPos * 64f else movingChar.xPos * 64f + entity.texture.regionWidth * 4f, screenY,
@@ -310,7 +310,7 @@ class LevelDrawer: Group() {
                     val movingChar = currentLevel.characterMap[y][x]!!
                     // down left
                     if (movingChar.x > movingChar.xPos * 64 - 64) {
-                        for (entity in currentLevel.map.map[y][x + 1]) {
+                        for (entity in currentLevel.map[y][x + 1]) {
                             if (entity.texture.regionHeight > 16) {
                                 batch!!.draw(entity.texture,
                                     if (!entity.mirrored) movingChar.xPos * 64f + 64 else movingChar.xPos * 64f + 64 + entity.texture.regionWidth * 4f, screenY,
@@ -330,7 +330,7 @@ class LevelDrawer: Group() {
                     }
                     // down right
                     if (movingChar.x < movingChar.xPos * 64) {
-                        for (entity in currentLevel.map.map[y][x - 1]) {
+                        for (entity in currentLevel.map[y][x - 1]) {
                             if (entity.texture.regionHeight > 16) {
                                 batch!!.draw(entity.texture,
                                     if (!entity.mirrored) movingChar.xPos * 64f - 64 else movingChar.xPos * 64f - 64 + entity.texture.regionWidth * 4f, screenY,

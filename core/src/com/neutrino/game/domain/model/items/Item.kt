@@ -3,12 +3,14 @@ package com.neutrino.game.domain.model.items
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
-import kotlinx.serialization.Serializable
+import com.neutrino.game.utility.Serialize
 import kotlin.random.Random
 
+@Serialize
 abstract class Item: ItemType, TextureHaver, Cloneable {
     abstract val name: String
     abstract val description: String
+    @Transient
     override var mirrored: Boolean = false
     /** Amount of items in stack. Null means that it's not stackable */
     open var amount: Int? = null
@@ -16,6 +18,7 @@ abstract class Item: ItemType, TextureHaver, Cloneable {
     abstract val itemTier: Int
 
     /** If 0, item won't be compared if it's better or worse */
+    @Transient
     open var goldValueOg: Int = 0
     open var goldValue: Int = 0
 

@@ -1,5 +1,6 @@
 package com.neutrino.game.domain.model.items.equipment.weapons
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
@@ -13,19 +14,25 @@ import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
-import com.neutrino.game.utility.serialization.AtlasRegion
+
 import kotlin.math.roundToInt
 
 class Dagger: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
+    @Transient
     override val handedItemType: HandedItemType = HandedItemType.DAGGER
+    @Transient
     override val name: String = "Dagger"
+    @Transient
     override val description: String = "A dagger"
 
+    @Transient
     override val textureNames: List<String> = listOf("dagger")
-    override var texture: AtlasRegion = setTexture()
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
 
+    @Transient
     override var goldValueOg: Int = 25
 
+    @Transient
     override var requirements: RequirementPrintable = RequirementPrintable(mutableMapOf(Pair("character", Data<Character>())))
 
     override val modifierList: ArrayList<EventWrapper> = arrayListOf(
@@ -34,6 +41,7 @@ class Dagger: EquipmentItem(), ItemType.EQUIPMENT.RHAND {
 //        TimedEvent(0.0, 5.0, Int.MAX_VALUE, EventHeal(1f))
     )
 
+    @Transient
     override var attack: Attack = BasicAttack(getDamageTypesFromModifiers(modifierList))
 
     init {

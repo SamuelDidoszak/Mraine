@@ -47,7 +47,7 @@ class GameScreen: KtxScreen {
 
     private val levelDrawer: LevelDrawer = LevelDrawer()
     /** Viewport for the game */
-    private val extendViewport: ExtendViewport = ExtendViewport(1600f, 900f)
+    private val extendViewport: ExtendViewport = ExtendViewport(1280f, 768f)
     private val gameStage = GameStage(extendViewport, levelDrawer)
 
     /** Viewport for the HUD */
@@ -112,7 +112,7 @@ class GameScreen: KtxScreen {
             isEqVisible = false
             // drops items
             while (uiStage.itemDropList.isNotEmpty())
-                gameStage.level!!.map.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
+                gameStage.level!!.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
         } else {
             Gdx.input.inputProcessor = uiInputMultiplexer
             hudStage.darkenScreen(true)

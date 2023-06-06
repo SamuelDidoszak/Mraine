@@ -4,12 +4,18 @@ import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.utility.RandomizationTypes
+import com.neutrino.game.utility.Serialize
 
+@Serialize
 abstract class EquipmentItem: Item(), ItemType.EQUIPMENT {
+
+    @Transient
     override var amount: Int? = null
     /** Parses only ModifyStat, ModifyStatPercent and Event */
     abstract val modifierList: ArrayList<EventWrapper>
+    @Transient
     override val itemTier: Int = 3
+    @Transient
     open var requirements: RequirementPrintable = RequirementPrintable()
         .add(RequirementPrintable.PrintableReq("", "") {true}) { true }
 

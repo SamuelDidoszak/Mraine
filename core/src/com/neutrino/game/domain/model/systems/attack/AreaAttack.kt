@@ -5,11 +5,11 @@ import com.neutrino.game.domain.model.characters.utility.HasRange
 import com.neutrino.game.domain.model.characters.utility.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord
-import kotlinx.serialization.Serializable
+
 import squidpony.squidmath.Coord
 import kotlin.properties.Delegates
 
-@Serializable
+
 class AreaAttack: Attack, HasRange {
     constructor(acceptedDamageTypes: Map<StatsEnum, Float>, range: Int, rangeType: RangeType) : super(acceptedDamageTypes) {
         this.range = range

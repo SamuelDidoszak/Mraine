@@ -2,9 +2,9 @@ package com.neutrino.game.domain.model.characters.utility
 
 import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.entities.DungeonWall
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.Interactable
 import com.neutrino.game.domain.model.entities.utility.Interaction
-import com.neutrino.game.domain.model.map.Map
 import com.neutrino.game.utility.BArray
 import kotlin.math.ceil
 import kotlin.math.min
@@ -14,7 +14,7 @@ import kotlin.math.round
  * Recursive shadowcasting implementation of FOV
  * FOV is round with max distance 1 less than distance
  */
-class Fov(var map: Map) {
+class Fov(var map: List<List<MutableList<Entity>>>) {
 
     companion object {
         val distance = HasRange.circleDistances
@@ -83,7 +83,7 @@ class Fov(var map: Map) {
     }
 
     private fun inMap(x: Int, y: Int): Boolean {
-        if (x !in 0 until map.xMax || y !in 0 until map.yMax)
+        if (x !in 0 until map[0].size || y !in map.indices)
             return false
         return true
     }
@@ -93,7 +93,7 @@ class Fov(var map: Map) {
      * Returns true if it's transparent, false otherwise
      */
     fun transparent(x: Int, y: Int): Boolean {
-        for (entity in map.map[y][x]) {
+        for (entity in map[y][x]) {
             if (entity is DungeonWall ||
                 (entity is Interactable && entity.getPrimaryInteraction() is Interaction.DOOR))
                 return false

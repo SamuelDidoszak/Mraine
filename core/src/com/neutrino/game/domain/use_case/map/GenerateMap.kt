@@ -6,6 +6,7 @@ import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.domain.use_case.map.utility.MapGenerator
 import com.neutrino.game.utility.Probability
 import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 /**
  * Class used for map generation
@@ -38,10 +39,8 @@ class GenerateMap(
             }
         }
 
-//        val map = chosenGenerator!!.primaryConstructor!!.call(level, interpretedTags).generate()
-        val map = com.neutrino.game.domain.use_case.map.generation_types.CavesLimitConnectivity(level, interpretedTags).generate()
-
-//        GenerateItems(level, map, interpretedTags.itemList, interpretedTags.generationParams)()
+        val map = chosenGenerator!!.primaryConstructor!!.call(level, interpretedTags).generate()
+        GenerateItems(level, map, interpretedTags.itemList, interpretedTags.generationParams)()
 
         return map
     }

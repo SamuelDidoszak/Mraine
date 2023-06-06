@@ -1,20 +1,20 @@
 package com.neutrino.game.domain.model.entities
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.entities.utility.*
-import com.neutrino.game.utility.serialization.AtlasRegion
-import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
-@Serializable
 class WoodenDoorArched: Entity(), ChangesImpassable, Interactable {
+    @Transient
     override val name: String = "Wooden door arched"
     override var allowOnTop: Boolean = false
     override var allowCharacterOnTop: Boolean = false
 
+    @Transient
     override val textureNames: List<String> = listOf(
         "woodenDoorArched", "woodenDoorArchedClosed", "woodenDoorArchedVertical", "woodenDoorArchedVerticalClosed"
     )
-    override var texture: AtlasRegion = setTexture()
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
 
     override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         val entityChecker = EntityChecker(onMapPosition, "DungeonWall", skipList = listOf(1, 3, 7, 9))

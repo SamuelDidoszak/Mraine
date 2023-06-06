@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.utility.VectorOperations
-import com.neutrino.game.utility.serialization.AtlasRegion
+
 
 class Projectile(
     var sourceX: Float,
@@ -40,7 +40,7 @@ class Projectile(
     var flightTime: Float? = null
 
     override val textureNames: List<String> = ProjectileType.values().map { it.textureName }
-    override var texture: AtlasRegion = getTexture(projectileType.textureName)
+    override var texture: TextureAtlas.AtlasRegion = getTexture(projectileType.textureName)
     override var mirrored: Boolean = false
     val textureHaver: TextureHaver = this
 

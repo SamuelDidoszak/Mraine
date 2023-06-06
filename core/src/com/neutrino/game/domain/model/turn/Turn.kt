@@ -145,13 +145,13 @@ object Turn {
                         fov.updateFov(action.x, action.y, Player.ai.fov, Player.viewDistance)
                         character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
-                        if (currentLevel.map.map[action.y][action.x] has DungeonStairsDown::class)
+                        if (currentLevel.map[action.y][action.x] has DungeonStairsDown::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, LevelChunkCoords(
                                 currentLevel.levelChunkCoords.x,
                                 currentLevel.levelChunkCoords.y,
                                 currentLevel.levelChunkCoords.z - 1
                             ))
-                        if (currentLevel.map.map[action.y][action.x] has DungeonStairsUp::class)
+                        if (currentLevel.map[action.y][action.x] has DungeonStairsUp::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, LevelChunkCoords(
                                 currentLevel.levelChunkCoords.x,
                                 currentLevel.levelChunkCoords.y,
@@ -169,7 +169,7 @@ object Turn {
                                 val item = (action.entity as ItemEntity).item
                                 if (Player.addToInventory(item)) {
                                     ActorVisuals.showPickedUpItem(Player, item)
-                                    currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].removeLast()
+                                    currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].removeLast()
                                 } else {
                                     println("Inventory is full!")
                                 }
@@ -185,16 +185,16 @@ object Turn {
                                     val items = entity.destroy()
                                     if (items != null) {
                                         for (item in items) {
-                                            currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
+                                            currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
                                         }
                                     }
                                     mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
                                 }
                             }
                             is Interaction.OPEN -> {
-                                currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].remove(action.entity)
+                                currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].remove(action.entity)
                                 for (item in (action.entity as Container).itemList) {
-                                    currentLevel.map.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
+                                    currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
                                 }
                                 mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
                             }
@@ -381,7 +381,7 @@ object Turn {
         // Drop its items
         if (character is HasDrops) {
             character.dropItems().forEach {
-                currentLevel.map.map[character.yPos][character.xPos].add(ItemEntity(it))
+                currentLevel.map[character.yPos][character.xPos].add(ItemEntity(it))
             }
         }
 

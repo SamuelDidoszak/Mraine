@@ -6,9 +6,10 @@ import com.neutrino.game.domain.model.entities.utility.OnMapPosition
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.graphics.shaders.ShaderParametered
-import kotlinx.serialization.Serializable
+import com.neutrino.game.utility.Serialize
 import kotlin.random.Random
 
+@Serialize
 abstract class Entity: TextureHaver, Shaderable {
     abstract val name: String
     open val description: String? = ""
@@ -17,6 +18,7 @@ abstract class Entity: TextureHaver, Shaderable {
 
     override var mirrored: Boolean = false
 
+    @Transient
     override var shaders: ArrayList<ShaderParametered?> = ArrayList(1)
 
     abstract fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random)

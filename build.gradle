@@ -12,7 +12,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:7.2.1'
 //        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.16'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+//        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlinVersion"
     }
 }
 
@@ -20,7 +21,13 @@ allprojects {
     apply plugin: "eclipse"
     version = '1.0'
     apply plugin: 'idea'
-    apply plugin: 'kotlinx-serialization'
+//    apply plugin: 'kotlinx-serialization'
+
+    apply plugin: "kotlin-noarg"
+    noArg {
+        annotation("com.neutrino.game.utility.Serialize")
+        invokeInitializers = true
+    }
 
     ext {
         appName = "Mraine"
@@ -120,7 +127,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.0"
-        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC"
+//        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC"
         implementation "com.esotericsoftware.kryo:kryo5:5.4.0"
         implementation "de.javakaffee:kryo-serializers:0.45"
 

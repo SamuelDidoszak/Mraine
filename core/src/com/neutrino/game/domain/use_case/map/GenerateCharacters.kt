@@ -27,15 +27,20 @@ class GenerateCharacters(
         val difficultyModifier = kotlin.math.abs(level.levelChunkCoords.z)
         interpretedTags.generationParams.difficulty += difficultyModifier / 4
 
-        // TODO temporary
+        addPlayerAtStairs()
+        spawnEnemies()
+        return characterArray
+    }
+
+    fun addPlayerAtStairs() {
         var stairsDown: Coord? = null
         var stairsUp: Coord? = null
-        for (y in 0 until level.map.yMax) {
-            for (x in 0 until level.map.xMax) {
-                for (z in 0 until level.map.map[y][x].size) {
-                    if (level.map.map[y][x][z] is DungeonStairsDown)
+        for (y in 0 until level.sizeY) {
+            for (x in 0 until level.sizeX) {
+                for (z in 0 until level.map[y][x].size) {
+                    if (level.map[y][x][z] is DungeonStairsDown)
                         stairsDown = Coord.get(x, y)
-                    if (level.map.map[y][x][z] is DungeonStairsUp)
+                    if (level.map[y][x][z] is DungeonStairsUp)
                         stairsUp = Coord.get(x, y)
                 }
             }
@@ -55,8 +60,6 @@ class GenerateCharacters(
 
         characterArray.add(Player)
         characterMap[Player.yPos][Player.xPos] = Player
-        spawnEnemies()
-        return characterArray
     }
 
 

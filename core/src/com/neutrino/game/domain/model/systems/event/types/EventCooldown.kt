@@ -7,7 +7,8 @@ import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.Event
 import com.neutrino.game.domain.model.systems.event.Timed
 import com.neutrino.game.domain.model.systems.skills.Skill
-import kotlinx.serialization.Serializable
+import com.neutrino.game.utility.Serialize
+
 import kotlin.reflect.KClass
 
 class EventCooldown(): Event(), Timed {
@@ -54,11 +55,12 @@ class EventCooldown(): Event(), Timed {
     }
 }
 
-@Serializable
 sealed class CooldownType {
     object FOOD: CooldownType()
+    @Serialize
     data class SKILL(val skill: Skill): CooldownType()
     /** Cooldown for a specific item */
+    @Serialize
     data class ITEM(val item: KClass<out Item>): CooldownType()
     object NONE: CooldownType()
 }

@@ -3,14 +3,15 @@ package com.neutrino.game.domain.model.items.items
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
-import com.neutrino.game.utility.serialization.AtlasRegion
-import kotlinx.serialization.Serializable
+
+
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-@Serializable
 class Gold: Item(), ItemType.MISC {
+    @Transient
     override val name: String = "Gold"
+    @Transient
     override val description: String = ""
     override var amount: Int? = 1
         set(value) {
@@ -21,10 +22,12 @@ class Gold: Item(), ItemType.MISC {
             realValue = amount!!
         }
 
+    @Transient
     override val textureNames: List<String> = listOf(
         "gold1", "gold2", "gold3", "gold4", "gold5", "gold6", "gold7", "gold8"
     )
-    override var texture: AtlasRegion = pickTexture()
+    override var texture: TextureAtlas.AtlasRegion = pickTexture()
+    @Transient
     override val itemTier: Int = 1
 
     override fun randomize(randomGenerator: Random, quality: Float, difficulty: Float): Item {

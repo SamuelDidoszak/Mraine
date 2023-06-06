@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.systems.skills.Skill
-import com.neutrino.game.utility.serialization.AtlasRegion
 
 class SkillActor(val skill: Skill): Group(), TextureHaver, PickupActor {
     // needed for resize
@@ -16,7 +15,7 @@ class SkillActor(val skill: Skill): Group(), TextureHaver, PickupActor {
     private var actorHeight: Float = ogHeight
 
     override val textureNames: List<String> = listOf(skill.textureName)
-    override var texture: AtlasRegion = setTexture()
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
     override var mirrored: Boolean = false
 
     val backgroundTexture = Constants.DefaultUITexture.findRegion("skillBackground")

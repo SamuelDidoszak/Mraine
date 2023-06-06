@@ -52,7 +52,7 @@ class GenerateItems(
             }
         }
 
-        printGeneratedItems()
+//        printGeneratedItems()
 
         // Add items to containers
 

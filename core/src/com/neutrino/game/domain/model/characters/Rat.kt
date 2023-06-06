@@ -1,6 +1,7 @@
 package com.neutrino.game.domain.model.characters
 
 import com.badlogic.gdx.graphics.g2d.Animation
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.Constants
 import com.neutrino.game.domain.model.characters.utility.EnemyAi
@@ -9,7 +10,7 @@ import com.neutrino.game.domain.model.characters.utility.Randomization
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.edible.Meat
-import com.neutrino.game.utility.serialization.AtlasRegion
+
 import kotlin.reflect.KClass
 
 class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Randomization, HasDrops {
@@ -47,7 +48,7 @@ class Rat(xPos: Int, yPos: Int, turn: Double) : Character(xPos, yPos, turn), Ran
     override val textureNames: List<String> = listOf(
         "rat#1", "rat#2", "rat#3", "rat#4", "rat#5", "rat#6"
     )
-    override var texture: AtlasRegion = Constants.DefaultItemTexture.findRegion("knife")
+    override var texture: TextureAtlas.AtlasRegion = Constants.DefaultItemTexture.findRegion("knife")
 
     override val textureHaver: TextureHaver = this
 

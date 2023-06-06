@@ -2,10 +2,9 @@ package com.neutrino.game.domain.model.systems.event.wrappers
 
 import com.neutrino.game.domain.model.systems.event.Event
 import com.neutrino.game.domain.model.systems.event.Timed
-import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.Serializable
+import com.neutrino.game.utility.Serialize
 
-@Serializable
+@Serialize
 data class TimedEvent(
     /** Execution delay */
     override val turnDelay: Double,
@@ -13,7 +12,7 @@ data class TimedEvent(
     override val cooldown: Double,
     /** How many times the event will occur */
     override var executions: Int,
-    @Polymorphic override val event: Event
+    override val event: Event
 ): EventWrapper(), Timed {
     /**
      * Creates an event that lasts infinitely

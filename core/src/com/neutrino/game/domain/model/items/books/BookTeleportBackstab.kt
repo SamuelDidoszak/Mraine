@@ -3,9 +3,7 @@ package com.neutrino.game.domain.model.items.books
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.SkillBook
 import com.neutrino.game.domain.model.systems.skills.SkillTeleportBackstab
-import kotlinx.serialization.Serializable
 
-@Serializable
 class BookTeleportBackstab: SkillBook(SkillTeleportBackstab(Player)) {
     override val description: String = skill.description
 

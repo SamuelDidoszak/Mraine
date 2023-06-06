@@ -71,17 +71,17 @@ object LevelArrays {
     }
 
     fun getMap(): List<List<MutableList<Entity>>> {
-        return Turn.currentLevel.map.map
+        return Turn.currentLevel.map
     }
 
     fun getEntitiesAt(coord: Coord): MutableList<Entity> {
         val coord = parseCoord(coord)
-        return Turn.currentLevel.map.map[coord.y][coord.x]
+        return Turn.currentLevel.map[coord.y][coord.x]
     }
 
     fun getEntitiesAt(x: Int, y: Int): MutableList<Entity> {
         val coord = parseCoord(Coord.get(x, y))
-        return Turn.currentLevel.map.map[coord.y][coord.x]
+        return Turn.currentLevel.map[coord.y][coord.x]
     }
 
     fun getImpassableList(): ArrayList<Coord> {

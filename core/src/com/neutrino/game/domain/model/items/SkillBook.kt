@@ -9,10 +9,9 @@ import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.model.systems.skills.SkillType
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.graphics.utility.ColorUtils.toTextraColor
-import com.neutrino.game.utility.serialization.AtlasRegion
-import kotlinx.serialization.Serializable
 
-@Serializable
+
+
 abstract class SkillBook(val skill: Skill): Item(), ItemType.USABLE {
 
     override val name: String = ColorUtils.getSkillTypeColor(skill.skillType).toTextraColor() + skill.name + " skill book"
@@ -28,7 +27,7 @@ abstract class SkillBook(val skill: Skill): Item(), ItemType.USABLE {
 
     override val textureNames: List<String> = listOf()
 
-    override lateinit var texture: AtlasRegion
+    override lateinit var texture: TextureAtlas.AtlasRegion
 
     fun getTexture(skillType: SkillType): TextureAtlas.AtlasRegion {
         return super.getTexture("book")

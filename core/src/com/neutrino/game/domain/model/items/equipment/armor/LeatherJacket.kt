@@ -1,5 +1,6 @@
 package com.neutrino.game.domain.model.items.equipment.armor
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.event.Data
@@ -9,7 +10,7 @@ import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
-import com.neutrino.game.utility.serialization.AtlasRegion
+
 import kotlin.math.roundToInt
 
 class LeatherJacket: EquipmentItem(), ItemType.EQUIPMENT.TORSO {
@@ -17,7 +18,7 @@ class LeatherJacket: EquipmentItem(), ItemType.EQUIPMENT.TORSO {
     override val description: String = "Makes you cool. And protected"
 
     override val textureNames: List<String> = listOf("leatherJacket")
-    override var texture: AtlasRegion = setTexture()
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
 
     override var goldValueOg: Int = 60
 

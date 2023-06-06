@@ -2,10 +2,20 @@ package com.neutrino.game.domain.model.systems.event
 
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.graphics.utility.ColorUtils.toHexaDecimal
+import com.neutrino.game.utility.Serialize
 
 class RequirementPrintable(
     override val data: MutableMap<String, Data<*>> = mutableMapOf()
 ): DataMap {
+
+//    override fun serializeHeader(kryo: Kryo?, output: Output?) {
+//        kryo!!.writeClassAndObject(output, data)
+//    }
+//
+//    constructor(kryo: Kryo?, input: Input?): this(
+//        kryo!!.readClassAndObject(input) as MutableMap<String, Data<*>>
+//    )
+
     private val requirementList: ArrayList<() -> Boolean> = ArrayList()
     private val printableForm: ArrayList<PrintableReq> = ArrayList()
 
@@ -49,6 +59,7 @@ class RequirementPrintable(
         return if (requirementList[i]()) metColor else unmetColor
     }
 
+    @Serialize
     data class PrintableReq(
         val requirementName: String,
         val value: Any?,

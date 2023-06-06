@@ -1,8 +1,10 @@
 package com.neutrino.game.domain.model.characters
 
 import com.badlogic.gdx.graphics.g2d.Animation
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.neutrino.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.Constants
@@ -14,10 +16,13 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
 import com.neutrino.game.domain.model.systems.CharacterTag
+import com.neutrino.game.domain.model.systems.event.types.EventManaRegen
+import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
+import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.*
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.utility.serialization.AtlasRegion
+
 import kotlin.reflect.KClass
 
 object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, HasPassives {
@@ -210,26 +215,25 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         skillList.add(SkillCripplingSpin(this))
         skillList.add(SkillTeleport(this))
         skillList.add(SkillTeleportToStairs(this))
+        skillList.add(SkillTeleportToStairsDown(this))
+        skillList.add(SkillMeteorite(this))
 //        skillList.add(SkillTeleportBackstab(this))
 //        skillList.add(SkillManaDrain(this))
-//        skillList.add(SkillMeteorite(this))
 //        skillList.add(SkillShieldBash(this))
 //        skillList.add(SkillTwoshot(this))
 
 //        for (i in 0 .. 100)
 //            skillList.add(SkillMeteorite(this))
 
-        println("Skill size ${skillList.size}")
-
-//        val manaRegen = CharacterEvent(Player, TimedEvent(0.0, 0.3, Int.MAX_VALUE, EventManaRegen(Player, 0.1f)), Turn.turn)
-//        EventDispatcher.dispatchEvent(manaRegen)
+        val manaRegen = CharacterEvent(Player, TimedEvent(0.0, 0.3, Int.MAX_VALUE, EventManaRegen(Player, 0.1f)), Turn.turn)
+        EventDispatcher.dispatchEvent(manaRegen)
 
         addTag(CharacterTag.IncreaseOnehandedDamage(400f))
         addTag(CharacterTag.IncreaseStealthDamage(1.5f))
 
         addPassive(IncreaseTwohandedDamage(this, 1.1f))
 
-        addTag(CharacterTag.BerserkLowerHpHigherDmg(0.8f, 2f))
+//        addTag(CharacterTag.BerserkLowerHpHigherDmg(0.8f, 2f))
 
 //        val event = (eventArray.find { it == manaRegen }?.event as EventManaRegen?)
 //        event?.power = 5f
@@ -242,7 +246,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
     override val textureNames: List<String> = listOf(
         "buddy#1", "buddy#2", "buddy#3", "buddy#4", "buddy#5"
     )
-    override var texture: AtlasRegion = Constants.DefaultItemTexture.findRegion("knife")
+    override var texture: TextureAtlas.AtlasRegion = Constants.DefaultItemTexture.findRegion("knife")
 
     override val defaultAnimationName: String = "buddy"
     override lateinit var defaultAnimation: Animation<TextureRegion>

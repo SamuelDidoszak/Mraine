@@ -1,19 +1,21 @@
 package com.neutrino.game.domain.model.entities
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.neutrino.game.domain.model.entities.utility.EntityChecker
 import com.neutrino.game.domain.model.entities.utility.OnMapPosition
-import com.neutrino.game.utility.serialization.AtlasRegion
-import com.neutrino.game.utility.serialization.AtlasRegionSerializer
-import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
-@Serializable
 class DungeonWall: Wall() {
+    @Transient
     override var allowOnTop = false
+    @Transient
     override var allowCharacterOnTop = false
+    @Transient
     override val name = "Dungeon wall"
+    @Transient
     override val description = "The wall of a dungeon. It wouldn't be fun if it suddenly collapsed"
 
+    @Transient
     override val textureNames: List<String> = listOf("dungeonWall$1","dungeonWall$2","dungeonWall$3","dungeonWall$4","dungeonWall$5",
         "dungeonWallLeft$1","dungeonWallLeft$2","dungeonWallLeft$3","dungeonWallLeft$4","dungeonWallLeft$5",
         "dungeonWallRight$1","dungeonWallRight$2","dungeonWallRight$3","dungeonWallRight$4","dungeonWallRight$5",
@@ -24,8 +26,7 @@ class DungeonWall: Wall() {
         "dungeonWallSingle$1","dungeonWallSingle$2",
         "dungeonWallSingleHorizontal$1","dungeonWallSingleHorizontal$2","dungeonWallSingleHorizontal$3","dungeonWallSingleHorizontal$4","dungeonWallSingleHorizontal$5",
         )
-    @Serializable(with = AtlasRegionSerializer::class)
-    override var texture: AtlasRegion = setTexture()
+    override var texture: TextureAtlas.AtlasRegion = setTexture()
 
     override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) {
         val randVal = randomGenerator.nextFloat() * 100

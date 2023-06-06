@@ -14,7 +14,7 @@ import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.turn.Turn
 import squidpony.squidmath.Coord
 
-class SkillTeleportToStairs(override val character: Character): Skill.ActiveSkill {
+class SkillTeleportToStairsDown(override val character: Character): Skill.ActiveSkill {
     override val skillType: SkillType = SkillType.INTELLIGENCE
     override val name: String = "Teleport"
     override val description: String = "Teleports you away"
@@ -48,7 +48,7 @@ class SkillTeleportToStairs(override val character: Character): Skill.ActiveSkil
                 break
         }
 
-        val event = CharacterEvent(character, OnOffEvent(EventTeleport(character, stairsUp!!)), Turn.turn)
+        val event = CharacterEvent(character, OnOffEvent(EventTeleport(character, stairsDown!!)), Turn.turn)
         EventDispatcher.dispatchEvent(event)
         causeCooldown()
     }

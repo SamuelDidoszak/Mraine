@@ -12,7 +12,6 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.equalsDelta
 import com.neutrino.game.lessThanDelta
 import space.earlygrey.shapedrawer.ShapeDrawer
-import kotlin.math.abs
 import kotlin.math.sign
 
 class TurnBar(
@@ -62,15 +61,20 @@ class TurnBar(
         }
         drawer?.setColor(pickColor())
 
+        val prevSize = size
         size =
             if (slowerThanPlayer)
                 ((characterTurn - Player.turn) / Player.movementSpeed).toFloat()
             else
-                (abs(Player.turn - characterTurn) / movementSpeed).toFloat()
+                (((Player.turn) - (characterTurn - Player.movementSpeed)) / movementSpeed).toFloat()
 //                ((characterTurn - Player.turn) / movementSpeed).toFloat()
-        println("Size%: $size")
+//        println("Size%: $size")
         size *= 60f / barCount
-        addAction(Actions.sizeTo(size, 8f, Constants.MoveSpeed))
+        addAction(Actions.sequence(
+            Actions.delay(delayTime),
+            Actions.sizeTo(size, 8f, Constants.MoveSpeed)
+        ))
+        size = prevSize
     }
 
     private fun pickColor(a: Float = 1f): Color {
@@ -83,9 +87,11 @@ class TurnBar(
         return baseColor
     }
 
+    var delayTime = 0f
     override fun setSize(width: Float, height: Float) {
-        super.setSize(width, height)
+        super.setSize(width, 8f)
         size = width
+        delayTime = Constants.MoveSpeed * ((8f - height) / 8f)
     }
 
     override fun remove(): Boolean {

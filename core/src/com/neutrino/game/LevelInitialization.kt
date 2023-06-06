@@ -1,23 +1,21 @@
 package com.neutrino.game
 
 import com.badlogic.gdx.Gdx
+import com.esotericsoftware.kryo.kryo5.io.Input
+import com.esotericsoftware.kryo.kryo5.io.Output
 import com.esotericsoftware.kryo.kryo5.minlog.Log
 import com.neutrino.AnimatedActors
 import com.neutrino.GameStage
 import com.neutrino.LevelDrawer
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.entities.CrateDoor
-import com.neutrino.game.domain.model.entities.Entity
-import com.neutrino.game.domain.model.entities.StonePillar
-import com.neutrino.game.domain.model.entities.containers.Barrel
-import com.neutrino.game.domain.model.entities.utility.Destructable
-import com.neutrino.game.domain.model.entities.utility.Interactable
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.domain.use_case.level.GetLevel
+import com.neutrino.game.domain.use_case.level.GenerateLevel
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
+import com.neutrino.game.domain.use_case.map.GenerateCharacters
 import com.neutrino.game.utility.serialization.KryoObj
 import squidpony.squidmath.Coord
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import kotlin.system.measureNanoTime
 
@@ -32,12 +30,8 @@ class LevelInitialization (
     fun initializeLevel(levelChunkCoords: LevelChunkCoords, playerCoords: Coord?) {
         val previousLevel = gameStage.level
         if (previousLevel != null) {
-            val file = Gdx.files.local("saves/${previousLevel.id}")
-            file.writeString(Serializers.format.encodeToString(previousLevel), false)
+            saveLevel(previousLevel)
 
-//            file.writeString(Serializers.format.encodeToString(previousLevel), false)
-
-//            gameStage.actors.removeAll { true }
             levelDrawer.clearChildren()
             Turn.unsetLevel()
             previousLevel.dispose()
@@ -45,9 +39,10 @@ class LevelInitialization (
             levelDrawer.clearLights()
         }
 
-        val level: Level = GetLevel()(levelChunkCoords)
+        val level = loadLevel(levelChunkCoords) ?: GenerateLevel()(levelChunkCoords)
+
         level.characterArray.forEach {levelDrawer.addActor(it)}
-        level.provideTextures()
+        level.provideCharacterTextures()
         levelDrawer.initializeLevel(level)
         Turn.setLevel(level)
         gameStage.level = level
@@ -59,5 +54,61 @@ class LevelInitialization (
 
         if (previousLevel != null)
             Player.move(Player.getPosition())
+    }
+
+    private fun saveLevel(level: Level) {
+        val file = Gdx.files.local("saves/${level.id}")
+        val fileOutputStream = FileOutputStream(file.file())
+        val output = Output(fileOutputStream)
+
+        Log.NONE()
+        val writeNs = measureNanoTime {
+            KryoObj.kryo.writeObject(output, level)
+        }
+        output.close()
+        println("write:\t$writeNs")
+    }
+
+    private fun loadLevel(chunkCoords: LevelChunkCoords): Level? {
+        val id: Int = chunkCoords.toHash()
+        val file = Gdx.files.local("saves/$id")
+        if (!file.exists())
+            return null
+        val fileInputStream = FileInputStream(file.file())
+        val input = Input(fileInputStream)
+        val level: Level
+        Log.NONE()
+        val readNs = measureNanoTime {
+            level =
+                KryoObj.kryo.readObject(input, Level::class.java)
+        }
+        println("read:\t$readNs")
+        input.close()
+
+        return level
+    }
+
+    /** TODO Temporary **/
+    private fun addPlayer(level: Level) {
+        val generateCharacters = GenerateCharacters(level)
+        generateCharacters.addPlayerAtStairs()
+        level.characterArray.addAll(generateCharacters.characterArray)
+    }
+
+    private fun printData(level: Level) {
+        println("Level: $level")
+        println(level.movementMap)
+
+        println("characters")
+        println("Is null ${level.characterArray == null}")
+        println(level.characterArray)
+
+        println("Adding characters")
+        println("Level: ${level.levelChunkCoords}")
+
+        // add player
+
+        println("Characters:")
+        level.characterArray.forEach { println(it.name) }
     }
 }

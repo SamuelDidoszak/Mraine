@@ -2,6 +2,8 @@ package com.neutrino.game.domain.use_case.level
 
 import com.neutrino.game.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.domain.use_case.map.GenerateCharacters
+import com.neutrino.game.domain.use_case.map.GenerateMap
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -15,6 +17,13 @@ class GenerateLevel(
             sizeX = LevelChunkSize,
             sizeY = LevelChunkSize
         )
+
+        level.map = GenerateMap(level)()
+        level.movementMap = level.createMovementMap()
+        val generateCharacters = GenerateCharacters(level)
+        level.characterArray = generateCharacters.generate()
+        level.characterMap = generateCharacters.characterMap
+        level.provideTextures()
 
         return level
     }

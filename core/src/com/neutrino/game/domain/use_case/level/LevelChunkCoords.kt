@@ -1,9 +1,9 @@
 package com.neutrino.game.domain.use_case.level
 
-import kotlinx.serialization.Serializable
+import com.neutrino.game.utility.Serialize
 
-@Serializable
-data class LevelChunkCoords(
+@Serialize
+class LevelChunkCoords(
     val x: Int,
     val y: Int,
     val z: Int

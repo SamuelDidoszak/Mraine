@@ -2,9 +2,7 @@ package com.neutrino.game.graphics.shaders
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
-import kotlinx.serialization.Serializable
 
-@Serializable
 sealed class ShaderParametered {
     abstract val shader: ShaderProgram
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.utils.ArrayMap
 import com.github.tommyettinger.textra.Font
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.domain.model.entities.Entity
@@ -69,7 +70,7 @@ object Constants {
     //  Global textures for items and entities
 
     /** Stores hashcodes of every texture */
-    val textureHashCodes: HashMap<Int, TextureAtlas> = HashMap()
+    val textureArrayMap: ArrayMap<Texture, TextureAtlas> = ArrayMap<Texture, TextureAtlas>()
 
     val DefaultItemTexture: TextureAtlas = TextureAtlas("textures/items.atlas")
     val DefaultEntityTexture: TextureAtlas = TextureAtlas("textures/entities.atlas")
@@ -93,11 +94,11 @@ object Constants {
 
     init {
         // Store hash codes
-        DefaultItemTexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultItemTexture }
-        DefaultEntityTexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultEntityTexture }
-        DefaultProjectileTexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultProjectileTexture }
-        DefaultIconTexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultIconTexture }
-        DefaultUITexture.textures.forEach { textureHashCodes[it.hashCode()] = DefaultUITexture }
+        DefaultItemTexture.textures.forEach { textureArrayMap.put(it, DefaultItemTexture) }
+        DefaultEntityTexture.textures.forEach { textureArrayMap.put(it, DefaultEntityTexture) }
+        DefaultProjectileTexture.textures.forEach { textureArrayMap.put(it, DefaultProjectileTexture) }
+        DefaultIconTexture.textures.forEach { textureArrayMap.put(it, DefaultIconTexture) }
+        DefaultUITexture.textures.forEach { textureArrayMap.put(it, DefaultUITexture) }
 //        textureHashCodes[WhitePixel.hashCode()] = WhitePixel
     }
 }

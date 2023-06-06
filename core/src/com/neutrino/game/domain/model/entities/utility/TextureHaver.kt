@@ -1,12 +1,11 @@
 package com.neutrino.game.domain.model.entities.utility
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.utility.serialization.AtlasRegion
 import kotlin.random.Random
 
 interface TextureHaver {
     val textureNames: List<String>
-    var texture: AtlasRegion
+    var texture: TextureAtlas.AtlasRegion
     var mirrored: Boolean
 
     fun getTexture(name: String): TextureAtlas.AtlasRegion

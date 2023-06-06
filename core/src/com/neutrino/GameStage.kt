@@ -80,10 +80,10 @@ class GameStage(
             MathUtils.ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f) / 64)
 
         // Make sure that values are in range
-        yBottom = if (yBottom <= 0) 0 else if (yBottom > level!!.map.map.size) level!!.map.map.size else yBottom
-        yTop = if (yTop <= 0) 0 else if (yTop > level!!.map.map.size) level!!.map.map.size else yTop
-        xLeft = if (xLeft <= 0) 0 else if (xLeft > level!!.map.map[0].size) level!!.map.map[0].size else xLeft
-        xRight = if (xRight <= 0) 0 else if (xRight > level!!.map.map[0].size) level!!.map.map[0].size else xRight
+        yBottom = if (yBottom <= 0) 0 else if (yBottom > level!!.map.size) level!!.map.size else yBottom
+        yTop = if (yTop <= 0) 0 else if (yTop > level!!.map.size) level!!.map.size else yTop
+        xLeft = if (xLeft <= 0) 0 else if (xLeft > level!!.map[0].size) level!!.map[0].size else xLeft
+        xRight = if (xRight <= 0) 0 else if (xRight > level!!.map[0].size) level!!.map[0].size else xRight
 
         return (tileX in xLeft..xRight) && (tileY in yTop..yBottom)
     }
@@ -161,7 +161,7 @@ class GameStage(
                         ItemDetailsPopup(item)
             }
             else
-                popup = EntityLookupPopup(level!!.map.map[tile.y][tile.x], level!!.characterMap[tile.y][tile.x])
+                popup = EntityLookupPopup(level!!.map[tile.y][tile.x], level!!.characterMap[tile.y][tile.x])
             this.addActor(popup)
             popup.setPosition(touch.x, touch.y)
             return true

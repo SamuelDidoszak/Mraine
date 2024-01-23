@@ -54,7 +54,8 @@ class Level(
     @Transient
     val textureList: ArrayList<TextureAtlas> = ArrayList()
 
-    var tagList: List<MapTags> = listOf(MapTags.STARTING_AREA)
+    // listOf(MapTags.STARTING_AREA)
+    var tagList: List<MapTags> = listOf()
 
     lateinit var map: List<List<MutableList<Entity>>>
 

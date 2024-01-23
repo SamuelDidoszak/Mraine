@@ -13,24 +13,24 @@ import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 
 import kotlin.math.roundToInt
 
-class SmallBackpack: EquipmentItem(), ItemType.EQUIPMENT.BAG {
-    override val name: String = "Small backpack"
-    override val description: String = "A small backpack"
-
-    override val textureNames: List<String> = listOf("smallBackpack")
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
-
-    override var goldValueOg: Int = 30
-
-    override var requirements: RequirementPrintable = RequirementPrintable(mutableMapOf(Pair("character", Data<Character>())))
-
-    override val modifierList: ArrayList<EventWrapper> = arrayListOf(
-        OnOffEvent(EventModifyCharacterParam(CharacterParamsEnum.INVENTORYSIZE, 20))
-    )
-    init {
-//        statRandomization(1f)
-
-        goldValue = goldValueOg
-        realValue = (goldValue * 1.2).roundToInt()
-    }
-}
+//class SmallBackpack: EquipmentItem(), ItemType.EQUIPMENT.BAG {
+//    override val name: String = "Small backpack"
+//    override val description: String = "A small backpack"
+//
+//    override val textureNames: List<String> = listOf("smallBackpack")
+//    override var texture: TextureAtlas.AtlasRegion = setTexture()
+//
+//    override var goldValueOg: Int = 30
+//
+//    override var requirements: RequirementPrintable = RequirementPrintable(mutableMapOf(Pair("character", Data<Character>())))
+//
+//    override val modifierList: ArrayList<EventWrapper> = arrayListOf(
+//        OnOffEvent(EventModifyCharacterParam(CharacterParamsEnum.INVENTORYSIZE, 20))
+//    )
+//    init {
+////        statRandomization(1f)
+//
+//        goldValue = goldValueOg
+//        realValue = (goldValue * 1.2).roundToInt()
+//    }
+//}

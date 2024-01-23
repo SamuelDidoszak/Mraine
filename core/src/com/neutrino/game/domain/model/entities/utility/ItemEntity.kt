@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.utility.serialization.HeaderSerializable
@@ -37,8 +38,8 @@ class ItemEntity(@Transient val item: Item): Entity(), Interactable, HeaderSeria
     override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) { }
 
     @Transient
-    override val interactionList: List<Interaction> = List(1) {
-        Interaction.ITEM()
+    override val interactionList: List<InteractionType> = List(1) {
+        InteractionType.ITEM()
     }
 
     @Transient

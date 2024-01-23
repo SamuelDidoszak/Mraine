@@ -1,5 +1,8 @@
 package com.neutrino.game.domain.model.characters.utility
 
+import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.entities.shared.util.RangeType
+
 interface Stats: HasRange {
     var hpMax: Float
     var hp: Float

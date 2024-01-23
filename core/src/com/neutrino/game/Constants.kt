@@ -69,6 +69,11 @@ object Constants {
 
     //  Global textures for items and entities
 
+    val SCALE = 4f
+    val SCALE_INT = SCALE.toInt()
+    val TILE_SIZE = 16 * SCALE
+    val TILE_SIZE_INT = 16 * SCALE_INT
+
     /** Stores hashcodes of every texture */
     val textureArrayMap: ArrayMap<Texture, TextureAtlas> = ArrayMap<Texture, TextureAtlas>()
 

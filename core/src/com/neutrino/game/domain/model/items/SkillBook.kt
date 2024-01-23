@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.items
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.domain.model.characters.utility.HasRange
+import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.domain.model.systems.event.types.EventLearnSkill
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent

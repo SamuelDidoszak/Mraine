@@ -1,9 +1,11 @@
 package com.neutrino.game.domain.model.entities.utility
 
-interface Interactable {
-    val interactionList: List<Interaction>
+import com.neutrino.game.entities.shared.util.InteractionType
 
-    fun getPrimaryInteraction(): Interaction? {
+interface Interactable {
+    val interactionList: List<InteractionType>
+
+    fun getPrimaryInteraction(): InteractionType? {
         for (action in interactionList)
             if (action.isPrimary)
                 return action

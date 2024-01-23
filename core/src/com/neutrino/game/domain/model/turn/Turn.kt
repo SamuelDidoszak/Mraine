@@ -10,11 +10,9 @@ import com.neutrino.game.domain.model.characters.utility.ActorVisuals
 import com.neutrino.game.domain.model.characters.utility.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.characters.utility.HasDrops
-import com.neutrino.game.domain.model.entities.DungeonStairsDown
-import com.neutrino.game.domain.model.entities.DungeonStairsUp
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.Destructable
-import com.neutrino.game.domain.model.entities.utility.Interaction
+import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.utility.HasProjectile
@@ -165,7 +163,7 @@ object Turn {
                     is Action.INTERACTION -> {
                         // Entity position(x, y) can be derived from ai.entityTargetCoords
                         when (action.interaction) {
-                            is Interaction.ITEM -> {
+                            is InteractionType.ITEM -> {
                                 val item = (action.entity as ItemEntity).item
                                 if (Player.addToInventory(item)) {
                                     ActorVisuals.showPickedUpItem(Player, item)
@@ -174,7 +172,7 @@ object Turn {
                                     println("Inventory is full!")
                                 }
                             }
-                            is Interaction.DESTROY -> {
+                            is InteractionType.DESTROY -> {
                                 val entity = (action.entity as Destructable)
                                 if (Player.equipment.getEquipped(EquipmentType.RHAND) is HasProjectile)
                                     (Player.equipment.getEquipped(EquipmentType.RHAND) as HasProjectile)
@@ -191,14 +189,14 @@ object Turn {
                                     mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
                                 }
                             }
-                            is Interaction.OPEN -> {
+                            is InteractionType.OPEN -> {
                                 currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].remove(action.entity)
                                 for (item in (action.entity as Container).itemList) {
                                     currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
                                 }
                                 mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
                             }
-                            is Interaction.DOOR -> {
+                            is InteractionType.DOOR -> {
                                 action.interaction.act()
                                 if (action.entity.allowCharacterOnTop)
                                     mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))

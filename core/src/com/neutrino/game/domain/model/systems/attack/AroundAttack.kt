@@ -1,8 +1,8 @@
 package com.neutrino.game.domain.model.systems.attack
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.utility.HasRange
-import com.neutrino.game.domain.model.characters.utility.RangeType
+import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord
 

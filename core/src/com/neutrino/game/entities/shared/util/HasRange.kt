@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.characters.utility
+package com.neutrino.game.entities.shared.util
 
 import squidpony.squidmath.Coord
 import kotlin.math.asin
@@ -14,7 +14,7 @@ interface HasRange {
     }
 
     fun isInRange(center: Coord, target: Coord): Boolean {
-        return Companion.isInRange(center, target, range, rangeType)
+        return isInRange(center, target, range, rangeType)
     }
 
     companion object {

@@ -26,6 +26,7 @@ import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.domain.use_case.Shaderable
+import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.utility.ColorUtils

@@ -17,6 +17,7 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
+import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.utility.serialization.HeaderSerializable
 import kotlin.random.Random
 import kotlin.reflect.KClass
@@ -200,7 +201,7 @@ class Level(
     }
 
     /** Returns topmost entity with provided interaction type */
-    fun getEntityWithAction(xPos: Int, yPos: Int, interaction: KClass<Interaction>): Entity? {
+    fun getEntityWithAction(xPos: Int, yPos: Int, interaction: KClass<InteractionType>): Entity? {
         for (entity in map[yPos][xPos].reversed()) {
             if (entity is Interactable && entity.interactionList.find { it::class == interaction } != null) {
                 return entity

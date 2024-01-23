@@ -20,12 +20,12 @@ import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
-import com.neutrino.game.domain.model.characters.utility.HasRange
-import com.neutrino.game.domain.model.characters.utility.RangeType
+import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interactable
-import com.neutrino.game.domain.model.entities.utility.Interaction
+import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
@@ -229,7 +229,7 @@ class GameScreen: KtxScreen {
                 else {
                     val action = entity.getPrimaryInteraction()
                     if (action != null) {
-                        if (action is Interaction.DESTROY)
+                        if (action is InteractionType.DESTROY)
                             action.requiredDistance = if ((entity as Destructable).destroyed) -1 else Player.range
                         // check the distance and act if close enough
                         if ((entityCoords.first in Player.xPos - action.requiredDistance .. Player.xPos + action.requiredDistance) &&

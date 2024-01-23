@@ -16,7 +16,7 @@ import com.neutrino.game.UI.popups.EquipmentComparisonPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Animated
-import com.neutrino.game.domain.model.characters.utility.HasRange
+import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.graphics.shaders.Shaders

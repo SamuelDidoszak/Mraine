@@ -4,7 +4,8 @@ import com.neutrino.game.compareDelta
 import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.Interactable
-import com.neutrino.game.domain.model.entities.utility.Interaction
+import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.utility.BArray
 import kotlin.math.ceil
 import kotlin.math.min
@@ -95,7 +96,7 @@ class Fov(var map: List<List<MutableList<Entity>>>) {
     fun transparent(x: Int, y: Int): Boolean {
         for (entity in map[y][x]) {
             if (entity is DungeonWall ||
-                (entity is Interactable && entity.getPrimaryInteraction() is Interaction.DOOR))
+                (entity is Interactable && entity.getPrimaryInteraction() is InteractionType.DOOR))
                 return false
         }
         return true

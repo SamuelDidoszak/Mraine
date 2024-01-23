@@ -2,7 +2,7 @@ package com.neutrino.game.domain.model.systems.skills
 
 import com.neutrino.EventDispatcher
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.utility.HasRange
+import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.domain.model.systems.event.CausesCooldown
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventCooldown

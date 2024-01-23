@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.items.edible
 
 //import com.badlogic.gdx.graphics.g2d.TextureAtlas
-//import com.neutrino.game.domain.model.characters.utility.HasRange
+//import com.neutrino.game.entities.shared.util.HasRange
 //import com.neutrino.game.domain.model.items.Item
 //import com.neutrino.game.domain.model.items.ItemType
 //import com.neutrino.game.domain.model.items.UseOn

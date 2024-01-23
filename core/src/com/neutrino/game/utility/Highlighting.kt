@@ -4,11 +4,12 @@ import com.badlogic.gdx.graphics.Color
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.utility.HasRange
+import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.domain.model.entities.Floor
 import com.neutrino.game.domain.model.entities.utility.*
 import com.neutrino.game.domain.model.systems.attack.utility.Attackable
 import com.neutrino.game.domain.use_case.Shaderable
+import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.graphics.shaders.ColorOverlayShader
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
@@ -157,7 +158,7 @@ class Highlighting {
 
         outlinedOnHover = entity
         shaderOnHover = OutlineShader(
-                if ((outlinedOnHover as Interactable).getPrimaryInteraction() is Interaction.DESTROY) {
+                if ((outlinedOnHover as Interactable).getPrimaryInteraction() is InteractionType.DESTROY) {
                     if ((outlinedOnHover as Destructable).destroyed)
                         OutlineShader.OUTLINE_CLEAR
                     else

@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.characters.utility
+package com.neutrino.game.entities.shared.util
 
 enum class RangeType {
     DIAGONAL,

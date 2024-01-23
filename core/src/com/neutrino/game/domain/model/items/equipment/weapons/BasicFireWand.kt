@@ -3,7 +3,7 @@ package com.neutrino.game.domain.model.items.equipment.weapons
 //import com.badlogic.gdx.graphics.g2d.TextureAtlas
 //import com.neutrino.game.compareDelta
 //import com.neutrino.game.domain.model.characters.Character
-//import com.neutrino.game.domain.model.characters.utility.RangeType
+//import com.neutrino.game.entities.shared.util.RangeType
 //import com.neutrino.game.domain.model.characters.utility.StatsEnum
 //import com.neutrino.game.domain.model.items.EquipmentItemRanged
 //import com.neutrino.game.domain.model.items.HandedItemType

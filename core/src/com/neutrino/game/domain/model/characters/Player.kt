@@ -22,6 +22,7 @@ import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.*
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.shared.util.RangeType
 
 import kotlin.reflect.KClass
 

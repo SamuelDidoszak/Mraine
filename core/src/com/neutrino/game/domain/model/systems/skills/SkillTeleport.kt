@@ -3,7 +3,7 @@ package com.neutrino.game.domain.model.systems.skills
 import com.neutrino.EventDispatcher
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.utility.RangeType
+import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventTeleport

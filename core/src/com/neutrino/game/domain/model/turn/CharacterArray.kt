@@ -1,7 +1,8 @@
 package com.neutrino.game.domain.model.turn
+
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.equalsDelta
-import com.neutrino.game.lessThanDelta
+import com.neutrino.game.util.equalsDelta
+import com.neutrino.game.util.lessThanDelta
 
 class CharacterArray(): ArrayList<Character>() {
     constructor(character: Character): this() {

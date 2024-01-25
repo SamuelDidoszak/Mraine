@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.Fonts
+import com.neutrino.game.util.Fonts
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.model.systems.skills.SkillType
 import com.neutrino.game.graphics.utility.ColorUtils

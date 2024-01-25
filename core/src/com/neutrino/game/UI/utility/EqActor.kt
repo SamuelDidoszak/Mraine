@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.items.Item
 
 class EqActor(val item: Item): Group(), PickupActor {

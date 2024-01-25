@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.items
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.utility.Serialize
 import kotlin.random.Random

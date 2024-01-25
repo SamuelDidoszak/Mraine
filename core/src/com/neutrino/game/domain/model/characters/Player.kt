@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.Constants
-import com.neutrino.game.compareDelta
+import com.neutrino.game.util.Constants
+import com.neutrino.game.util.compareDelta
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Equipment

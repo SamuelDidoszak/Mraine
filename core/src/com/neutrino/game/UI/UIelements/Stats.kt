@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.Fonts
+import com.neutrino.game.util.Fonts
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.roundOneDecimal

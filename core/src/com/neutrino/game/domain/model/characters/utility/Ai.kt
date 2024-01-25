@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.model.characters.utility
 
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.domain.model.turn.Action

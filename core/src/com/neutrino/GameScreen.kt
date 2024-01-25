@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 import com.neutrino.game.LevelInitialization
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.characters.Character

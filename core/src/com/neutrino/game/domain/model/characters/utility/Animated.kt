@@ -3,7 +3,7 @@ package com.neutrino.game.domain.model.characters.utility
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.neutrino.game.Constants.AnimationSpeed
+import com.neutrino.game.util.Constants.AnimationSpeed
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 
 interface Animated {

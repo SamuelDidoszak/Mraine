@@ -3,7 +3,7 @@ package com.neutrino.game.domain.use_case.map.utility
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.map.TagInterpretation
-import com.neutrino.game.isSuper
+import com.neutrino.game.util.isSuper
 import com.neutrino.game.lessThanDelta
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass

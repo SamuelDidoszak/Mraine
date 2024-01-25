@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.Matrix4
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 
 object Blurring {
     private val blurBatch = SpriteBatch(2)

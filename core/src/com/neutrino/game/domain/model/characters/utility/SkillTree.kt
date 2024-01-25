@@ -9,7 +9,7 @@ import com.neutrino.game.domain.model.systems.skills.passive.BerserkLowerHpHighe
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseMeleeDamage
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseOnehandedDamage
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
-import com.neutrino.game.round
+import com.neutrino.game.util.round
 import kotlin.reflect.KClass
 
 enum class SkillTree(val skills: List<List<Skill.PassiveSkill>>) {

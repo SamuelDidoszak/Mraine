@@ -30,8 +30,8 @@ import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.domain.use_case.level.LevelUseCases
-import com.neutrino.game.has
-import com.neutrino.game.lessThanDelta
+import com.neutrino.game.util.has
+import com.neutrino.game.util.lessThanDelta
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord

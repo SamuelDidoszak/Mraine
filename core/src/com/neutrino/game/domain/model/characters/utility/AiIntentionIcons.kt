@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.characters.utility
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 
 sealed class AiIntentionIcons {
     class ENEMY_DETECTED: AiIntentionIcons(), IntentionIcon {

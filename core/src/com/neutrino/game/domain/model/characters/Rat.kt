@@ -3,7 +3,7 @@ package com.neutrino.game.domain.model.characters
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.characters.utility.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.HasDrops
 import com.neutrino.game.domain.model.characters.utility.Randomization

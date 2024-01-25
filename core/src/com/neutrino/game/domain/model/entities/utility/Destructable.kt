@@ -5,7 +5,7 @@ import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord
-import com.neutrino.game.lessThanDelta
+import com.neutrino.game.util.lessThanDelta
 import squidpony.squidmath.Coord
 
 interface Destructable: Interactable, AttackableRequiresCoord {

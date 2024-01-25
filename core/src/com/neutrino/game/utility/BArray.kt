@@ -1,6 +1,6 @@
 package com.neutrino.game.utility
 
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 
 /**
  * Utilities for boolean arrays

@@ -19,7 +19,7 @@ import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.utility.EqElement
 import com.neutrino.game.domain.model.items.utility.Inventory
-import com.neutrino.game.isIn
+import com.neutrino.game.util.isIn
 import kotlin.math.ceil
 
 class InventoryManager(private val uiStage: UiStage) {

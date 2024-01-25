@@ -7,8 +7,8 @@ import com.esotericsoftware.kryo.kryo5.Kryo
 import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
 import com.neutrino.AnimatedActors
-import com.neutrino.game.Constants
-import com.neutrino.game.Constants.LevelChunkSize
+import com.neutrino.game.util.Constants
+import com.neutrino.game.util.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.entities.Entity

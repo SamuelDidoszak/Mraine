@@ -11,8 +11,8 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.Constants.MoveSpeed
-import com.neutrino.game.compareDelta
+import com.neutrino.game.util.Constants.MoveSpeed
+import com.neutrino.game.util.compareDelta
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.systems.CharacterTag

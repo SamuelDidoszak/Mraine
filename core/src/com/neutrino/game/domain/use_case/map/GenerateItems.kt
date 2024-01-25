@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.use_case.map
 
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.ItemEntity

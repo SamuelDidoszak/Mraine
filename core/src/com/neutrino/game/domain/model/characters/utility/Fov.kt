@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.model.characters.utility
 
-import com.neutrino.game.compareDelta
+import com.neutrino.game.util.compareDelta
 import com.neutrino.game.domain.model.entities.DungeonWall
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.Interactable

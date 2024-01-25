@@ -15,8 +15,8 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.Constants
-import com.neutrino.game.Fonts
+import com.neutrino.game.util.Constants
+import com.neutrino.game.util.Fonts
 import com.neutrino.game.UI.utility.SkillActor
 import com.neutrino.game.UI.utility.SkillTreeActor
 import com.neutrino.game.domain.model.characters.Player

@@ -1,7 +1,7 @@
 package com.neutrino.game.map.attributes
 
-import com.neutrino.game.Constants.SCALE
-import com.neutrino.game.Constants.SCALE_INT
+import com.neutrino.game.util.Constants.SCALE
+import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity

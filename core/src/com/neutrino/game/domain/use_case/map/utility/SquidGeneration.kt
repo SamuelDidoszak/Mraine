@@ -2,11 +2,11 @@ package com.neutrino.game.domain.use_case.map.utility
 
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.Wall
 import com.neutrino.game.domain.model.map.Level
-import com.neutrino.game.hasSuper
+import com.neutrino.game.util.hasSuper
 import squidpony.squidgrid.mapping.DungeonGenerator
 import squidpony.squidgrid.mapping.styled.TilesetType
 import squidpony.squidmath.Coord

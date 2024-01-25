@@ -13,6 +13,7 @@ import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.domain.use_case.level.GenerateLevel
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
+import com.neutrino.game.util.Constants
 import com.neutrino.game.utility.serialization.KryoObj
 import squidpony.squidmath.Coord
 import java.io.FileInputStream

@@ -47,6 +47,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer
 import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.concurrent.schedule
+import com.neutrino.game.util.*
 
 class HudStage(viewport: Viewport): Stage(viewport) {
     private val hudAtlas = TextureAtlas("UI/hud.atlas")

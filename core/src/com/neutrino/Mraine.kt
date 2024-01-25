@@ -3,7 +3,7 @@ package com.neutrino
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Texture
 import com.github.tommyettinger.textra.KnownFonts.setAssetPrefix
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
 import ktx.app.KtxGame
 
 class Mraine: KtxGame<Screen>() {

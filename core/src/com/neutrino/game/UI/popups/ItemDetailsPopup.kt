@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.Constants
-import com.neutrino.game.Fonts
+import com.neutrino.game.util.Constants
+import com.neutrino.game.util.Fonts
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.SkillBook

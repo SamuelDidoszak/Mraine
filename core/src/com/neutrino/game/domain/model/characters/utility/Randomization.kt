@@ -1,6 +1,7 @@
 package com.neutrino.game.domain.model.characters.utility
 
-import com.neutrino.game.Constants
+import com.neutrino.game.util.Constants
+import kotlin.math.exp
 import kotlin.math.roundToInt
 
 interface Randomization: Stats {

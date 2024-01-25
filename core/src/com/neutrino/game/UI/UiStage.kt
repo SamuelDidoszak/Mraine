@@ -24,6 +24,7 @@ import com.neutrino.game.UI.utility.ManagerType
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.util.Constants
 
 
 class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewport) {

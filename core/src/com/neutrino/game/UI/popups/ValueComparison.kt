@@ -1,6 +1,6 @@
 package com.neutrino.game.UI.popups
 
-import com.neutrino.game.equalsDelta
+import com.neutrino.game.util.equalsDelta
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.graphics.utility.ColorUtils.toTextraColor
 

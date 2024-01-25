@@ -2,8 +2,8 @@ package com.neutrino.game.domain.model.turn
 
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
-import com.neutrino.game.equalsDelta
-import com.neutrino.game.lessThanDelta
+import com.neutrino.game.util.equalsDelta
+import com.neutrino.game.util.lessThanDelta
 
 class EventArray: ArrayList<CharacterEvent>() {
     /** Adds the event both to this list and the character arrayList */

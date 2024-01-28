@@ -5,7 +5,6 @@ import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.items.Gold
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.map.utility.GenerationParams
 import com.neutrino.game.utility.Probability
@@ -85,22 +84,22 @@ class GenerateItems(
         }
     }
 
-    private fun printGeneratedItems() {
-        var totalValue = 0
-        var totalGold = 0
-        for (tier in itemPool) {
-            for (item in tier) {
-                if (item is Gold)
-                    totalGold += item.realValue
-                else
-                    println("${item.name} value: ${item.realValue}")
-                totalValue += item.realValue
-            }
-        }
-        println("Total value: $totalValue")
-        println("Total gold: $totalGold")
-
-    }
+//    private fun printGeneratedItems() {
+//        var totalValue = 0
+//        var totalGold = 0
+//        for (tier in itemPool) {
+//            for (item in tier) {
+//                if (item is Gold)
+//                    totalGold += item.realValue
+//                else
+//                    println("${item.name} value: ${item.realValue}")
+//                totalValue += item.realValue
+//            }
+//        }
+//        println("Total value: $totalValue")
+//        println("Total gold: $totalGold")
+//
+//    }
 
     /**
      * Returns the list of containers divided into lists having a particular item tier

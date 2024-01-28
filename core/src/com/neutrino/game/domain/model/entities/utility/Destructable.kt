@@ -23,7 +23,8 @@ interface Destructable: Interactable, AttackableRequiresCoord {
         val items = destroy()
         if (items != null) {
             for (item in items) {
-                LevelArrays.getEntitiesAt(coord).add(ItemEntity(item))
+                // TODO OLD
+//                LevelArrays.getEntitiesAt(coord).add(ItemEntity(item))
             }
         }
         LevelArrays.getImpassableList().remove(coord)

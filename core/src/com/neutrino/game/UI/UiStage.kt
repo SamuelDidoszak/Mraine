@@ -14,7 +14,6 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
 import com.neutrino.HudStage
-import com.neutrino.game.*
 import com.neutrino.game.UI.UIelements.Equipment
 import com.neutrino.game.UI.UIelements.Shop
 import com.neutrino.game.UI.UIelements.Skills
@@ -24,7 +23,7 @@ import com.neutrino.game.UI.utility.ManagerType
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.skills.Skill
-import com.neutrino.game.util.Constants
+import com.neutrino.game.util.*
 
 
 class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewport) {

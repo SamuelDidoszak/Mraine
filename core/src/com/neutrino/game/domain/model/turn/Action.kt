@@ -1,10 +1,10 @@
 package com.neutrino.game.domain.model.turn
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.entities.Entity
-import com.neutrino.game.entities.shared.util.InteractionType
-import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.items.attributes.Item
+import com.neutrino.game.entities.shared.util.InteractionType
 import squidpony.squidmath.Coord
 
 sealed class Action {

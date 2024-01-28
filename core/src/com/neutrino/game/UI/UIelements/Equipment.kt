@@ -12,7 +12,6 @@ import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.items.Gold
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
@@ -69,9 +68,10 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
         equipmentTable.setPosition(border.width - equipmentTable.width - 12 - 8, 38f)
 
         // Initialize Gold actor
-        equipmentMap[EquipmentType.MONEY]!!.actor = EqActor(Gold())
-        (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).item.amount = 0
-        (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).refreshAmount()
+        // TODO ECS Items
+//        equipmentMap[EquipmentType.MONEY]!!.actor = EqActor(Gold())
+//        (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).item.amount = 0
+//        (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).refreshAmount()
     }
 
     private fun setEquipmentDrawable(type: EquipmentType) {
@@ -87,10 +87,11 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
         val goldActor = equipmentMap[EquipmentType.MONEY]!!.actor as EqActor
         val prevAmount = goldActor.item.amount!!
         var goldAmount = 0
-        Player.inventory.itemList.forEach { if (it.item is Gold) goldAmount += it.item.amount!! }
-        goldActor.item.amount = goldAmount
-        if (prevAmount != goldAmount)
-            goldActor.refreshAmount()
+        // TODO ECS Items
+//        Player.inventory.itemList.forEach { if (it.item is Gold) goldAmount += it.item.amount!! }
+//        goldActor.item.amount = goldAmount
+//        if (prevAmount != goldAmount)
+//            goldActor.refreshAmount()
     }
 
     fun refreshEquipment(type: EquipmentType) {

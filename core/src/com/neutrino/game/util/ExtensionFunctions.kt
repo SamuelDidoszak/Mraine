@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entities
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity
@@ -67,6 +68,10 @@ fun getChangeListener(method: (event: ChangeListener.ChangeEvent?, actor: Actor?
     }
 }
 
+
+infix fun MutableList<Entity>.has(other: String): Boolean = this.any { it.name == other }
+
+infix fun MutableList<Entity>.has(other: KClass<Attribute>): Boolean = this.any { it has other}
 
 infix fun Entity.hasIdentity(identity: KClass<out Identity>): Boolean {
     return get(identity) != null || identity == Identity.Any::class

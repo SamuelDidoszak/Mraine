@@ -1,10 +1,11 @@
 package com.neutrino
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.entities.Entity
+import com.neutrino.game.entities.Entity
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.map.attributes.MapParams
 import squidpony.squidmath.Coord
 
 object LevelArrays {
@@ -90,9 +91,8 @@ object LevelArrays {
 
     fun isImpassable(coord: Coord): Boolean {
         for (entity in getEntitiesAt(coord)) {
-            if (!entity.allowCharacterOnTop) {
+            if (entity.get(MapParams::class)?.allowCharacterOnTop == false)
                 return true
-            }
         }
         return false
     }

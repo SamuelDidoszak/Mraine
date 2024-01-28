@@ -43,7 +43,8 @@ class LevelInitialization (
         val level = loadLevel(levelChunkCoords) ?: GenerateLevel()(levelChunkCoords)
 
         level.characterArray.forEach {levelDrawer.addActor(it)}
-        level.provideCharacterTextures()
+        // TODO ECS Characters
+//        level.provideCharacterTextures()
         levelDrawer.initializeLevel(level)
         Turn.setLevel(level)
         gameStage.level = level

@@ -10,8 +10,8 @@ import com.neutrino.GlobalDataType
 import com.neutrino.game.util.Fonts
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.roundOneDecimal
-import com.neutrino.game.setTextSameWidth
+import com.neutrino.game.util.roundOneDecimal
+import com.neutrino.game.util.setTextSameWidth
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
 import kotlin.math.roundToInt

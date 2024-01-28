@@ -4,14 +4,14 @@ import com.neutrino.EventDispatcher
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.entities.DungeonStairsDown
-import com.neutrino.game.domain.model.entities.DungeonStairsUp
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventTeleport
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord
 
 class SkillTeleportToStairsDown(override val character: Character): Skill.ActiveSkill {
@@ -38,9 +38,9 @@ class SkillTeleportToStairsDown(override val character: Character): Skill.Active
         for (y in 0 until LevelArrays.getLevel().sizeY) {
             for (x in 0 until LevelArrays.getLevel().sizeX) {
                 for (z in 0 until LevelArrays.getLevel().map[y][x].size) {
-                    if (LevelArrays.getLevel().map[y][x][z] is DungeonStairsDown)
+                    if (LevelArrays.getLevel().map[y][x][z] hasIdentity Identity.StairsDown::class)
                         stairsDown = Coord.get(x, y)
-                    if (LevelArrays.getLevel().map[y][x][z] is DungeonStairsUp)
+                    if (LevelArrays.getLevel().map[y][x][z] hasIdentity Identity.StairsUp::class)
                         stairsUp = Coord.get(x, y)
                 }
             }

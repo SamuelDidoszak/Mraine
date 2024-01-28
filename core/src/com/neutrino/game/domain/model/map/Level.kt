@@ -6,18 +6,18 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.esotericsoftware.kryo.kryo5.Kryo
 import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
-import com.neutrino.AnimatedActors
-import com.neutrino.game.util.Constants
-import com.neutrino.game.util.Constants.LevelChunkSize
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.utility.Animated
-import com.neutrino.game.domain.model.entities.Entity
-import com.neutrino.game.domain.model.entities.utility.*
-import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.items.attributes.Item
+import com.neutrino.game.entities.map.attributes.ChangesImpassable
+import com.neutrino.game.entities.map.attributes.MapParams
+import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.util.Constants
+import com.neutrino.game.util.Constants.LevelChunkSize
 import com.neutrino.game.utility.serialization.HeaderSerializable
 import kotlin.random.Random
 import kotlin.reflect.KClass
@@ -92,7 +92,7 @@ class Level(
         for (y in 0 until sizeY) {
             for (x in 0 until sizeX) {
                 for (entity in map[y][x]) {
-                    if (!entity.allowCharacterOnTop && entity !is ChangesImpassable) {
+                    if (!entity.get(MapParams::class)!!.allowCharacterOnTop && entity hasNot ChangesImpassable::class) {
                         movementMap[x][y] = '#'
                         break
                     }
@@ -113,57 +113,10 @@ class Level(
         return characterMap
     }
 
-    /**
-     * Fills the level textureList with textures needed by the level
-     * Provides the textures for every entity on the map
-     * If entity is animated, adds it to the list
-     */
-    fun provideTextures() {
-        // textures for tiles and entities
-        for (y in 0 until sizeY) {
-            for (x in 0 until sizeX) {
-                for (z in 0 until map[y][x].size) {
-                    if (map[y][x][z] is ItemEntity)
-                        continue
-
-                    map[y][x][z].pickTexture(OnMapPosition(map, x, y, z), randomGenerator)
-                    if (map[y][x][z] is Animated) {
-                        (map[y][x][z] as Animated).setDefaultAnimation()
-                        AnimatedActors.add(map[y][x][z])
-                    }
-                }
-            }
-        }
-    }
-
-    fun provideCharacterTextures() {
-        // textures for characters
-        for (character in characterArray) {
-            var exists = false
-            val textureSrc = character.textureSrc
-
-            for (atlas in textureList) {
-                atlas.textures.forEach {
-                    if (it.toString() == textureSrc) {
-                        exists = true
-                        character.loadTextures(atlas)
-                        character.setDefaultAnimation()
-                        return@forEach
-                    }
-                }
-            }
-            if (!exists) {
-                textureList.add(TextureAtlas(character.textureSrc.substring(0, character.textureSrc.lastIndexOf(".")) + ".atlas"))
-                character.loadTextures(textureList[textureList.size - 1])
-                character.setDefaultAnimation()
-            }
-        }
-    }
-
     fun allowsCharacter(xPos: Int, yPos: Int): Boolean {
         var allow = true
         for (entity in map[yPos][xPos]) {
-            if (!entity.allowCharacterOnTop) {
+            if (!entity.get(MapParams::class)!!.allowCharacterOnTop) {
                 allow = false
                 break
             }
@@ -174,7 +127,7 @@ class Level(
     fun allowsCharacterChangesImpassable(xPos: Int, yPos: Int): Boolean {
         var allow = true
         for (entity in map[yPos][xPos]) {
-            if (!entity.allowCharacterOnTop && entity !is ChangesImpassable) {
+            if (!entity.get(MapParams::class)!!.allowCharacterOnTop && entity hasNot ChangesImpassable::class) {
                 allow = false
                 break
             }
@@ -185,8 +138,8 @@ class Level(
     /** Returns topmost item on the tile or null */
     fun getTopItem(xPos: Int, yPos: Int): Item? {
         val tile = map[yPos][xPos]
-        if (tile[tile.size - 1] is ItemEntity)
-            return (tile[tile.size - 1] as ItemEntity).item
+        if (tile[tile.size - 1] has Item::class)
+            return tile[tile.size - 1] get Item::class
         else
             return null
     }
@@ -194,7 +147,7 @@ class Level(
     /** Returns topmost entity that has an action associated with it */
     fun getEntityWithAction(xPos: Int, yPos: Int): Entity? {
         for (entity in map[yPos][xPos].reversed()) {
-            if (entity is Interactable)
+            if (entity has Interaction::class)
                 return entity
         }
         return null
@@ -203,7 +156,7 @@ class Level(
     /** Returns topmost entity with provided interaction type */
     fun getEntityWithAction(xPos: Int, yPos: Int, interaction: KClass<InteractionType>): Entity? {
         for (entity in map[yPos][xPos].reversed()) {
-            if (entity is Interactable && entity.interactionList.find { it::class == interaction } != null) {
+            if (entity.get(Interaction::class)?.interactionList?.find { it::class == interaction } != null) {
                 return entity
             }
         }

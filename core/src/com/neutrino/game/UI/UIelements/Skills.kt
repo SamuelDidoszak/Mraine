@@ -23,8 +23,8 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.SkillTree
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.graphics.utility.ColorUtils
-import com.neutrino.game.isIn
-import com.neutrino.game.roundPosition
+import com.neutrino.game.util.isIn
+import com.neutrino.game.util.roundPosition
 import ktx.actors.setScrollFocus
 import ktx.scene2d.container
 import ktx.scene2d.scene2d

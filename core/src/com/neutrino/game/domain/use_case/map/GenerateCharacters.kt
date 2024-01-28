@@ -3,12 +3,12 @@ package com.neutrino.game.domain.use_case.map
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.Rat
-import com.neutrino.game.domain.model.entities.DungeonStairsDown
-import com.neutrino.game.domain.model.entities.DungeonStairsUp
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord
 import kotlin.math.roundToInt
 
@@ -38,9 +38,9 @@ class GenerateCharacters(
         for (y in 0 until level.sizeY) {
             for (x in 0 until level.sizeX) {
                 for (z in 0 until level.map[y][x].size) {
-                    if (level.map[y][x][z] is DungeonStairsDown)
+                    if (level.map[y][x][z] hasIdentity Identity.StairsDown::class)
                         stairsDown = Coord.get(x, y)
-                    if (level.map[y][x][z] is DungeonStairsUp)
+                    if (level.map[y][x][z] hasIdentity Identity.StairsUp::class)
                         stairsUp = Coord.get(x, y)
                 }
             }

@@ -35,6 +35,10 @@ class Entity() {
         return attributes[attributeClass] != null
     }
 
+    infix fun hasNot(attributeClass: KClass<out Attribute>): Boolean {
+        return attributes[attributeClass] == null
+    }
+
 
     infix fun call(callableClass: KClass<out Callable>) {
         for (callable in callables!!) {

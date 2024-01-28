@@ -30,10 +30,11 @@ abstract class Attack(
         if (LevelArrays.getCharacterAt(target) is Attackable)
             return LevelArrays.getCharacterAt(target) as Attackable
 
-        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {
-            if (LevelArrays.getEntitiesAt(target)[z] is Attackable)
-                return LevelArrays.getEntitiesAt(target)[z] as Attackable
-        }
+        // TODO ECS Attack
+//        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {
+//            if (LevelArrays.getEntitiesAt(target)[z] is Attackable)
+//                return LevelArrays.getEntitiesAt(target)[z] as Attackable
+//        }
         return null
     }
 
@@ -42,10 +43,11 @@ abstract class Attack(
         if (LevelArrays.getCharacterAt(target) is Attackable)
             attackableList.add(LevelArrays.getCharacterAt(target) as Attackable)
 
-        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {
-            if (LevelArrays.getEntitiesAt(target)[z] is Attackable)
-                attackableList.add(LevelArrays.getEntitiesAt(target)[z] as Attackable)
-        }
+        // TODO ECS Attack
+//        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {
+//            if (LevelArrays.getEntitiesAt(target)[z] is Attackable)
+//                attackableList.add(LevelArrays.getEntitiesAt(target)[z] as Attackable)
+//        }
         return attackableList
     }
     fun getAttackData(character: Character): AttackData {

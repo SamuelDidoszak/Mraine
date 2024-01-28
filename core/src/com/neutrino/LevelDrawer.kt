@@ -11,14 +11,15 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.utility.Blurring
 import com.neutrino.game.graphics.utility.Pixel
+import com.neutrino.game.util.Constants
 
 class LevelDrawer: Group() {
 
@@ -67,13 +68,20 @@ class LevelDrawer: Group() {
 
     private val lights: ArrayList<Pair<Pair<Float, Float>, Color>> = arrayListOf()
 
+    // dummy map for later deletion
+    private val dummyMap: List<List<MutableList<Entity>>> = List(100) {
+        List(100) {
+            ArrayList()
+        }
+    }
+
     fun prepareLights(level: Level) {
         var screenX = 0f
         var screenY = height
 
         for (y in 0 until level.sizeY) {
             for (x in 0 until level.sizeX) {
-                for (entity in level.map[y][x]) {
+                for (entity in dummyMap[y][x]) {
                     if (entity !is ItemEntity)
                         addLightFromTexture(entity.texture, screenX, screenY, entity.mirrored)
                 }
@@ -243,7 +251,7 @@ class LevelDrawer: Group() {
 
         for (y in yTop until yBottom) {
             for (x in xLeft until xRight) {
-                for (entity in currentLevel.map[y][x]) {
+                for (entity in dummyMap[y][x]) {
                     batch!!.draw(entity.texture, if (!entity.mirrored) screenX else screenX + entity.texture.regionWidth * 4f, screenY,
                         entity.texture.regionWidth * if (!entity.mirrored) 4f else -4f, entity.texture.regionHeight * 4f)
 
@@ -285,7 +293,7 @@ class LevelDrawer: Group() {
                         val movingChar = currentLevel.characterMap[y - 1][x]!!
                         movingChar.draw(batch, parentAlpha)
 
-                        for (entity in currentLevel.map[y][x]) {
+                        for (entity in dummyMap[y][x]) {
                             if (entity.texture.regionHeight > 16) {
                                 batch!!.draw(entity.texture,
                                     if (!entity.mirrored) movingChar.xPos * 64f else movingChar.xPos * 64f + entity.texture.regionWidth * 4f, screenY,
@@ -310,7 +318,7 @@ class LevelDrawer: Group() {
                     val movingChar = currentLevel.characterMap[y][x]!!
                     // down left
                     if (movingChar.x > movingChar.xPos * 64 - 64) {
-                        for (entity in currentLevel.map[y][x + 1]) {
+                        for (entity in dummyMap[y][x + 1]) {
                             if (entity.texture.regionHeight > 16) {
                                 batch!!.draw(entity.texture,
                                     if (!entity.mirrored) movingChar.xPos * 64f + 64 else movingChar.xPos * 64f + 64 + entity.texture.regionWidth * 4f, screenY,
@@ -330,7 +338,7 @@ class LevelDrawer: Group() {
                     }
                     // down right
                     if (movingChar.x < movingChar.xPos * 64) {
-                        for (entity in currentLevel.map[y][x - 1]) {
+                        for (entity in dummyMap[y][x - 1]) {
                             if (entity.texture.regionHeight > 16) {
                                 batch!!.draw(entity.texture,
                                     if (!entity.mirrored) movingChar.xPos * 64f - 64 else movingChar.xPos * 64f - 64 + entity.texture.regionWidth * 4f, screenY,

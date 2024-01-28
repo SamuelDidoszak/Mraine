@@ -9,29 +9,19 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.ActorVisuals
 import com.neutrino.game.domain.model.characters.utility.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.Fov
-import com.neutrino.game.domain.model.characters.utility.HasDrops
-import com.neutrino.game.domain.model.entities.utility.Container
-import com.neutrino.game.domain.model.entities.utility.Destructable
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
-import com.neutrino.game.domain.model.items.EquipmentType
-import com.neutrino.game.domain.model.items.utility.HasProjectile
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.systems.CharacterTag
-import com.neutrino.game.domain.model.systems.event.CausesCooldown
-import com.neutrino.game.domain.model.systems.event.CausesEvents
-import com.neutrino.game.domain.model.systems.event.types.CooldownType
-import com.neutrino.game.domain.model.systems.event.types.EventCooldown
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
-import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
-import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.domain.use_case.level.LevelUseCases
-import com.neutrino.game.util.has
-import com.neutrino.game.util.lessThanDelta
+import com.neutrino.game.entities.map.attributes.MapParams
+import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.util.hasIdentity
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord
@@ -143,13 +133,13 @@ object Turn {
                         fov.updateFov(action.x, action.y, Player.ai.fov, Player.viewDistance)
                         character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
-                        if (currentLevel.map[action.y][action.x] has DungeonStairsDown::class)
+                        if (currentLevel.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, LevelChunkCoords(
                                 currentLevel.levelChunkCoords.x,
                                 currentLevel.levelChunkCoords.y,
                                 currentLevel.levelChunkCoords.z - 1
                             ))
-                        if (currentLevel.map[action.y][action.x] has DungeonStairsUp::class)
+                        if (currentLevel.map[action.y][action.x] hasIdentity Identity.StairsUp::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, LevelChunkCoords(
                                 currentLevel.levelChunkCoords.x,
                                 currentLevel.levelChunkCoords.y,
@@ -164,6 +154,7 @@ object Turn {
                         // Entity position(x, y) can be derived from ai.entityTargetCoords
                         when (action.interaction) {
                             is InteractionType.ITEM -> {
+                                // TODO ECS ITEM
                                 val item = (action.entity as ItemEntity).item
                                 if (Player.addToInventory(item)) {
                                     ActorVisuals.showPickedUpItem(Player, item)
@@ -172,33 +163,34 @@ object Turn {
                                     println("Inventory is full!")
                                 }
                             }
-                            is InteractionType.DESTROY -> {
-                                val entity = (action.entity as Destructable)
-                                if (Player.equipment.getEquipped(EquipmentType.RHAND) is HasProjectile)
-                                    (Player.equipment.getEquipped(EquipmentType.RHAND) as HasProjectile)
-                                        .shoot(Player.xPos, Player.yPos, Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second, Player.parent.parent)
-
-                                entity.entityHp -= character.damage
-                                if (entity.entityHp.lessThanDelta(0f)) {
-                                    val items = entity.destroy()
-                                    if (items != null) {
-                                        for (item in items) {
-                                            currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
-                                        }
-                                    }
-                                    mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
-                                }
-                            }
-                            is InteractionType.OPEN -> {
-                                currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].remove(action.entity)
-                                for (item in (action.entity as Container).itemList) {
-                                    currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
-                                }
-                                mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
-                            }
+                            // TODO ECS ATTACK
+//                            is InteractionType.DESTROY -> {
+//                                val entity = (action.entity get com.neutrino.game.entities.map.attributes.Destructable::class)
+//                                if (Player.equipment.getEquipped(EquipmentType.RHAND) is HasProjectile)
+//                                    (Player.equipment.getEquipped(EquipmentType.RHAND) as HasProjectile)
+//                                        .shoot(Player.xPos, Player.yPos, Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second, Player.parent.parent)
+//
+//                                entity.entityHp -= character.damage
+//                                if (entity.entityHp.lessThanDelta(0f)) {
+//                                    val items = entity.destroy()
+//                                    if (items != null) {
+//                                        for (item in items) {
+//                                            currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
+//                                        }
+//                                    }
+//                                    mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
+//                                }
+//                            }
+//                            is InteractionType.OPEN -> {
+//                                currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].remove(action.entity)
+//                                for (item in (action.entity as Container).itemList) {
+//                                    currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
+//                                }
+//                                mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
+//                            }
                             is InteractionType.DOOR -> {
                                 action.interaction.act()
-                                if (action.entity.allowCharacterOnTop)
+                                if (action.entity.get(MapParams::class)?.allowCharacterOnTop == true)
                                     mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
                                 else
                                     mapImpassableList.add(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
@@ -212,43 +204,44 @@ object Turn {
                         }
                         Player.ai.entityTargetCoords = null
                     }
-                    is Action.ITEM -> {
-                        ActorVisuals.showItemUsed(character, action.item)
-
-                        if (action.item is CausesEvents) {
-                            for (wrapper in action.item.eventWrappers) {
-                                if (wrapper.event.has("character"))
-                                    wrapper.event.set("character", action.character)
-
-                                when (wrapper) {
-                                    is TimedEvent -> {
-                                        eventArray.startEvent(
-                                            CharacterEvent(
-                                                action.character, wrapper, turn
-                                        ))
-                                    }
-                                    is OnOffEvent -> {
-                                        eventArray.startEvent(
-                                            CharacterEvent(
-                                                action.character, wrapper, turn
-                                            ))
-                                    }
-                                    is CharacterEvent -> {
-                                        eventArray.startEvent(wrapper)
-                                    }
-                                }
-                            }
-                            updateBatch.addFirst(Action.EVENT)
-                        }
-                        if (action.item is CausesCooldown && action.item.cooldownType != CooldownType.NONE) {
-                            eventArray.startEvent(
-                                CharacterEvent(
-                                action.character, turn, action.item.cooldownLength, 1,
-                                EventCooldown(action.character, action.item.cooldownType, action.item.cooldownLength)
-                            )
-                            )
-                        }
-                    }
+                    // TODO ECS ITEM
+//                    is Action.ITEM -> {
+//                        ActorVisuals.showItemUsed(character, action.item)
+//
+//                        if (action.item is CausesEvents) {
+//                            for (wrapper in action.item.eventWrappers) {
+//                                if (wrapper.event.has("character"))
+//                                    wrapper.event.set("character", action.character)
+//
+//                                when (wrapper) {
+//                                    is TimedEvent -> {
+//                                        eventArray.startEvent(
+//                                            CharacterEvent(
+//                                                action.character, wrapper, turn
+//                                        ))
+//                                    }
+//                                    is OnOffEvent -> {
+//                                        eventArray.startEvent(
+//                                            CharacterEvent(
+//                                                action.character, wrapper, turn
+//                                            ))
+//                                    }
+//                                    is CharacterEvent -> {
+//                                        eventArray.startEvent(wrapper)
+//                                    }
+//                                }
+//                            }
+//                            updateBatch.addFirst(Action.EVENT)
+//                        }
+//                        if (action.item is CausesCooldown && action.item.cooldownType != CooldownType.NONE) {
+//                            eventArray.startEvent(
+//                                CharacterEvent(
+//                                action.character, turn, action.item.cooldownLength, 1,
+//                                EventCooldown(action.character, action.item.cooldownType, action.item.cooldownLength)
+//                            )
+//                            )
+//                        }
+//                    }
                     is Action.SKILL -> {
                         when (action.skill) {
                             is Skill.ActiveSkill -> {
@@ -279,6 +272,8 @@ object Turn {
                     is Action.EVENT -> {
                         println("caused an event")
                     }
+
+                    else -> {}
                 }
                 playerAction = false
 //                charactersUseCases.updateTurnBars()
@@ -325,7 +320,8 @@ object Turn {
                         println(character.name + " interacted with ${action.entity.name}")
                     }
                     is Action.ITEM -> {
-                        ActorVisuals.showItemUsed(character, action.item)
+                        // TODO ECS ITEM
+//                        ActorVisuals.showItemUsed(character, action.item)
                         println(character.name + " used an item")
                     }
                     is Action.WAIT -> {
@@ -377,11 +373,12 @@ object Turn {
         Player.experience += character.experience
         characterArray.remove(character)
         // Drop its items
-        if (character is HasDrops) {
-            character.dropItems().forEach {
-                currentLevel.map[character.yPos][character.xPos].add(ItemEntity(it))
-            }
-        }
+        // TODO ECS ITEM
+//        if (character is HasDrops) {
+//            character.dropItems().forEach {
+//                currentLevel.map[character.yPos][character.xPos].add(ItemEntity(it))
+//            }
+//        }
 
         eventArray.remove(character)
     }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.ArrayMap
 import com.github.tommyettinger.textra.Font
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.graphics.utility.PixelData
+import ktx.script.KotlinScriptEngine
 import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.full.superclasses
@@ -28,11 +29,13 @@ object Constants {
     val TILE_SIZE = 16 * SCALE
     val TILE_SIZE_INT = 16 * SCALE_INT
 
+    val scriptEngine = KotlinScriptEngine()
+
     /** Stores hashcodes of every texture */
     val textureArrayMap: ArrayMap<Texture, TextureAtlas> = ArrayMap<Texture, TextureAtlas>()
 
     val DefaultItemTexture: TextureAtlas = TextureAtlas("textures/items.atlas")
-    val DefaultEntityTexture: TextureAtlas = TextureAtlas("textures/entities.atlas")
+    val DefaultEntityTexture: TextureAtlas = TextureAtlas("textures/entitiesOld.atlas")
     val DefaultProjectileTexture: TextureAtlas = TextureAtlas("textures/projectiles.atlas")
     val DefaultIconTexture: TextureAtlas = TextureAtlas("textures/icons.atlas")
     val DefaultUITexture: TextureAtlas = TextureAtlas("UI/ui.atlas")

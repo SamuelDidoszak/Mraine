@@ -4,15 +4,20 @@ import com.badlogic.gdx.graphics.Color
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.entities.shared.util.HasRange
-import com.neutrino.game.domain.model.entities.Floor
-import com.neutrino.game.domain.model.entities.utility.*
-import com.neutrino.game.domain.model.systems.attack.utility.Attackable
+import com.neutrino.game.domain.model.entities.utility.Destructable
+import com.neutrino.game.domain.model.entities.utility.Interactable
+import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.use_case.Shaderable
+import com.neutrino.game.entities.characters.attributes.DefensiveStats
+import com.neutrino.game.entities.items.attributes.Item
+import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.entities.shared.attributes.Interaction
+import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.graphics.shaders.ColorOverlayShader
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
+import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord
 
 class Highlighting {
@@ -47,10 +52,11 @@ class Highlighting {
         for (tile in range.getTilesInRange(center, omitCenter)) {
             val entities = LevelArrays.getEntitiesAt(tile)
             for (z in entities.size - 1 downTo 0) {
-                if (entities[z] is Floor) {
+                if (entities[z] hasIdentity Identity.Floor::class) {
                     val shader = ColorOverlayShader(color)
-                    entities[z].shaders.add(shader)
-                    highlightedList.add(Pair(entities[z], shader))
+                    // TODO ECS Shaders
+//                    entities[z].shaders.add(shader)
+//                    highlightedList.add(Pair(entities[z], shader))
                 }
             }
         }
@@ -89,16 +95,18 @@ class Highlighting {
             val entities = LevelArrays.getEntitiesAt(tile)
             var floorHighlighted = false
             for (z in entities.size - 1 downTo 0) {
-                if (entities[z] is Attackable) {
-                    val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, entities[z].texture)
-                    entities[z].shaders.add(shader)
-                    selectionHighlightedList.add(Pair(entities[z], shader))
+                if (entities[z] has DefensiveStats::class) {
+                    // TODO ECS Shaders
+//                    val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, entities[z].texture)
+//                    entities[z].shaders.add(shader)
+//                    selectionHighlightedList.add(Pair(entities[z], shader))
                 }
-                if (!floorHighlighted && entities[z] is Floor) {
-                    val shader = ColorOverlayShader(ColorOverlayShader.DARK_RED)
-                    entities[z].shaders.add(shader)
-                    selectionHighlightedList.add(Pair(entities[z], shader))
-                    floorHighlighted = true
+                if (!floorHighlighted && entities[z] hasIdentity Identity.Floor::class) {
+                    // TODO ECS Shaders
+//                    val shader = ColorOverlayShader(ColorOverlayShader.DARK_RED)
+//                    entities[z].shaders.add(shader)
+//                    selectionHighlightedList.add(Pair(entities[z], shader))
+//                    floorHighlighted = true
                 }
             }
         }
@@ -133,9 +141,10 @@ class Highlighting {
 
     private fun addInteractableOutlineOnHover(coord: Coord): Boolean {
         val entity = LevelArrays.getLevel().getEntityWithAction(coord.x, coord.y)
-        if (entity != null && entity == outlinedOnHover)
-            return true
-        if (entity is ItemEntity)
+        // TODO ECS Shaders
+//        if (entity != null && entity == outlinedOnHover)
+//            return true
+        if (entity != null && entity has Item::class)
             return false
 
         outlinedOnHover?.shaders?.remove(shaderOnHover)
@@ -144,19 +153,20 @@ class Highlighting {
         if (entity == null)
             return false
 
-        if (entity is Attackable) {
+        if (entity has DefensiveStats::class) {
             if (!Player.ai.canAttack(coord.x, coord.y))
                 return false
         }
-        else if (entity is Interactable) {
-            val requiredDistance = (entity as Interactable).getPrimaryInteraction()?.requiredDistance
+        else if (entity has Interaction::class) {
+            val requiredDistance = entity.get(Interaction::class)?.getPrimaryInteraction()?.requiredDistance
                 ?: return false
             if ((coord.x !in Player.xPos - requiredDistance .. Player.xPos + requiredDistance) ||
                 (coord.y !in Player.yPos - requiredDistance .. Player.yPos + requiredDistance))
                 return false
         }
 
-        outlinedOnHover = entity
+        // TODO ECS Shaders
+//        outlinedOnHover = entity
         shaderOnHover = OutlineShader(
                 if ((outlinedOnHover as Interactable).getPrimaryInteraction() is InteractionType.DESTROY) {
                     if ((outlinedOnHover as Destructable).destroyed)

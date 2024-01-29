@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.equalsDelta
-import com.neutrino.game.isInUnscaled
+import com.neutrino.game.util.equalsDelta
+import com.neutrino.game.util.isInUnscaled
 import ktx.actors.setScrollFocus
 
 class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, TextureAtlas.AtlasRegion>) {

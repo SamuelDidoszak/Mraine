@@ -2,7 +2,7 @@ package com.neutrino.game.domain.model.items.utility
 
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.lessThanDelta
+import com.neutrino.game.util.lessThanDelta
 
 data class Inventory(
     val itemList: MutableList<EqElement> = ArrayList(),

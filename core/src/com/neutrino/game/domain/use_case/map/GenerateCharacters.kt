@@ -4,6 +4,7 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.Rat
 import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.domain.model.map.MapTags
 import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.model.turn.Turn
@@ -21,7 +22,7 @@ class GenerateCharacters(
         MutableList<Character?>(level.sizeX) {null}
     }
 
-    private val interpretedTags = TagInterpretation(level.tagList)
+    private val interpretedTags = TagInterpretation(listOf(MapTags.CHARACTERS))
 
     fun generate(): CharacterArray {
         val difficultyModifier = kotlin.math.abs(level.levelChunkCoords.z)

@@ -2,14 +2,17 @@ package com.neutrino.game.map.generation
 
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
+import com.neutrino.game.domain.use_case.map.GenerateCharacters
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.map.generation.util.GenerationParams
 import com.neutrino.game.util.Constants.LevelChunkSize
+import com.neutrino.generation.Tilesets
 import kotlin.math.abs
 import kotlin.math.max
 
 class GenerateLevel(var levelDrawer: LevelDrawer) {
 
+    private var tags: ArrayList<MapTag> = ArrayList()
     private var tagGenerators: ArrayList<() -> MapTag> = ArrayList()
 
     fun generate(chunkCoords: LevelChunkCoords): Level {
@@ -26,11 +29,13 @@ class GenerateLevel(var levelDrawer: LevelDrawer) {
             }
         }
 
+        tags.add(getDefaultMapTag())
+
         generateMap(level)
         level.movementMap = level.createMovementMap()
-//        val generateCharacters = GenerateCharacters(level)
-//        level.characterArray = generateCharacters.generate()
-//        level.characterMap = generateCharacters.characterMap
+        val generateCharacters = GenerateCharacters(level)
+        level.characterArray = generateCharacters.generate()
+        level.characterMap = generateCharacters.characterMap
 
         return level
     }
@@ -46,10 +51,21 @@ class GenerateLevel(var levelDrawer: LevelDrawer) {
     private fun getParams(level: Level): GenerationParams {
         return GenerationParams(
             MapTagInterpretation(
-                tagGenerators.map { it.invoke() }
+                tagGenerators.map { it.invoke() }.plus(tags)
             ),
             level.randomGenerator,
             levelDrawer.map
+        )
+    }
+
+    private fun getDefaultMapTag(): MapTag {
+        return MapTag(
+            listOf(Tilesets.get("Dungeon")),
+            listOf(Generators.get("Dungeon")),
+            listOf(),
+            listOf(),
+            TagParams(10f),
+            true
         )
     }
 

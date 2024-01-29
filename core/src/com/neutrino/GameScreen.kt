@@ -123,7 +123,7 @@ class GameScreen: KtxScreen {
         // game events such as player input and ai
         gameplay.gameLoop()
 
-        AnimatedActors.animateAll()
+//        AnimatedActors.animateAll()
         gameStage.act(delta)
         gameStage.draw()
 

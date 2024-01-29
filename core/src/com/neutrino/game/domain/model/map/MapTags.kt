@@ -1,6 +1,9 @@
 package com.neutrino.game.domain.model.map
 
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.characters.Rat
+import com.neutrino.game.domain.model.entities.Floor
+import com.neutrino.game.domain.model.entities.Wall
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.use_case.map.utility.EntityParams
 import com.neutrino.game.domain.use_case.map.utility.GenerationParams
@@ -14,6 +17,16 @@ enum class MapTags(val entityParams: EntityParams,
                    val itemList: List<Probability<KClass<out Item>>>,
                    val generationParams: GenerationParams,
                    val isModifier: Boolean) {
+    CHARACTERS(
+        EntityParams(Wall::class, Floor::class),
+        listOf(),
+        characterList = listOf(
+            Rat::class
+        ),
+        listOf(),
+        GenerationParams(10f),
+        false
+    )
 //    STARTING_AREA(
 //        entityParams = EntityParams(
 //            wall = DungeonWall::class,

@@ -97,6 +97,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
+        implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.8.10"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
@@ -126,6 +127,8 @@ project(":core") {
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        api group: 'io.github.libktx', name: 'ktx-script', version: '1.11.0-rc6'
+        implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.8.10"
         implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.0"
 //        implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC"
         implementation "com.esotericsoftware.kryo:kryo5:5.4.0"

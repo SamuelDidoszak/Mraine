@@ -1,4 +1,4 @@
-package com.neutrino.game.map.generation
+package com.neutrino.game.map.generation.util
 
 import com.neutrino.game.entities.Entities
 import com.neutrino.game.entities.Entity

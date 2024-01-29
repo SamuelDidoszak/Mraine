@@ -7,7 +7,7 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.graphics.drawing.EntityDrawer
 import com.neutrino.game.graphics.textures.TextureSprite
-import com.neutrino.game.map.generation.NameOrIdentity
+import com.neutrino.game.map.generation.util.NameOrIdentity
 import com.neutrino.game.util.add
 import kotlin.reflect.KClass
 

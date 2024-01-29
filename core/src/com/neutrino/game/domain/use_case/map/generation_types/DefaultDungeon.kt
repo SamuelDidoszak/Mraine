@@ -33,17 +33,17 @@ package com.neutrino.game.domain.use_case.map.generation_types
 //            EntityPositionRequirement(EntityPositionRequirementType.NOR, Wall::class, listOf(4, 6, 7, 8, 9))
 //        ), 2f, assertAmount = true)
 //
-//        addEntities(WoodenDoor::class, GenerationRequirements.getDefaults(WoodenDoor::class), 10f, assertAmount = true)
-//        addEntities(WoodenDoorArched::class, GenerationRequirements.getDefaults(WoodenDoorArched::class), 8f, assertAmount = true)
-//        addEntities(CrateDoor::class, GenerationRequirements.getDefaults(WoodenDoorArched::class), 5f, assertAmount = true)
+//        addEntities(WoodenDoor::class, com.neutrino.game.map.generation.GenerationRequirements.getDefaults(WoodenDoor::class), 10f, assertAmount = true)
+//        addEntities(WoodenDoorArched::class, com.neutrino.game.map.generation.GenerationRequirements.getDefaults(WoodenDoorArched::class), 8f, assertAmount = true)
+//        addEntities(CrateDoor::class, com.neutrino.game.map.generation.GenerationRequirements.getDefaults(WoodenDoorArched::class), 5f, assertAmount = true)
 //
-//        addEntities(Torch::class, GenerationRequirements.getDefaults(Torch::class), 20f, assertAmount = true)
+//        addEntities(Torch::class, com.neutrino.game.map.generation.GenerationRequirements.getDefaults(Torch::class), 20f, assertAmount = true)
 //        addEntities(
 //            StandingTorch::class, listOf(
 //                EntityPositionRequirement(EntityPositionRequirementType.NOR, Wall::class, listOf(1, 2, 3, 4, 6, 7, 8, 9))
 //            ), 6f, assertAmount = true
 //        )
-//        addEntities(CandleSingle::class, GenerationRequirements.requirementNearWall(), 15f, assertAmount = true)
+//        addEntities(CandleSingle::class, com.neutrino.game.map.generation.GenerationRequirements.requirementNearWall(), 15f, assertAmount = true)
 //        addEntities(
 //            CandlesMultiple::class, listOf(
 //                EntityPositionRequirement(EntityPositionRequirementType.NOR, Wall::class, listOf(1, 2, 3, 4, 6, 7, 8, 9))
@@ -62,8 +62,8 @@ package com.neutrino.game.domain.use_case.map.generation_types
 //            ), 0.25f
 //        )
 //
-//        addEntities(Barrel::class, GenerationRequirements.requirementNearWall(), 0.0085f)
-//        addEntities(CrateSmall::class, GenerationRequirements.requirementNearWall(), 0.005f)
+//        addEntities(Barrel::class, com.neutrino.game.map.generation.GenerationRequirements.requirementNearWall(), 0.0085f)
+//        addEntities(CrateSmall::class, com.neutrino.game.map.generation.GenerationRequirements.requirementNearWall(), 0.005f)
 //        addEntities(
 //            CrateBigger::class, listOf(
 //            EntityPositionRequirement(EntityPositionRequirementType.AND, Wall::class, listOf(7, 8, 9)),
@@ -71,10 +71,10 @@ package com.neutrino.game.domain.use_case.map.generation_types
 //            EntityPositionRequirement(EntityPositionRequirementType.NAND, CrateBigger::class, listOf(4)),
 //        ), 0.01f)
 //
-//        addEntities(WoodenChest::class, GenerationRequirements.getDefaults(WoodenChest::class), 3f, assertAmount = true)
+//        addEntities(WoodenChest::class, com.neutrino.game.map.generation.GenerationRequirements.getDefaults(WoodenChest::class), 3f, assertAmount = true)
 //
-//        addEntities(ClayPot::class, GenerationRequirements.requirementNearWall(), 0.01f)
-//        addEntities(ClayPotMultiple::class, GenerationRequirements.requirementNearWall(), 0.005f)
+//        addEntities(ClayPot::class, com.neutrino.game.map.generation.GenerationRequirements.requirementNearWall(), 0.01f)
+//        addEntities(ClayPotMultiple::class, com.neutrino.game.map.generation.GenerationRequirements.requirementNearWall(), 0.005f)
 //
 //        return map
 //    }

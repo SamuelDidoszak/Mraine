@@ -75,7 +75,7 @@ enum class MapTags(val entityParams: EntityParams,
 ////            Probability(BookSkillCripplingSpin::class, 5f),
 ////            Probability(BookTeleportBackstab::class, 5f),
 //        ),
-//        generationParams = GenerationParams(
+//        generationParams = com.neutrino.game.map.generation.util.GenerationParams(
 //            difficulty = 100f
 //        ),
 //        isModifier = false

@@ -10,9 +10,9 @@ import com.neutrino.LevelDrawer
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.domain.use_case.level.GenerateLevel
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
+import com.neutrino.game.map.generation.GenerateLevel
 import com.neutrino.game.util.Constants
 import com.neutrino.game.utility.serialization.KryoObj
 import squidpony.squidmath.Coord
@@ -40,7 +40,7 @@ class LevelInitialization (
             levelDrawer.clearLights()
         }
 
-        val level = loadLevel(levelChunkCoords) ?: GenerateLevel()(levelChunkCoords)
+        val level = loadLevel(levelChunkCoords) ?: GenerateLevel(levelDrawer).generate(levelChunkCoords)
 
         level.characterArray.forEach {levelDrawer.addActor(it)}
         // TODO ECS Characters

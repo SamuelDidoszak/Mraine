@@ -20,6 +20,7 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.gameplay.main.Gameplay
+import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.util.Constants
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin

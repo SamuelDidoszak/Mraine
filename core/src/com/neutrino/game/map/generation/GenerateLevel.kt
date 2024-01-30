@@ -45,6 +45,8 @@ class GenerateLevel(var levelDrawer: LevelDrawer) {
         for (generator in params.interpretedTags.mapGenerators) {
             generator.generate(params)
         }
+        levelDrawer.currentLevel = level
+        levelDrawer.map = level.map
         levelDrawer.initializeTextures(params.rng)
     }
 
@@ -54,7 +56,7 @@ class GenerateLevel(var levelDrawer: LevelDrawer) {
                 tagGenerators.map { it.invoke() }.plus(tags)
             ),
             level.randomGenerator,
-            levelDrawer.map
+            level.map
         )
     }
 

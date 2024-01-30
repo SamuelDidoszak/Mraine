@@ -17,6 +17,7 @@ import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
@@ -187,7 +188,7 @@ class GameStage(
             }
             Input.Keys.NUM_2 -> {
                 if (level != null)
-                    (actors.first() as LevelDrawer).drawFovFow += 1
+                    (actors.first() as LevelDrawer).fogOfWar.drawFovFow += 1
             }
             Input.Keys.ESCAPE -> {
                 if (highlightMode != Highlighting.Companion.HighlightModes.NORMAL)

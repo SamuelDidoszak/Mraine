@@ -6,6 +6,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataObserver
+import com.neutrino.GlobalDataType
+import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.domain.model.turn.Turn.currentLevel
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
@@ -17,6 +22,8 @@ import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.OnMapPosition
 import com.neutrino.game.map.attributes.Position
+import com.neutrino.game.util.Constants.TILE_SIZE
+import com.neutrino.game.util.Constants.TILE_SIZE_INT
 import java.util.*
 import kotlin.random.Random
 
@@ -25,6 +32,8 @@ open class LevelDrawer: EntityDrawer, Group() {
     override val animations: Animations = Animations()
     override val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
     private val textureLayers: SortedMap<Int, LayeredTextureList> = sortedMapOf()
+
+    val fogOfWar = FogOfWar()
 
     fun clearAll() {
         animations.clear()
@@ -47,20 +56,29 @@ open class LevelDrawer: EntityDrawer, Group() {
         textureLayers[texture.z]!!.removeIf { it.entity == entity && it.texture == texture }
     }
 
+    lateinit var currentLevel: Level
     override var map: List<List<MutableList<Entity>>> = initializeMap()
 
     init {
-        width = map[0].size * 48f
-        height = map.size * 48f
+        width = map[0].size * TILE_SIZE
+        height = map.size * TILE_SIZE
+
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.PLAYERMOVED
+            override fun update(data: Any?): Boolean {
+                fogOfWar.updateVisibility()
+                return true
+            }
+        })
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val gameCamera = parent.stage.camera as OrthographicCamera
 
-        var yTop = MathUtils.floor((height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 48) + 1
-        var yBottom = MathUtils.ceil((height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 48) + 2
-        var xLeft: Int = MathUtils.floor((gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f) / 48)
-        var xRight = MathUtils.ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f) / 48)
+        var yTop = MathUtils.floor((height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)) / TILE_SIZE_INT) + 1
+        var yBottom = MathUtils.ceil((height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)) / TILE_SIZE_INT) + 2
+        var xLeft: Int = MathUtils.floor((gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f) / TILE_SIZE_INT)
+        var xRight = MathUtils.ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f) / TILE_SIZE_INT)
 
         // Make sure that values are in range
         yTop = if (yTop <= 0) 0 else if (yTop > map.size) map.size else yTop
@@ -68,8 +86,8 @@ open class LevelDrawer: EntityDrawer, Group() {
         xLeft = if (xLeft <= 0) 0 else if (xLeft > map[0].size) map[0].size else xLeft
         xRight = if (xRight <= 0) 0 else if (xRight > map[0].size) map[0].size else xRight
 
-        var screenX = xLeft * 48f
-        var screenY = height - (yTop * 48f)
+        var screenX = xLeft * TILE_SIZE
+        var screenY = height - (yTop * TILE_SIZE)
 
         for (y in yTop until yBottom) {
             for (x in xLeft until xRight) {
@@ -84,10 +102,10 @@ open class LevelDrawer: EntityDrawer, Group() {
                                 texture.texture.regionHeight * SCALE)
                     }
                 }
-                screenX += 48
+                screenX += TILE_SIZE_INT
             }
-            screenY -= 48
-            screenX = xLeft * 48f
+            screenY -= TILE_SIZE_INT
+            screenX = xLeft * TILE_SIZE
         }
 
         yTop = Math.round(gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)
@@ -117,7 +135,19 @@ open class LevelDrawer: EntityDrawer, Group() {
             }
         }
 
+        if (fogOfWar.drawFovFow % 3 in 0 .. 1) {
+            batch?.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO)
+            batch?.draw(currentLevel.blurredFov.colorBufferTexture, 0f, 64f)
+        }
+
         drawLights(batch)
+
+
+        if (fogOfWar.drawFovFow % 3 == 0) {
+            batch?.shader = Shaders.defaultShader
+            batch?.draw(currentLevel.blurredFogOfWar.colorBufferTexture, 0f, 64f)
+            batch?.shader = null
+        }
     }
 
     private fun drawLights(batch: Batch?) {

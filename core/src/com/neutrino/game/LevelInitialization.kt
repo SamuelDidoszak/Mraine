@@ -6,12 +6,12 @@ import com.esotericsoftware.kryo.kryo5.io.Output
 import com.esotericsoftware.kryo.kryo5.minlog.Log
 import com.neutrino.AnimatedActors
 import com.neutrino.GameStage
-import com.neutrino.LevelDrawer
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.domain.use_case.level.LevelChunkCoords
 import com.neutrino.game.domain.use_case.map.GenerateCharacters
+import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.map.generation.GenerateLevel
 import com.neutrino.game.util.Constants
 import com.neutrino.game.utility.serialization.KryoObj
@@ -37,7 +37,8 @@ class LevelInitialization (
             Turn.unsetLevel()
             previousLevel.dispose()
             AnimatedActors.clear()
-            levelDrawer.clearLights()
+            levelDrawer.clearAll()
+            levelDrawer.map = levelDrawer.initializeMap()
         }
 
         val level = loadLevel(levelChunkCoords) ?: GenerateLevel(levelDrawer).generate(levelChunkCoords)
@@ -45,7 +46,7 @@ class LevelInitialization (
         level.characterArray.forEach {levelDrawer.addActor(it)}
         // TODO ECS Characters
 //        level.provideCharacterTextures()
-        levelDrawer.initializeLevel(level)
+        levelDrawer.fogOfWar.initializeFogOfWar(level)
         Turn.setLevel(level)
         gameStage.level = level
         gameStage.startXPosition = startXPosition

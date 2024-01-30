@@ -142,6 +142,7 @@ class Highlighting {
     private fun addInteractableOutlineOnHover(coord: Coord): Boolean {
         val entity = LevelArrays.getLevel().getEntityWithAction(coord.x, coord.y)
         // TODO ECS Shaders
+        return false
 //        if (entity != null && entity == outlinedOnHover)
 //            return true
         if (entity != null && entity has Item::class)

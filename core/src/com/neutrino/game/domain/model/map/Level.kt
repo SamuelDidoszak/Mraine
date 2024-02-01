@@ -6,16 +6,17 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.esotericsoftware.kryo.kryo5.Kryo
 import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
-import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.turn.CharacterArray
-import com.neutrino.game.domain.use_case.level.LevelChunkCoords
-import com.neutrino.game.domain.use_case.map.GenerateCharacters
+import com.neutrino.game.domain.use_case.level.ChunkCoords
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.items.attributes.Item
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.MapParams
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.map.generation.CharacterGenerator
+import com.neutrino.game.map.generation.MapTagInterpretation
+import com.neutrino.game.map.generation.util.GenerationParams
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.LevelChunkSize
 import com.neutrino.game.utility.serialization.HeaderSerializable
@@ -24,7 +25,7 @@ import kotlin.reflect.KClass
 
 class Level(
     @Transient
-    val levelChunkCoords: LevelChunkCoords,
+    val chunkCoords: ChunkCoords,
     @Transient
     val description: String,
     val sizeX: Int = LevelChunkSize,
@@ -32,24 +33,28 @@ class Level(
 ): HeaderSerializable {
 
     constructor(kryo: Kryo?, input: Input?): this(
-        kryo?.readClassAndObject(input) as LevelChunkCoords,
+        kryo?.readClassAndObject(input) as ChunkCoords,
         kryo.readClassAndObject(input) as String
     )
 
     override fun serializeHeader(kryo: Kryo?, output: Output?) {
-        kryo?.writeClassAndObject(output, levelChunkCoords)
+        kryo?.writeClassAndObject(output, chunkCoords)
         kryo?.writeClassAndObject(output, description)
     }
 
     override fun readAfter(kryo: Kryo?, input: Input?) {
         movementMap = createMovementMap()
-        val generateCharacters = GenerateCharacters(this)
-        characterArray = generateCharacters.generate()
+        // TODO ECS Generation
+        val characterGenerator = CharacterGenerator(GenerationParams(MapTagInterpretation(listOf()), randomGenerator, this, map))
+        characterArray = characterGenerator.generate()
         characterMap = createCharacterMap()
+//        val generateCharacters = GenerateCharacters(this)
+//        characterArray = generateCharacters.generate()
+//        characterMap = createCharacterMap()
     }
 
     @Transient
-    val id: Int = levelChunkCoords.toHash()
+    val id: Int = chunkCoords.toHash()
     @Transient
     val randomGenerator = Random(Constants.Seed + id)
     @Transient
@@ -68,10 +73,10 @@ class Level(
      */
     // Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
     @Transient
-    lateinit var characterArray: CharacterArray
+    lateinit var characterArray: com.neutrino.game.map.level.CharacterArray
     // Map of character locations
     @Transient
-    lateinit var characterMap: List<MutableList<Character?>>
+    lateinit var characterMap: List<MutableList<Entity?>>
 
     /**
      * Map of discovered and undiscovered tiles
@@ -102,13 +107,13 @@ class Level(
         return movementMap
     }
 
-    fun createCharacterMap(): List<MutableList<Character?>> {
+    fun createCharacterMap(): List<MutableList<Entity?>> {
         val characterMap = List(sizeY) {
-            MutableList<Character?>(sizeX) {null}
+            MutableList<Entity?>(sizeX) {null}
         }
 
         characterArray.forEach {
-            characterMap[it.yPos][it.xPos] = it
+            characterMap[it.get(Position::class)!!.y][it.get(Position::class)!!.x] = it
         }
         return characterMap
     }

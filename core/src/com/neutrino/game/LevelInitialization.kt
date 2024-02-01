@@ -9,10 +9,12 @@ import com.neutrino.GameStage
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.domain.use_case.level.LevelChunkCoords
-import com.neutrino.game.domain.use_case.map.GenerateCharacters
+import com.neutrino.game.domain.use_case.level.ChunkCoords
 import com.neutrino.game.graphics.drawing.LevelDrawer
+import com.neutrino.game.map.generation.CharacterGenerator
 import com.neutrino.game.map.generation.GenerateLevel
+import com.neutrino.game.map.generation.MapTagInterpretation
+import com.neutrino.game.map.generation.util.GenerationParams
 import com.neutrino.game.util.Constants
 import com.neutrino.game.utility.serialization.KryoObj
 import squidpony.squidmath.Coord
@@ -28,7 +30,7 @@ class LevelInitialization (
     private val startXPosition = 0f
     private val startYPosition = Constants.LevelChunkSize * 64f
 
-    fun initializeLevel(levelChunkCoords: LevelChunkCoords, playerCoords: Coord?) {
+    fun initializeLevel(chunkCoords: ChunkCoords, playerCoords: Coord?) {
         val previousLevel = gameStage.level
         if (previousLevel != null) {
             saveLevel(previousLevel)
@@ -41,9 +43,9 @@ class LevelInitialization (
             levelDrawer.map = levelDrawer.initializeMap()
         }
 
-        val level = loadLevel(levelChunkCoords) ?: GenerateLevel(levelDrawer).generate(levelChunkCoords)
+        val level = loadLevel(chunkCoords) ?: GenerateLevel(levelDrawer).generate(chunkCoords)
 
-        level.characterArray.forEach {levelDrawer.addActor(it)}
+//        level.characterArray.forEach {levelDrawer.addActor(it)}
         // TODO ECS Characters
 //        level.provideCharacterTextures()
         levelDrawer.fogOfWar.initializeFogOfWar(level)
@@ -52,7 +54,7 @@ class LevelInitialization (
         gameStage.startXPosition = startXPosition
         gameStage.startYPosition = startYPosition
 
-        AnimatedActors.addAll(level.characterArray)
+//        AnimatedActors.addAll(level.characterArray)
         gameStage.camera.position.set(Player.x, Player.y, gameStage.camera.position.z)
 
         if (previousLevel != null)
@@ -72,7 +74,7 @@ class LevelInitialization (
         println("write:\t$writeNs")
     }
 
-    private fun loadLevel(chunkCoords: LevelChunkCoords): Level? {
+    private fun loadLevel(chunkCoords: ChunkCoords): Level? {
         val id: Int = chunkCoords.toHash()
         val file = Gdx.files.local("saves/$id")
         if (!file.exists())
@@ -93,9 +95,10 @@ class LevelInitialization (
 
     /** TODO Temporary **/
     private fun addPlayer(level: Level) {
-        val generateCharacters = GenerateCharacters(level)
-        generateCharacters.addPlayerAtStairs()
-        level.characterArray.addAll(generateCharacters.characterArray)
+        val characterGenerator = CharacterGenerator(GenerationParams(
+            MapTagInterpretation(listOf()), level.randomGenerator, level, level.map))
+        characterGenerator.addPlayerAtStairs()
+        level.characterArray.addAll(characterGenerator.characterArray)
     }
 
     private fun printData(level: Level) {
@@ -107,7 +110,7 @@ class LevelInitialization (
         println(level.characterArray)
 
         println("Adding characters")
-        println("Level: ${level.levelChunkCoords}")
+        println("Level: ${level.chunkCoords}")
 
         // add player
 

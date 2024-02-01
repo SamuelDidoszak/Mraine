@@ -10,7 +10,6 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.map.Level
-import com.neutrino.game.domain.model.turn.Turn.currentLevel
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
@@ -20,8 +19,8 @@ import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
-import com.neutrino.game.map.attributes.OnMapPosition
-import com.neutrino.game.map.attributes.Position
+import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.util.Constants.TILE_SIZE
 import com.neutrino.game.util.Constants.TILE_SIZE_INT
 import java.util.*
@@ -154,14 +153,14 @@ open class LevelDrawer: EntityDrawer, Group() {
         batch?.shader = Shaders.lightShader
         batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE)
         for (light in lights) {
-            val positionAttribute = light.first.get(Position::class)!!
+            val drawPositionAttribute = light.first.get(DrawPosition::class)!!
             val radius = light.second.radius
             batch?.color = light.second.color
             // TODO add texture position
             batch?.draw(
                 Constants.WhitePixel,
-                x + positionAttribute.x + light.second.x * SCALE_INT - radius + SCALE / 2,
-                y + positionAttribute.y + light.second.y * SCALE_INT - radius + SCALE / 2,
+                x + drawPositionAttribute.x + light.second.x * SCALE_INT - radius + SCALE / 2,
+                y + drawPositionAttribute.y + light.second.y * SCALE_INT - radius + SCALE / 2,
                 2 * radius, 2 * radius
             )
         }
@@ -180,8 +179,8 @@ open class LevelDrawer: EntityDrawer, Group() {
         for (y in map.indices) {
             for (x in map[0].indices) {
                 for (entity in map[y][x]) {
-                    entity addAttribute Position()
-                    entity addAttribute OnMapPosition(x, y, this)
+                    entity addAttribute DrawPosition()
+                    entity addAttribute Position(x, y, this)
                     entity.get(Texture::class)?.setTextures(null, rng)
                 }
             }

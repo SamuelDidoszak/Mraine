@@ -35,6 +35,7 @@ class Fov(var map: List<List<MutableList<Entity>>>) {
     }
 
     /**
+     * Updates the fov passed as an argument
      * @param cx Center x position
      * @param cy Center y position
      * @param viewDistance View distance

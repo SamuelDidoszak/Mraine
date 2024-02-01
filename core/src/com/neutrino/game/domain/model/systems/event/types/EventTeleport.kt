@@ -36,7 +36,7 @@ class EventTeleport(): Event() {
 
         LevelArrays.getCharacterMap()[character.yPos][character.xPos] = null
         LevelArrays.getCharacterMap()[coord.y][coord.x] = character
-        Turn.fov.updateFov(coord.x, coord.y, character.ai.fov, character.viewDistance)
+        Turn.mapFov.updateFov(coord.x, coord.y, character.ai.fov, character.viewDistance)
         character.move(coord.x, coord.y, 0f)
     }
 

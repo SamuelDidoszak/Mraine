@@ -1,17 +1,19 @@
-package com.neutrino.game.map.attributes
+package com.neutrino.game.entities.map.attributes
 
-import com.neutrino.game.util.Constants.SCALE
-import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.graphics.drawing.EntityDrawer
 import com.neutrino.game.graphics.textures.TextureSprite
+import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.util.NameOrIdentity
+import com.neutrino.game.util.Constants.SCALE
+import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.util.add
+import squidpony.squidmath.Coord
 import kotlin.reflect.KClass
 
-class OnMapPosition(
+class Position(
     x: Int,
     y: Int,
     var level: EntityDrawer
@@ -20,13 +22,13 @@ class OnMapPosition(
     var x: Int = x
         set(value) {
             field = value
-            entity.get(Position::class)!!.x = value * 16 * SCALE
+            entity.get(DrawPosition::class)!!.x = value * 16 * SCALE
         }
 
     var y: Int = y
         set(value) {
             field = value
-            entity.get(Position::class)!!.y =
+            entity.get(DrawPosition::class)!!.y =
                 level.map.size * 16 * SCALE_INT - value * 16 * SCALE
         }
 
@@ -37,6 +39,10 @@ class OnMapPosition(
 
     fun getMap(): List<List<MutableList<Entity>>> {
         return level.map
+    }
+
+    fun getPosition(): Coord {
+        return Coord.get(x, y)
     }
 
     private companion object {

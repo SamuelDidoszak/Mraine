@@ -15,8 +15,8 @@ import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.graphics.textures.Textures
-import com.neutrino.game.map.attributes.OnMapPosition
-import com.neutrino.game.map.attributes.Position
+import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.map.attributes.DrawPosition
 import java.util.*
 import kotlin.math.min
 import kotlin.random.Random
@@ -40,8 +40,8 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
                 textureLayers.clear()
             field = value
             map[1][1][0] = field
-            field.addAttribute(Position())
-            field.addAttribute(OnMapPosition(1, 1, this))
+            field.addAttribute(DrawPosition())
+            field.addAttribute(Position(1, 1, this))
             val textureAttribute = field.get(Texture::class) ?:
             field.addAttribute(Texture { _, _, _ ->}).get(Texture::class)!!
             textureAttribute.setTextures(null, Random)

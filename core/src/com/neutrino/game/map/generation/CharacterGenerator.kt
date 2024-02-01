@@ -1,32 +1,28 @@
-package com.neutrino.game.domain.use_case.map
+package com.neutrino.game.map.generation
 
-import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.Rat
-import com.neutrino.game.domain.model.map.Level
-import com.neutrino.game.domain.model.map.MapTags
-import com.neutrino.game.domain.model.map.TagInterpretation
-import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.map.generation.util.GenerationParams
+import com.neutrino.game.map.level.CharacterArray
 import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord
 import kotlin.math.roundToInt
 
-class GenerateCharacters(
-    private val level: Level
-) {
-    val characterArray = CharacterArray()
+class CharacterGenerator(val params: GenerationParams) {
 
-    val characterMap: List<MutableList<Character?>> = List(level.sizeY) {
-        MutableList<Character?>(level.sizeX) {null}
+    val characterArray = CharacterArray()
+    val characterMap: List<MutableList<Entity?>> = List(params.map.size) {
+        MutableList(params.map[0].size) {null}
     }
 
-    private val interpretedTags = TagInterpretation(listOf(MapTags.CHARACTERS))
-
     fun generate(): CharacterArray {
-        val difficultyModifier = kotlin.math.abs(level.chunkCoords.z)
-        interpretedTags.generationParams.difficulty += difficultyModifier / 4
+        // TODO Map generation
+        val difficultyModifier = kotlin.math.abs(params.level.chunkCoords.z)
+        params.interpretedTags.tagParams.difficulty += difficultyModifier / 4
 
         addPlayerAtStairs()
         spawnEnemies()
@@ -36,12 +32,12 @@ class GenerateCharacters(
     fun addPlayerAtStairs() {
         var stairsDown: Coord? = null
         var stairsUp: Coord? = null
-        for (y in 0 until level.sizeY) {
-            for (x in 0 until level.sizeX) {
-                for (z in 0 until level.map[y][x].size) {
-                    if (level.map[y][x][z] hasIdentity Identity.StairsDown::class)
+        for (y in 0 until params.map.size) {
+            for (x in 0 until params.map[0].size) {
+                for (z in 0 until params.map[y][x].size) {
+                    if (params.map[y][x][z] hasIdentity Identity.StairsDown::class)
                         stairsDown = Coord.get(x, y)
-                    if (level.map[y][x][z] hasIdentity Identity.StairsUp::class)
+                    if (params.map[y][x][z] hasIdentity Identity.StairsUp::class)
                         stairsUp = Coord.get(x, y)
                 }
             }
@@ -49,7 +45,7 @@ class GenerateCharacters(
                 break
         }
 
-        if (level.chunkCoords.z > 0) {
+        if (params.level.chunkCoords.z > 0) {
             Player.xPos = stairsUp!!.x
             Player.yPos = stairsUp.y
         }
@@ -65,11 +61,13 @@ class GenerateCharacters(
 
 
     private fun spawnEnemies() {
-        for (i in 0 until (20 * interpretedTags.generationParams.enemyMultiplier * (2f - interpretedTags.generationParams.enemyQuality)).roundToInt()) {
+        for (i in 0 until (
+                20 * params.interpretedTags.tagParams.enemyMultiplier * (2f - params.interpretedTags.tagParams.enemyQuality))
+            .roundToInt()) {
             try {
                 val character = getCharacter()
                 characterArray.add(character)
-                characterMap[character.yPos][character.xPos] = character
+                characterMap[character.get(Position::class)!!.y][character.get(Position::class)!!.x] = character
             } catch (e: Exception) {
                 println("Error: ${e.message}")
                 break
@@ -78,12 +76,14 @@ class GenerateCharacters(
     }
 
     @Throws(Exception::class)
-    private fun getCharacter(): Character {
+    private fun getCharacter(): Entity {
         val currentTurn = Turn.turn
         // TODO Amount and the type of enemies should be dependant on level difficulty and enemy difficulty
         val coord = getRandomPosition()!!
-        val character: Character = Rat(coord.getX(), coord.getY(), currentTurn)
-        character.randomize(level.randomGenerator)
+        val character: Entity = Rat(coord.getX(), coord.getY(), currentTurn)
+        character.addAttribute(Position(coord.getX(), coord.getY()))
+        character.addAttribute(com.neutrino.game.entities.map.attributes.Turn(currentTurn))
+        character.randomize(params.rng)
         return character
     }
 
@@ -95,12 +95,12 @@ class GenerateCharacters(
             var xPos: Int
             var yPos: Int
             do {
-                xPos = level.randomGenerator.nextInt(0, level.sizeX)
-                yPos = level.randomGenerator.nextInt(0, level.sizeY)
+                xPos = params.rng.nextInt(0, params.map[0].size)
+                yPos = params.rng.nextInt(0, params.map.size)
                 if (tries++ == 50)
                     throw Exception("Couldn't find more positions")
                 // possibly change it to movementMap for efficiency. It has inverted xPos and yPos
-            } while (!level.allowsCharacter(xPos, yPos) || characterMap[yPos][xPos] != null)
+            } while (!params.level.allowsCharacter(xPos, yPos) || characterMap[yPos][xPos] != null)
 
             return Coord.get(xPos, yPos)
         } catch (e: Exception) {e.toString()}

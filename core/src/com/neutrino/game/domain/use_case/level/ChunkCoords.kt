@@ -3,7 +3,7 @@ package com.neutrino.game.domain.use_case.level
 import com.neutrino.game.utility.Serialize
 
 @Serialize
-class LevelChunkCoords(
+class ChunkCoords(
     val x: Int,
     val y: Int,
     val z: Int

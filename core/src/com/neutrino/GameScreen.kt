@@ -18,7 +18,7 @@ import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.domain.use_case.level.LevelChunkCoords
+import com.neutrino.game.domain.use_case.level.ChunkCoords
 import com.neutrino.game.gameplay.main.Gameplay
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.util.Constants
@@ -71,7 +71,7 @@ class GameScreen: KtxScreen {
         Gdx.input.inputProcessor = gameInputMultiplexer
 
         gameStage.addActor(levelDrawer)
-        levelInitialization.initializeLevel(LevelChunkCoords(0, 0, 0), null)
+        levelInitialization.initializeLevel(ChunkCoords(0, 0, 0), null)
 
         gameStage.cancelSkill = gameplay::cancelUsage
 
@@ -232,11 +232,11 @@ class GameScreen: KtxScreen {
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.LEVELCHANGED
             override fun update(data: Any?): Boolean {
-                if (data !is LevelChunkCoords)
+                if (data !is ChunkCoords)
                     return false
 
                 levelInitialization.initializeLevel(data, Player.getPosition())
-                hudStage.diagnostics.dungeonTypeLabel.setText("Dungeon depth ${Turn.currentLevel.levelChunkCoords.z.absoluteValue}")
+                hudStage.diagnostics.dungeonTypeLabel.setText("Dungeon depth ${Turn.currentLevel.chunkCoords.z.absoluteValue}")
                 return true
             }
         })

@@ -7,7 +7,7 @@ import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.ActorVisuals
-import com.neutrino.game.domain.model.characters.utility.EnemyAi
+import com.neutrino.game.entities.characters.attributes.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.map.Level
@@ -16,11 +16,17 @@ import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.use_case.characters.CharactersUseCases
-import com.neutrino.game.domain.use_case.level.LevelChunkCoords
+import com.neutrino.game.domain.use_case.level.ChunkCoords
 import com.neutrino.game.domain.use_case.level.LevelUseCases
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.characters.attributes.CharacterTags
+import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.map.attributes.MapParams
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.map.level.CharacterArray
 import com.neutrino.game.util.hasIdentity
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
@@ -61,11 +67,12 @@ object Turn {
     /**
      * A list of current level characters. Should be changed / added to when entering a new Level
      */
-    var characterArray: CharacterArray = CharacterArray(Player)
+    // TODO ECS Characters Initialize with Player inside
+    var characterArray: CharacterArray = CharacterArray()
 
-    lateinit var characterMap: List<MutableList<Character?>>
+    lateinit var characterMap: List<MutableList<Entity?>>
     lateinit var currentLevel: Level
-    lateinit var fov: Fov
+    lateinit var mapFov: Fov
 
     /**
      * List containing various short term events, often related to characters.
@@ -103,9 +110,13 @@ object Turn {
 
         dijkstraMap.initialize(level.movementMap)
 
-        fov = Fov(level.map)
+        mapFov = Fov(level.map)
         for (character in characterArray) {
-            fov.updateFov(character.xPos, character.yPos, character.ai.fov, character.viewDistance)
+            mapFov.updateFov(
+                character.get(Position::class)!!.x,
+                character.get(Position::class)!!.y,
+                character.get(Ai::class)!!.fov,
+                character.get(Ai::class)!!.viewDistance)
         }
 
         GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
@@ -130,20 +141,24 @@ object Turn {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
                         moveCharacter(character.xPos, character.yPos, action.x, action.y)
-                        fov.updateFov(action.x, action.y, Player.ai.fov, Player.viewDistance)
+                        mapFov.updateFov(
+                            character.get(Position::class)!!.x,
+                            character.get(Position::class)!!.y,
+                            character.get(Ai::class)!!.fov,
+                            character.get(Ai::class)!!.viewDistance)
                         character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                         if (currentLevel.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
-                            GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, LevelChunkCoords(
-                                currentLevel.levelChunkCoords.x,
-                                currentLevel.levelChunkCoords.y,
-                                currentLevel.levelChunkCoords.z - 1
+                            GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
+                                currentLevel.chunkCoords.x,
+                                currentLevel.chunkCoords.y,
+                                currentLevel.chunkCoords.z - 1
                             ))
                         if (currentLevel.map[action.y][action.x] hasIdentity Identity.StairsUp::class)
-                            GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, LevelChunkCoords(
-                                currentLevel.levelChunkCoords.x,
-                                currentLevel.levelChunkCoords.y,
-                                currentLevel.levelChunkCoords.z + 1
+                            GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
+                                currentLevel.chunkCoords.x,
+                                currentLevel.chunkCoords.y,
+                                currentLevel.chunkCoords.z + 1
                             ))
                     }
                     is Action.ATTACK -> {
@@ -195,7 +210,11 @@ object Turn {
                                 else
                                     mapImpassableList.add(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
 
-                                fov.updateFov(Player.xPos, Player.yPos, Player.ai.fov, Player.viewDistance)
+                                mapFov.updateFov(
+                                    character.get(Position::class)!!.x,
+                                    character.get(Position::class)!!.y,
+                                    character.get(Ai::class)!!.fov,
+                                    character.get(Ai::class)!!.viewDistance)
                                 GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
                             }
                             else -> {
@@ -281,25 +300,29 @@ object Turn {
 //                println()
             } else {
                 // initialize the ai if it's 10 tiles or less from the player
-                if (character.ai is EnemyAi)
-                    (character.ai as EnemyAi).decide()
+                if (character has EnemyAi::class)
+                    character.get(EnemyAi::class)!!.decide()
                 else
-                    character.ai.action = Action.WAIT
+                    character.get(Ai::class)!!.action = Action.WAIT
 
-                var action: Action = character.ai.useAction()
+                var action: Action = character.get(Ai::class)!!.useAction()
                 when (action) {
                     is Action.MOVE -> {
                         if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
-                            val prevCoord = character.ai.moveList.lastOrNull() ?: Coord.get(action.x, action.y)
-                            character.ai.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, mapImpassableList.plus(charactersUseCases.getImpassable()), true)
-                            val coord = character.ai.getMove()
+                            val prevCoord = character.get(Ai::class)!!.moveList.lastOrNull() ?: Coord.get(action.x, action.y)
+                            character.get(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, mapImpassableList.plus(charactersUseCases.getImpassable()), true)
+                            val coord = character.get(Ai::class)!!.getMove()
                             action = Action.MOVE(coord.x, coord.y)
                         }
 
                         moveCharacter(character.xPos, character.yPos, action.x, action.y)
                         character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
-                        fov.updateFov(character.xPos, character.yPos, character.ai.fov, character.viewDistance)
+                        mapFov.updateFov(
+                            character.get(Position::class)!!.x,
+                            character.get(Position::class)!!.y,
+                            character.get(Ai::class)!!.fov,
+                            character.get(Ai::class)!!.viewDistance)
                     }
                     is Action.ATTACK -> {
                         val attackedCharacter = characterArray.get(action.x, action.y)
@@ -312,8 +335,8 @@ object Turn {
                     is Action.SKILL -> {
                         println(character.name + " used a skill")
                         if (action.skill.manaCost != null) {
-                            val multiplier = character.getTag(CharacterTag.ReduceCooldown::class)?.reducePercent ?: 1f
-                            character.mp -= action.skill.manaCost!! * multiplier
+                            val multiplier = character.get(CharacterTags::class)?.getTag(CharacterTag.ReduceCooldown::class)?.reducePercent ?: 1f
+                            character.get(DefensiveStats::class)!!.mp -= action.skill.manaCost!! * multiplier
                         }
                     }
                     is Action.INTERACTION -> {
@@ -366,7 +389,7 @@ object Turn {
     /**
      * Called from character class when enemy is killed.
      */
-    private fun characterDied(character: Character) {
+    private fun characterDied(character: Entity) {
         if (character is Player)
             return playerDied()
 

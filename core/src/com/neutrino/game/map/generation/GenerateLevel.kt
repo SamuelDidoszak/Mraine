@@ -1,8 +1,7 @@
 package com.neutrino.game.map.generation
 
 import com.neutrino.game.domain.model.map.Level
-import com.neutrino.game.domain.use_case.level.LevelChunkCoords
-import com.neutrino.game.domain.use_case.map.GenerateCharacters
+import com.neutrino.game.domain.use_case.level.ChunkCoords
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.map.generation.util.GenerationParams
 import com.neutrino.game.util.Constants.LevelChunkSize
@@ -15,7 +14,7 @@ class GenerateLevel(var levelDrawer: LevelDrawer) {
     private var tags: ArrayList<MapTag> = ArrayList()
     private var tagGenerators: ArrayList<() -> MapTag> = ArrayList()
 
-    fun generate(chunkCoords: LevelChunkCoords): Level {
+    fun generate(chunkCoords: ChunkCoords): Level {
         val level: Level = Level(
             chunkCoords,
             "A level for testing map generation",
@@ -33,7 +32,7 @@ class GenerateLevel(var levelDrawer: LevelDrawer) {
 
         generateMap(level)
         level.movementMap = level.createMovementMap()
-        val generateCharacters = GenerateCharacters(level)
+        val generateCharacters = CharacterGenerator(getParams(level))
         level.characterArray = generateCharacters.generate()
         level.characterMap = generateCharacters.characterMap
 
@@ -56,6 +55,7 @@ class GenerateLevel(var levelDrawer: LevelDrawer) {
                 tagGenerators.map { it.invoke() }.plus(tags)
             ),
             level.randomGenerator,
+            level,
             level.map
         )
     }

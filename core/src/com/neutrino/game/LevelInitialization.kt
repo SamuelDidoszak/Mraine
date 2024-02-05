@@ -96,7 +96,7 @@ class LevelInitialization (
     /** TODO Temporary **/
     private fun addPlayer(level: Level) {
         val characterGenerator = CharacterGenerator(GenerationParams(
-            MapTagInterpretation(listOf()), level.randomGenerator, level, level.map))
+            MapTagInterpretation(listOf()), level.randomGenerator, level, level.map), levelDrawer)
         characterGenerator.addPlayerAtStairs()
         level.characterArray.addAll(characterGenerator.characterArray)
     }

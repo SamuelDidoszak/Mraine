@@ -4,27 +4,24 @@ import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.utility.ActorVisuals
-import com.neutrino.game.entities.characters.attributes.EnemyAi
 import com.neutrino.game.domain.model.characters.utility.Fov
-import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.skills.Skill
-import com.neutrino.game.domain.use_case.characters.CharactersUseCases
 import com.neutrino.game.domain.use_case.level.ChunkCoords
 import com.neutrino.game.domain.use_case.level.LevelUseCases
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.CharacterTags
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
+import com.neutrino.game.entities.characters.attributes.EnemyAi
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.map.level.CharacterArray
 import com.neutrino.game.util.hasIdentity
@@ -86,7 +83,6 @@ object Turn {
     val globalEventArray: EventArray = EventArray()
 
     lateinit var levelUseCases: LevelUseCases
-    var charactersUseCases: CharactersUseCases = CharactersUseCases(characterArray)
 
     var dijkstraMap: DijkstraMap = DijkstraMap(GWTRNG())
 
@@ -101,7 +97,6 @@ object Turn {
     fun setLevel(level: Level) {
         currentLevel = level
         characterArray = level.characterArray
-        charactersUseCases = CharactersUseCases(characterArray)
         characterMap = level.characterMap
         levelUseCases = LevelUseCases(level)
         mapImpassableList = levelUseCases.getImpassable() as ArrayList<Coord>
@@ -128,7 +123,9 @@ object Turn {
             val character = characterArray.get(turn)!!
             playerAction = character == Player
 
-            if (updateBatch.firstOrNull() == Action.MOVE(character.xPos, character.yPos)) {
+            if (updateBatch.firstOrNull() == Action.MOVE(
+                    character.get(Position::class)!!.x,
+                    character.get(Position::class)!!.y)) {
                 updateBatch.removeFirst()
                 println("resetting update batch")
             }
@@ -136,17 +133,16 @@ object Turn {
             // Player actions
             if (playerAction) {
                 // Makes the player action or returns if Action.NOTHING
-                val action: Action = character.ai.useAction()
+                val action: Action = character.get(Ai::class)!!.useAction()
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
-                        moveCharacter(character.xPos, character.yPos, action.x, action.y)
+                        moveCharacter(character, action.x, action.y)
                         mapFov.updateFov(
                             character.get(Position::class)!!.x,
                             character.get(Position::class)!!.y,
                             character.get(Ai::class)!!.fov,
                             character.get(Ai::class)!!.viewDistance)
-                        character.move(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                         if (currentLevel.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
@@ -163,20 +159,21 @@ object Turn {
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)!!
-                        Player.primaryAttack.attack(Player, Coord.get(action.x, action.y))
+                        // TODO ECS Attack
+//                        Player.primaryAttack.attack(Player, Coord.get(action.x, action.y))
                     }
                     is Action.INTERACTION -> {
                         // Entity position(x, y) can be derived from ai.entityTargetCoords
                         when (action.interaction) {
                             is InteractionType.ITEM -> {
                                 // TODO ECS ITEM
-                                val item = (action.entity as ItemEntity).item
-                                if (Player.addToInventory(item)) {
-                                    ActorVisuals.showPickedUpItem(Player, item)
-                                    currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].removeLast()
-                                } else {
-                                    println("Inventory is full!")
-                                }
+//                                val item = (action.entity as ItemEntity).item
+//                                if (Player.addToInventory(item)) {
+//                                    ActorVisuals.showPickedUpItem(Player, item)
+//                                    currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].removeLast()
+//                                } else {
+//                                    println("Inventory is full!")
+//                                }
                             }
                             // TODO ECS ATTACK
 //                            is InteractionType.DESTROY -> {
@@ -206,9 +203,13 @@ object Turn {
                             is InteractionType.DOOR -> {
                                 action.interaction.act()
                                 if (action.entity.get(MapParams::class)?.allowCharacterOnTop == true)
-                                    mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
+                                    mapImpassableList.remove(Coord.get(
+                                        Player.get(Ai::class)!!.targetCoords!!.first,
+                                        Player.get(Ai::class)!!.targetCoords!!.second))
                                 else
-                                    mapImpassableList.add(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
+                                    mapImpassableList.add(Coord.get(
+                                        Player.get(Ai::class)!!.targetCoords!!.first,
+                                        Player.get(Ai::class)!!.targetCoords!!.second))
 
                                 mapFov.updateFov(
                                     character.get(Position::class)!!.x,
@@ -221,7 +222,7 @@ object Turn {
                                 action.interaction.act()
                             }
                         }
-                        Player.ai.entityTargetCoords = null
+                        Player.get(Ai::class)!!.targetCoords = null
                     }
                     // TODO ECS ITEM
 //                    is Action.ITEM -> {
@@ -280,8 +281,8 @@ object Turn {
                             }
                         }
                         if (action.skill.manaCost != null) {
-                            val multiplier = Player.getTag(CharacterTag.ReduceCooldown::class)?.reducePercent ?: 1f
-                            Player.mp -= action.skill.manaCost!! * multiplier
+                            val multiplier = Player.get(CharacterTags::class)!!.getTag(CharacterTag.ReduceCooldown::class)?.reducePercent ?: 1f
+                            Player.get(DefensiveStats::class)!!.mp -= action.skill.manaCost!! * multiplier
                         }
                     }
 
@@ -295,7 +296,8 @@ object Turn {
                     else -> {}
                 }
                 playerAction = false
-//                charactersUseCases.updateTurnBars()
+                // TODO ECS Character info panel
+//                characterArray.forEach {it.updateTurnBar()}
 //                characterArray.forEach { println("${it.name}, ${it.turn}") }
 //                println()
             } else {
@@ -310,13 +312,13 @@ object Turn {
                     is Action.MOVE -> {
                         if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
                             val prevCoord = character.get(Ai::class)!!.moveList.lastOrNull() ?: Coord.get(action.x, action.y)
-                            character.get(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, mapImpassableList.plus(charactersUseCases.getImpassable()), true)
+                            character.get(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, mapImpassableList.plus(
+                                characterArray.getImpassable()), true)
                             val coord = character.get(Ai::class)!!.getMove()
                             action = Action.MOVE(coord.x, coord.y)
                         }
 
-                        moveCharacter(character.xPos, character.yPos, action.x, action.y)
-                        character.move(action.x, action.y)
+                        moveCharacter(character, action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                         mapFov.updateFov(
                             character.get(Position::class)!!.x,
@@ -325,12 +327,13 @@ object Turn {
                             character.get(Ai::class)!!.viewDistance)
                     }
                     is Action.ATTACK -> {
-                        val attackedCharacter = characterArray.get(action.x, action.y)
-                        if (attackedCharacter == null) {
-                            println("No character there")
-                        } else {
-                            character.primaryAttack.attack(character, Coord.get(action.x, action.y))
-                        }
+                        // TODO ECS Attack
+//                        val attackedCharacter = characterArray.get(action.x, action.y)
+//                        if (attackedCharacter == null) {
+//                            println("No character there")
+//                        } else {
+//                            character.primaryAttack.attack(character, Coord.get(action.x, action.y))
+//                        }
                     }
                     is Action.SKILL -> {
                         println(character.name + " used a skill")
@@ -357,7 +360,8 @@ object Turn {
                         println("caused an event")
                     }
                 }
-                character.updateTurnBar(false)
+                // TODO ECS Character info panel
+//                character.updateTurnBar(false)
             }
             characterArray.move(character)
             while (updateBatch.firstOrNull() is Action.EVENT) {
@@ -390,10 +394,11 @@ object Turn {
      * Called from character class when enemy is killed.
      */
     private fun characterDied(character: Entity) {
-        if (character is Player)
+        if (character == Player)
             return playerDied()
 
-        Player.experience += character.experience
+        // TODO ECS Attack levelling
+//        Player.experience += character.experience
         characterArray.remove(character)
         // Drop its items
         // TODO ECS ITEM
@@ -403,14 +408,16 @@ object Turn {
 //            }
 //        }
 
-        eventArray.remove(character)
+        // TODO ECS Events
+//        eventArray.remove(character)
     }
 
     private fun playerDied() {
         /** Exiting the app **/
         println("\n\n=======================================================================================================================================\n")
-        println("Current score is: ${Player.experience}")
-        println("\tGold collected: ${Player.inventory.get("Gold")?.amount?:0}")
+        println("Current score is: ${Player.get(com.neutrino.game.entities.characters.attributes.Level::class)!!.experience}")
+        // TODO ECS Items
+//        println("\tGold collected: ${Player.inventory.get("Gold")?.amount?:0}")
         println("\n=======================================================================================================================================\n\n")
         Gdx.app.exit()
         System.exit(0)
@@ -438,10 +445,16 @@ object Turn {
         }
     }
 
-    private fun moveCharacter(fromX: Int, fromY: Int, toX: Int, toY: Int) {
-        val characterToMove = characterMap[fromY][fromX]
-        characterMap[fromY][fromX] = null
-        characterMap[toY][toX] = characterToMove
+    private fun moveCharacter(character: Entity, toX: Int, toY: Int) {
+        val x = character.get(Position::class)!!.x
+        val y = character.get(Position::class)!!.y
+        characterMap[y][x] = null
+        characterMap[toY][toX] = character
+
+//        this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, speed))
+        if (toX != x)
+            character.get(Texture::class)!!.textures.mirror(toX < x)
+        character.get(Position::class)!!.setPosition(toX, toY)
     }
 
 
@@ -461,7 +474,7 @@ object Turn {
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.CHARACTERDIED
             override fun update(data: Any?): Boolean {
-                if (data != null && data is Character)
+                if (data != null && data is Entity)
                     characterDied(data)
 
                 return true

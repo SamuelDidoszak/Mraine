@@ -79,6 +79,10 @@ class Texture(
                 removeAt(i)
         }
 
+        fun mirror(mirror: Boolean) {
+            this.forEach { it.mirrorX = mirror }
+        }
+
         private fun addToLevel(element: TextureSprite, animationData: AnimationData? = null) {
             val level = entity.get(Position::class)!!.level
             if (element.z != 0)

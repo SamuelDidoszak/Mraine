@@ -5,6 +5,7 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
 import com.neutrino.game.util.equalsDelta
 import com.neutrino.game.util.lessThanDelta
+import squidpony.squidmath.Coord
 
 class CharacterArray(): ArrayList<Entity>() {
     constructor(character: Entity): this() {
@@ -69,4 +70,7 @@ class CharacterArray(): ArrayList<Entity>() {
         return this.find { character -> character.get(Position::class)!!.x == x && character.get(Position::class)!!.y == y }
     }
 
+    fun getImpassable(): Collection<Coord> {
+        return this.map { Coord.get(it.get(Position::class)!!.x, it.get(Position::class)!!.y) }
+    }
 }

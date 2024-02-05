@@ -9,7 +9,7 @@ import squidpony.squidmath.Coord
 import kotlin.math.pow
 import kotlin.random.Random
 
-class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
+open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
 
     /**
      * Constant values related to enemy detection and sensing
@@ -86,7 +86,7 @@ class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
             AiBehavior.TARGET_ENEMY -> {
                 target(
                     targettedEnemy!!.get(Position::class)!!.x, targettedEnemy!!.get(Position::class)!!.y,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
+                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))
 
                 if (action is Action.ATTACK)
                     energy += 5
@@ -109,7 +109,7 @@ class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                         return decide()
                     }
 
-                    setMoveList(designatedPosition.x, designatedPosition.y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
+                    setMoveList(designatedPosition.x, designatedPosition.y, Turn.dijkstraMap, Turn.characterArray.getImpassable())
                     val returnPath = moveList.toList()
                     if (returnPath.isNotEmpty())
                         designatedPosition = returnPath[Random.nextInt(returnPath.size / 2, returnPath.size)]
@@ -144,7 +144,7 @@ class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                 }
 
                 moveTo(designatedPosition!!.x, designatedPosition!!.y,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
+                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))
 
                 energy++
             }

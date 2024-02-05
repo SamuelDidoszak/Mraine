@@ -1,18 +1,20 @@
 package com.neutrino.game.map.generation
 
-import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.Rat
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.Characters
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.graphics.drawing.LevelDrawer
+import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.util.GenerationParams
 import com.neutrino.game.map.level.CharacterArray
 import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord
 import kotlin.math.roundToInt
 
-class CharacterGenerator(val params: GenerationParams) {
+class CharacterGenerator(val params: GenerationParams, val levelDrawer: LevelDrawer) {
 
     val characterArray = CharacterArray()
     val characterMap: List<MutableList<Entity?>> = List(params.map.size) {
@@ -45,18 +47,24 @@ class CharacterGenerator(val params: GenerationParams) {
                 break
         }
 
+        if (Player hasNot Position::class) {
+            Player.addAttribute(DrawPosition())
+            Player.addAttribute(Position(0, 0, levelDrawer))
+        }
+        Player.addAttribute(com.neutrino.game.entities.map.attributes.Turn(0.0))
+
         if (params.level.chunkCoords.z > 0) {
-            Player.xPos = stairsUp!!.x
-            Player.yPos = stairsUp.y
+            Player.get(Position::class)!!.x = stairsUp!!.x
+            Player.get(Position::class)!!.y = stairsUp.y
         }
         else {
             val coord = stairsDown ?: (getRandomPosition()?: Coord.get(30, 30))
-            Player.xPos = coord.getX()
-            Player.yPos = coord.getY()
+            Player.get(Position::class)!!.x = coord.getX()
+            Player.get(Position::class)!!.y = coord.getY()
         }
 
         characterArray.add(Player)
-        characterMap[Player.yPos][Player.xPos] = Player
+        characterMap[Player.get(Position::class)!!.y][Player.get(Position::class)!!.x] = Player
     }
 
 
@@ -80,10 +88,12 @@ class CharacterGenerator(val params: GenerationParams) {
         val currentTurn = Turn.turn
         // TODO Amount and the type of enemies should be dependant on level difficulty and enemy difficulty
         val coord = getRandomPosition()!!
-        val character: Entity = Rat(coord.getX(), coord.getY(), currentTurn)
-        character.addAttribute(Position(coord.getX(), coord.getY()))
+        val character: Entity = Characters.new("Rat")
+        character.addAttribute(DrawPosition())
+        character.addAttribute(Position(coord.getX(), coord.getY(), levelDrawer))
         character.addAttribute(com.neutrino.game.entities.map.attributes.Turn(currentTurn))
-        character.randomize(params.rng)
+        // TODO ECS Items
+//        character.randomize(params.rng)
         return character
     }
 

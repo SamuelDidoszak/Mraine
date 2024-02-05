@@ -2,14 +2,16 @@ package com.neutrino.game.utility
 
 import com.badlogic.gdx.graphics.Color
 import com.neutrino.LevelArrays
-import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interactable
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.use_case.Shaderable
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.items.attributes.Item
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.HasRange
@@ -64,12 +66,13 @@ class Highlighting {
 
     private fun highlightCharacters(range: HasRange, center: Coord, omitCenter: Boolean, color: Color) {
         for (tile in range.getTilesInRange(center, omitCenter)) {
-            val character = LevelArrays.getCharacterAt(tile)
-            if (character != null) {
-                val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, character.texture)
-                character.shaders.add(shader)
-                highlightedList.add(Pair(character, shader))
-            }
+            // TODO ECS Shaders
+//            val character = LevelArrays.getCharacterAt(tile)
+//            if (character != null) {
+//                val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, character.texture)
+//                character.shaders.add(shader)
+//                highlightedList.add(Pair(character, shader))
+//            }
         }
     }
 
@@ -81,16 +84,17 @@ class Highlighting {
         previousAttackCoord = center
 
         if ((requireCharacter && LevelArrays.getCharacterAt(center) == null) ||
-            (requireCharacter && LevelArrays.getCharacterAt(center) is Player))
+            (requireCharacter && LevelArrays.getCharacterAt(center) == Player))
             return
 
         for (tile in range.getTilesInRange(center)) {
             val character = LevelArrays.getCharacterAt(tile)
-            if (character != null) {
-                val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, character.texture)
-                character.shaders.add(shader)
-                selectionHighlightedList.add(Pair(character, shader))
-            }
+            // TODO ECS Shaders
+//            if (character != null) {
+//                val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, character.texture)
+//                character.shaders.add(shader)
+//                selectionHighlightedList.add(Pair(character, shader))
+//            }
 
             val entities = LevelArrays.getEntitiesAt(tile)
             var floorHighlighted = false
@@ -155,14 +159,14 @@ class Highlighting {
             return false
 
         if (entity has DefensiveStats::class) {
-            if (!Player.ai.canAttack(coord.x, coord.y))
+            if (!Player.get(Ai::class)!!.canAttack(coord.x, coord.y))
                 return false
         }
         else if (entity has Interaction::class) {
             val requiredDistance = entity.get(Interaction::class)?.getPrimaryInteraction()?.requiredDistance
                 ?: return false
-            if ((coord.x !in Player.xPos - requiredDistance .. Player.xPos + requiredDistance) ||
-                (coord.y !in Player.yPos - requiredDistance .. Player.yPos + requiredDistance))
+            if ((coord.x !in Player.get(Position::class)!!.x - requiredDistance .. Player.get(Position::class)!!.x + requiredDistance) ||
+                (coord.y !in Player.get(Position::class)!!.y - requiredDistance .. Player.get(Position::class)!!.y + requiredDistance))
                 return false
         }
 
@@ -185,20 +189,22 @@ class Highlighting {
     }
 
     private fun addCharacterOutlineOnHover(coord: Coord): Boolean {
-        val character: Character? = LevelArrays.getCharacterAt(coord)
-        if (character != null && character == outlinedOnHover)
-            return true
+        val character: Entity? = LevelArrays.getCharacterAt(coord)
+        // TODO ECS Shaders
+//        if (character != null && character == outlinedOnHover)
+//            return true
         if (character == Player)
             return false
 
         outlinedOnHover?.shaders?.remove(shaderOnHover)
         outlinedOnHover = null
 
-        if (character == null || !Player.ai.canAttack(character.xPos, character.yPos))
+        if (character == null || !Player.get(Ai::class)!!.canAttack(character.get(Position::class)!!.x, character.get(Position::class)!!.y))
             return false
 
-        outlinedOnHover = character
-        if (character?.isAlive() != true)
+        // TODO ECS Shaders
+//        outlinedOnHover = character
+        if (character?.get(DefensiveStats::class)?.isAlive() != true)
             return false
 
         shaderOnHover = OutlineShader(

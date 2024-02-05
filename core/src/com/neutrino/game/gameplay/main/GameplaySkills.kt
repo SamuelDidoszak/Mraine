@@ -4,10 +4,12 @@ import com.neutrino.GameStage
 import com.neutrino.HudStage
 import com.neutrino.LevelArrays
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.model.turn.Action
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.utility.Highlighting
@@ -26,14 +28,14 @@ class GameplaySkills(
     internal fun useSkill(usedSkill: Skill): Boolean {
         when (usedSkill) {
             is Skill.ActiveSkill -> {
-                Player.ai.action = Action.SKILL(usedSkill)
+                Player.get(Ai::class)!!.action = Action.SKILL(usedSkill)
                 uiStage.usedSkill = null
                 hudStage.usedSkill = null
             }
             is Skill.ActiveSkillCharacter -> {
                 if (!gameplay.waitForAdditionalClick) {
                     gameplay.waitForAdditionalClick = true
-                    gameStage.highlighting.highlightArea(usedSkill, Player.getPosition(), true, true)
+                    gameStage.highlighting.highlightArea(usedSkill, Player.get(Position::class)!!.getPosition(), true, true)
                     gameStage.highlightRange = object: HasRange {
                         override var range: Int = 0
                         override var rangeType: RangeType = RangeType.SQUARE
@@ -49,19 +51,20 @@ class GameplaySkills(
                     return false
                 }
 
-                val clickedCharacter: Character? = LevelArrays.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
+                val clickedCharacter: Entity? = LevelArrays.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
                 if (clickedCharacter == null) {
                     gameStage.clickedCoordinates = null
                     return false
                 }
 
-                Player.ai.action = Action.SKILL(usedSkill, clickedCharacter)
+                // TODO Ecs Skills
+//                Player.get(Ai::class)!!.action = Action.SKILL(usedSkill, clickedCharacter)
                 gameplay.cancelUsage()
             }
             is Skill.ActiveSkillTile -> {
                 if (!gameplay.waitForAdditionalClick) {
                     gameplay.waitForAdditionalClick = true
-                    gameStage.highlighting.highlightArea(usedSkill, Player.getPosition(), true, true)
+                    gameStage.highlighting.highlightArea(usedSkill, Player.get(Position::class)!!.getPosition(), true, true)
                     gameStage.highlightRange = object: HasRange {
                         override var range: Int = 0
                         override var rangeType: RangeType = RangeType.SQUARE
@@ -77,13 +80,13 @@ class GameplaySkills(
                     return false
                 }
 
-                Player.ai.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
+                Player.get(Ai::class)!!.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
                 gameplay.cancelUsage()
             }
             is Skill.ActiveSkillArea -> {
                 if (!gameplay.waitForAdditionalClick) {
                     gameplay.waitForAdditionalClick = true
-                    gameStage.highlighting.highlightArea(usedSkill, Player.getPosition(), false, true)
+                    gameStage.highlighting.highlightArea(usedSkill, Player.get(Position::class)!!.getPosition(), false, true)
                     gameStage.highlightRange = usedSkill.area
                     gameStage.highlightMode = Highlighting.Companion.HighlightModes.AREA
                     gameStage.skillRange = usedSkill
@@ -96,7 +99,7 @@ class GameplaySkills(
                     return false
                 }
 
-                Player.ai.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
+                Player.get(Ai::class)!!.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
                 gameplay.cancelUsage()
             }
 

@@ -1,11 +1,9 @@
 package com.neutrino.game.domain.model.systems.attack
 
-import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.Attackable
-
 import squidpony.squidmath.Coord
 import kotlin.random.Random
 
@@ -27,8 +25,9 @@ abstract class Attack(
     abstract fun attack(character: Character, target: Coord)
 
     fun getTopmostAttackable(target: Coord): Attackable? {
-        if (LevelArrays.getCharacterAt(target) is Attackable)
-            return LevelArrays.getCharacterAt(target) as Attackable
+        // TODO ECS Attack
+//        if (LevelArrays.getCharacterAt(target) is Attackable)
+//            return LevelArrays.getCharacterAt(target) as Attackable
 
         // TODO ECS Attack
 //        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {
@@ -40,8 +39,9 @@ abstract class Attack(
 
     fun getAllAttackable(target: Coord): List<Attackable> {
         val attackableList: ArrayList<Attackable> = ArrayList()
-        if (LevelArrays.getCharacterAt(target) is Attackable)
-            attackableList.add(LevelArrays.getCharacterAt(target) as Attackable)
+        // TODO ECS Attack
+//        if (LevelArrays.getCharacterAt(target) is Attackable)
+//            attackableList.add(LevelArrays.getCharacterAt(target) as Attackable)
 
         // TODO ECS Attack
 //        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {

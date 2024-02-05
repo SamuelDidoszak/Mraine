@@ -54,13 +54,15 @@ class Entity() {
         }
     }
 
-    infix fun attach(callable: Callable) {
+    infix fun attach(callable: Callable): Entity {
         if (callables == null)
             callables = ArrayList()
         callables!!.add(callable)
+        return this
     }
 
-    infix fun detach(callable: Callable) {
+    infix fun detach(callable: Callable): Entity {
         callables!!.remove(callable)
+        return this
     }
 }

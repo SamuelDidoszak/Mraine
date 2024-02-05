@@ -14,9 +14,6 @@ import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.InteractionType
-import com.neutrino.game.map.generation.CharacterGenerator
-import com.neutrino.game.map.generation.MapTagInterpretation
-import com.neutrino.game.map.generation.util.GenerationParams
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.LevelChunkSize
 import com.neutrino.game.utility.serialization.HeaderSerializable
@@ -45,9 +42,10 @@ class Level(
     override fun readAfter(kryo: Kryo?, input: Input?) {
         movementMap = createMovementMap()
         // TODO ECS Generation
-        val characterGenerator = CharacterGenerator(GenerationParams(MapTagInterpretation(listOf()), randomGenerator, this, map))
-        characterArray = characterGenerator.generate()
-        characterMap = createCharacterMap()
+//        val characterGenerator = CharacterGenerator(GenerationParams(MapTagInterpretation(listOf()), randomGenerator, this, map))
+//        characterArray = characterGenerator.generate()
+//        characterMap = createCharacterMap()
+        // OLD
 //        val generateCharacters = GenerateCharacters(this)
 //        characterArray = generateCharacters.generate()
 //        characterMap = createCharacterMap()

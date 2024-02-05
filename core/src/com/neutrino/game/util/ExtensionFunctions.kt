@@ -8,6 +8,7 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entities
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -114,3 +115,12 @@ fun Table.remove(actor: Actor) {
     getCell(actor).pad(0f).space(0f)
     removeActor(actor)
 }
+
+
+var Entity.x: Int
+    get() = get(Position::class)!!.x
+    set(value) { get(Position::class)!!.x = value }
+
+var Entity.y: Int
+    get() = get(Position::class)!!.y
+    set(value) { get(Position::class)!!.y = value }

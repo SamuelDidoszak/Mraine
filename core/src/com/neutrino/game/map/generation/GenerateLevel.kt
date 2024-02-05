@@ -32,7 +32,7 @@ class GenerateLevel(var levelDrawer: LevelDrawer) {
 
         generateMap(level)
         level.movementMap = level.createMovementMap()
-        val generateCharacters = CharacterGenerator(getParams(level))
+        val generateCharacters = CharacterGenerator(getParams(level), levelDrawer)
         level.characterArray = generateCharacters.generate()
         level.characterMap = generateCharacters.characterMap
 

@@ -45,6 +45,11 @@ class Position(
         return Coord.get(x, y)
     }
 
+    fun setPosition(x: Int, y: Int) {
+        this.x = x
+        this.y = y
+    }
+
     private companion object {
         val positionMap = mapOf(
             1 to (-1 to 1),

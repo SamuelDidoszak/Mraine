@@ -1,19 +1,14 @@
 package com.neutrino.game.domain.model.systems.skills
 
-import com.neutrino.EventDispatcher
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.entities.shared.util.HasRange
-import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.AroundAttack
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
-import com.neutrino.game.domain.model.systems.event.types.EventModifyStat
-import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
-import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.entities.shared.util.RangeType
 
 class SkillCripplingSpin(override val character: Character): Skill.ActiveSkill, HasRange {
     override val skillType: SkillType = SkillType.STRENGTH
@@ -48,8 +43,9 @@ class SkillCripplingSpin(override val character: Character): Skill.ActiveSkill, 
         attack.attack(character)
         for (coord in getTilesInRange(character.getPosition(), true)) {
             val characterAt = LevelArrays.getCharacterAt(coord) ?: continue
-            val event = CharacterEvent(characterAt, TimedEvent(slowDownTime, EventModifyStat(StatsEnum.MOVEMENT_SPEED, slowDownStrength, true)), Turn.turn)
-            EventDispatcher.dispatchEvent(event)
+            // TODO Events
+//            val event = CharacterEvent(characterAt, TimedEvent(slowDownTime, EventModifyStat(StatsEnum.MOVEMENT_SPEED, slowDownStrength, true)), Turn.turn)
+//            EventDispatcher.dispatchEvent(event)
         }
         causeCooldown()
     }

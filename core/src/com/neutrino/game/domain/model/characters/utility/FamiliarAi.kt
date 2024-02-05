@@ -2,7 +2,6 @@ package com.neutrino.game.domain.model.characters.utility
 
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.turn.Action
-import com.neutrino.game.domain.model.turn.Turn
 import kotlin.math.abs
 
 class FamiliarAi(private val character: Character, private val master: Character): EnemyAi(character) {
@@ -28,11 +27,13 @@ class FamiliarAi(private val character: Character, private val master: Character
                     return decide()
                 }
 
-                moveTo(master.xPos, master.yPos,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
+                // OLD Turn
+//                moveTo(master.xPos, master.yPos,
+//                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
             }
             AiBehavior.SENSE_ENEMIES -> {
-                searchTarget(Turn.characterMap)
+                // OLD Turn
+//                searchTarget(Turn.characterMap)
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
@@ -44,8 +45,9 @@ class FamiliarAi(private val character: Character, private val master: Character
                     return
                 }
 
-                moveTo(master.xPos, master.yPos,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
+                // OLD Turn
+//                moveTo(master.xPos, master.yPos,
+//                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
             }
 
             else -> {

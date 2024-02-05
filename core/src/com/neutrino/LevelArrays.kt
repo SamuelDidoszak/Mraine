@@ -1,11 +1,10 @@
 package com.neutrino
 
-import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.entities.Entity
 import com.neutrino.game.domain.model.map.Level
-import com.neutrino.game.domain.model.turn.CharacterArray
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.MapParams
+import com.neutrino.game.map.level.CharacterArray
 import squidpony.squidmath.Coord
 
 object LevelArrays {
@@ -57,16 +56,16 @@ object LevelArrays {
         return Turn.characterArray
     }
 
-    fun getCharacterMap(): List<MutableList<Character?>> {
+    fun getCharacterMap(): List<MutableList<Entity?>> {
         return Turn.characterMap
     }
 
-    fun getCharacterAt(coord: Coord): Character? {
+    fun getCharacterAt(coord: Coord): Entity? {
         val coord = parseCoord(coord)
         return Turn.characterMap[coord.y][coord.x]
     }
 
-    fun getCharacterAt(x: Int, y: Int): Character? {
+    fun getCharacterAt(x: Int, y: Int): Entity? {
         val coord = parseCoord(Coord.get(x, y))
         return Turn.characterMap[coord.y][coord.x]
     }

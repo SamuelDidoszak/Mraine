@@ -1,19 +1,14 @@
 package com.neutrino.game.domain.model.systems.skills
 
-import com.neutrino.EventDispatcher
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.entities.shared.util.HasRange
-import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.BasicAttack
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
-import com.neutrino.game.domain.model.systems.event.types.EventBurn
-import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
-import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.entities.shared.util.RangeType
 import squidpony.squidmath.Coord
 
 class SkillMeteorite(override val character: Character): Skill.ActiveSkillArea {
@@ -52,8 +47,9 @@ class SkillMeteorite(override val character: Character): Skill.ActiveSkillArea {
             attack.attack(character, tile)
             val enemy = LevelArrays.getCharacterAt(tile)
             if (enemy != null) {
-                val event = CharacterEvent(enemy, TimedEvent(0.0, 1.0, burnLength.toInt(), EventBurn(enemy, burnDamage)), Turn.turn)
-                EventDispatcher.dispatchEvent(event)
+                // TODO Events
+//                val event = CharacterEvent(enemy, TimedEvent(0.0, 1.0, burnLength.toInt(), EventBurn(enemy, burnDamage)), Turn.turn)
+//                EventDispatcher.dispatchEvent(event)
             }
         }
         causeCooldown()

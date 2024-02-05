@@ -2,7 +2,6 @@ package com.neutrino.game.domain.model.characters.utility
 
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.turn.Action
-import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.utility.VectorOperations
 import squidpony.squidmath.Coord
 import kotlin.math.pow
@@ -32,7 +31,7 @@ open class EnemyAi(private val character: Character): Ai(character) {
             if (value != null) {
                 energy += 10
                 val displayDetection = !sensedEnemyArray.contains(value)
-                searchTarget(Turn.characterMap)
+//                searchTarget(Turn.characterMap)
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     if (displayDetection)
@@ -70,7 +69,8 @@ open class EnemyAi(private val character: Character): Ai(character) {
 
         when (currentBehavior) {
             AiBehavior.SENSE_ENEMIES -> {
-                searchTarget(Turn.characterMap)
+                // OLD Turn
+//                searchTarget(Turn.characterMap)
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
@@ -81,9 +81,10 @@ open class EnemyAi(private val character: Character): Ai(character) {
                 energy++
             }
             AiBehavior.TARGET_ENEMY -> {
-                character.ai.target(
-                    targettedEnemy!!.xPos, targettedEnemy!!.yPos,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
+                // OLD Turn
+//                character.ai.target(
+//                    targettedEnemy!!.xPos, targettedEnemy!!.yPos,
+//                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
 
                 if (character.ai.action is Action.ATTACK)
                     energy += 5
@@ -97,15 +98,17 @@ open class EnemyAi(private val character: Character): Ai(character) {
                 if (energyRecharged >= 5) {
                     energyRecharged = 0
                     // If the enemy is still in view, can decide to attack it
-                    if (targettedEnemy == null)
-                        searchTarget(Turn.characterMap)
+                    // OLD Turn
+//                    if (targettedEnemy == null)
+//                        searchTarget(Turn.characterMap)
                     if (targettedEnemy != null && Random.nextFloat() <= 0.5) {
                         currentBehavior = AiBehavior.TARGET_ENEMY
                         ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
                         return decide()
                     }
 
-                    setMoveList(designatedPosition.x, designatedPosition.y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
+                    // OLD Turn
+//                    setMoveList(designatedPosition.x, designatedPosition.y, Turn.dijkstraMap, Turn.charactersUseCases.getImpassable())
                     val returnPath = moveList.toList()
                     if (returnPath.isNotEmpty())
                         designatedPosition = returnPath[Random.nextInt(returnPath.size / 2, returnPath.size)]
@@ -129,7 +132,8 @@ open class EnemyAi(private val character: Character): Ai(character) {
                 }
 
                 if (targettedEnemy == null)
-                    searchTarget(Turn.characterMap)
+                    // OLD Turn
+//                    searchTarget(Turn.characterMap)
                 // If the enemy is still sensed, add a probability to attack it
                 if (targettedEnemy != null && Random.nextFloat() <= 0.137) {
                     ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
@@ -137,8 +141,9 @@ open class EnemyAi(private val character: Character): Ai(character) {
                     return decide()
                 }
 
-                moveTo(designatedPosition!!.x, designatedPosition!!.y,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
+                // OLD Turn
+//                moveTo(designatedPosition!!.x, designatedPosition!!.y,
+//                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.charactersUseCases.getImpassable()))
 
                 energy++
             }

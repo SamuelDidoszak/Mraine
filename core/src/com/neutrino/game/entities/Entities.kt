@@ -12,23 +12,23 @@ object Entities {
     }
 
     fun new(name: String): Entity {
-        try {
+//        try {
             return new(entityIds[name]!!)
-        } catch (_: Exception) {
-            System.err.println("Entity with name: $name does not exist!")
-        }
-        throw Exception()
+//        } catch (_: Exception) {
+//            System.err.println("Entity with name: $name does not exist!")
+//        }
+//        throw Exception()
     }
 
     fun new(id: Int): Entity {
-        try {
+//        try {
             val entity = entityFactory[id].invoke()
             entity.id = id
             return entity
-        } catch (_: Exception) {
-            System.err.println("Entity with id: $id ${if (id < entityNames.size) "name: ${entityNames[id]} " else ""}does not exist!")
-        }
-        throw Exception()
+//        } catch (_: Exception) {
+//            System.err.println("Entity with id: $id ${if (id < entityNames.size) "name: ${entityNames[id]} " else ""}does not exist!")
+//        }
+//        throw Exception()
     }
 
     fun getId(name: String): Int {

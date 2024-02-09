@@ -85,7 +85,6 @@ class Shop(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Group
     }
 
     private fun getCellDrawable(cellNumber: Int): Drawable {
-        println("Called for $cellNumber")
         if (cellNumber >= Player.inventory.size)
             return TextureRegionDrawable(uiElements["cellUnavailable"])
         if (cellNumber == 0)

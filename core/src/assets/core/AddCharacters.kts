@@ -6,12 +6,13 @@ import com.neutrino.game.entities.characters.attributes.EnemyAi
 import com.neutrino.game.entities.characters.attributes.Faction
 import com.neutrino.game.entities.characters.attributes.Stats
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
+import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.graphics.textures.Textures
 
-Characters.add("Rat") {
+Characters.add("Mouse") {
     Entity()
         .addAttribute(Stats(
             hpMax = 13f,
-            mpMax = 10f,
             strength = 2f,
             dexterity = 2f,
             intelligence = 0f,
@@ -23,6 +24,28 @@ Characters.add("Rat") {
         ))
         .addAttribute(EnemyAi(viewDistance = 8))
         .addAttribute(Faction(FactionEnum.ENEMY))
+        .addAttribute(Texture { position, random, textures ->
+            textures.add(Textures.get("mouse_idle"))
+        })
+        .addAttribute(CharacterTags())
+}
+Characters.add("Slime") {
+    Entity()
+        .addAttribute(Stats(
+            hpMax = 25f,
+            strength = 3f,
+            damageMin = 1f,
+            damageMax = 4f,
+            poisonDamageMin = 0f,
+            poisonDamageMax = 2f,
+            defence = 1.5f,
+            criticalChance = 0.05f
+        ))
+        .addAttribute(EnemyAi(viewDistance = 8))
+        .addAttribute(Faction(FactionEnum.ENEMY))
+        .addAttribute(Texture { position, random, textures ->
+            textures.add(Textures.get("Slime_idle"))
+        })
         .addAttribute(CharacterTags())
 }
 

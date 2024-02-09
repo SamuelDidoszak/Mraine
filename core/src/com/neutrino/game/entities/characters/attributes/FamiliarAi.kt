@@ -46,7 +46,7 @@ class FamiliarAi(viewDistance: Int = 10, private val master: Entity): EnemyAi(vi
                 }
 
                 if (abs(entity.x - master.x) <= 2 && abs(entity.y - master.y) <= 2) {
-                    entity.get(Ai::class)!!.action = Action.WAIT
+                    entity.getSuper(Ai::class)!!.action = Action.WAIT
                     return
                 }
 

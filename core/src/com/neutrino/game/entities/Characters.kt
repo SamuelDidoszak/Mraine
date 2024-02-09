@@ -12,22 +12,22 @@ object Characters {
     }
 
     fun new(name: String): Entity {
-        try {
+//        try {
             return new(characterIds[name]!!)
-        } catch (_: Exception) {
-            System.err.println("Character with name: $name does not exist!")
-        }
-        throw Exception()
+//        } catch (_: Exception) {
+//            System.err.println("Character with name: $name does not exist!")
+//        }
+//        throw Exception()
     }
 
     fun new(id: Int): Entity {
-        try {
+//        try {
             val entity = characterFactory[id].invoke()
             entity.id = id
             return entity
-        } catch (_: Exception) {
-            System.err.println("Character with id: $id ${if (id < characterNames.size) "name: ${characterNames[id]} " else ""}does not exist!")
-        }
-        throw Exception()
+//        } catch (_: Exception) {
+//            System.err.println("Character with id: $id ${if (id < characterNames.size) "name: ${characterNames[id]} " else ""}does not exist!")
+//        }
+//        throw Exception()
     }
 }

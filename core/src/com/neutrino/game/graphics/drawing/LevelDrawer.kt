@@ -187,6 +187,19 @@ open class LevelDrawer: EntityDrawer, Group() {
         }
     }
 
+    fun initializeCharacterTextures(map: List<MutableList<Entity?>>,
+                                    rng: Random = Random(Random.nextInt())) {
+        for (y in map.indices) {
+            for (x in map[0].indices) {
+                if (map[y][x] != null) {
+                    map[y][x]!! addAttribute DrawPosition()
+                    map[y][x]!! addAttribute Position(x, y, this)
+                    map[y][x]!!.get(Texture::class)?.setTextures(null, rng)
+                }
+            }
+        }
+    }
+
     fun initializeMap(): List<List<MutableList<Entity>>> {
         return List(100) {
             List(100) {

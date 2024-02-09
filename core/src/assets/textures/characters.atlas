@@ -1,0 +1,108 @@
+characters.png
+	size: 512, 64
+Slime_attack#1
+	bounds: 169, 2, 23, 15
+Slime_attack#2
+	bounds: 338, 42, 29, 20
+Slime_attack#3
+	bounds: 369, 45, 32, 17
+Slime_attack#4
+	bounds: 403, 47, 32, 15
+Slime_attack#5
+	bounds: 437, 47, 30, 15
+Slime_attack#6
+	bounds: 142, 19, 26, 15
+Slime_death#1
+	bounds: 469, 46, 28, 16
+Slime_death#2
+	bounds: 338, 29, 30, 11
+Slime_death#3
+	bounds: 106, 2, 31, 9
+Slime_death#4
+	bounds: 73, 2, 31, 7
+Slime_idle#1
+	bounds: 260, 17, 22, 18
+Slime_idle#2
+	bounds: 284, 17, 22, 18
+Slime_idle#3
+	bounds: 308, 17, 22, 17
+Slime_idle#4
+	bounds: 332, 9, 22, 18
+Slime_walk#1
+	bounds: 370, 30, 29, 13
+Slime_walk#2
+	bounds: 142, 2, 25, 15
+Slime_walk#8
+	bounds: 142, 2, 25, 15
+Slime_walk#3
+	bounds: 416, 26, 18, 19
+Slime_walk#7
+	bounds: 416, 26, 18, 19
+Slime_walk#4
+	bounds: 125, 13, 15, 21
+Slime_walk#5
+	bounds: 125, 13, 15, 21
+Slime_walk#6
+	bounds: 125, 13, 15, 21
+mouse_attack#1
+	bounds: 61, 36, 26, 26
+mouse_attack#2
+	bounds: 258, 37, 25, 25
+mouse_attack#3
+	bounds: 2, 35, 29, 27
+mouse_attack#4
+	bounds: 2, 6, 26, 27
+mouse_death#1
+	bounds: 89, 36, 26, 26
+mouse_idle#1
+	bounds: 89, 36, 26, 26
+mouse_death#2
+	bounds: 312, 36, 24, 26
+mouse_death#3
+	bounds: 73, 11, 25, 23
+mouse_death#4
+	bounds: 100, 13, 23, 21
+mouse_idle#2
+	bounds: 117, 36, 26, 26
+mouse_idle#3
+	bounds: 145, 36, 26, 26
+mouse_idle#4
+	bounds: 33, 35, 26, 27
+mouse_idle#5
+	bounds: 30, 6, 26, 27
+mouse_walk#1
+	bounds: 173, 36, 26, 26
+mouse_walk#2
+	bounds: 201, 37, 27, 25
+mouse_walk#3
+	bounds: 230, 36, 26, 26
+mouse_walk#4
+	bounds: 285, 37, 25, 25
+player_attack#1
+	bounds: 356, 4, 13, 23
+player_attack#2
+	bounds: 453, 22, 13, 23
+player_attack#3
+	bounds: 224, 10, 19, 24
+player_attack#4
+	bounds: 245, 10, 13, 24
+player_death#1
+	bounds: 468, 21, 13, 23
+player_death#2
+	bounds: 483, 24, 13, 20
+player_death#3
+	bounds: 436, 27, 15, 18
+player_death#4
+	bounds: 170, 19, 22, 8
+player_idle#1
+	bounds: 371, 4, 13, 24
+player_idle#2
+	bounds: 58, 2, 13, 25
+player_walk#1
+	bounds: 386, 4, 13, 24
+player_walk#2
+	bounds: 194, 2, 13, 25
+player_walk#3
+	bounds: 401, 19, 13, 24
+player_walk#4
+	bounds: 209, 2, 13, 25

@@ -2,6 +2,7 @@ package com.neutrino.game.entities
 
 import kotlin.properties.Delegates
 import kotlin.reflect.KClass
+import kotlin.reflect.full.superclasses
 
 class Entity() {
     constructor(attributes: List<Attribute>): this() {
@@ -28,7 +29,21 @@ class Entity() {
     }
 
     infix fun <T: Attribute> get(attributeClass: KClass<T>): T? {
-        return attributes[attributeClass] as T?
+        return attributes[attributeClass] as? T?
+    }
+
+    infix fun <T: Attribute> getSuper(attributeClass: KClass<T>): T? {
+        if (attributes[attributeClass] != null)
+            return attributes[attributeClass] as? T?
+
+        attributes.keys.forEach { attribute ->
+            attribute.superclasses.forEach {
+                if (it == attributeClass)
+                    return attributes[attribute] as? T?
+            }
+        }
+
+        return null
     }
 
     infix fun has(attributeClass: KClass<out Attribute>): Boolean {

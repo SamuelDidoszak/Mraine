@@ -47,7 +47,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
     /**
      * Position to which the character will return after exhausting energy
      */
-    private var designatedPosition = Coord.get(entity.get(Position::class)!!.x, entity.get(Position::class)!!.y)
+    private var designatedPosition = Coord.get(0, 0)
 
     var currentBehavior: AiBehavior = AiBehavior.SENSE_ENEMIES
 
@@ -84,6 +84,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                 energy++
             }
             AiBehavior.TARGET_ENEMY -> {
+                designatedPosition = Coord.get(entity.get(Position::class)!!.x, entity.get(Position::class)!!.y)
                 target(
                     targettedEnemy!!.get(Position::class)!!.x, targettedEnemy!!.get(Position::class)!!.y,
                     Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))

@@ -110,8 +110,8 @@ object Turn {
             mapFov.updateFov(
                 character.get(Position::class)!!.x,
                 character.get(Position::class)!!.y,
-                character.get(Ai::class)!!.fov,
-                character.get(Ai::class)!!.viewDistance)
+                character.getSuper(Ai::class)!!.fov,
+                character.getSuper(Ai::class)!!.viewDistance)
         }
 
         GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
@@ -133,7 +133,7 @@ object Turn {
             // Player actions
             if (playerAction) {
                 // Makes the player action or returns if Action.NOTHING
-                val action: Action = character.get(Ai::class)!!.useAction()
+                val action: Action = character.getSuper(Ai::class)!!.useAction()
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
@@ -141,8 +141,8 @@ object Turn {
                         mapFov.updateFov(
                             character.get(Position::class)!!.x,
                             character.get(Position::class)!!.y,
-                            character.get(Ai::class)!!.fov,
-                            character.get(Ai::class)!!.viewDistance)
+                            character.getSuper(Ai::class)!!.fov,
+                            character.getSuper(Ai::class)!!.viewDistance)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                         if (currentLevel.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
@@ -204,25 +204,25 @@ object Turn {
                                 action.interaction.act()
                                 if (action.entity.get(MapParams::class)?.allowCharacterOnTop == true)
                                     mapImpassableList.remove(Coord.get(
-                                        Player.get(Ai::class)!!.targetCoords!!.first,
-                                        Player.get(Ai::class)!!.targetCoords!!.second))
+                                        Player.getSuper(Ai::class)!!.targetCoords!!.first,
+                                        Player.getSuper(Ai::class)!!.targetCoords!!.second))
                                 else
                                     mapImpassableList.add(Coord.get(
-                                        Player.get(Ai::class)!!.targetCoords!!.first,
-                                        Player.get(Ai::class)!!.targetCoords!!.second))
+                                        Player.getSuper(Ai::class)!!.targetCoords!!.first,
+                                        Player.getSuper(Ai::class)!!.targetCoords!!.second))
 
                                 mapFov.updateFov(
                                     character.get(Position::class)!!.x,
                                     character.get(Position::class)!!.y,
-                                    character.get(Ai::class)!!.fov,
-                                    character.get(Ai::class)!!.viewDistance)
+                                    character.getSuper(Ai::class)!!.fov,
+                                    character.getSuper(Ai::class)!!.viewDistance)
                                 GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
                             }
                             else -> {
                                 action.interaction.act()
                             }
                         }
-                        Player.get(Ai::class)!!.targetCoords = null
+                        Player.getSuper(Ai::class)!!.targetCoords = null
                     }
                     // TODO ECS ITEM
 //                    is Action.ITEM -> {
@@ -305,16 +305,16 @@ object Turn {
                 if (character has EnemyAi::class)
                     character.get(EnemyAi::class)!!.decide()
                 else
-                    character.get(Ai::class)!!.action = Action.WAIT
+                    character.getSuper(Ai::class)!!.action = Action.WAIT
 
-                var action: Action = character.get(Ai::class)!!.useAction()
+                var action: Action = character.getSuper(Ai::class)!!.useAction()
                 when (action) {
                     is Action.MOVE -> {
                         if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
-                            val prevCoord = character.get(Ai::class)!!.moveList.lastOrNull() ?: Coord.get(action.x, action.y)
-                            character.get(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, mapImpassableList.plus(
+                            val prevCoord = character.getSuper(Ai::class)!!.moveList.lastOrNull() ?: Coord.get(action.x, action.y)
+                            character.getSuper(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, mapImpassableList.plus(
                                 characterArray.getImpassable()), true)
-                            val coord = character.get(Ai::class)!!.getMove()
+                            val coord = character.getSuper(Ai::class)!!.getMove()
                             action = Action.MOVE(coord.x, coord.y)
                         }
 
@@ -323,8 +323,8 @@ object Turn {
                         mapFov.updateFov(
                             character.get(Position::class)!!.x,
                             character.get(Position::class)!!.y,
-                            character.get(Ai::class)!!.fov,
-                            character.get(Ai::class)!!.viewDistance)
+                            character.getSuper(Ai::class)!!.fov,
+                            character.getSuper(Ai::class)!!.viewDistance)
                     }
                     is Action.ATTACK -> {
                         // TODO ECS Attack

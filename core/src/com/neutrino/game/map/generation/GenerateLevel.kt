@@ -35,6 +35,7 @@ class GenerateLevel(var levelDrawer: LevelDrawer) {
         val generateCharacters = CharacterGenerator(getParams(level), levelDrawer)
         level.characterArray = generateCharacters.generate()
         level.characterMap = generateCharacters.characterMap
+        levelDrawer.initializeCharacterTextures(level.characterMap)
 
         return level
     }

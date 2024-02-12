@@ -6,9 +6,10 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Matrix4
-import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.Turn.currentLevel
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.graphics.utility.Blurring
 import com.neutrino.game.util.Constants
 
@@ -53,9 +54,9 @@ class FogOfWar {
         level.fogOfWarFBO.begin()
         fboBatch.begin()
         Gdx.gl.glColorMask(false, false, false, true)
-        for (y in 0 until Player.ai.fov.size) {
-            for (x in 0 until Player.ai.fov[0].size) {
-                if (Player.ai.fov[y][x] && !level.discoveredMap[y][x]) {
+        for (y in 0 until Player.getSuper(Ai::class)!!.fov.size) {
+            for (x in 0 until Player.getSuper(Ai::class)!!.fov[0].size) {
+                if (Player.getSuper(Ai::class)!!.fov[y][x] && !level.discoveredMap[y][x]) {
                     level.discoveredMap[y][x] = true
                     fboBatch.draw(Constants.TransparentPixel, x.toFloat(), y.toFloat(), 1f, 1f)
                 }
@@ -76,9 +77,9 @@ class FogOfWar {
         Gdx.gl.glClearColor(darkenedColor.r, darkenedColor.g, darkenedColor.b, darkenedColor.a)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-        for (y in 0 until Player.ai.fov.size) {
-            for (x in 0 until Player.ai.fov[0].size) {
-                if (Player.ai.fov[y][x])
+        for (y in 0 until Player.getSuper(Ai::class)!!.fov.size) {
+            for (x in 0 until Player.getSuper(Ai::class)!!.fov[0].size) {
+                if (Player.getSuper(Ai::class)!!.fov[y][x])
                     fboBatch.draw(Constants.WhitePixel, x.toFloat(), y.toFloat(), 1f, 1f)
             }
         }

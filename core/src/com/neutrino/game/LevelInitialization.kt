@@ -6,16 +6,16 @@ import com.esotericsoftware.kryo.kryo5.io.Output
 import com.esotericsoftware.kryo.kryo5.minlog.Log
 import com.neutrino.AnimatedActors
 import com.neutrino.GameStage
-import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.domain.use_case.level.ChunkCoords
+import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.graphics.drawing.LevelDrawer
+import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.CharacterGenerator
 import com.neutrino.game.map.generation.GenerateLevel
 import com.neutrino.game.map.generation.MapTagInterpretation
 import com.neutrino.game.map.generation.util.GenerationParams
-import com.neutrino.game.util.Constants
 import com.neutrino.game.utility.serialization.KryoObj
 import squidpony.squidmath.Coord
 import java.io.FileInputStream
@@ -26,9 +26,6 @@ class LevelInitialization (
     private val gameStage: GameStage,
     private val levelDrawer: LevelDrawer
 ) {
-
-    private val startXPosition = 0f
-    private val startYPosition = Constants.LevelChunkSize * 64f
 
     fun initializeLevel(chunkCoords: ChunkCoords, playerCoords: Coord?) {
         val previousLevel = gameStage.level
@@ -51,14 +48,12 @@ class LevelInitialization (
         levelDrawer.fogOfWar.initializeFogOfWar(level)
         Turn.setLevel(level)
         gameStage.level = level
-        gameStage.startXPosition = startXPosition
-        gameStage.startYPosition = startYPosition
 
 //        AnimatedActors.addAll(level.characterArray)
-        gameStage.camera.position.set(Player.x, Player.y, gameStage.camera.position.z)
+        gameStage.gameCamera.setCameraPosition(Player.get(DrawPosition::class)!!.x, Player.get(DrawPosition::class)!!.y)
 
-        if (previousLevel != null)
-            Player.move(Player.getPosition())
+//        if (previousLevel != null)
+//            Player.move(Player.getPosition())
     }
 
     private fun saveLevel(level: Level) {

@@ -1,15 +1,17 @@
 package com.neutrino.game.graphics.drawing
 
-import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
+import com.neutrino.game.util.Constants.SCALE_INT
 
 internal open class LayeredTexture(
     val entity: Entity,
     val texture: TextureSprite
 ) {
     private val drawPositionAttribute = entity.get(DrawPosition::class)!!
+    private val sizeScale = if (entity.getSuper(Ai::class) != null) 3 else SCALE_INT
 
     /** Returns scaled x position including map placement */
     fun getX(): Float {
@@ -31,12 +33,12 @@ internal open class LayeredTexture(
 
     /** Returns scaled width */
     fun getWidth(): Int {
-        return texture.texture.regionWidth * SCALE_INT
+        return texture.texture.regionWidth * sizeScale
     }
 
     /** Returns scaled height */
     fun getHeight(): Int {
-        return texture.texture.regionHeight * SCALE_INT
+        return texture.texture.regionHeight * sizeScale
     }
 
     operator fun compareTo(value: LayeredTexture): Int {

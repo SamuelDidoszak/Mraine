@@ -56,6 +56,8 @@ class Entity() {
 
 
     infix fun call(callableClass: KClass<out Callable>) {
+        if (callables == null)
+            return
         for (callable in callables!!) {
             if (callableClass.java.isAssignableFrom(callable::class.java))
                 callable.call(this)
@@ -63,6 +65,8 @@ class Entity() {
     }
 
     fun call(callableClass: KClass<out Callable>, vararg data: Any?, callOthers: Boolean = true) {
+        if (callables == null)
+            return
         for (callable in callables!!) {
             if (callableClass.java.isAssignableFrom(callable::class.java))
                 callable.call(this, data, callOthers)

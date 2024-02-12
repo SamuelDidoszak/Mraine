@@ -29,8 +29,8 @@ class Gameplay(
         // TODO Actions
         // Before there was if ((Player.hasActions() || gameStage.focusPlayer) && ...
         if ((gameStage.focusPlayer) && !gameStage.lookingAround) {
-            gameStage.setCameraToPlayer()
-            gameStage.focusPlayer = !gameStage.isPlayerFocused()
+            gameStage.gameCamera.moveCameraToEntity(Player)
+            gameStage.focusPlayer = !gameStage.gameCamera.isPlayerFocused()
         }
 
         // decide on the player action. They are executed in the Turn.makeTurn method along with ai actions
@@ -50,13 +50,13 @@ class Gameplay(
             // interact with an entity
             // TODO Actions
             // Before it was:
-            // if (Player.get(Ai::class)!!.action is Action.NOTHING && !Player.hasActions() && Player.get(Ai::class)!!.targetCoords != null) {
-            if (Player.get(Ai::class)!!.action is Action.NOTHING && Player.get(Ai::class)!!.targetCoords != null) {
-                val entityCoords = Player.get(Ai::class)!!.targetCoords!!
+            // if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && !Player.hasActions() && Player.getSuper(Ai::class)!!.targetCoords != null) {
+            if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && Player.getSuper(Ai::class)!!.targetCoords != null) {
+                val entityCoords = Player.getSuper(Ai::class)!!.targetCoords!!
                 val entity = Turn.currentLevel.getEntityWithAction(entityCoords.first, entityCoords.second)?.get(Interaction::class)
                 // Entity has disappeared in the meantime
                 if (entity == null)
-                    Player.get(Ai::class)!!.targetCoords = null
+                    Player.getSuper(Ai::class)!!.targetCoords = null
                 else {
                     val action = entity.getPrimaryInteraction()
                     if (action != null) {
@@ -66,9 +66,9 @@ class Gameplay(
                         // check the distance and act if close enough
                         if ((entityCoords.first in Player.x - action.requiredDistance .. Player.x + action.requiredDistance) &&
                             (entityCoords.second in Player.y - action.requiredDistance .. Player.y + action.requiredDistance)) {
-                            Player.get(Ai::class)!!.action = Action.INTERACTION(entity.entity, action)
+                            Player.getSuper(Ai::class)!!.action = Action.INTERACTION(entity.entity, action)
                             // Stop moving
-                            Player.get(Ai::class)!!.moveList = ArrayDeque()
+                            Player.getSuper(Ai::class)!!.moveList = ArrayDeque()
                         }
                     }
                 }
@@ -78,7 +78,7 @@ class Gameplay(
             // TODO Actions
             // Before it was:
             // if (Player.ai.action is Action.NOTHING && gameStage.moveDirection != null && !Player.hasActions()) {
-            if (Player.get(Ai::class)!!.action is Action.NOTHING && gameStage.moveDirection != null) {
+            if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && gameStage.moveDirection != null) {
                 val yChange = when (gameStage.moveDirection) {
                     7, 8, 9 -> -1
                     1, 2, 3 -> 1
@@ -94,7 +94,7 @@ class Gameplay(
                 if (!Turn.currentLevel.allowsCharacter(wasdCoord.x, wasdCoord.y) || LevelArrays.getCharacterAt(wasdCoord) != null)
                     return
 
-                Player.get(Ai::class)!!.moveTo(wasdCoord.x, wasdCoord.y, Turn.dijkstraMap, LevelArrays.getImpassableList())
+                Player.getSuper(Ai::class)!!.moveTo(wasdCoord.x, wasdCoord.y, Turn.dijkstraMap, LevelArrays.getImpassableList())
             }
 
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
@@ -102,28 +102,28 @@ class Gameplay(
             // TODO Actions
             // Before it was:
             // if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && gameStage.clickedCoordinates == null && Player.ai.action is Action.NOTHING) {
-            if (Player.get(Ai::class)!!.moveList.isNotEmpty() && gameStage.clickedCoordinates == null && Player.get(Ai::class)!!.action is Action.NOTHING) {
+            if (Player.getSuper(Ai::class)!!.moveList.isNotEmpty() && gameStage.clickedCoordinates == null && Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
                 if (Turn.updateBatch.firstOrNull() is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
-                    Player.get(Ai::class)!!.setMoveList(
-                        Player.get(Ai::class)!!.moveList.last().x, Player.get(Ai::class)!!.moveList.last().y, Turn.dijkstraMap, Turn.mapImpassableList.plus(
+                    Player.getSuper(Ai::class)!!.setMoveList(
+                        Player.getSuper(Ai::class)!!.moveList.last().x, Player.getSuper(Ai::class)!!.moveList.last().y, Turn.dijkstraMap, Turn.mapImpassableList.plus(
                             Turn.characterArray.getImpassable()), true)
-                val tile = Player.get(Ai::class)!!.getMove()
-                Player.get(Ai::class)!!.action = Action.MOVE(tile.x, tile.y)
+                val tile = Player.getSuper(Ai::class)!!.getMove()
+                Player.getSuper(Ai::class)!!.action = Action.MOVE(tile.x, tile.y)
                 if (!gameStage.lookingAround)
                     gameStage.focusPlayer = true
             }
 
             // Set the player action if there was no previous one
-            if (Player.get(Ai::class)!!.action is Action.NOTHING) {
+            if (Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
                 // calls this method until a tile is clicked
                 if (gameStage.clickedCoordinates == null) return
                 // player clicked during movement
                 // TODO Actions
                 // Before it was:
                 // if (Player.ai.moveList.isNotEmpty() || Player.hasActions()) {
-                if (Player.get(Ai::class)!!.moveList.isNotEmpty()) {
-                    Player.get(Ai::class)!!.moveList = ArrayDeque()
-                    Player.get(Ai::class)!!.targetCoords = null
+                if (Player.getSuper(Ai::class)!!.moveList.isNotEmpty()) {
+                    Player.getSuper(Ai::class)!!.moveList = ArrayDeque()
+                    Player.getSuper(Ai::class)!!.targetCoords = null
                     gameStage.clickedCoordinates = null
                     return
                 }
@@ -138,32 +138,32 @@ class Gameplay(
                     gameStage.focusPlayer = true
                     gameStage.lookingAround = false
                     if (Turn.currentLevel.getTopItem(x, y) != null)
-                        Player.get(Ai::class)!!.action = Action.NOTHING
+                        Player.getSuper(Ai::class)!!.action = Action.NOTHING
                     else {
                         // TODO add defend action
-                        Player.get(Ai::class)!!.action = Action.WAIT
+                        Player.getSuper(Ai::class)!!.action = Action.WAIT
                     }
                 }
                 // Attack the enemy
-                else if (clickedCharacter != null && Player.get(Ai::class)!!.canAttack(x, y))
-                    Player.get(Ai::class)!!.action = Action.ATTACK(x, y) // can pass a character
+                else if (clickedCharacter != null && Player.getSuper(Ai::class)!!.canAttack(x, y))
+                    Player.getSuper(Ai::class)!!.action = Action.ATTACK(x, y) // can pass a character
 
                 // Calculate move list
-                if (Player.get(Ai::class)!!.action is Action.NOTHING) {
+                if (Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
                     // Add the interactable entity as the target
                     if (Turn.currentLevel.getEntityWithAction(x, y) != null)
-                        Player.get(Ai::class)!!.targetCoords = Pair(x, y)
+                        Player.getSuper(Ai::class)!!.targetCoords = Pair(x, y)
                     else
-                        Player.get(Ai::class)!!.targetCoords = null
+                        Player.getSuper(Ai::class)!!.targetCoords = null
 
                     // Add player movement list
                     if (!Turn.currentLevel.discoveredMap[y][x] || !Turn.currentLevel.allowsCharacterChangesImpassable(x, y))
-                        Player.get(Ai::class)!!.action = Action.NOTHING
+                        Player.getSuper(Ai::class)!!.action = Action.NOTHING
                     else
-                        Player.get(Ai::class)!!.setMoveList(x, y, Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))
+                        Player.getSuper(Ai::class)!!.setMoveList(x, y, Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))
 
                     // Focus player either if he's off screen or if he clicked near his current position
-                    if (!gameStage.isInCamera(Player.x, Player.y) ||
+                    if (!gameStage.gameCamera.isInCamera(Player.x, Player.y) ||
                         abs(Player.x - x) <= 5 &&  abs(Player.y - y) <= 5) {
                         gameStage.lookingAround = false
                         gameStage.focusPlayer = true

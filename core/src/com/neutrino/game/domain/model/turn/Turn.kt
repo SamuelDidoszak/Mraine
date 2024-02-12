@@ -18,6 +18,7 @@ import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.CharacterTags
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.characters.attributes.EnemyAi
+import com.neutrino.game.entities.characters.callables.VisionChangedCallable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
@@ -114,7 +115,7 @@ object Turn {
                 character.getSuper(Ai::class)!!.viewDistance)
         }
 
-        GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
+        Player.call(VisionChangedCallable::class)
     }
 
     fun makeTurn() {
@@ -143,6 +144,7 @@ object Turn {
                             character.get(Position::class)!!.y,
                             character.getSuper(Ai::class)!!.fov,
                             character.getSuper(Ai::class)!!.viewDistance)
+                        Player.call(VisionChangedCallable::class)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                         if (currentLevel.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
@@ -216,7 +218,7 @@ object Turn {
                                     character.get(Position::class)!!.y,
                                     character.getSuper(Ai::class)!!.fov,
                                     character.getSuper(Ai::class)!!.viewDistance)
-                                GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
+                                Player.call(VisionChangedCallable::class)
                             }
                             else -> {
                                 action.interaction.act()

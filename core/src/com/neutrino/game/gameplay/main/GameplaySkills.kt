@@ -28,7 +28,7 @@ class GameplaySkills(
     internal fun useSkill(usedSkill: Skill): Boolean {
         when (usedSkill) {
             is Skill.ActiveSkill -> {
-                Player.get(Ai::class)!!.action = Action.SKILL(usedSkill)
+                Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill)
                 uiStage.usedSkill = null
                 hudStage.usedSkill = null
             }
@@ -58,7 +58,7 @@ class GameplaySkills(
                 }
 
                 // TODO Ecs Skills
-//                Player.get(Ai::class)!!.action = Action.SKILL(usedSkill, clickedCharacter)
+//                Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill, clickedCharacter)
                 gameplay.cancelUsage()
             }
             is Skill.ActiveSkillTile -> {
@@ -80,7 +80,7 @@ class GameplaySkills(
                     return false
                 }
 
-                Player.get(Ai::class)!!.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
+                Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
                 gameplay.cancelUsage()
             }
             is Skill.ActiveSkillArea -> {
@@ -99,7 +99,7 @@ class GameplaySkills(
                     return false
                 }
 
-                Player.get(Ai::class)!!.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
+                Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
                 gameplay.cancelUsage()
             }
 

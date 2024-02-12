@@ -73,7 +73,6 @@ class CharacterGenerator(val params: GenerationParams, val levelDrawer: LevelDra
                 20 * params.interpretedTags.tagParams.enemyMultiplier * (2f - params.interpretedTags.tagParams.enemyQuality))
             .roundToInt()) {
 //            try {
-                println("Trying to spawn")
                 val character = getCharacter()
                 characterArray.add(character)
                 characterMap[character.get(Position::class)!!.y][character.get(Position::class)!!.x] = character
@@ -89,7 +88,7 @@ class CharacterGenerator(val params: GenerationParams, val levelDrawer: LevelDra
         val currentTurn = Turn.turn
         // TODO Amount and the type of enemies should be dependant on level difficulty and enemy difficulty
         val coord = getRandomPosition()!!
-        val character: Entity = Characters.new("Slime")
+        val character: Entity = Characters.new("Mouse")
         character.addAttribute(DrawPosition())
         character.addAttribute(Position(coord.getX(), coord.getY(), levelDrawer))
         character.addAttribute(com.neutrino.game.entities.map.attributes.Turn(currentTurn))

@@ -159,7 +159,7 @@ class Highlighting {
             return false
 
         if (entity has DefensiveStats::class) {
-            if (!Player.get(Ai::class)!!.canAttack(coord.x, coord.y))
+            if (!Player.getSuper(Ai::class)!!.canAttack(coord.x, coord.y))
                 return false
         }
         else if (entity has Interaction::class) {
@@ -199,7 +199,7 @@ class Highlighting {
         outlinedOnHover?.shaders?.remove(shaderOnHover)
         outlinedOnHover = null
 
-        if (character == null || !Player.get(Ai::class)!!.canAttack(character.get(Position::class)!!.x, character.get(Position::class)!!.y))
+        if (character == null || !Player.getSuper(Ai::class)!!.canAttack(character.get(Position::class)!!.x, character.get(Position::class)!!.y))
             return false
 
         // TODO ECS Shaders

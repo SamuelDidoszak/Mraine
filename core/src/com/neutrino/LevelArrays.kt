@@ -1,18 +1,18 @@
 package com.neutrino
 
-import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.map.level.CharacterArray
+import com.neutrino.game.map.level.Chunk
 import squidpony.squidmath.Coord
 
 object LevelArrays {
-    private fun levelDispatcher(): Level {
-        return Turn.currentLevel
+    private fun levelDispatcher(): Chunk {
+        return Turn.currentChunk
     }
 
-    private fun levelDispatcher(coord: Coord): Level {
+    private fun levelDispatcher(coord: Coord): Chunk {
         if (coord.x !in 0 until 100 || coord.y !in 0 until 100) {
             // TODO return adjacent level
         }
@@ -40,7 +40,7 @@ object LevelArrays {
         return Coord.get(x, y)
     }
 
-    fun getLevel(): Level {
+    fun getLevel(): Chunk {
         return levelDispatcher()
     }
 
@@ -71,17 +71,17 @@ object LevelArrays {
     }
 
     fun getMap(): List<List<MutableList<Entity>>> {
-        return Turn.currentLevel.map
+        return Turn.currentChunk.map
     }
 
     fun getEntitiesAt(coord: Coord): MutableList<Entity> {
         val coord = parseCoord(coord)
-        return Turn.currentLevel.map[coord.y][coord.x]
+        return Turn.currentChunk.map[coord.y][coord.x]
     }
 
     fun getEntitiesAt(x: Int, y: Int): MutableList<Entity> {
         val coord = parseCoord(Coord.get(x, y))
-        return Turn.currentLevel.map[coord.y][coord.x]
+        return Turn.currentChunk.map[coord.y][coord.x]
     }
 
     fun getImpassableList(): ArrayList<Coord> {

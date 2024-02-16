@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.neutrino.game.domain.use_case.level.ChunkCoords
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.entities.Entity
@@ -16,14 +17,16 @@ import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.map.attributes.DrawPosition
+import com.neutrino.game.map.level.Chunk
 import java.util.*
 import kotlin.math.min
 import kotlin.random.Random
 
 class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
 
-    override val animations: Animations = Animations()
+    override val animations: Animations = Animations(this)
     override val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
     // Optimize
     private val textureLayers: SortedMap<Int, LayeredTextureList> = sortedMapOf()
@@ -33,6 +36,10 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
     private var offsetX = 0f
     private var offsetY = 0f
 
+    private companion object {
+        val fakeChunk: Chunk = Chunk(ChunkCoords(Int.MAX_VALUE, Int.MAX_VALUE, Int.MAX_VALUE))
+    }
+
     override var map: List<List<MutableList<Entity>>> = getEmptyEntityList()
     private var entity: Entity = entity
         set(value) {
@@ -41,7 +48,8 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
             field = value
             map[1][1][0] = field
             field.addAttribute(DrawPosition())
-            field.addAttribute(Position(1, 1, this))
+            field.addAttribute(Position(1, 1, fakeChunk))
+            field.addAttribute(DrawerAttribute(this))
             val textureAttribute = field.get(Texture::class) ?:
             field.addAttribute(Texture { _, _, _ ->}).get(Texture::class)!!
             textureAttribute.setTextures(null, Random)

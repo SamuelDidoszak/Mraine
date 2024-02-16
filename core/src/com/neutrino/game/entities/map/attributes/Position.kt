@@ -3,10 +3,10 @@ package com.neutrino.game.entities.map.attributes
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity
-import com.neutrino.game.graphics.drawing.EntityDrawer
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.util.NameOrIdentity
+import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.util.add
@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
 class Position(
     x: Int,
     y: Int,
-    var level: EntityDrawer
+    var chunk: Chunk
 ): Attribute() {
 
     var x: Int = x
@@ -29,7 +29,7 @@ class Position(
         set(value) {
             field = value
             entity.get(DrawPosition::class)!!.y =
-                level.map.size * 16 * SCALE_INT - value * 16 * SCALE
+                chunk.map.size * 16 * SCALE_INT - value * 16 * SCALE
         }
 
     override fun onEntityAttached() {
@@ -38,7 +38,7 @@ class Position(
     }
 
     fun getMap(): List<List<MutableList<Entity>>> {
-        return level.map
+        return chunk.map
     }
 
     fun getPosition(): Coord {
@@ -130,13 +130,13 @@ class Position(
             val xy = positionMap[position[i]]!!
             val x = x + xy.first
             val y = y + xy.second
-            if (y !in level.map.indices || x !in level.map[0].indices) {
+            if (y !in chunk.map.indices || x !in chunk.map[0].indices) {
                 if (nameOrIdentity.not)
                     continue
                 return null
             }
             var add = false
-            for (entity in level.map[y][x]) {
+            for (entity in chunk.map[y][x]) {
                 if (nameOrIdentity.isSame(entity))
                     add = true
                 else if (nameOrIdentity.not)
@@ -182,13 +182,13 @@ class Position(
             val xy = positionMap[requirements[i].first]!!
             val x = x + xy.first
             val y = y + xy.second
-            if (y !in level.map.indices || x !in level.map[0].indices) {
+            if (y !in chunk.map.indices || x !in chunk.map[0].indices) {
                 if (requirements[i].second.not)
                     continue
                 return null
             }
             var add = false
-            for (entity in level.map[y][x]) {
+            for (entity in chunk.map[y][x]) {
                 if (requirements[i].second.isSame(entity))
                     add = true
                 else if (requirements[i].second.not)

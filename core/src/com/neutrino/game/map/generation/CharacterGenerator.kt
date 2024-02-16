@@ -6,7 +6,6 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
-import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.util.GenerationParams
 import com.neutrino.game.map.level.CharacterArray
@@ -14,7 +13,7 @@ import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord
 import kotlin.math.roundToInt
 
-class CharacterGenerator(val params: GenerationParams, val levelDrawer: LevelDrawer) {
+class CharacterGenerator(val params: GenerationParams) {
 
     val characterArray = CharacterArray()
     val characterMap: List<MutableList<Entity?>> = List(params.map.size) {
@@ -23,7 +22,7 @@ class CharacterGenerator(val params: GenerationParams, val levelDrawer: LevelDra
 
     fun generate(): CharacterArray {
         // TODO Map generation
-        val difficultyModifier = kotlin.math.abs(params.level.chunkCoords.z)
+        val difficultyModifier = kotlin.math.abs(params.chunk.chunkCoords.z)
         params.interpretedTags.tagParams.difficulty += difficultyModifier / 4
 
         addPlayerAtStairs()
@@ -49,11 +48,11 @@ class CharacterGenerator(val params: GenerationParams, val levelDrawer: LevelDra
 
         if (Player hasNot Position::class) {
             Player.addAttribute(DrawPosition())
-            Player.addAttribute(Position(0, 0, levelDrawer))
+            Player.addAttribute(Position(0, 0, params.chunk))
         }
         Player.addAttribute(com.neutrino.game.entities.map.attributes.Turn(0.0))
 
-        if (params.level.chunkCoords.z > 0) {
+        if (params.chunk.chunkCoords.z > 0) {
             Player.get(Position::class)!!.x = stairsUp!!.x
             Player.get(Position::class)!!.y = stairsUp.y
         }
@@ -90,7 +89,7 @@ class CharacterGenerator(val params: GenerationParams, val levelDrawer: LevelDra
         val coord = getRandomPosition()!!
         val character: Entity = Characters.new("Mouse")
         character.addAttribute(DrawPosition())
-        character.addAttribute(Position(coord.getX(), coord.getY(), levelDrawer))
+        character.addAttribute(Position(coord.getX(), coord.getY(), params.chunk))
         character.addAttribute(com.neutrino.game.entities.map.attributes.Turn(currentTurn))
         // TODO ECS Items
 //        character.randomize(params.rng)
@@ -110,7 +109,7 @@ class CharacterGenerator(val params: GenerationParams, val levelDrawer: LevelDra
                 if (tries++ == 50)
                     throw Exception("Couldn't find more positions")
                 // possibly change it to movementMap for efficiency. It has inverted xPos and yPos
-            } while (!params.level.allowsCharacter(xPos, yPos) || characterMap[yPos][xPos] != null)
+            } while (!params.chunk.allowsCharacter(xPos, yPos) || characterMap[yPos][xPos] != null)
 
             return Coord.get(xPos, yPos)
         } catch (e: Exception) {e.toString()}

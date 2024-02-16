@@ -53,7 +53,7 @@ class Gameplay(
             // if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && !Player.hasActions() && Player.getSuper(Ai::class)!!.targetCoords != null) {
             if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && Player.getSuper(Ai::class)!!.targetCoords != null) {
                 val entityCoords = Player.getSuper(Ai::class)!!.targetCoords!!
-                val entity = Turn.currentLevel.getEntityWithAction(entityCoords.first, entityCoords.second)?.get(Interaction::class)
+                val entity = Turn.currentChunk.getEntityWithAction(entityCoords.first, entityCoords.second)?.get(Interaction::class)
                 // Entity has disappeared in the meantime
                 if (entity == null)
                     Player.getSuper(Ai::class)!!.targetCoords = null
@@ -91,7 +91,7 @@ class Gameplay(
                 }
 
                 val wasdCoord = Coord.get(Player.x + xChange, Player.y + yChange)
-                if (!Turn.currentLevel.allowsCharacter(wasdCoord.x, wasdCoord.y) || LevelArrays.getCharacterAt(wasdCoord) != null)
+                if (!Turn.currentChunk.allowsCharacter(wasdCoord.x, wasdCoord.y) || LevelArrays.getCharacterAt(wasdCoord) != null)
                     return
 
                 Player.getSuper(Ai::class)!!.moveTo(wasdCoord.x, wasdCoord.y, Turn.dijkstraMap, LevelArrays.getImpassableList())
@@ -137,7 +137,7 @@ class Gameplay(
                 if(clickedCharacter == Player) {
                     gameStage.focusPlayer = true
                     gameStage.lookingAround = false
-                    if (Turn.currentLevel.getTopItem(x, y) != null)
+                    if (Turn.currentChunk.getTopItem(x, y) != null)
                         Player.getSuper(Ai::class)!!.action = Action.NOTHING
                     else {
                         // TODO add defend action
@@ -151,13 +151,13 @@ class Gameplay(
                 // Calculate move list
                 if (Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
                     // Add the interactable entity as the target
-                    if (Turn.currentLevel.getEntityWithAction(x, y) != null)
+                    if (Turn.currentChunk.getEntityWithAction(x, y) != null)
                         Player.getSuper(Ai::class)!!.targetCoords = Pair(x, y)
                     else
                         Player.getSuper(Ai::class)!!.targetCoords = null
 
                     // Add player movement list
-                    if (!Turn.currentLevel.discoveredMap[y][x] || !Turn.currentLevel.allowsCharacterChangesImpassable(x, y))
+                    if (!Turn.currentChunk.discoveredMap[y][x] || !Turn.currentChunk.allowsCharacterChangesImpassable(x, y))
                         Player.getSuper(Ai::class)!!.action = Action.NOTHING
                     else
                         Player.getSuper(Ai::class)!!.setMoveList(x, y, Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))

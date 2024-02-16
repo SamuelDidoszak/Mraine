@@ -1,5 +1,6 @@
 package com.neutrino.game.entities.shared.attributes
 
+import com.neutrino.ChunkManager
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.graphics.drawing.AnimationData
@@ -84,14 +85,14 @@ class Texture(
         }
 
         private fun addToLevel(element: TextureSprite, animationData: AnimationData? = null) {
-            val level = entity.get(Position::class)!!.level
+            val drawer = entity.get(DrawerAttribute::class)?.drawer ?: ChunkManager.getDrawer(entity.get(Position::class)!!.chunk)
             if (element.z != 0)
-                level.addTexture(entity, element)
+                drawer.addTexture(entity, element)
             if (element is AnimatedTextureSprite)
-                level.animations.add(animationData ?: AnimationData(element, entity))
+                drawer.animations.add(animationData ?: AnimationData(element, entity))
             if (element.lights != null) {
                 if (element.lights!!.isSingleLight)
-                    level.lights.add(Pair(entity, element.lights!!.getLight().xyDiff(element.x, element.y)))
+                    drawer.lights.add(Pair(entity, element.lights!!.getLight().xyDiff(element.x, element.y)))
                 else {
                     if (element is AnimatedTextureSprite) {
                         for (i in 0 until element.lights!!.getLightArraySize()) {
@@ -110,7 +111,7 @@ class Texture(
                             else
                                 light.x += element.x
                             light.y += element.y
-                            level.lights.add(Pair(entity, light))
+                            drawer.lights.add(Pair(entity, light))
                         }
                     }
                 }
@@ -118,17 +119,17 @@ class Texture(
         }
 
         private fun removeFromLevel(element: TextureSprite) {
-            val level = entity.get(Position::class)!!.level
+            val drawer = entity.get(DrawerAttribute::class)?.drawer ?: ChunkManager.getDrawer(entity.get(Position::class)!!.chunk)
             if (element.z != 0)
-                level.removeTexture(entity, element)
+                drawer.removeTexture(entity, element)
             if (element is AnimatedTextureSprite)
-                level.animations.remove(AnimationData(element, entity))
+                drawer.animations.remove(AnimationData(element, entity))
             if (element.lights != null) {
                 if (element.lights!!.isSingleLight)
-                    level.lights.remove(Pair(entity, element.lights!!.getLight()))
+                    drawer.lights.remove(Pair(entity, element.lights!!.getLight()))
                 else
                     for (light in element.lights!!.getLights()!!) {
-                        level.lights.remove(Pair(entity, light))
+                        drawer.lights.remove(Pair(entity, light))
                     }
             }
         }

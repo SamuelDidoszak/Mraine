@@ -5,7 +5,7 @@ import com.neutrino.GlobalDataType
 import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.Wall
-import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.util.hasSuper
 import squidpony.squidgrid.mapping.DungeonGenerator
 import squidpony.squidgrid.mapping.styled.TilesetType
@@ -17,10 +17,10 @@ import kotlin.reflect.full.createInstance
 
 
 class SquidGeneration (
-    val level: Level
+    val chunk: Chunk
 ) {
-    private val irng: IRNG = GWTRNG(Constants.Seed + level.id)
-    private val dungeonGenerator = DungeonGenerator(level.sizeX, level.sizeY, irng)
+    private val irng: IRNG = GWTRNG(Constants.Seed + chunk.id)
+    private val dungeonGenerator = DungeonGenerator(chunk.sizeX, chunk.sizeY, irng)
     private lateinit var dungeonLayout: Array<out CharArray>
 
     fun generateDungeon(tilesetType: TilesetType) {
@@ -30,8 +30,8 @@ class SquidGeneration (
     }
 
     fun setWalls(map: List<List<MutableList<Entity>>>, wall: KClass<out Wall>) {
-        for (y in 0 until level.sizeY) {
-            for (x in 0 until level.sizeX) {
+        for (y in 0 until chunk.sizeY) {
+            for (x in 0 until chunk.sizeX) {
                 if (dungeonLayout[y][x] == '#')
                     map[y][x].add(wall.createInstance())
             }
@@ -71,8 +71,8 @@ class SquidGeneration (
         // randomize position if no coord fount
         do {
             stairsCorrected = Coord.get(
-                level.randomGenerator.nextInt(0, level.sizeX),
-                level.randomGenerator.nextInt(0, level.sizeY)
+                chunk.randomGenerator.nextInt(0, chunk.sizeX),
+                chunk.randomGenerator.nextInt(0, chunk.sizeY)
             )
         } while (map[stairsCorrected!!.y][stairsCorrected.x] hasSuper Wall::class)
 

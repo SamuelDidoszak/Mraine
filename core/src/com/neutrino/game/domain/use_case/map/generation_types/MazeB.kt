@@ -7,7 +7,7 @@ package com.neutrino.game.domain.use_case.map.generation_types
 //import com.neutrino.game.domain.model.entities.lightSources.StandingTorch
 //import com.neutrino.game.domain.model.entities.lightSources.Torch
 //import com.neutrino.game.domain.model.entities.Wall
-//import com.neutrino.game.domain.model.map.Level
+//import com.neutrino.game.map.level.Level
 //import com.neutrino.game.domain.model.map.TagInterpretation
 //import com.neutrino.game.domain.use_case.map.utility.*
 //import squidpony.squidgrid.mapping.styled.TilesetType

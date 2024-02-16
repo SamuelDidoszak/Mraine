@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
@@ -26,13 +26,23 @@ import com.neutrino.game.util.Constants.TILE_SIZE_INT
 import java.util.*
 import kotlin.random.Random
 
-open class LevelDrawer: EntityDrawer, Group() {
+open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
 
-    override val animations: Animations = Animations()
+    override val animations: Animations = Animations(this)
     override val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
     private val textureLayers: SortedMap<Int, LayeredTextureList> = sortedMapOf()
 
-    val fogOfWar = FogOfWar()
+    var chunk: Chunk = chunk
+        set(value) {
+            clearAll()
+            field = value
+            fogOfWar.chunk = chunk
+            fogOfWar.initializeFogOfWar()
+        }
+    override val map: List<List<MutableList<Entity>>>
+        get() = chunk.map
+
+    val fogOfWar = FogOfWar(chunk)
 
     fun clearAll() {
         animations.clear()
@@ -54,9 +64,6 @@ open class LevelDrawer: EntityDrawer, Group() {
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
         textureLayers[texture.z]!!.removeIf { it.entity == entity && it.texture == texture }
     }
-
-    lateinit var currentLevel: Level
-    override var map: List<List<MutableList<Entity>>> = initializeMap()
 
     init {
         width = map[0].size * TILE_SIZE
@@ -136,7 +143,7 @@ open class LevelDrawer: EntityDrawer, Group() {
 
         if (fogOfWar.drawFovFow % 3 in 0 .. 1) {
             batch?.setBlendFunction(GL20.GL_DST_COLOR, GL20.GL_ZERO)
-            batch?.draw(currentLevel.blurredFov.colorBufferTexture, 0f, 64f)
+            batch?.draw(fogOfWar.blurredFov.colorBufferTexture, 0f, 64f)
         }
 
         drawLights(batch)
@@ -144,7 +151,7 @@ open class LevelDrawer: EntityDrawer, Group() {
 
         if (fogOfWar.drawFovFow % 3 == 0) {
             batch?.shader = Shaders.defaultShader
-            batch?.draw(currentLevel.blurredFogOfWar.colorBufferTexture, 0f, 64f)
+            batch?.draw(fogOfWar.blurredFogOfWar.colorBufferTexture, 0f, 64f)
             batch?.shader = null
         }
     }
@@ -180,7 +187,7 @@ open class LevelDrawer: EntityDrawer, Group() {
             for (x in map[0].indices) {
                 for (entity in map[y][x]) {
                     entity addAttribute DrawPosition()
-                    entity addAttribute Position(x, y, this)
+                    entity addAttribute Position(x, y, chunk)
                     entity.get(Texture::class)?.setTextures(null, rng)
                 }
             }
@@ -192,8 +199,6 @@ open class LevelDrawer: EntityDrawer, Group() {
         for (y in map.indices) {
             for (x in map[0].indices) {
                 if (map[y][x] != null) {
-                    map[y][x]!! addAttribute DrawPosition()
-                    map[y][x]!! addAttribute Position(x, y, this)
                     map[y][x]!!.get(Texture::class)?.setTextures(null, rng)
                 }
             }

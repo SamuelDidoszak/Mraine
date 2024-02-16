@@ -4,7 +4,7 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Texture
 
-class Animations {
+class Animations(val drawer: EntityDrawer) {
     private val animations = ArrayList<AnimationData>(10)
 
     fun add(animation: AnimationData) {
@@ -27,16 +27,15 @@ class Animations {
         val iterator = animations.listIterator()
         while (iterator.hasNext()) {
             val animation = iterator.next()
-            val levelLights = animation.entity.get(Position::class)!!.level.lights
             if (animation.animation.getCurrentLights() != null) {
                 for (light in animation.animation.getCurrentLights()!!) {
-                    levelLights.remove(animation.entity to light)
+                    drawer.lights.remove(animation.entity to light)
                 }
             }
             val remove = !animation.animation.setFrame(deltaTime)
             if (animation.animation.getCurrentLights() != null) {
                 for (light in animation.animation.getCurrentLights()!!) {
-                    levelLights.add(animation.entity to light)
+                    drawer.lights.add(animation.entity to light)
                 }
             }
             if (remove) {

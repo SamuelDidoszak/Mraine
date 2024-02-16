@@ -1,63 +1,52 @@
 package com.neutrino.game.map.generation
 
-import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.use_case.level.ChunkCoords
-import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.map.generation.util.GenerationParams
-import com.neutrino.game.util.Constants.LevelChunkSize
+import com.neutrino.game.map.level.Chunk
 import com.neutrino.generation.Tilesets
 import kotlin.math.abs
 import kotlin.math.max
 
-class GenerateLevel(var levelDrawer: LevelDrawer) {
+class GenerateLevel() {
 
     private var tags: ArrayList<MapTag> = ArrayList()
     private var tagGenerators: ArrayList<() -> MapTag> = ArrayList()
 
-    fun generate(chunkCoords: ChunkCoords): Level {
-        val level: Level = Level(
-            chunkCoords,
-            "A level for testing map generation",
-            sizeX = LevelChunkSize,
-            sizeY = LevelChunkSize
-        )
+    fun generate(chunkCoords: ChunkCoords): Chunk {
+        val chunk: Chunk = Chunk(chunkCoords)
 
-        level.map = List(level.sizeY) {
-            List(level.sizeX) {
+        chunk.map = List(chunk.sizeY) {
+            List(chunk.sizeX) {
                 java.util.ArrayList()
             }
         }
 
         tags.add(getDefaultMapTag())
 
-        generateMap(level)
-        level.movementMap = level.createMovementMap()
-        val generateCharacters = CharacterGenerator(getParams(level), levelDrawer)
-        level.characterArray = generateCharacters.generate()
-        level.characterMap = generateCharacters.characterMap
-        levelDrawer.initializeCharacterTextures(level.characterMap)
+        generateMap(chunk)
+        chunk.movementMap = chunk.createMovementMap()
+        val generateCharacters = CharacterGenerator(getParams(chunk))
+        chunk.characterArray = generateCharacters.generate()
+        chunk.characterMap = generateCharacters.characterMap
 
-        return level
+        return chunk
     }
 
-    private fun generateMap(level: Level) {
-        val params = getParams(level)
+    private fun generateMap(chunk: Chunk) {
+        val params = getParams(chunk)
         for (generator in params.interpretedTags.mapGenerators) {
             generator.generate(params)
         }
-        levelDrawer.currentLevel = level
-        levelDrawer.map = level.map
-        levelDrawer.initializeTextures(params.rng)
     }
 
-    private fun getParams(level: Level): GenerationParams {
+    private fun getParams(chunk: Chunk): GenerationParams {
         return GenerationParams(
             MapTagInterpretation(
                 tagGenerators.map { it.invoke() }.plus(tags)
             ),
-            level.randomGenerator,
-            level,
-            level.map
+            chunk.randomGenerator,
+            chunk,
+            chunk.map
         )
     }
 

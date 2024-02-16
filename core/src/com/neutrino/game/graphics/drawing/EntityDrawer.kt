@@ -9,7 +9,7 @@ interface EntityDrawer {
     val animations: Animations
     val lights: ArrayList<Pair<Entity, Light>>
 
-    var map: List<List<MutableList<Entity>>>
+    val map: List<List<MutableList<Entity>>>
 
     fun addTexture(entity: Entity, texture: TextureSprite)
     fun removeTexture(entity: Entity, texture: TextureSprite)

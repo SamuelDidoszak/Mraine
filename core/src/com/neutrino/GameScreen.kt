@@ -13,14 +13,15 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.neutrino.game.LevelInitialization
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.domain.use_case.level.ChunkCoords
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.gameplay.main.Gameplay
-import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.util.Constants
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
@@ -28,7 +29,6 @@ import kotlin.math.absoluteValue
 
 class GameScreen: KtxScreen {
 
-    private val levelDrawer: LevelDrawer = LevelDrawer()
     /** Viewport for the game */
     private val extendViewport: ExtendViewport = ExtendViewport(1280f, 768f)
     private val gameStage = GameStage(extendViewport, levelDrawer)
@@ -48,7 +48,7 @@ class GameScreen: KtxScreen {
     private val gameInputMultiplexer: InputMultiplexer = InputMultiplexer()
     private val uiInputMultiplexer: InputMultiplexer = InputMultiplexer()
 
-    private val levelInitialization: LevelInitialization = LevelInitialization(gameStage, levelDrawer)
+    private val levelInitialization: LevelInitialization = LevelInitialization(gameStage)
 
     init {
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
@@ -70,7 +70,6 @@ class GameScreen: KtxScreen {
         uiInputMultiplexer.addProcessor(uiStage)
         Gdx.input.inputProcessor = gameInputMultiplexer
 
-        gameStage.addActor(levelDrawer)
         levelInitialization.initializeLevel(ChunkCoords(0, 0, 0), null)
 
         gameStage.cancelSkill = gameplay::cancelUsage
@@ -192,8 +191,8 @@ class GameScreen: KtxScreen {
                     gameStage.focusPlayer = true
                     gameStage.lookingAround = false
 
-                    Player.ai.moveList = ArrayDeque()
-                    Player.ai.entityTargetCoords = null
+                    Player.getSuper(Ai::class)?.moveList = ArrayDeque()
+                    Player.getSuper(Ai::class)?.targetCoords = null
                 }
                 return false
             }
@@ -235,8 +234,8 @@ class GameScreen: KtxScreen {
                 if (data !is ChunkCoords)
                     return false
 
-                levelInitialization.initializeLevel(data, Player.getPosition())
-                hudStage.diagnostics.dungeonTypeLabel.setText("Dungeon depth ${Turn.currentLevel.chunkCoords.z.absoluteValue}")
+                levelInitialization.initializeLevel(data, Player.get(Position::class)?.getPosition())
+                hudStage.diagnostics.dungeonTypeLabel.setText("Dungeon depth ${Turn.currentChunk.chunkCoords.z.absoluteValue}")
                 return true
             }
         })

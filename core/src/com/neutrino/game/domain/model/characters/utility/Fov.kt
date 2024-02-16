@@ -2,7 +2,9 @@ package com.neutrino.game.domain.model.characters.utility
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.util.compareDelta
 import com.neutrino.game.util.hasIdentity
 import com.neutrino.game.utility.BArray
@@ -95,7 +97,8 @@ class Fov(var map: List<List<MutableList<Entity>>>) {
      */
     fun transparent(x: Int, y: Int): Boolean {
         for (entity in map[y][x]) {
-            if (entity hasIdentity Identity.Wall::class || entity hasIdentity Identity.Door::class)
+            if (entity hasIdentity Identity.Wall::class || (entity hasIdentity Identity.Door::class &&
+                        entity.get(Interaction::class)?.getInteraction(InteractionType.DOOR::class)?.open == false))
                 return false
         }
         return true

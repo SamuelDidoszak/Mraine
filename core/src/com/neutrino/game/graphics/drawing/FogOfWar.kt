@@ -3,17 +3,18 @@ package com.neutrino.game.graphics.drawing
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.Matrix4
-import com.neutrino.game.domain.model.map.Level
-import com.neutrino.game.domain.model.turn.Turn.currentLevel
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.graphics.utility.Blurring
+import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.util.Constants
 
-class FogOfWar {
+class FogOfWar(var chunk: Chunk) {
 
     /**
      * DEBUG draw overlaying fog of war and FOV
@@ -24,54 +25,59 @@ class FogOfWar {
     private val darkenedColor = Color(0.50f, 0.45f, 0.60f, 1.0f)
     private val backgroundColor = Color((21f / 255f) * darkenedColor.r, (21f / 255f) * darkenedColor.g, (23f / 255f) * darkenedColor.b, 1f)
 
-    fun initializeFogOfWar(level: Level) {
-        level.fogOfWarFBO.begin()
+    val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, chunk.sizeX, chunk.sizeY, false)
+    val fovOverlayFBO = FrameBuffer(Pixmap.Format.RGBA8888, chunk.sizeX, chunk.sizeY, false)
+    val blurredFogOfWar = FrameBuffer(Pixmap.Format.RGBA8888, chunk.sizeX * 64, chunk.sizeY * 64, false)
+    val blurredFov = FrameBuffer(Pixmap.Format.RGBA8888, chunk.sizeX * 64, chunk.sizeY * 64, false)
+
+    fun initializeFogOfWar() {
+        fogOfWarFBO.begin()
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        level.fogOfWarFBO.end()
+        fogOfWarFBO.end()
         fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, 100f, 100f)
         fboBatch.disableBlending()
 
-        level.fogOfWarFBO.begin()
+        fogOfWarFBO.begin()
         fboBatch.begin()
         Gdx.gl.glColorMask(false, false, false, true)
-        for (y in 0 until level.sizeY) {
-            for (x in 0 until level.sizeX) {
-                if (level.discoveredMap[y][x]) {
+        for (y in 0 until chunk.sizeY) {
+            for (x in 0 until chunk.sizeX) {
+                if (chunk.discoveredMap[y][x]) {
                     fboBatch.draw(Constants.TransparentPixel, x.toFloat(), y.toFloat(), 1f, 1f)
                 }
             }
         }
         Gdx.gl.glColorMask(true, true, true, true)
         fboBatch.end()
-        level.fogOfWarFBO.end()
+        fogOfWarFBO.end()
     }
 
     /**
      * Updates the fog of war texture by drawing on top of it in places that were not visited before
      */
-    private fun updateFogOfWar(level: Level) {
-        level.fogOfWarFBO.begin()
+    private fun updateFogOfWar() {
+        fogOfWarFBO.begin()
         fboBatch.begin()
         Gdx.gl.glColorMask(false, false, false, true)
         for (y in 0 until Player.getSuper(Ai::class)!!.fov.size) {
             for (x in 0 until Player.getSuper(Ai::class)!!.fov[0].size) {
-                if (Player.getSuper(Ai::class)!!.fov[y][x] && !level.discoveredMap[y][x]) {
-                    level.discoveredMap[y][x] = true
+                if (Player.getSuper(Ai::class)!!.fov[y][x] && !chunk.discoveredMap[y][x]) {
+                    chunk.discoveredMap[y][x] = true
                     fboBatch.draw(Constants.TransparentPixel, x.toFloat(), y.toFloat(), 1f, 1f)
                 }
             }
         }
         Gdx.gl.glColorMask(true, true, true, true)
         fboBatch.end()
-        level.fogOfWarFBO.end()
+        fogOfWarFBO.end()
     }
 
     /**
      * Resets the FOV texture
      */
-    private fun updateFovTexture(level: Level) {
-        level.fovOverlayFBO.begin()
+    private fun updateFovTexture() {
+        fovOverlayFBO.begin()
         fboBatch.begin()
 
         Gdx.gl.glClearColor(darkenedColor.r, darkenedColor.g, darkenedColor.b, darkenedColor.a)
@@ -85,7 +91,7 @@ class FogOfWar {
         }
 
         fboBatch.end()
-        level.fovOverlayFBO.end()
+        fovOverlayFBO.end()
     }
 
     /**
@@ -96,10 +102,10 @@ class FogOfWar {
 //        if (drawing)
 //            parent.stage.batch.end()
 
-        updateFovTexture(currentLevel)
-        updateFogOfWar(currentLevel)
-        Blurring.blurTexture(currentLevel.fovOverlayFBO.colorBufferTexture, currentLevel.blurredFov)
-        Blurring.blurTexture(currentLevel.fogOfWarFBO.colorBufferTexture, currentLevel.blurredFogOfWar)
+        updateFovTexture()
+        updateFogOfWar()
+        Blurring.blurTexture(fovOverlayFBO.colorBufferTexture, blurredFov)
+        Blurring.blurTexture(fogOfWarFBO.colorBufferTexture, blurredFogOfWar)
 
 //        if (drawing)
 //            parent.stage.batch.begin()
@@ -117,5 +123,12 @@ class FogOfWar {
         // Reset batch settings
         batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         batch?.color = Color(1.0f, 1.0f, 1.0f, 1.0f)
+    }
+
+    fun dispose() {
+        fogOfWarFBO.dispose()
+        fovOverlayFBO.dispose()
+        blurredFogOfWar.dispose()
+        blurredFov.dispose()
     }
 }

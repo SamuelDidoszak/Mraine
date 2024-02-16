@@ -3,6 +3,7 @@ package com.neutrino.game.entities.shared.attributes
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.entities.shared.util.RequiresEntityParameter
+import kotlin.reflect.KClass
 
 class Interaction(interactionList: ArrayList<InteractionType>): Attribute() {
 
@@ -35,5 +36,9 @@ class Interaction(interactionList: ArrayList<InteractionType>): Attribute() {
             if (action.isPrimary)
                 return action
         return null
+    }
+
+    fun <T: InteractionType> getInteraction(interactionType: KClass<T>): T? {
+        return interactionList.find { it::class == interactionType } as? T?
     }
 }

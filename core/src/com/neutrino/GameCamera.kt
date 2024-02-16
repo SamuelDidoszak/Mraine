@@ -17,11 +17,14 @@ import kotlin.math.sign
 
 class GameCamera(
     val camera: Camera,
-    val levelDrawer: LevelDrawer
+    private val stage: GameStage
 ) {
 
     private val startXPosition = 0f
     private val startYPosition = Constants.LevelChunkSize * 64f + 64f
+
+    private val levelDrawer
+        get() = stage.actors[0] as LevelDrawer
 
     fun isPlayerFocused(): Boolean {
         return (abs(camera.position.x - Player.get(DrawPosition::class)!!.x) < 16 &&
@@ -37,6 +40,13 @@ class GameCamera(
 
     fun moveCameraPosition(xPos: Int, yPos: Int) {
         camera.position.lerp(Vector3(xPos * 64f, startYPosition - yPos * 64f, camera.position.z), 0.03f)
+    }
+
+    fun setCameraToEntity(entity: Entity) {
+        camera.position.set(
+            entity.get(DrawPosition::class)!!.x,
+            entity.get(DrawPosition::class)!!.y,
+            camera.position.z)
     }
 
     fun setCameraPosition(x: Float, y: Float) {
@@ -93,11 +103,11 @@ class GameCamera(
     fun getTileUnprojected(position: Vector3): Coord {
         // Change the outOfBounds click behavior
         val tileX: Int = if(position.x.toInt() / 64 <= 0) 0 else
-            if (position.x.toInt() / 64 >= levelDrawer.currentLevel.sizeX) levelDrawer.currentLevel.sizeX - 1 else
+            if (position.x.toInt() / 64 >= levelDrawer.chunk.sizeX) levelDrawer.chunk.sizeX - 1 else
                 position.x.toInt() / 64
 
         val tileY: Int = if((startYPosition - position.y) / 64 <= 0) 0 else
-            if ((startYPosition - position.y) / 64 >= levelDrawer.currentLevel.sizeY) levelDrawer.currentLevel.sizeY - 1 else
+            if ((startYPosition - position.y) / 64 >= levelDrawer.chunk.sizeY) levelDrawer.chunk.sizeY - 1 else
                 (startYPosition - position.y).toInt() / 64
 
         return Coord.get(tileX, tileY)

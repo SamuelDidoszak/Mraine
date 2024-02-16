@@ -13,29 +13,28 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.UI.popups.EntityLookupPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
 import com.neutrino.game.domain.model.characters.utility.Animated
-import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.shaders.Shaders
+import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
 import kotlin.math.abs
 
 class GameStage(
-    viewport: Viewport,
-    val levelDrawer: LevelDrawer
+    viewport: Viewport
 ): Stage(viewport,
     SpriteBatch(1000, Shaders.fragmentAlphas)) {
     init {
         root = GameStageGroup()
         root.name = "GameStage"
     }
-    var level: Level? = null
+    var chunk: Chunk? = null
 
-    val gameCamera = GameCamera(camera, levelDrawer)
+    val gameCamera = GameCamera(camera, this)
 
     var waitForPlayerInput: Boolean = true
     var clickedCoordinates: Coord? = null
@@ -72,7 +71,6 @@ class GameStage(
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT || button != Input.Buttons.FORWARD) || pointer > 0) return false
-        if (level == null) return false
         if (dragging) {
             dragging = false
             return true
@@ -143,8 +141,7 @@ class GameStage(
                 showEq = true
             }
             Input.Keys.NUM_2 -> {
-                if (level != null)
-                    (actors.first() as LevelDrawer).fogOfWar.drawFovFow += 1
+                actors.forEach { if (it is LevelDrawer) it.fogOfWar.drawFovFow += 1 }
             }
             Input.Keys.ESCAPE -> {
                 if (highlightMode != Highlighting.Companion.HighlightModes.NORMAL)

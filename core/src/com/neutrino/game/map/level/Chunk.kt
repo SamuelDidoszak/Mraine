@@ -1,11 +1,9 @@
-package com.neutrino.game.domain.model.map
+package com.neutrino.game.map.level
 
-import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.esotericsoftware.kryo.kryo5.Kryo
 import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
+import com.neutrino.game.domain.model.map.MapTags
 import com.neutrino.game.domain.use_case.level.ChunkCoords
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.items.attributes.Item
@@ -20,23 +18,23 @@ import com.neutrino.game.utility.serialization.HeaderSerializable
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
-class Level(
+class Chunk(
     @Transient
     val chunkCoords: ChunkCoords,
-    @Transient
-    val description: String,
-    val sizeX: Int = LevelChunkSize,
-    val sizeY: Int = LevelChunkSize
 ): HeaderSerializable {
 
+    val sizeX: Int
+        get() = LevelChunkSize
+
+    val sizeY: Int
+        get() = LevelChunkSize
+
     constructor(kryo: Kryo?, input: Input?): this(
-        kryo?.readClassAndObject(input) as ChunkCoords,
-        kryo.readClassAndObject(input) as String
+        kryo?.readClassAndObject(input) as ChunkCoords
     )
 
     override fun serializeHeader(kryo: Kryo?, output: Output?) {
         kryo?.writeClassAndObject(output, chunkCoords)
-        kryo?.writeClassAndObject(output, description)
     }
 
     override fun readAfter(kryo: Kryo?, input: Input?) {
@@ -55,8 +53,6 @@ class Level(
     val id: Int = chunkCoords.toHash()
     @Transient
     val randomGenerator = Random(Constants.Seed + id)
-    @Transient
-    val textureList: ArrayList<TextureAtlas> = ArrayList()
 
     // listOf(MapTags.STARTING_AREA)
     var tagList: List<MapTags> = listOf()
@@ -71,7 +67,7 @@ class Level(
      */
     // Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
     @Transient
-    lateinit var characterArray: com.neutrino.game.map.level.CharacterArray
+    lateinit var characterArray: CharacterArray
     // Map of character locations
     @Transient
     lateinit var characterMap: List<MutableList<Entity?>>
@@ -80,15 +76,6 @@ class Level(
      * Map of discovered and undiscovered tiles
      */
     val discoveredMap: List<MutableList<Boolean>> = List(sizeY) { MutableList(sizeX) {false} }
-
-    @Transient
-    val fogOfWarFBO = FrameBuffer(Pixmap.Format.RGBA8888, sizeX, sizeY, false)
-    @Transient
-    val fovOverlayFBO = FrameBuffer(Pixmap.Format.RGBA8888, sizeX, sizeY, false)
-    @Transient
-    val blurredFogOfWar = FrameBuffer(Pixmap.Format.RGBA8888, sizeX * 64, sizeY * 64, false)
-    @Transient
-    val blurredFov = FrameBuffer(Pixmap.Format.RGBA8888, sizeX * 64, sizeY * 64, false)
 
     fun createMovementMap(): Array<out CharArray> {
         val movementMap: Array<out CharArray> = Array(sizeY) {CharArray(sizeX) {'.'} }
@@ -164,12 +151,5 @@ class Level(
             }
         }
         return null
-    }
-
-    fun dispose() {
-        fogOfWarFBO.dispose()
-        fovOverlayFBO.dispose()
-        blurredFogOfWar.dispose()
-        blurredFov.dispose()
     }
 }

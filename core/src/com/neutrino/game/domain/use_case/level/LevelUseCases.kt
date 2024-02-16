@@ -1,8 +1,8 @@
 package com.neutrino.game.domain.use_case.level
 
-import com.neutrino.game.domain.model.map.Level
+import com.neutrino.game.map.level.Chunk
 
 data class LevelUseCases(
-    val level: Level,
-    val getImpassable: GetImpassable = GetImpassable(level)
+    val chunk: Chunk,
+    val getImpassable: GetImpassable = GetImpassable(chunk)
 )

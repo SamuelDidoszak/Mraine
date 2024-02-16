@@ -5,7 +5,6 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.utility.Fov
-import com.neutrino.game.domain.model.map.Level
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
@@ -25,6 +24,7 @@ import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.map.level.CharacterArray
+import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.util.hasIdentity
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
@@ -69,7 +69,7 @@ object Turn {
     var characterArray: CharacterArray = CharacterArray()
 
     lateinit var characterMap: List<MutableList<Entity?>>
-    lateinit var currentLevel: Level
+    lateinit var currentChunk: Chunk
     lateinit var mapFov: Fov
 
     /**
@@ -90,23 +90,23 @@ object Turn {
     var mapImpassableList: ArrayList<Coord> = ArrayList()
 
     fun unsetLevel() {
-        currentLevel.characterArray.clear()
-        currentLevel.characterArray.addAll(characterArray)
-        currentLevel.characterArray.remove(Player)
+        currentChunk.characterArray.clear()
+        currentChunk.characterArray.addAll(characterArray)
+        currentChunk.characterArray.remove(Player)
     }
 
-    fun setLevel(level: Level) {
-        currentLevel = level
-        characterArray = level.characterArray
-        characterMap = level.characterMap
-        levelUseCases = LevelUseCases(level)
+    fun setLevel(chunk: Chunk) {
+        currentChunk = chunk
+        characterArray = chunk.characterArray
+        characterMap = chunk.characterMap
+        levelUseCases = LevelUseCases(chunk)
         mapImpassableList = levelUseCases.getImpassable() as ArrayList<Coord>
         // terrain cost can be easily added by calling the initializeCost method.
         dijkstraMap.measurement = Measurement.EUCLIDEAN
 
-        dijkstraMap.initialize(level.movementMap)
+        dijkstraMap.initialize(chunk.movementMap)
 
-        mapFov = Fov(level.map)
+        mapFov = Fov(chunk.map)
         for (character in characterArray) {
             mapFov.updateFov(
                 character.get(Position::class)!!.x,
@@ -146,17 +146,17 @@ object Turn {
                             character.getSuper(Ai::class)!!.viewDistance)
                         Player.call(VisionChangedCallable::class)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
-                        if (currentLevel.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
+                        if (currentChunk.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
-                                currentLevel.chunkCoords.x,
-                                currentLevel.chunkCoords.y,
-                                currentLevel.chunkCoords.z - 1
+                                currentChunk.chunkCoords.x,
+                                currentChunk.chunkCoords.y,
+                                currentChunk.chunkCoords.z - 1
                             ))
-                        if (currentLevel.map[action.y][action.x] hasIdentity Identity.StairsUp::class)
+                        if (currentChunk.map[action.y][action.x] hasIdentity Identity.StairsUp::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
-                                currentLevel.chunkCoords.x,
-                                currentLevel.chunkCoords.y,
-                                currentLevel.chunkCoords.z + 1
+                                currentChunk.chunkCoords.x,
+                                currentChunk.chunkCoords.y,
+                                currentChunk.chunkCoords.z + 1
                             ))
                     }
                     is Action.ATTACK -> {

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.neutrino.game.domain.use_case.level.ChunkCoords
+import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.entities.Entity
@@ -19,7 +19,7 @@ import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.map.attributes.DrawPosition
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.Chunk
 import java.util.*
 import kotlin.math.min
 import kotlin.random.Random

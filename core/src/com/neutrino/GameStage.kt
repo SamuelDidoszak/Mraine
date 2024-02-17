@@ -5,20 +5,16 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.UI.popups.EntityLookupPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
-import com.neutrino.game.domain.model.characters.utility.Animated
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.shaders.Shaders
-import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
@@ -28,11 +24,6 @@ class GameStage(
     viewport: Viewport
 ): Stage(viewport,
     SpriteBatch(1000, Shaders.fragmentAlphas)) {
-    init {
-        root = GameStageGroup()
-        root.name = "GameStage"
-    }
-    var chunk: Chunk? = null
 
     val gameCamera = GameCamera(camera, this)
 
@@ -257,27 +248,5 @@ class GameStage(
 
 
         return super.mouseMoved(screenX, screenY)
-    }
-
-    override fun getRoot(): Group {
-        return super.getRoot()
-    }
-
-    override fun addActor(actor: Actor?) {
-        super.addActor(actor)
-        if (actor is Animated)
-            AnimatedActors.add(actor)
-    }
-
-
-    /**
-     * Group functioning as a root of GameStage
-     */
-    inner class GameStageGroup: Group() {
-        override fun removeActor(actor: Actor?, unfocus: Boolean): Boolean {
-            if (actor is Animated)
-                AnimatedActors.remove(actor)
-            return super.removeActor(actor, unfocus)
-        }
     }
 }

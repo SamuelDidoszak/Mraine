@@ -1,10 +1,9 @@
-package com.neutrino.game.map.level
+package com.neutrino.game.map.chunk
 
 import com.esotericsoftware.kryo.kryo5.Kryo
 import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
-import com.neutrino.game.domain.model.map.MapTags
-import com.neutrino.game.domain.use_case.level.ChunkCoords
+import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.items.attributes.Item
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
@@ -12,9 +11,13 @@ import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.map.generation.MapTag
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.LevelChunkSize
 import com.neutrino.game.utility.serialization.HeaderSerializable
+import squidpony.squidai.DijkstraMap
+import squidpony.squidgrid.Measurement
+import squidpony.squidmath.Coord
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
@@ -22,12 +25,6 @@ class Chunk(
     @Transient
     val chunkCoords: ChunkCoords,
 ): HeaderSerializable {
-
-    val sizeX: Int
-        get() = LevelChunkSize
-
-    val sizeY: Int
-        get() = LevelChunkSize
 
     constructor(kryo: Kryo?, input: Input?): this(
         kryo?.readClassAndObject(input) as ChunkCoords
@@ -38,7 +35,7 @@ class Chunk(
     }
 
     override fun readAfter(kryo: Kryo?, input: Input?) {
-        movementMap = createMovementMap()
+        afterMapGeneration()
         // TODO ECS Generation
 //        val characterGenerator = CharacterGenerator(GenerationParams(MapTagInterpretation(listOf()), randomGenerator, this, map))
 //        characterArray = characterGenerator.generate()
@@ -49,18 +46,22 @@ class Chunk(
 //        characterMap = createCharacterMap()
     }
 
+    val sizeX: Int
+        get() = LevelChunkSize
+    val sizeY: Int
+        get() = LevelChunkSize
+
     @Transient
     val id: Int = chunkCoords.toHash()
     @Transient
     val randomGenerator = Random(Constants.Seed + id)
+    var tagList: List<MapTag> = listOf()
 
-    // listOf(MapTags.STARTING_AREA)
-    var tagList: List<MapTags> = listOf()
-
-    lateinit var map: List<List<MutableList<Entity>>>
-
+    private var isMapSet = false
+    val map: List<List<EntityList>> = List(sizeY) { List(sizeX) { EntityList(::onEntityChanged) } }
     @Transient
-    lateinit var movementMap: Array<out CharArray>
+    val dijkstraMap = DijkstraMap()
+    var mapImpassableList: ArrayList<Coord> = ArrayList()
 
     /**
      * A list of current level characters.
@@ -77,7 +78,30 @@ class Chunk(
      */
     val discoveredMap: List<MutableList<Boolean>> = List(sizeY) { MutableList(sizeX) {false} }
 
-    fun createMovementMap(): Array<out CharArray> {
+    @Transient
+    val fov: Fov = Fov(this)
+
+    fun afterMapGeneration() {
+        isMapSet = true
+        mapImpassableList = generateImpassableList()
+        // terrain cost can be easily added by calling the initializeCost method.
+        dijkstraMap.measurement = Measurement.EUCLIDEAN
+        dijkstraMap.initialize(createDijkstraMap())
+    }
+
+    private fun onEntityChanged(entity: Entity) {
+        if (!isMapSet)
+            return
+
+        println("Heyo! ${entity.name} changed!")
+        dijkstraMap.initialize(createDijkstraMap())
+    }
+
+    fun getImpassable(): List<Coord> {
+        return mapImpassableList.plus(characterArray.getImpassable())
+    }
+
+    private fun createDijkstraMap(): Array<out CharArray> {
         val movementMap: Array<out CharArray> = Array(sizeY) {CharArray(sizeX) {'.'} }
         for (y in 0 until sizeY) {
             for (x in 0 until sizeX) {
@@ -151,5 +175,23 @@ class Chunk(
             }
         }
         return null
+    }
+
+    fun generateImpassableList(): ArrayList<Coord> {
+        val coordList: ArrayList<Coord> = ArrayList()
+        for (y in 0 until sizeY) {
+            for (x in 0 until sizeX) {
+                for (entity in map[y][x]) {
+                    if (entity has ChangesImpassable::class && !entity.get(MapParams::class)!!.allowCharacterOnTop) {
+                        if ((entity.get(Interaction::class)?.interactionList?.find { it is InteractionType.DOOR } as InteractionType.DOOR?)?.open == true)
+                            continue
+
+                        coordList.add(Coord.get(x, y))
+                        break
+                    }
+                }
+            }
+        }
+        return coordList
     }
 }

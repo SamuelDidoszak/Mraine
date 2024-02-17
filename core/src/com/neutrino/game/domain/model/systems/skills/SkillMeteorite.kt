@@ -1,5 +1,6 @@
 package com.neutrino.game.domain.model.systems.skills
 
+import com.neutrino.ChunkManager
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
@@ -45,7 +46,7 @@ class SkillMeteorite(override val character: Character): Skill.ActiveSkillArea {
         for (tile in area.getTilesInRange(tile)) {
             val attack = BasicAttack(mapOf(StatsEnum.FIRE_DAMAGE to fireDamage))
             attack.attack(character, tile)
-            val enemy = LevelArrays.getCharacterAt(tile)
+            val enemy = ChunkManager.getCharacterAt(tile)
             if (enemy != null) {
                 // TODO Events
 //                val event = CharacterEvent(enemy, TimedEvent(0.0, 1.0, burnLength.toInt(), EventBurn(enemy, burnDamage)), Turn.turn)

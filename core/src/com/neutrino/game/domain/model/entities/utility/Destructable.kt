@@ -1,10 +1,10 @@
 package com.neutrino.game.domain.model.entities.utility
 
-import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord
+import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.util.lessThanDelta
 import squidpony.squidmath.Coord
 
@@ -27,7 +27,8 @@ interface Destructable: Interactable, AttackableRequiresCoord {
 //                LevelArrays.getEntitiesAt(coord).add(ItemEntity(item))
             }
         }
-        LevelArrays.getImpassableList().remove(coord)
+        // TODO MULTIPLE CHUNKS
+        Turn.currentChunk.mapImpassableList.remove(coord)
     }
 
     fun destroy(): MutableList<Item>? {

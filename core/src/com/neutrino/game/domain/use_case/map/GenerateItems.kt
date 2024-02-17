@@ -5,7 +5,7 @@ import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.utility.Container
 import com.neutrino.game.domain.model.entities.utility.ItemEntity
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.domain.use_case.map.utility.GenerationParams
 import com.neutrino.game.utility.Probability
 import kotlin.math.roundToInt

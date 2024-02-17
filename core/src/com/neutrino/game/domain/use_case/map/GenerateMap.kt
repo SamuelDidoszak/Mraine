@@ -1,9 +1,9 @@
 package com.neutrino.game.domain.use_case.map
 
 import com.neutrino.game.domain.model.entities.Entity
-import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.domain.use_case.map.utility.MapGenerator
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.utility.Probability
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
@@ -19,7 +19,7 @@ class GenerateMap(
      * Generates the map
      */
     operator fun invoke(): List<List<MutableList<Entity>>> {
-        val interpretedTags = TagInterpretation(chunk.tagList)
+        val interpretedTags = TagInterpretation(listOf())
 
         // get map generator
         val mapGenerators = ArrayList<Probability<KClass<out MapGenerator>>>()

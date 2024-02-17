@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.use_case.level
+package com.neutrino.game.map.chunk
 
 import com.neutrino.game.utility.Serialize
 

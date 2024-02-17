@@ -1,30 +1,23 @@
 package com.neutrino.game.map.generation
 
-import com.neutrino.game.domain.use_case.level.ChunkCoords
+import com.neutrino.game.map.chunk.Chunk
+import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.map.generation.util.GenerationParams
-import com.neutrino.game.map.level.Chunk
 import com.neutrino.generation.Tilesets
 import kotlin.math.abs
 import kotlin.math.max
 
 class GenerateLevel() {
 
-    private var tags: ArrayList<MapTag> = ArrayList()
+    private var tagList: ArrayList<MapTag> = ArrayList<MapTag>().also { it.add(getDefaultMapTag()) }
     private var tagGenerators: ArrayList<() -> MapTag> = ArrayList()
 
     fun generate(chunkCoords: ChunkCoords): Chunk {
         val chunk: Chunk = Chunk(chunkCoords)
-
-        chunk.map = List(chunk.sizeY) {
-            List(chunk.sizeX) {
-                java.util.ArrayList()
-            }
-        }
-
-        tags.add(getDefaultMapTag())
+        chunk.tagList = tagList
 
         generateMap(chunk)
-        chunk.movementMap = chunk.createMovementMap()
+        chunk.afterMapGeneration()
         val generateCharacters = CharacterGenerator(getParams(chunk))
         chunk.characterArray = generateCharacters.generate()
         chunk.characterMap = generateCharacters.characterMap
@@ -42,7 +35,7 @@ class GenerateLevel() {
     private fun getParams(chunk: Chunk): GenerationParams {
         return GenerationParams(
             MapTagInterpretation(
-                tagGenerators.map { it.invoke() }.plus(tags)
+                tagGenerators.map { it.invoke() }.plus(tagList)
             ),
             chunk.randomGenerator,
             chunk,

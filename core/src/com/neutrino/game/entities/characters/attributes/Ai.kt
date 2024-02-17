@@ -1,12 +1,14 @@
 package com.neutrino.game.entities.characters.attributes
 
+import com.neutrino.ChunkManager
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.util.Constants
-import squidpony.squidai.DijkstraMap
+import com.neutrino.game.util.x
+import com.neutrino.game.util.y
 import squidpony.squidmath.Coord
 
 open class Ai(var viewDistance: Int = 10): Attribute() {
@@ -24,6 +26,10 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
     var moveList: ArrayDeque<Coord> = ArrayDeque()
 
     var action: Action = Action.NOTHING
+
+    fun updateFov() {
+        entity.get(Position::class)!!.chunk.fov.updateFov(entity)
+    }
 
     /**
      * Return action and set it to NOTHING
@@ -58,19 +64,18 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
 
     open fun decide() {}
 
-    fun target(xPos: Int, yPos: Int, dijkstraMap: DijkstraMap, impassable: Collection<Coord>) {
+    fun target(xPos: Int, yPos: Int) {
         if (canAttack(xPos, yPos)) {
             action = Action.ATTACK(xPos, yPos)
             return
         }
-        moveTo(xPos, yPos, dijkstraMap, impassable)
+        moveTo(xPos, yPos)
     }
 
-    fun moveTo(xPos: Int, yPos: Int, dijkstraMap: DijkstraMap, impassable: Collection<Coord>) {
-        setMoveList(xPos, yPos, dijkstraMap, impassable)
-        dijkstraMap.clearGoals()
+    fun moveTo(xPos: Int, yPos: Int) {
+        setMoveList(xPos, yPos)
         val coord = getMove()
-        if (coord.getX() == entity.get(Position::class)!!.x && coord.getY() == entity.get(Position::class)!!.y) {
+        if (coord.getX() == entity.x && coord.getY() == entity.y) {
             action = Action.WAIT
         }
         else
@@ -89,16 +94,12 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
     /**
      * Finds the path to target if it isn't already set
      */
-    fun setMoveList(xPos: Int, yPos: Int, dijkstraMap: DijkstraMap, impassable: Collection<Coord>, forceUpdate: Boolean = false) {
+    fun setMoveList(xPos: Int, yPos: Int, forceUpdate: Boolean = false) {
         if (xPos == moveList.lastOrNull()?.x && yPos == moveList.lastOrNull()?.y && !forceUpdate) {
             return
         }
         moveList = ArrayDeque()
-        val map = dijkstraMap.findPath(30, 30,  impassable, null,
-            Coord.get(entity.get(Position::class)!!.x, entity.get(Position::class)!!.y),
-            Coord.get(xPos, yPos))
-        moveList.addAll(map)
-        dijkstraMap.reset()
+        moveList.addAll(ChunkManager.getPath(entity, Position(xPos, yPos, entity.get(Position::class)!!.chunk)))
     }
 
     fun canAttack(xTarget: Int, yTarget: Int): Boolean {

@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Matrix4
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.graphics.utility.Blurring
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.util.Constants
 
 class FogOfWar(var chunk: Chunk) {

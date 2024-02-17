@@ -5,7 +5,7 @@ import com.neutrino.GlobalDataType
 import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.entities.Wall
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.util.hasSuper
 import squidpony.squidgrid.mapping.DungeonGenerator
 import squidpony.squidgrid.mapping.styled.TilesetType

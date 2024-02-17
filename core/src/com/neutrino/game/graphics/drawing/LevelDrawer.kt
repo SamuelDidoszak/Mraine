@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
@@ -21,6 +21,7 @@ import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.map.attributes.DrawPosition
+import com.neutrino.game.map.chunk.EntityList
 import com.neutrino.game.util.Constants.TILE_SIZE
 import com.neutrino.game.util.Constants.TILE_SIZE_INT
 import java.util.*
@@ -39,7 +40,7 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
             fogOfWar.chunk = chunk
             fogOfWar.initializeFogOfWar()
         }
-    override val map: List<List<MutableList<Entity>>>
+    override val map: List<List<EntityList>>
         get() = chunk.map
 
     val fogOfWar = FogOfWar(chunk)

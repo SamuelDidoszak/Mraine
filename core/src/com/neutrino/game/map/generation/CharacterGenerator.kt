@@ -8,7 +8,7 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.util.GenerationParams
-import com.neutrino.game.map.level.CharacterArray
+import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord
 import kotlin.math.roundToInt

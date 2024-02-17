@@ -1,4 +1,4 @@
-package com.neutrino.game.map.level
+package com.neutrino.game.map.chunk
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position

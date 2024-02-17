@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.use_case.map
 
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.entities.map.attributes.MapParams
 
 class GetMovementMap(

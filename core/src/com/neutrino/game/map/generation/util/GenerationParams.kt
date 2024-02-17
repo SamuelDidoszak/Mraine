@@ -1,6 +1,6 @@
 package com.neutrino.game.map.generation.util
 
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.map.generation.MapTagInterpretation
 import kotlin.random.Random

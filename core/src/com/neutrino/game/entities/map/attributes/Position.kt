@@ -3,10 +3,11 @@ package com.neutrino.game.entities.map.attributes
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.generation.util.NameOrIdentity
-import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.util.add
@@ -18,6 +19,8 @@ class Position(
     y: Int,
     var chunk: Chunk
 ): Attribute() {
+
+    constructor(coord: Coord, chunk: Chunk): this(coord.x, coord.y, chunk)
 
     var x: Int = x
         set(value) {
@@ -46,6 +49,17 @@ class Position(
     }
 
     fun setPosition(x: Int, y: Int) {
+        this.x = x
+        this.y = y
+    }
+
+    fun moveCharacter(x: Int, y: Int) {
+        chunk.characterMap[this.y][this.x] = null
+        chunk.characterMap[y][x] = entity
+        // TODO ECS Actions
+//        this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, speed))
+        if (this.x != x)
+            entity.get(Texture::class)!!.textures.mirror(x < this.x)
         this.x = x
         this.y = y
     }

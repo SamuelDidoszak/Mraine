@@ -7,14 +7,14 @@ import com.esotericsoftware.kryo.kryo5.minlog.Log
 import com.neutrino.ChunkManager
 import com.neutrino.GameStage
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.domain.use_case.level.ChunkCoords
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.graphics.drawing.LevelDrawer
+import com.neutrino.game.map.chunk.Chunk
+import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.map.generation.CharacterGenerator
 import com.neutrino.game.map.generation.GenerateLevel
 import com.neutrino.game.map.generation.MapTagInterpretation
 import com.neutrino.game.map.generation.util.GenerationParams
-import com.neutrino.game.map.level.Chunk
 import com.neutrino.game.utility.serialization.KryoObj
 import squidpony.squidmath.Coord
 import java.io.FileInputStream
@@ -23,12 +23,20 @@ import kotlin.system.measureNanoTime
 
 class LevelInitialization (private val gameStage: GameStage) {
 
+    private var initializedFirstLevel = false
+
     fun initializeLevel(chunkCoords: ChunkCoords, playerCoords: Coord?) {
-        val previousChunk = gameStage.chunk
-        if (previousChunk != null) {
-            saveLevel(previousChunk)
-            Turn.unsetLevel()
-        }
+        val previousChunk: Chunk?
+        if (initializedFirstLevel) {
+            previousChunk = Turn.currentChunk
+            if (previousChunk != null) {
+                saveLevel(previousChunk)
+                Turn.unsetLevel()
+            }
+        } else
+            previousChunk = null
+
+        initializedFirstLevel = true
 
         val chunk = loadLevel(chunkCoords) ?: GenerateLevel().generate(chunkCoords)
 
@@ -53,7 +61,6 @@ class LevelInitialization (private val gameStage: GameStage) {
         levelDrawer.initializeCharacterTextures(chunk.characterMap)
 
         Turn.setLevel(chunk)
-        gameStage.chunk = chunk
 
         gameStage.gameCamera.setCameraToEntity(Player)
 
@@ -103,8 +110,6 @@ class LevelInitialization (private val gameStage: GameStage) {
 
     private fun printData(chunk: Chunk) {
         println("Level: $chunk")
-        println(chunk.movementMap)
-
         println("characters")
         println("Is null ${chunk.characterArray == null}")
         println(chunk.characterArray)

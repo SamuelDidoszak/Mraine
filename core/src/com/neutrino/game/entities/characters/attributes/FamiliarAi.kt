@@ -1,7 +1,6 @@
 package com.neutrino.game.entities.characters.attributes
 
 import com.neutrino.game.domain.model.turn.Action
-import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
 import com.neutrino.game.entities.map.attributes.Position
@@ -33,11 +32,10 @@ class FamiliarAi(viewDistance: Int = 10, private val master: Entity): EnemyAi(vi
                     return decide()
                 }
 
-                moveTo(master.get(Position::class)!!.x, master.get(Position::class)!!.y,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))
+                moveTo(master.get(Position::class)!!.x, master.get(Position::class)!!.y)
             }
             AiBehavior.SENSE_ENEMIES -> {
-                searchTarget(Turn.characterMap)
+                searchTarget()
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     // TODO ActorVisuals
@@ -50,8 +48,7 @@ class FamiliarAi(viewDistance: Int = 10, private val master: Entity): EnemyAi(vi
                     return
                 }
 
-                moveTo(master.x, master.y,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))
+                moveTo(master.x, master.y)
             }
 
             else -> {

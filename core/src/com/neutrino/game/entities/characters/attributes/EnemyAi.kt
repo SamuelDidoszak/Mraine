@@ -1,9 +1,10 @@
 package com.neutrino.game.entities.characters.attributes
 
 import com.neutrino.game.domain.model.turn.Action
-import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.util.x
+import com.neutrino.game.util.y
 import com.neutrino.game.utility.VectorOperations
 import squidpony.squidmath.Coord
 import kotlin.math.pow
@@ -33,7 +34,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
             if (value != null) {
                 energy += 10
                 val displayDetection = !sensedEnemyArray.contains(value)
-                searchTarget(Turn.characterMap)
+                searchTarget()
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     // TODO ECS Actors
@@ -72,7 +73,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
 
         when (currentBehavior) {
             AiBehavior.SENSE_ENEMIES -> {
-                searchTarget(Turn.characterMap)
+                searchTarget()
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     // TODO ECS Actors
@@ -86,8 +87,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
             AiBehavior.TARGET_ENEMY -> {
                 designatedPosition = Coord.get(entity.get(Position::class)!!.x, entity.get(Position::class)!!.y)
                 target(
-                    targettedEnemy!!.get(Position::class)!!.x, targettedEnemy!!.get(Position::class)!!.y,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))
+                    targettedEnemy!!.get(Position::class)!!.x, targettedEnemy!!.get(Position::class)!!.y)
 
                 if (action is Action.ATTACK)
                     energy += 5
@@ -102,7 +102,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                     energyRecharged = 0
                     // If the enemy is still in view, can decide to attack it
                     if (targettedEnemy == null)
-                        searchTarget(Turn.characterMap)
+                        searchTarget()
                     if (targettedEnemy != null && Random.nextFloat() <= 0.5) {
                         currentBehavior = AiBehavior.TARGET_ENEMY
                         // TODO ECS Actors
@@ -110,7 +110,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                         return decide()
                     }
 
-                    setMoveList(designatedPosition.x, designatedPosition.y, Turn.dijkstraMap, Turn.characterArray.getImpassable())
+                    setMoveList(designatedPosition.x, designatedPosition.y)
                     val returnPath = moveList.toList()
                     if (returnPath.isNotEmpty())
                         designatedPosition = returnPath[Random.nextInt(returnPath.size / 2, returnPath.size)]
@@ -135,7 +135,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                 }
 
                 if (targettedEnemy == null)
-                    searchTarget(Turn.characterMap)
+                    searchTarget()
                 // If the enemy is still sensed, add a probability to attack it
                 if (targettedEnemy != null && Random.nextFloat() <= 0.137) {
                     // TODO ECS Actors
@@ -144,8 +144,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                     return decide()
                 }
 
-                moveTo(designatedPosition!!.x, designatedPosition!!.y,
-                    Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))
+                moveTo(designatedPosition!!.x, designatedPosition!!.y)
 
                 energy++
             }
@@ -161,7 +160,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
      * Searches possible targets in a square area around the character
      * Sets the found character as the target
      */
-    protected fun searchTarget(characterMap: List<MutableList<Entity?>>) {
+    protected fun searchTarget() {
         /**
          * Tries to detect the enemy.
          * Takes into account distance, enemy stealth and character stealth as detection buff
@@ -169,16 +168,14 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
          * @return true if the enemy was detected
          */
         fun tryDetect(enemy: Entity): Boolean {
-            val distance = VectorOperations.getDistance(
-                entity.get(Position::class)!!.x, entity.get(Position::class)!!.y,
-                enemy.get(Position::class)!!.x, enemy.get(Position::class)!!.x)
+            val distance = VectorOperations.getDistance(entity.x, entity.y, enemy.x, enemy.y)
             var detectionProbability = 0.2f * 0.05f.pow(distance / MAX_DETECTION_DISTANCE - 0.04f)
 
             if (gotAttackedBy == enemy)
                 detectionProbability += 0.15f
 
             // If the enemy is visible, increase detection probability
-            if (fov[enemy.get(Position::class)!!.y][enemy.get(Position::class)!!.x]) {
+            if (fov[enemy.y][enemy.x]) {
                 detectionProbability += 0.7f
 
                 if (gotAttackedBy == enemy)
@@ -188,8 +185,9 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
             return Random.nextFloat() <= detectionProbability + entity.get(DefensiveStats::class)!!.stealth - enemy.get(DefensiveStats::class)!!.stealth
         }
 
-        val xPos = entity.get(Position::class)!!.x
-        val yPos = entity.get(Position::class)!!.y
+        val characterMap = entity.get(Position::class)!!.chunk.characterMap
+        val xPos = entity.x
+        val yPos = entity.y
 
         val left: Int = if (xPos - DETECTION_RADIUS <= 0) 0 else xPos - DETECTION_RADIUS
         val right: Int = if (xPos + DETECTION_RADIUS >= characterMap[0].size) characterMap[0].size - 1 else xPos + DETECTION_RADIUS
@@ -197,8 +195,8 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
         val down: Int = if (yPos + DETECTION_RADIUS >= characterMap.size) characterMap.size - 1 else yPos + DETECTION_RADIUS
 
         // Add every enemy in radius
-        for (x in left .. right) {
-            for (y in up .. down) {
+        for (y in up .. down) {
+            for (x in left .. right) {
                 if (characterMap[y][x] != null &&
                     entity.get(Faction::class)!!.faction.enemies
                         .contains(characterMap[y][x]!!.get(Faction::class)!!.faction))

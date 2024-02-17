@@ -3,6 +3,7 @@ package com.neutrino.game.gameplay.main
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.ChunkManager
 import com.neutrino.GameStage
 import com.neutrino.HudStage
 import com.neutrino.LevelArrays
@@ -92,7 +93,7 @@ class GameplayItems(
                         return
                     }
 
-                    val clickedCharacter: Entity? = LevelArrays.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
+                    val clickedCharacter: Entity? = ChunkManager.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
                     if (clickedCharacter == null || (useItemOn.useOn == UseOn.OTHERS_ONLY && clickedCharacter == Player)) {
                         gameStage.clickedCoordinates = null
                         return
@@ -136,7 +137,7 @@ class GameplayItems(
                         return
                     }
 
-                    val character: Entity? = LevelArrays.getCharacterAt(gameStage.clickedCoordinates!!)
+                    val character: Entity? = ChunkManager.getCharacterAt(gameStage.clickedCoordinates!!)
                     if (character == null) {
                         gameplay.cancelUsage()
                         return

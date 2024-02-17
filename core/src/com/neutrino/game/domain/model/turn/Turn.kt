@@ -4,13 +4,10 @@ import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.skills.Skill
-import com.neutrino.game.domain.use_case.level.ChunkCoords
-import com.neutrino.game.domain.use_case.level.LevelUseCases
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
@@ -21,15 +18,12 @@ import com.neutrino.game.entities.characters.callables.VisionChangedCallable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
-import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
-import com.neutrino.game.map.level.CharacterArray
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.CharacterArray
+import com.neutrino.game.map.chunk.Chunk
+import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.util.hasIdentity
-import squidpony.squidai.DijkstraMap
-import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord
-import squidpony.squidmath.GWTRNG
 
 /**
  * Singleton turn class containing turn and tick data
@@ -67,10 +61,7 @@ object Turn {
      */
     // TODO ECS Characters Initialize with Player inside
     var characterArray: CharacterArray = CharacterArray()
-
-    lateinit var characterMap: List<MutableList<Entity?>>
     lateinit var currentChunk: Chunk
-    lateinit var mapFov: Fov
 
     /**
      * List containing various short term events, often related to characters.
@@ -83,12 +74,6 @@ object Turn {
      */
     val globalEventArray: EventArray = EventArray()
 
-    lateinit var levelUseCases: LevelUseCases
-
-    var dijkstraMap: DijkstraMap = DijkstraMap(GWTRNG())
-
-    var mapImpassableList: ArrayList<Coord> = ArrayList()
-
     fun unsetLevel() {
         currentChunk.characterArray.clear()
         currentChunk.characterArray.addAll(characterArray)
@@ -97,22 +82,10 @@ object Turn {
 
     fun setLevel(chunk: Chunk) {
         currentChunk = chunk
-        characterArray = chunk.characterArray
-        characterMap = chunk.characterMap
-        levelUseCases = LevelUseCases(chunk)
-        mapImpassableList = levelUseCases.getImpassable() as ArrayList<Coord>
-        // terrain cost can be easily added by calling the initializeCost method.
-        dijkstraMap.measurement = Measurement.EUCLIDEAN
+        characterArray.addAll(chunk.characterArray)
 
-        dijkstraMap.initialize(chunk.movementMap)
-
-        mapFov = Fov(chunk.map)
         for (character in characterArray) {
-            mapFov.updateFov(
-                character.get(Position::class)!!.x,
-                character.get(Position::class)!!.y,
-                character.getSuper(Ai::class)!!.fov,
-                character.getSuper(Ai::class)!!.viewDistance)
+            character.getSuper(Ai::class)!!.updateFov()
         }
 
         Player.call(VisionChangedCallable::class)
@@ -138,12 +111,8 @@ object Turn {
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
-                        moveCharacter(character, action.x, action.y)
-                        mapFov.updateFov(
-                            character.get(Position::class)!!.x,
-                            character.get(Position::class)!!.y,
-                            character.getSuper(Ai::class)!!.fov,
-                            character.getSuper(Ai::class)!!.viewDistance)
+                        character.get(Position::class)!!.moveCharacter(action.x, action.y)
+                        character.getSuper(Ai::class)!!.updateFov()
                         Player.call(VisionChangedCallable::class)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                         if (currentChunk.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
@@ -151,13 +120,15 @@ object Turn {
                                 currentChunk.chunkCoords.x,
                                 currentChunk.chunkCoords.y,
                                 currentChunk.chunkCoords.z - 1
-                            ))
+                            )
+                            )
                         if (currentChunk.map[action.y][action.x] hasIdentity Identity.StairsUp::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
                                 currentChunk.chunkCoords.x,
                                 currentChunk.chunkCoords.y,
                                 currentChunk.chunkCoords.z + 1
-                            ))
+                            )
+                            )
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)!!
@@ -205,19 +176,15 @@ object Turn {
                             is InteractionType.DOOR -> {
                                 action.interaction.act()
                                 if (action.entity.get(MapParams::class)?.allowCharacterOnTop == true)
-                                    mapImpassableList.remove(Coord.get(
-                                        Player.getSuper(Ai::class)!!.targetCoords!!.first,
-                                        Player.getSuper(Ai::class)!!.targetCoords!!.second))
+                                    character.get(Position::class)!!.chunk.mapImpassableList.remove(Coord.get(
+                                        character.getSuper(Ai::class)!!.targetCoords!!.first,
+                                        character.getSuper(Ai::class)!!.targetCoords!!.second))
                                 else
-                                    mapImpassableList.add(Coord.get(
-                                        Player.getSuper(Ai::class)!!.targetCoords!!.first,
-                                        Player.getSuper(Ai::class)!!.targetCoords!!.second))
+                                    character.get(Position::class)!!.chunk.mapImpassableList.add(Coord.get(
+                                        character.getSuper(Ai::class)!!.targetCoords!!.first,
+                                        character.getSuper(Ai::class)!!.targetCoords!!.second))
 
-                                mapFov.updateFov(
-                                    character.get(Position::class)!!.x,
-                                    character.get(Position::class)!!.y,
-                                    character.getSuper(Ai::class)!!.fov,
-                                    character.getSuper(Ai::class)!!.viewDistance)
+                                character.getSuper(Ai::class)!!.updateFov()
                                 Player.call(VisionChangedCallable::class)
                             }
                             else -> {
@@ -314,19 +281,15 @@ object Turn {
                     is Action.MOVE -> {
                         if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
                             val prevCoord = character.getSuper(Ai::class)!!.moveList.lastOrNull() ?: Coord.get(action.x, action.y)
-                            character.getSuper(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, dijkstraMap, mapImpassableList.plus(
-                                characterArray.getImpassable()), true)
+
+                            character.getSuper(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, true)
                             val coord = character.getSuper(Ai::class)!!.getMove()
                             action = Action.MOVE(coord.x, coord.y)
                         }
 
-                        moveCharacter(character, action.x, action.y)
+                        character.get(Position::class)!!.moveCharacter(action.x, action.y)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
-                        mapFov.updateFov(
-                            character.get(Position::class)!!.x,
-                            character.get(Position::class)!!.y,
-                            character.getSuper(Ai::class)!!.fov,
-                            character.getSuper(Ai::class)!!.viewDistance)
+                        character.getSuper(Ai::class)!!.updateFov()
                     }
                     is Action.ATTACK -> {
                         // TODO ECS Attack
@@ -445,18 +408,6 @@ object Turn {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-    }
-
-    private fun moveCharacter(character: Entity, toX: Int, toY: Int) {
-        val x = character.get(Position::class)!!.x
-        val y = character.get(Position::class)!!.y
-        characterMap[y][x] = null
-        characterMap[toY][toX] = character
-
-//        this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, speed))
-        if (toX != x)
-            character.get(Texture::class)!!.textures.mirror(toX < x)
-        character.get(Position::class)!!.setPosition(toX, toY)
     }
 
 

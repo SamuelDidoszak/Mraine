@@ -3,8 +3,8 @@ package com.neutrino
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.MapParams
-import com.neutrino.game.map.level.CharacterArray
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.CharacterArray
+import com.neutrino.game.map.chunk.Chunk
 import squidpony.squidmath.Coord
 
 object LevelArrays {
@@ -56,20 +56,6 @@ object LevelArrays {
         return Turn.characterArray
     }
 
-    fun getCharacterMap(): List<MutableList<Entity?>> {
-        return Turn.characterMap
-    }
-
-    fun getCharacterAt(coord: Coord): Entity? {
-        val coord = parseCoord(coord)
-        return Turn.characterMap[coord.y][coord.x]
-    }
-
-    fun getCharacterAt(x: Int, y: Int): Entity? {
-        val coord = parseCoord(Coord.get(x, y))
-        return Turn.characterMap[coord.y][coord.x]
-    }
-
     fun getMap(): List<List<MutableList<Entity>>> {
         return Turn.currentChunk.map
     }
@@ -82,10 +68,6 @@ object LevelArrays {
     fun getEntitiesAt(x: Int, y: Int): MutableList<Entity> {
         val coord = parseCoord(Coord.get(x, y))
         return Turn.currentChunk.map[coord.y][coord.x]
-    }
-
-    fun getImpassableList(): ArrayList<Coord> {
-        return Turn.mapImpassableList
     }
 
     fun isImpassable(coord: Coord): Boolean {

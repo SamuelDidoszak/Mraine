@@ -17,7 +17,7 @@ import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.domain.use_case.level.ChunkCoords
+import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.map.attributes.Position

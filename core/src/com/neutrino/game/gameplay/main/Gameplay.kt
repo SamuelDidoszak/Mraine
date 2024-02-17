@@ -1,8 +1,8 @@
 package com.neutrino.game.gameplay.main
 
+import com.neutrino.ChunkManager
 import com.neutrino.GameStage
 import com.neutrino.HudStage
-import com.neutrino.LevelArrays
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
@@ -91,10 +91,10 @@ class Gameplay(
                 }
 
                 val wasdCoord = Coord.get(Player.x + xChange, Player.y + yChange)
-                if (!Turn.currentChunk.allowsCharacter(wasdCoord.x, wasdCoord.y) || LevelArrays.getCharacterAt(wasdCoord) != null)
+                if (!Turn.currentChunk.allowsCharacter(wasdCoord.x, wasdCoord.y) || ChunkManager.getCharacterAt(wasdCoord) != null)
                     return
 
-                Player.getSuper(Ai::class)!!.moveTo(wasdCoord.x, wasdCoord.y, Turn.dijkstraMap, LevelArrays.getImpassableList())
+                Player.getSuper(Ai::class)!!.moveTo(wasdCoord.x, wasdCoord.y)
             }
 
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
@@ -105,8 +105,7 @@ class Gameplay(
             if (Player.getSuper(Ai::class)!!.moveList.isNotEmpty() && gameStage.clickedCoordinates == null && Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
                 if (Turn.updateBatch.firstOrNull() is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
                     Player.getSuper(Ai::class)!!.setMoveList(
-                        Player.getSuper(Ai::class)!!.moveList.last().x, Player.getSuper(Ai::class)!!.moveList.last().y, Turn.dijkstraMap, Turn.mapImpassableList.plus(
-                            Turn.characterArray.getImpassable()), true)
+                        Player.getSuper(Ai::class)!!.moveList.last().x, Player.getSuper(Ai::class)!!.moveList.last().y, true)
                 val tile = Player.getSuper(Ai::class)!!.getMove()
                 Player.getSuper(Ai::class)!!.action = Action.MOVE(tile.x, tile.y)
                 if (!gameStage.lookingAround)
@@ -160,7 +159,7 @@ class Gameplay(
                     if (!Turn.currentChunk.discoveredMap[y][x] || !Turn.currentChunk.allowsCharacterChangesImpassable(x, y))
                         Player.getSuper(Ai::class)!!.action = Action.NOTHING
                     else
-                        Player.getSuper(Ai::class)!!.setMoveList(x, y, Turn.dijkstraMap, Turn.mapImpassableList.plus(Turn.characterArray.getImpassable()))
+                        Player.getSuper(Ai::class)!!.setMoveList(x, y)
 
                     // Focus player either if he's off screen or if he clicked near his current position
                     if (!gameStage.gameCamera.isInCamera(Player.x, Player.y) ||

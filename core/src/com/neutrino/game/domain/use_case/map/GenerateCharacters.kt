@@ -3,7 +3,7 @@ package com.neutrino.game.domain.use_case.map
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.Rat
-import com.neutrino.game.map.level.Chunk
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.domain.model.map.MapTags
 import com.neutrino.game.domain.model.map.TagInterpretation
 import com.neutrino.game.domain.model.turn.CharacterArray

@@ -1,6 +1,7 @@
 package com.neutrino.game.utility
 
 import com.badlogic.gdx.graphics.Color
+import com.neutrino.ChunkManager
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interactable
@@ -83,12 +84,12 @@ class Highlighting {
         deHighlight(true)
         previousAttackCoord = center
 
-        if ((requireCharacter && LevelArrays.getCharacterAt(center) == null) ||
-            (requireCharacter && LevelArrays.getCharacterAt(center) == Player))
+        if ((requireCharacter && ChunkManager.getCharacterAt(center) == null) ||
+            (requireCharacter && ChunkManager.getCharacterAt(center) == Player))
             return
 
         for (tile in range.getTilesInRange(center)) {
-            val character = LevelArrays.getCharacterAt(tile)
+            val character = ChunkManager.getCharacterAt(tile)
             // TODO ECS Shaders
 //            if (character != null) {
 //                val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, character.texture)
@@ -189,7 +190,7 @@ class Highlighting {
     }
 
     private fun addCharacterOutlineOnHover(coord: Coord): Boolean {
-        val character: Entity? = LevelArrays.getCharacterAt(coord)
+        val character: Entity? = ChunkManager.getCharacterAt(coord)
         // TODO ECS Shaders
 //        if (character != null && character == outlinedOnHover)
 //            return true

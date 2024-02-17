@@ -1,5 +1,6 @@
 package com.neutrino.game.gameplay.main
 
+import com.neutrino.ChunkManager
 import com.neutrino.GameStage
 import com.neutrino.HudStage
 import com.neutrino.LevelArrays
@@ -51,7 +52,7 @@ class GameplaySkills(
                     return false
                 }
 
-                val clickedCharacter: Entity? = LevelArrays.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
+                val clickedCharacter: Entity? = ChunkManager.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
                 if (clickedCharacter == null) {
                     gameStage.clickedCoordinates = null
                     return false

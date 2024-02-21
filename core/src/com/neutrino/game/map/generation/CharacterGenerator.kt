@@ -4,11 +4,12 @@ import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Characters
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.map.attributes.DrawPosition
-import com.neutrino.game.map.generation.util.GenerationParams
 import com.neutrino.game.map.chunk.CharacterArray
+import com.neutrino.game.map.generation.util.GenerationParams
 import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord
 import kotlin.math.roundToInt
@@ -109,10 +110,21 @@ class CharacterGenerator(val params: GenerationParams) {
                 if (tries++ == 50)
                     throw Exception("Couldn't find more positions")
                 // possibly change it to movementMap for efficiency. It has inverted xPos and yPos
-            } while (!params.chunk.allowsCharacter(xPos, yPos) || characterMap[yPos][xPos] != null)
+            } while (!allowsCharacter(xPos, yPos) || characterMap[yPos][xPos] != null)
 
             return Coord.get(xPos, yPos)
         } catch (e: Exception) {e.toString()}
         return null
+    }
+
+    private fun allowsCharacter(xPos: Int, yPos: Int): Boolean {
+        var allow = true
+        for (entity in params.chunk.map[yPos][xPos]) {
+            if (!entity.get(MapParams::class)!!.allowCharacterOnTop) {
+                allow = false
+                break
+            }
+        }
+        return allow
     }
 }

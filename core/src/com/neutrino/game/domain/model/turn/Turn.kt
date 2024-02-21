@@ -22,6 +22,7 @@ import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkCoords
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord
 
@@ -111,7 +112,7 @@ object Turn {
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
-                        character.get(Position::class)!!.moveCharacter(action.x, action.y)
+                        character.get(Position::class)!!.moveCharacter(Position(action.x, action.y, currentChunk))
                         character.getSuper(Ai::class)!!.updateFov()
                         Player.call(VisionChangedCallable::class)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
@@ -176,13 +177,15 @@ object Turn {
                             is InteractionType.DOOR -> {
                                 action.interaction.act()
                                 if (action.entity.get(MapParams::class)?.allowCharacterOnTop == true)
-                                    character.get(Position::class)!!.chunk.mapImpassableList.remove(Coord.get(
+                                    ChunkManager.characterMethods.removeImpassable(Position(Coord.get(
                                         character.getSuper(Ai::class)!!.targetCoords!!.first,
-                                        character.getSuper(Ai::class)!!.targetCoords!!.second))
+                                        character.getSuper(Ai::class)!!.targetCoords!!.second),
+                                        character.get(Position::class)!!.chunk))
                                 else
-                                    character.get(Position::class)!!.chunk.mapImpassableList.add(Coord.get(
+                                    ChunkManager.characterMethods.addImpassable(Position(Coord.get(
                                         character.getSuper(Ai::class)!!.targetCoords!!.first,
-                                        character.getSuper(Ai::class)!!.targetCoords!!.second))
+                                        character.getSuper(Ai::class)!!.targetCoords!!.second),
+                                        character.get(Position::class)!!.chunk))
 
                                 character.getSuper(Ai::class)!!.updateFov()
                                 Player.call(VisionChangedCallable::class)
@@ -287,7 +290,7 @@ object Turn {
                             action = Action.MOVE(coord.x, coord.y)
                         }
 
-                        character.get(Position::class)!!.moveCharacter(action.x, action.y)
+                        character.get(Position::class)!!.moveCharacter(Position(action.x, action.y, currentChunk))
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                         character.getSuper(Ai::class)!!.updateFov()
                     }

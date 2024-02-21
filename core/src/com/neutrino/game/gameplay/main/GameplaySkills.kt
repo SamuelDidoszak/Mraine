@@ -1,9 +1,7 @@
 package com.neutrino.game.gameplay.main
 
-import com.neutrino.ChunkManager
 import com.neutrino.GameStage
 import com.neutrino.HudStage
-import com.neutrino.LevelArrays
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.domain.model.turn.Action
@@ -13,6 +11,7 @@ import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.utility.Highlighting
 
 class GameplaySkills(
@@ -52,7 +51,7 @@ class GameplaySkills(
                     return false
                 }
 
-                val clickedCharacter: Entity? = ChunkManager.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
+                val clickedCharacter: Entity? = ChunkManager.getCharacterAt(gameStage.clickedCoordinates!!)
                 if (clickedCharacter == null) {
                     gameStage.clickedCoordinates = null
                     return false

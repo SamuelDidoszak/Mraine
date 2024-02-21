@@ -7,7 +7,6 @@ import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.InteractionType
-import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.util.compareDelta
 import com.neutrino.game.util.hasIdentity
 import com.neutrino.game.utility.BArray
@@ -19,10 +18,7 @@ import kotlin.math.round
  * Recursive shadowcasting implementation of FOV
  * FOV is round with max distance 1 less than distance
  */
-class Fov(val chunk: Chunk) {
-
-    val map: List<List<MutableList<Entity>>>
-        get() = chunk.map
+class Fov(var map: List<List<MutableList<Entity>>>) {
 
     companion object {
         val distance = HasRange.circleDistances
@@ -40,14 +36,6 @@ class Fov(val chunk: Chunk) {
             Transform(0, -1, 1, 0),
             Transform(0, -1, -1, 0)
         )
-    }
-
-    fun updateFov(entity: Entity) {
-        updateFov(
-            entity.get(Position::class)!!.x,
-            entity.get(Position::class)!!.y,
-            entity.getSuper(Ai::class)!!.fov,
-            entity.getSuper(Ai::class)!!.viewDistance)
     }
 
     /**

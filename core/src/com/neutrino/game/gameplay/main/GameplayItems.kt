@@ -3,10 +3,8 @@ package com.neutrino.game.gameplay.main
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.ChunkManager
 import com.neutrino.GameStage
 import com.neutrino.HudStage
-import com.neutrino.LevelArrays
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.UseOn
@@ -15,6 +13,7 @@ import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
 
@@ -93,7 +92,7 @@ class GameplayItems(
                         return
                     }
 
-                    val clickedCharacter: Entity? = ChunkManager.getCharacterAt(gameStage.clickedCoordinates!!.x, gameStage.clickedCoordinates!!.y)
+                    val clickedCharacter: Entity? = ChunkManager.getCharacterAt(gameStage.clickedCoordinates!!)
                     if (clickedCharacter == null || (useItemOn.useOn == UseOn.OTHERS_ONLY && clickedCharacter == Player)) {
                         gameStage.clickedCoordinates = null
                         return

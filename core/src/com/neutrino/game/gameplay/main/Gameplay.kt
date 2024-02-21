@@ -1,6 +1,5 @@
 package com.neutrino.game.gameplay.main
 
-import com.neutrino.ChunkManager
 import com.neutrino.GameStage
 import com.neutrino.HudStage
 import com.neutrino.game.UI.UiStage
@@ -8,11 +7,12 @@ import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
 import com.neutrino.game.utility.Highlighting
-import squidpony.squidmath.Coord
 import kotlin.math.abs
 
 class Gameplay(
@@ -90,8 +90,8 @@ class Gameplay(
                     else -> 0
                 }
 
-                val wasdCoord = Coord.get(Player.x + xChange, Player.y + yChange)
-                if (!Turn.currentChunk.allowsCharacter(wasdCoord.x, wasdCoord.y) || ChunkManager.getCharacterAt(wasdCoord) != null)
+                val wasdCoord = Position(Player.x + xChange, Player.y + yChange, Player.get(Position::class)!!.chunk)
+                if (!ChunkManager.allowsCharacter(wasdCoord) || ChunkManager.getCharacterAt(wasdCoord) != null)
                     return
 
                 Player.getSuper(Ai::class)!!.moveTo(wasdCoord.x, wasdCoord.y)
@@ -156,7 +156,7 @@ class Gameplay(
                         Player.getSuper(Ai::class)!!.targetCoords = null
 
                     // Add player movement list
-                    if (!Turn.currentChunk.discoveredMap[y][x] || !Turn.currentChunk.allowsCharacterChangesImpassable(x, y))
+                    if (!Turn.currentChunk.discoveredMap[y][x] || !ChunkManager.allowsCharacterChangesImpassable(Position(x, y, ChunkManager.middleChunk)))
                         Player.getSuper(Ai::class)!!.action = Action.NOTHING
                     else
                         Player.getSuper(Ai::class)!!.setMoveList(x, y)

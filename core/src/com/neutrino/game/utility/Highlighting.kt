@@ -1,7 +1,7 @@
 package com.neutrino.game.utility
 
 import com.badlogic.gdx.graphics.Color
-import com.neutrino.ChunkManager
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interactable

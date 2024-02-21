@@ -5,6 +5,8 @@ import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.lessThanDelta
 import squidpony.squidmath.Coord
 
@@ -28,7 +30,10 @@ interface Destructable: Interactable, AttackableRequiresCoord {
             }
         }
         // TODO MULTIPLE CHUNKS
-        Turn.currentChunk.mapImpassableList.remove(coord)
+        ChunkManager.characterMethods.removeImpassable(
+            Position(coord, Turn.currentChunk)
+        )
+        ChunkManager.characterMethods.removeImpassable(Position(coord, Turn.currentChunk))
     }
 
     fun destroy(): MutableList<Item>? {

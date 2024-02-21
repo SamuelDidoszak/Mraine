@@ -21,6 +21,7 @@ import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.map.attributes.DrawPosition
+import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.EntityList
 import com.neutrino.game.util.Constants.TILE_SIZE
 import com.neutrino.game.util.Constants.TILE_SIZE_INT
@@ -195,14 +196,9 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
         }
     }
 
-    fun initializeCharacterTextures(map: List<MutableList<Entity?>>,
-                                    rng: Random = Random(Random.nextInt())) {
-        for (y in map.indices) {
-            for (x in map[0].indices) {
-                if (map[y][x] != null) {
-                    map[y][x]!!.get(Texture::class)?.setTextures(null, rng)
-                }
-            }
+    fun initializeCharacterTextures(characterArray: CharacterArray, rng: Random = Random(Random.nextInt())) {
+        for (character in characterArray) {
+            character.get(Texture::class)?.setTextures(null, rng)
         }
     }
 

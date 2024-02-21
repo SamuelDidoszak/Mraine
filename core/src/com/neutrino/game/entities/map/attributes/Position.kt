@@ -3,10 +3,10 @@ package com.neutrino.game.entities.map.attributes
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity
-import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.Chunk
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.map.generation.util.NameOrIdentity
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
@@ -25,13 +25,13 @@ class Position(
     var x: Int = x
         set(value) {
             field = value
-            entity.get(DrawPosition::class)!!.x = value * 16 * SCALE
+            entity.get(DrawPosition::class)?.x = value * 16 * SCALE
         }
 
     var y: Int = y
         set(value) {
             field = value
-            entity.get(DrawPosition::class)!!.y =
+            entity.get(DrawPosition::class)?.y =
                 chunk.map.size * 16 * SCALE_INT - value * 16 * SCALE
         }
 
@@ -53,15 +53,8 @@ class Position(
         this.y = y
     }
 
-    fun moveCharacter(x: Int, y: Int) {
-        chunk.characterMap[this.y][this.x] = null
-        chunk.characterMap[y][x] = entity
-        // TODO ECS Actions
-//        this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, speed))
-        if (this.x != x)
-            entity.get(Texture::class)!!.textures.mirror(x < this.x)
-        this.x = x
-        this.y = y
+    fun moveCharacter(position: Position) {
+        ChunkManager.characterMethods.moveCharacter(entity, position)
     }
 
     private companion object {

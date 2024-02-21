@@ -1,7 +1,6 @@
 package com.neutrino.game.domain.model.systems.skills
 
-import com.neutrino.ChunkManager
-import com.neutrino.LevelArrays
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.StatsEnum

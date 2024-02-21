@@ -1,11 +1,11 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.ChunkManager
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
 import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
@@ -28,7 +28,7 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
     var action: Action = Action.NOTHING
 
     fun updateFov() {
-        entity.get(Position::class)!!.chunk.fov.updateFov(entity)
+        ChunkManager.characterMethods.updateFov(entity)
     }
 
     /**
@@ -99,7 +99,8 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
             return
         }
         moveList = ArrayDeque()
-        moveList.addAll(ChunkManager.getPath(entity, Position(xPos, yPos, entity.get(Position::class)!!.chunk)))
+        moveList.addAll(ChunkManager.characterMethods
+            .getPath(entity, Position(xPos, yPos, entity.get(Position::class)!!.chunk)))
     }
 
     fun canAttack(xTarget: Int, yTarget: Int): Boolean {

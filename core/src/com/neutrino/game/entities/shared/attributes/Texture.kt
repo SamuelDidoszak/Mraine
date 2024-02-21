@@ -1,6 +1,6 @@
 package com.neutrino.game.entities.shared.attributes
 
-import com.neutrino.ChunkManager
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.graphics.drawing.AnimationData

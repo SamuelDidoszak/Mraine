@@ -1,47 +1,51 @@
 package com.neutrino.game.entities.map.attributes
 
 import com.neutrino.game.entities.Attribute
-import com.neutrino.game.entities.shared.attributes.Interaction
-import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.attributes.DefensiveStats
+import com.neutrino.game.entities.characters.callables.attack.EntityDiedCallable
+import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.graphics.textures.Textures
+import com.neutrino.game.map.chunk.ChunkManager
 
-class Destructable(var entityHp: Float): Attribute() {
-    var destroyed: Boolean = false
+class Destructable(
+    hp: Float,
+    private var destroyedTextureName: String? = null,
+    defence: Float = 0f,
+    fireDefence: Float = 0f,
+    waterDefence: Float = 0f,
+    airDefence: Float = 0f,
+    poisonDefence: Float = 0f,
+    evasion: Float = 0f
+): Attribute() {
 
-    init {
-        if (!(entity has Interaction::class))
-            entity addAttribute Interaction(arrayListOf())
-        val interaction = InteractionType.DESTROY()
-        interaction.entity = entity
-        entity.get(Interaction::class)!!.interactionList.add(interaction)
+    private val defensiveStats = DefensiveStats(
+        hpMax = hp,
+        defence = defence,
+        fireDefence = fireDefence,
+        waterDefence = waterDefence,
+        airDefence = airDefence,
+        poisonDefence = poisonDefence,
+        evasion = evasion
+    )
+
+    override fun onEntityAttached() {
+        entity.addAttribute(defensiveStats)
+        entity.attach(DestroyedCallable())
     }
 
-//    fun getDamage(data: AttackData, coord: Coord) {
-//        entityHp -= data.getDamageSum()
-//        if (entityHp.lessThanDelta(0f)) {
-//            destroy(coord)
-//        }
-//    }
-//
-//    fun destroy(coord: Coord) {
-//        val items = destroy()
-//        if (items != null) {
-//            for (item in items) {
-//                LevelArrays.getEntitiesAt(coord).add(ItemEntity(item))
-//            }
-//        }
-//        LevelArrays.getImpassableList().remove(coord)
-//    }
-//
-//    fun destroy(): MutableList<Item>? {
-//        destroyed = true
-//        if (this is Entity) {
-//            allowOnTop = true
-//            allowCharacterOnTop = true
-//            texture = getTexture(texture.name + "Destroyed")
-//        }
-//        if (this is Container) {
-//            return dropItems()
-//        }
-//        return null
-//    }
+    private inner class DestroyedCallable: EntityDiedCallable() {
+
+        override fun call(entity: Entity, vararg data: Any?): Boolean {
+            entity.get(MapParams::class)?.allowOnTop = true
+            entity.get(MapParams::class)?.allowCharacterOnTop = true
+            val texture = entity get Texture::class
+            if (texture != null) {
+                destroyedTextureName = destroyedTextureName ?: (texture.textures[0].texture.name + "Destroyed")
+                texture.textures[0] = Textures.get(destroyedTextureName!!)
+            }
+            ChunkManager.characterMethods.removeImpassable(entity.get(Position::class)!!)
+            return true
+        }
+    }
 }

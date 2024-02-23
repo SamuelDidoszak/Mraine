@@ -1,10 +1,7 @@
 package com.neutrino.game.domain.model.systems.skills
 
-import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.systems.attack.BasicAttack
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.entities.shared.util.HasRange
@@ -42,16 +39,16 @@ class SkillMeteorite(override val character: Character): Skill.ActiveSkillArea {
     )
 
     override fun use(tile: Coord) {
-        for (tile in area.getTilesInRange(tile)) {
-            val attack = BasicAttack(mapOf(StatsEnum.FIRE_DAMAGE to fireDamage))
-            attack.attack(character, tile)
-            val enemy = ChunkManager.getCharacterAt(tile)
-            if (enemy != null) {
+//        for (tile in area.getTilesInRange(tile)) {
+//            val attack = BasicAttack(mapOf(StatsEnum.FIRE_DAMAGE to fireDamage))
+//            attack.attack(character, tile)
+//            val enemy = ChunkManager.getCharacterAt(tile)
+//            if (enemy != null) {
                 // TODO Events
 //                val event = CharacterEvent(enemy, TimedEvent(0.0, 1.0, burnLength.toInt(), EventBurn(enemy, burnDamage)), Turn.turn)
 //                EventDispatcher.dispatchEvent(event)
-            }
-        }
+//            }
+//        }
         causeCooldown()
     }
 }

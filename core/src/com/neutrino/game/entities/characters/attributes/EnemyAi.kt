@@ -2,6 +2,7 @@ package com.neutrino.game.entities.characters.attributes
 
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.callables.attack.GotAttackedAfterCallable
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
@@ -11,6 +12,16 @@ import kotlin.math.pow
 import kotlin.random.Random
 
 open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
+
+    override fun onEntityAttached() {
+        entity.attach(object : GotAttackedAfterCallable() {
+            override fun call(entity: Entity, vararg data: Any?): Boolean {
+                gotAttackedBy = data[0] as Entity
+                println("Got attacked! By $gotAttackedBy")
+                return true
+            }
+        })
+    }
 
     /**
      * Constant values related to enemy detection and sensing

@@ -1,13 +1,13 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.shared.util.RangeType
 
 class Stats(
     hpMax: Float = 1f,
-    hp: Float = 1f,
+    hp: Float = hpMax,
     mpMax: Float = 0f,
-    mp: Float = 0f,
+    mp: Float = mpMax,
     strength: Float = 0f,
     dexterity: Float = 0f,
     intelligence: Float = 0f,
@@ -21,7 +21,7 @@ class Stats(
     accuracy: Float = 1f,
     criticalChance: Float = 0f,
     /** Damage multiplier applied on critical hit */
-    criticalDamage: Float = 1f,
+    criticalDamage: Float = 1.2f,
     attackSpeed: Double = 1.0,
     movementSpeed: Double = 1.0,
     range: Int = 1,

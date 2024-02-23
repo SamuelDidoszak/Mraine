@@ -8,6 +8,7 @@ import com.neutrino.HudStage
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.UseOn
+import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.map.attributes.Position
@@ -87,7 +88,7 @@ class GameplayItems(
                     if (gameStage.clickedCoordinates == null)
                         return
 
-                    if (!range.isInRange(Player.get(Position::class)!!.getPosition(), gameStage.clickedCoordinates!!)) {
+                    if (!range.isInRange(Player.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk))) {
                         gameplay.cancelUsage()
                         return
                     }
@@ -131,7 +132,7 @@ class GameplayItems(
                     if (gameStage.clickedCoordinates == null)
                         return
 
-                    if (!range.isInRange(Player.get(Position::class)!!.getPosition(), gameStage.clickedCoordinates!!)) {
+                    if (!range.isInRange(Player.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk))) {
                         gameplay.cancelUsage()
                         return
                     }

@@ -64,12 +64,12 @@ class Entity() {
         }
     }
 
-    fun call(callableClass: KClass<out Callable>, vararg data: Any?, callOthers: Boolean = true) {
+    fun call(callableClass: KClass<out Callable>, vararg data: Any?) {
         if (callables == null)
             return
         for (callable in callables!!) {
             if (callableClass.java.isAssignableFrom(callable::class.java))
-                callable.call(this, data, callOthers)
+                callable.call(this, *data)
         }
     }
 

@@ -46,10 +46,11 @@ class GameplaySkills(
                 if (gameStage.clickedCoordinates == null)
                     return false
 
-                if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
-                    gameplay.cancelUsage()
-                    return false
-                }
+                // TODO Skills
+//                if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
+//                    gameplay.cancelUsage()
+//                    return false
+//                }
 
                 val clickedCharacter: Entity? = ChunkManager.getCharacterAt(gameStage.clickedCoordinates!!)
                 if (clickedCharacter == null) {
@@ -75,10 +76,11 @@ class GameplaySkills(
                 if (gameStage.clickedCoordinates == null)
                     return false
 
-                if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
-                    gameplay.cancelUsage()
-                    return false
-                }
+                // TODO Skills
+//                if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
+//                    gameplay.cancelUsage()
+//                    return false
+//                }
 
                 Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
                 gameplay.cancelUsage()
@@ -94,10 +96,11 @@ class GameplaySkills(
                 if (gameStage.clickedCoordinates == null)
                     return false
 
-                if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
-                    gameplay.cancelUsage()
-                    return false
-                }
+                // TODO Skills
+//                if (!usedSkill.isInRange(usedSkill.character.getPosition(), gameStage.clickedCoordinates!!)) {
+//                    gameplay.cancelUsage()
+//                    return false
+//                }
 
                 Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill, tile = gameStage.clickedCoordinates!!)
                 gameplay.cancelUsage()

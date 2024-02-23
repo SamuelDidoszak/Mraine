@@ -1,8 +1,11 @@
 package com.neutrino.game.entities.characters.attributes
 
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.util.add
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -19,7 +22,7 @@ class OffensiveStats(
     var accuracy: Float = 1f,
     var criticalChance: Float = 0f,
     /** Damage multiplier applied on critical hit */
-    var criticalDamage: Float = 1f,
+    var criticalDamage: Float = 1.2f,
     var attackSpeed: Double = 1.0,
     override var range: Int = 1,
     override var rangeType: RangeType = RangeType.SQUARE,
@@ -33,6 +36,57 @@ class OffensiveStats(
     var poisonDamageMin: Float = 0f,
     var poisonDamageMax: Float = poisonDamageMin
 ): Attribute(), HasRange {
+
+    fun attack(target: Position) {
+        if (entity has AreaAttack::class)
+            return areaAttack(target, entity.get(AreaAttack::class)!!)
+        if (entity has AroundAttack::class)
+            return aroundAttack(target)
+        basicAttack(target)
+    }
+
+    private fun basicAttack(target: Position) {
+        getTopAttackable(target)?.get(DefensiveStats::class)?.getDamage(this)
+        val projectile = entity get Projectile::class
+        projectile?.shoot(target)
+    }
+
+    private fun areaAttack(target: Position, hasRange: HasRange) {
+        val projectile = entity get Projectile::class
+        for (tile in hasRange.getTilesInRange(target)) {
+            val attackables = getAllAttackables(tile) ?: continue
+            for (entity in attackables) {
+                entity.get(DefensiveStats::class)!!.getDamage(this)
+                projectile?.shoot(entity)
+            }
+        }
+    }
+
+    private fun aroundAttack(target: Position) {
+        val projectile = entity get Projectile::class
+        for (tile in getTilesInRange(target, true)) {
+            val attackables = getAllAttackables(tile) ?: continue
+            for (entity in attackables) {
+                entity.get(DefensiveStats::class)!!.getDamage(this)
+                projectile?.shoot(entity)
+            }
+        }
+    }
+
+    private fun getTopAttackable(target: Position): Entity? {
+        return target.chunk.characterMap[target.y][target.x] ?:
+            target.chunk.map[target.y][target.x].asReversed().firstOrNull { it has DefensiveStats::class }
+    }
+
+    private fun getAllAttackables(target: Position): List<Entity>? {
+        val list = ArrayList<Entity>()
+        list.add(target.chunk.characterMap[target.y][target.x])
+        target.chunk.map[target.y][target.x].forEach {
+            if (it has DefensiveStats::class)
+                list.add(it)
+        }
+        return if (list.isEmpty()) null else list
+    }
 
     fun getDamage(): Float {
         return damageMin + (damageMax - damageMin) * Random.nextFloat()

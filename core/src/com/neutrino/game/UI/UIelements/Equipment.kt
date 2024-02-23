@@ -84,9 +84,9 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
     }
 
     fun refreshGoldInEquipment() {
-        val goldActor = equipmentMap[EquipmentType.MONEY]!!.actor as EqActor
-        val prevAmount = goldActor.item.amount!!
-        var goldAmount = 0
+//        val goldActor = equipmentMap[EquipmentType.MONEY]!!.actor as EqActor
+//        val prevAmount = goldActor.item.amount!!
+//        var goldAmount = 0
         // TODO ECS Items
 //        Player.inventory.itemList.forEach { if (it.item is Gold) goldAmount += it.item.amount!! }
 //        goldActor.item.amount = goldAmount

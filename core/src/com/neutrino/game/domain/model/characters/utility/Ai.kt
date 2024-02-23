@@ -1,10 +1,9 @@
 package com.neutrino.game.domain.model.characters.utility
 
-import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.domain.model.turn.Action
-import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.util.Constants
 import squidpony.squidai.DijkstraMap
 import squidpony.squidmath.Coord
 
@@ -93,6 +92,7 @@ open class Ai (private val character: Character) {
     }
 
     fun canAttack(xTarget: Int, yTarget: Int): Boolean {
-        return (character as HasRange).isInRange(character.getPosition(), Coord.get(xTarget, yTarget))
+//        return (character as HasRange).isInRange(character.getPosition(), Coord.get(xTarget, yTarget))
+        return true
     }
 }

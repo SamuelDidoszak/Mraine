@@ -52,6 +52,21 @@ object ChunkManager: ChunkManagerMethods {
         characterMethods.resetMap()
     }
 
+    /**
+     * @return Corrected position with correct chunk
+     */
+    fun getCorrectPosition(position: Position): Position {
+        val xChunkDiff: Int = position.x / Constants.LevelChunkSize
+        val yChunkDiff: Int = position.y / Constants.LevelChunkSize
+        if (xChunkDiff == 0 && yChunkDiff == 0)
+            return position
+        val chunkCoords = position.chunk.chunkCoords
+        return Position(
+            position.x - xChunkDiff * Constants.LevelChunkSize,
+            position.y - yChunkDiff * Constants.LevelChunkSize,
+            chunkCoordMap[ChunkCoords(chunkCoords.x + xChunkDiff, chunkCoords.y + yChunkDiff, chunkCoords.z).toHash()]!!)
+    }
+
     class CharacterMethods() {
 
         private var fullMap:  List<List<MutableList<Entity>>> = listOf(listOf(EntityList()))

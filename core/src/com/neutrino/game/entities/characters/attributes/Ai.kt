@@ -105,7 +105,7 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
 
     fun canAttack(xTarget: Int, yTarget: Int): Boolean {
         return entity.get(OffensiveStats::class)!!.isInRange(
-            entity.get(Position::class)!!.getPosition(),
-            Coord.get(xTarget, yTarget))
+            entity.get(Position::class)!!,
+            Position(xTarget, yTarget, com.neutrino.game.domain.model.turn.Turn.currentChunk))
     }
 }

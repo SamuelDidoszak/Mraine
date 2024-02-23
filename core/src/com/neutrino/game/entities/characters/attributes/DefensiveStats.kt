@@ -3,20 +3,22 @@ package com.neutrino.game.entities.characters.attributes
 import com.badlogic.gdx.graphics.Color
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.domain.model.characters.Player.shaders
 import com.neutrino.game.domain.model.systems.CharacterTag.IncreaseStealthDamage
-import com.neutrino.game.domain.model.systems.CharacterTag.Lifesteal
 import com.neutrino.game.entities.Attribute
-import com.neutrino.game.entities.characters.attributes.EnemyAi
+import com.neutrino.game.entities.characters.callables.attack.AttackedAfterCallable
+import com.neutrino.game.entities.characters.callables.attack.AttackedBeforeCallable
+import com.neutrino.game.entities.characters.callables.attack.EntityDiedCallable
+import com.neutrino.game.entities.characters.callables.attack.GotAttackedAfterCallable
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.compareDelta
+import com.neutrino.game.util.roundOneDecimal
 import kotlin.random.Random
 
 class DefensiveStats(
     var hpMax: Float = 1f,
     var hp: Float = hpMax,
     var mpMax: Float = 0f,
-    var mp: Float = 0f,
+    var mp: Float = mpMax,
     var defence: Float = 0f,
     /** Range is 0 - 1 which tells the probability of dodging */
     var evasion: Float = 0f,
@@ -35,10 +37,13 @@ class DefensiveStats(
     fun getDamage(attacker: OffensiveStats) {
 //        if (!this.isAlive())
 //            return
+        attacker.entity.call(AttackedBeforeCallable::class, entity)
 
         val evaded = Random.nextFloat() * (1 - attacker.accuracy + evasion)
         if (evaded != 0f && evaded in 0f .. evasion) {
             println("Evaded the attack")
+            entity.call(GotAttackedAfterCallable::class, attacker.entity, null)
+            attacker.entity.call(AttackedAfterCallable::class, entity, null)
             return
         }
 
@@ -57,24 +62,14 @@ class DefensiveStats(
         damage += airDamage
         damage += poisonDamage
 
-        if (entity.get(EnemyAi::class)?.sensedEnemyArray?.contains(attacker.entity) == true) {
+        if (entity.get(EnemyAi::class)?.sensedEnemyArray?.contains(attacker.entity) == false) {
             println("Stealth hit!")
             val multiplier = attacker.entity.get(CharacterTags::class)?.getTag(IncreaseStealthDamage::class)?.incrementPercent ?: 1f
-            println("Multiplier: $multiplier")
             damage *= attacker.criticalDamage * multiplier
         }
         else if (Random.nextFloat() < attacker.criticalChance) {
             println("Critical hit!")
             damage *= attacker.criticalDamage
-        }
-
-        if (attacker.entity.get(CharacterTags::class)?.getTag(Lifesteal::class) != null) {
-            // TODO ECS Events
-//            val heal = CharacterEvent(attacker.entity,
-//                TimedEvent(1.0,
-//                    EventHeal(damage * attacker.entity.get(CharacterTags::class)?.getTag(Lifesteal::class)!!.power)
-//                ), Turn.turn)
-//            EventDispatcher.dispatchEvent(heal)
         }
 
         // get damage color from interpolation
@@ -90,11 +85,10 @@ class DefensiveStats(
         // TODO ECS Actors
 //        ActorVisuals.showDamage(this, damageColor, damage)
 
-        entity.get(EnemyAi::class)?.gotAttackedBy = attacker.entity
-
-        this.hp -= damage
+        hp -= damage
+        hp = hp.roundOneDecimal()
         if (hp <= 0) {
-            shaders.clear()
+//            shaders.clear()
             // TODO ECS Actors
 //            this.addAction(
 //                Actions.sequence(
@@ -102,8 +96,10 @@ class DefensiveStats(
 //                Actions.removeActor()
 //            ))
             hp = 0f
-            GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this)
-        }
+            entity.call(EntityDiedCallable::class, entity)
+            GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this.entity)
+        } else entity.call(GotAttackedAfterCallable::class, attacker.entity, damage)
+        attacker.entity.call(AttackedAfterCallable::class, entity, damage)
         // TODO ECS Actors
 //        this.findActor<HpBar>("hpBar")?.update(hp)
     }

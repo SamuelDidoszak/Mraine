@@ -1,7 +1,6 @@
 package com.neutrino.game.utility
 
 import com.badlogic.gdx.graphics.Color
-import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.LevelArrays
 import com.neutrino.game.domain.model.entities.utility.Destructable
 import com.neutrino.game.domain.model.entities.utility.Interactable
@@ -13,14 +12,13 @@ import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.items.attributes.Item
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.graphics.shaders.ColorOverlayShader
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
-import com.neutrino.game.util.hasIdentity
+import com.neutrino.game.map.chunk.ChunkManager
 import squidpony.squidmath.Coord
 
 class Highlighting {
@@ -52,21 +50,21 @@ class Highlighting {
     }
 
     private fun highlightTiles(range: HasRange, center: Coord, omitCenter: Boolean, color: Color) {
-        for (tile in range.getTilesInRange(center, omitCenter)) {
-            val entities = LevelArrays.getEntitiesAt(tile)
-            for (z in entities.size - 1 downTo 0) {
-                if (entities[z] hasIdentity Identity.Floor::class) {
-                    val shader = ColorOverlayShader(color)
+//        for (tile in range.getTilesInRange(center, omitCenter)) {
+//            val entities = LevelArrays.getEntitiesAt(tile)
+//            for (z in entities.size - 1 downTo 0) {
+//                if (entities[z] hasIdentity Identity.Floor::class) {
+//                    val shader = ColorOverlayShader(color)
                     // TODO ECS Shaders
 //                    entities[z].shaders.add(shader)
 //                    highlightedList.add(Pair(entities[z], shader))
-                }
-            }
-        }
+//                }
+//            }
+//        }
     }
 
     private fun highlightCharacters(range: HasRange, center: Coord, omitCenter: Boolean, color: Color) {
-        for (tile in range.getTilesInRange(center, omitCenter)) {
+//        for (tile in range.getTilesInRange(center, omitCenter)) {
             // TODO ECS Shaders
 //            val character = LevelArrays.getCharacterAt(tile)
 //            if (character != null) {
@@ -74,15 +72,15 @@ class Highlighting {
 //                character.shaders.add(shader)
 //                highlightedList.add(Pair(character, shader))
 //            }
-        }
+//        }
     }
 
-    fun highlightAttackArea(range: HasRange, center: Coord, requireCharacter: Boolean) {
-        if (center == previousAttackCoord)
-            return
+    fun highlightAttackArea(range: HasRange, center: Position, requireCharacter: Boolean) {
+//        if (center == previousAttackCoord)
+//            return
 
         deHighlight(true)
-        previousAttackCoord = center
+//        previousAttackCoord = center
 
         if ((requireCharacter && ChunkManager.getCharacterAt(center) == null) ||
             (requireCharacter && ChunkManager.getCharacterAt(center) == Player))
@@ -97,23 +95,23 @@ class Highlighting {
 //                selectionHighlightedList.add(Pair(character, shader))
 //            }
 
-            val entities = LevelArrays.getEntitiesAt(tile)
+//            val entities = LevelArrays.getEntitiesAt(tile)
             var floorHighlighted = false
-            for (z in entities.size - 1 downTo 0) {
-                if (entities[z] has DefensiveStats::class) {
+//            for (z in entities.size - 1 downTo 0) {
+//                if (entities[z] has DefensiveStats::class) {
                     // TODO ECS Shaders
 //                    val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, entities[z].texture)
 //                    entities[z].shaders.add(shader)
 //                    selectionHighlightedList.add(Pair(entities[z], shader))
-                }
-                if (!floorHighlighted && entities[z] hasIdentity Identity.Floor::class) {
+//                }
+//                if (!floorHighlighted && entities[z] hasIdentity Identity.Floor::class) {
                     // TODO ECS Shaders
 //                    val shader = ColorOverlayShader(ColorOverlayShader.DARK_RED)
 //                    entities[z].shaders.add(shader)
 //                    selectionHighlightedList.add(Pair(entities[z], shader))
 //                    floorHighlighted = true
-                }
-            }
+//                }
+//            }
         }
     }
 

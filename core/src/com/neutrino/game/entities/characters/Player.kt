@@ -6,6 +6,7 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.*
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
 import com.neutrino.game.entities.characters.callables.VisionChangedCallable
+import com.neutrino.game.entities.characters.callables.attack.LifestealCallable
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.textures.Textures
 
@@ -19,7 +20,6 @@ val Player = Entity()
         damageMin = 2f,
         damageMax = 4f,
         criticalChance = 0.05f,
-        criticalDamage = 2f,
         movementSpeed = 1.0,
         attackSpeed = 1.0,
         range = 1
@@ -36,8 +36,10 @@ val Player = Entity()
 
 private fun attachCallables(entity: Entity) {
     entity.attach(object : VisionChangedCallable() {
-        override fun call(entity: Entity) {
+        override fun call(entity: Entity, vararg data: Any?): Boolean {
             GlobalData.notifyObservers(GlobalDataType.PLAYERMOVED)
+            return true
         }
     })
+    entity.attach(LifestealCallable())
 }

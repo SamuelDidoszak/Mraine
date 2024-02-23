@@ -10,20 +10,20 @@ import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
-import com.neutrino.game.entities.characters.attributes.Ai
-import com.neutrino.game.entities.characters.attributes.CharacterTags
-import com.neutrino.game.entities.characters.attributes.DefensiveStats
-import com.neutrino.game.entities.characters.attributes.EnemyAi
+import com.neutrino.game.entities.characters.attributes.*
 import com.neutrino.game.entities.characters.callables.VisionChangedCallable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.hasIdentity
+import com.neutrino.game.util.x
+import com.neutrino.game.util.y
 import squidpony.squidmath.Coord
 
 /**
@@ -133,8 +133,7 @@ object Turn {
                     }
                     is Action.ATTACK -> {
                         val clickedCharacter = characterArray.get(action.x, action.y)!!
-                        // TODO ECS Attack
-//                        Player.primaryAttack.attack(Player, Coord.get(action.x, action.y))
+                        Player.get(OffensiveStats::class)!!.attack(Position(action.x, action.y, currentChunk))
                     }
                     is Action.INTERACTION -> {
                         // Entity position(x, y) can be derived from ai.entityTargetCoords
@@ -150,30 +149,17 @@ object Turn {
 //                                }
                             }
                             // TODO ECS ATTACK
-//                            is InteractionType.DESTROY -> {
-//                                val entity = (action.entity get com.neutrino.game.entities.map.attributes.Destructable::class)
-//                                if (Player.equipment.getEquipped(EquipmentType.RHAND) is HasProjectile)
-//                                    (Player.equipment.getEquipped(EquipmentType.RHAND) as HasProjectile)
-//                                        .shoot(Player.xPos, Player.yPos, Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second, Player.parent.parent)
-//
-//                                entity.entityHp -= character.damage
-//                                if (entity.entityHp.lessThanDelta(0f)) {
-//                                    val items = entity.destroy()
-//                                    if (items != null) {
-//                                        for (item in items) {
-//                                            currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
-//                                        }
-//                                    }
-//                                    mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
-//                                }
-//                            }
-//                            is InteractionType.OPEN -> {
+                            is InteractionType.DESTROY -> {
+                                action.entity.get(DefensiveStats::class)!!.getDamage(Player.get(OffensiveStats::class)!!)
+                                Player.get(Projectile::class)?.shoot(action.entity.get(Position::class)!!)
+                            }
+                            is InteractionType.OPEN -> {
 //                                currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].remove(action.entity)
 //                                for (item in (action.entity as Container).itemList) {
 //                                    currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
 //                                }
 //                                mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
-//                            }
+                            }
                             is InteractionType.DOOR -> {
                                 action.interaction.act()
                                 if (action.entity.get(MapParams::class)?.allowCharacterOnTop == true)
@@ -296,12 +282,7 @@ object Turn {
                     }
                     is Action.ATTACK -> {
                         // TODO ECS Attack
-//                        val attackedCharacter = characterArray.get(action.x, action.y)
-//                        if (attackedCharacter == null) {
-//                            println("No character there")
-//                        } else {
-//                            character.primaryAttack.attack(character, Coord.get(action.x, action.y))
-//                        }
+                        character.get(OffensiveStats::class)!!.attack(Position(action.x, action.y, currentChunk))
                     }
                     is Action.SKILL -> {
                         println(character.name + " used a skill")
@@ -367,7 +348,12 @@ object Turn {
 
         // TODO ECS Attack levelling
 //        Player.experience += character.experience
+        val chunk = character.get(Position::class)!!.chunk
+        chunk.characterMap[character.y][character.x] = null
+        chunk.characterArray.remove(character)
         characterArray.remove(character)
+        character.get(Texture::class)!!.textures.clear()
+
         // Drop its items
         // TODO ECS ITEM
 //        if (character is HasDrops) {

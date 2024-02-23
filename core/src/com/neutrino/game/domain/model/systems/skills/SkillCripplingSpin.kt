@@ -1,6 +1,5 @@
 package com.neutrino.game.domain.model.systems.skills
 
-import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
@@ -41,12 +40,12 @@ class SkillCripplingSpin(override val character: Character): Skill.ActiveSkill, 
     override fun use() {
         val attack = AroundAttack(mapOf(StatsEnum.DAMAGE to damage), range, rangeType)
         attack.attack(character)
-        for (coord in getTilesInRange(character.getPosition(), true)) {
-            val characterAt = ChunkManager.getCharacterAt(coord) ?: continue
+//        for (coord in getTilesInRange(character.getPosition(), true)) {
+//            val characterAt = ChunkManager.getCharacterAt(coord) ?: continue
             // TODO Events
 //            val event = CharacterEvent(characterAt, TimedEvent(slowDownTime, EventModifyStat(StatsEnum.MOVEMENT_SPEED, slowDownStrength, true)), Turn.turn)
 //            EventDispatcher.dispatchEvent(event)
-        }
-        causeCooldown()
+//        }
+//        causeCooldown()
     }
 }

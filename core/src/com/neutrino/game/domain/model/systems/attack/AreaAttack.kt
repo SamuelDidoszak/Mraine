@@ -1,11 +1,9 @@
 package com.neutrino.game.domain.model.systems.attack
 
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
-import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord
-
 import squidpony.squidmath.Coord
 import kotlin.properties.Delegates
 
@@ -36,13 +34,13 @@ class AreaAttack: Attack, HasRange {
 
     override fun attack(character: Character, target: Coord) {
         val attackData = getAttackData(character)
-        for (tile in getTilesInRange(target)) {
-            for (attackable in getAllAttackable(tile)) {
-                if (attackable is AttackableRequiresCoord)
-                    attackable.getDamage(attackData, tile)
-                else
-                    attackable.getDamage(attackData)
-            }
-        }
+//        for (tile in getTilesInRange(target)) {
+//            for (attackable in getAllAttackable(tile)) {
+//                if (attackable is AttackableRequiresCoord)
+//                    attackable.getDamage(attackData, tile)
+//                else
+//                    attackable.getDamage(attackData)
+//            }
+//        }
     }
 }

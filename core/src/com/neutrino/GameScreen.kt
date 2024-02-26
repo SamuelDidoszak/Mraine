@@ -17,11 +17,11 @@ import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.Turn
-import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.gameplay.main.Gameplay
+import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.util.Constants
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin

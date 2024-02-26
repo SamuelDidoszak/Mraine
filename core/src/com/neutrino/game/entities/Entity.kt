@@ -1,19 +1,29 @@
 package com.neutrino.game.entities
 
-import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 import kotlin.reflect.full.superclasses
 
-class Entity() {
+open class Entity() {
     constructor(attributes: List<Attribute>): this() {
         for (attribute in attributes)
             addAttribute(attribute)
     }
 
-    var id by Delegates.notNull<Int>()
+    private var idSet = false
+    protected var nameSet = false
 
-    val name: String
-        get() {return Entities.getName(id)}
+    var id: Int = 0
+        set(value) { if (!idSet) {
+            idSet = true
+            field = value
+        }}
+
+    open var name: String = ""
+        get() {return if (nameSet) field else Entities.getName(id)}
+        set(value) {
+            nameSet = true
+            field = value
+        }
 
 
     private val attributes: HashMap<KClass<out Attribute>, Attribute> = HashMap()

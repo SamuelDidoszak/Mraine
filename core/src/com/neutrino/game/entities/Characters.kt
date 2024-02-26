@@ -30,4 +30,13 @@ object Characters {
 //        }
 //        throw Exception()
     }
+
+    fun getName(id: Int): String {
+        try {
+            return characterNames[id]
+        } catch (_: Exception) {
+            println("Entity with id: $id ${if (id < characterNames.size) "name: ${characterNames[id]} " else ""}does not exist!")
+        }
+        throw Exception()
+    }
 }

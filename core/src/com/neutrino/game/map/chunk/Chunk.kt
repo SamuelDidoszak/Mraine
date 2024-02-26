@@ -4,9 +4,10 @@ import com.esotericsoftware.kryo.kryo5.Kryo
 import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.items.attributes.Item
+import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
+import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.map.generation.MapTag
 import com.neutrino.game.util.Constants
@@ -72,9 +73,11 @@ class Chunk(
         isMapSet = true
     }
 
-    private fun onEntityChanged(entity: Entity) {
+    private fun onEntityChanged(entity: Entity, added: Boolean) {
         if (!isMapSet)
             return
+        if (!added)
+            entity.get(Texture::class)?.textures?.clear()
     }
 
     private fun createCharacterMap(): List<MutableList<Entity?>> {
@@ -89,10 +92,10 @@ class Chunk(
     }
 
     /** Returns topmost item on the tile or null */
-    fun getTopItem(xPos: Int, yPos: Int): Item? {
+    fun getTopItem(xPos: Int, yPos: Int): Entity? {
         val tile = map[yPos][xPos]
-        if (tile[tile.size - 1] has Item::class)
-            return tile[tile.size - 1] get Item::class
+        if (tile[tile.size - 1] is Item)
+            return tile[tile.size - 1]
         else
             return null
     }

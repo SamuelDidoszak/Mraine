@@ -1,12 +1,13 @@
 package com.neutrino.game.map.generation
 
 import com.neutrino.game.util.EntityName
+import com.neutrino.game.utility.Probability
 
 class MapTagInterpretation(val tagList: List<MapTag>) {
     lateinit var tilesets: ArrayList<Tileset>
     lateinit var mapGenerators: ArrayList<Generator>
     lateinit var characterList: ArrayList<EntityName>
-    lateinit var itemList: ArrayList<Pair<Float, EntityName>>
+    lateinit var itemList: ArrayList<Probability<EntityName>>
     val tagParams: TagParams = TagParams(10f)
 
     init {
@@ -19,12 +20,12 @@ class MapTagInterpretation(val tagList: List<MapTag>) {
             tilesets = ArrayList<Tileset>().apply { addAll(tagList[0].tilesets) }
             mapGenerators = ArrayList<Generator>().apply { addAll(tagList[0].mapGenerators) }
             characterList = ArrayList<EntityName>().apply { addAll(tagList[0].characterList) }
-            itemList = ArrayList<Pair<Float, EntityName>>().apply { addAll(tagList[0].itemList) }
+            itemList = ArrayList<Probability<EntityName>>().apply { addAll(tagList[0].itemList) }
         } else {
             val tilesets: ArrayList<Tileset> = ArrayList()
             val mapGenerators: ArrayList<Generator> = ArrayList()
             val characterList: ArrayList<EntityName> = ArrayList()
-            val itemList: ArrayList<Pair<Float, EntityName>> = ArrayList()
+            val itemList: ArrayList<Probability<EntityName>> = ArrayList()
             for (tag in tagList) {
                 for (tileset in tag.tilesets) {
                     var canAdd = true

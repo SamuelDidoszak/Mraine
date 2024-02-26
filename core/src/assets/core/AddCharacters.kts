@@ -1,6 +1,6 @@
 
 import com.neutrino.game.entities.Characters
-import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.CharacterTags
 import com.neutrino.game.entities.characters.attributes.EnemyAi
 import com.neutrino.game.entities.characters.attributes.Faction
@@ -10,7 +10,7 @@ import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.textures.Textures
 
 Characters.add("Mouse") {
-    Entity()
+    Character()
         .addAttribute(Stats(
             hpMax = 13f,
             strength = 2f,
@@ -30,7 +30,7 @@ Characters.add("Mouse") {
         .addAttribute(CharacterTags())
 }
 Characters.add("Slime") {
-    Entity()
+    Character()
         .addAttribute(Stats(
             hpMax = 25f,
             strength = 3f,

@@ -10,7 +10,7 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
-import com.neutrino.game.entities.items.attributes.Item
+import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.HasRange
@@ -148,7 +148,7 @@ class Highlighting {
         return false
 //        if (entity != null && entity == outlinedOnHover)
 //            return true
-        if (entity != null && entity has Item::class)
+        if (entity != null && entity !is Item)
             return false
 
         outlinedOnHover?.shaders?.remove(shaderOnHover)

@@ -10,6 +10,7 @@ class Scripts {
         scriptEngine.evaluate(Gdx.files.internal("core/AddTextures.kts"))
         scriptEngine.evaluate(Gdx.files.internal("core/AddEntities.kts"))
         scriptEngine.evaluate(Gdx.files.internal("core/AddCharacters.kts"))
+        scriptEngine.evaluate(Gdx.files.internal("core/AddItems.kts"))
         scriptEngine.evaluate(Gdx.files.internal("core/AddTilesets.kts"))
         scriptEngine.evaluate(Gdx.files.internal("core/AddGenerators.kts"))
         scriptEngine.evaluate(Gdx.files.internal("core/AddGenerationRequirements.kts"))

@@ -10,7 +10,7 @@ import com.neutrino.game.entities.characters.callables.attack.LifestealCallable
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.textures.Textures
 
-val Player = Entity()
+val Player = Character()
     .addAttribute(
         Stats(
         strength = 1f,
@@ -31,8 +31,12 @@ val Player = Entity()
         textures.add(Textures.get("player_idle"))
     })
     .addAttribute(CharacterTags())
-    .also { it.id = 0 }
-    .also { attachCallables(it) }
+    .addAttribute(Inventory())
+    .also { it.id = 21370 }
+    .also {
+        attachCallables(it)
+        it.name = "Player"
+    }
 
 private fun attachCallables(entity: Entity) {
     entity.attach(object : VisionChangedCallable() {

@@ -1,83 +1,80 @@
 items.png
-	size: 128, 128
-	repeat: none
+	size: 256, 32
 basicFireWand
-	bounds: 35, 35, 16, 16
+	bounds: 210, 21, 9, 9
 basicPoisonWand
-	bounds: 103, 86, 16, 16
+	bounds: 115, 10, 7, 7
 bigBow
-	bounds: 52, 103, 16, 16
+	bounds: 2, 3, 13, 13
 book
-	bounds: 69, 86, 16, 16
+	bounds: 49, 15, 11, 15
 brokenSword
-	bounds: 69, 52, 16, 16
+	bounds: 105, 10, 8, 7
 cuffedLinenPants
-	bounds: 35, 18, 16, 16
+	bounds: 232, 21, 8, 9
 curvedBow
-	bounds: 18, 18, 16, 16
+	bounds: 84, 3, 6, 11
 dagger
-	bounds: 86, 69, 16, 16
+	bounds: 124, 11, 7, 7
 extinguishedFireWand
-	bounds: 1, 86, 16, 16
+	bounds: 124, 2, 7, 7
 fireStaff
-	bounds: 1, 18, 16, 16
+	bounds: 19, 17, 13, 13
 gold1
-	bounds: 103, 69, 16, 16
+	bounds: 149, 6, 4, 4
 gold2
-	bounds: 52, 52, 16, 16
+	bounds: 242, 23, 10, 7
 gold3
-	bounds: 1, 52, 16, 16
+	bounds: 62, 5, 11, 11
 gold4
-	bounds: 52, 35, 16, 16
+	bounds: 107, 19, 11, 11
 gold5
-	bounds: 52, 69, 16, 16
+	bounds: 133, 2, 6, 4
 gold6
-	bounds: 18, 103, 16, 16
+	bounds: 92, 12, 11, 6
 gold7
-	bounds: 69, 69, 16, 16
+	bounds: 159, 23, 12, 7
 gold8
-	bounds: 1, 35, 16, 16
+	bounds: 47, 2, 13, 11
 knife
-	bounds: 35, 86, 16, 16
+	bounds: 62, 18, 12, 12
 leatherBoots
-	bounds: 18, 35, 16, 16
+	bounds: 76, 22, 15, 8
 leatherCap
-	bounds: 18, 52, 16, 16
+	bounds: 186, 22, 10, 8
 leatherJacket
-	bounds: 18, 69, 16, 16
+	bounds: 120, 20, 11, 10
 leatherSocks
-	bounds: 52, 1, 16, 16
+	bounds: 76, 16, 13, 4
 linenShirt
-	bounds: 103, 103, 16, 16
+	bounds: 133, 21, 11, 9
 meat
-	bounds: 35, 1, 16, 16
+	bounds: 93, 20, 12, 10
 pocketKnife
-	bounds: 52, 86, 16, 16
+	bounds: 141, 3, 6, 7
 reinforcedLeatherBoots
-	bounds: 35, 69, 16, 16
+	bounds: 2, 18, 15, 12
 reinforcedLeatherCap
-	bounds: 52, 18, 16, 16
+	bounds: 221, 21, 9, 9
 rippedPants
-	bounds: 18, 86, 16, 16
+	bounds: 140, 12, 7, 7
 rockWand
-	bounds: 69, 103, 16, 16
+	bounds: 149, 12, 7, 7
 scrollOfDefence
-	bounds: 1, 69, 16, 16
+	bounds: 17, 2, 13, 13
 scrollOfFireball
-	bounds: 1, 103, 16, 16
+	bounds: 32, 2, 13, 13
 scrollOfTeleportation
-	bounds: 35, 52, 16, 16
+	bounds: 34, 17, 13, 13
 smallBackpack
-	bounds: 35, 103, 16, 16
+	bounds: 92, 2, 7, 8
 smallBag
-	bounds: 18, 1, 16, 16
+	bounds: 198, 20, 10, 10
 smallBow
-	bounds: 69, 35, 16, 16
+	bounds: 133, 8, 5, 11
 smallHealingPotion
-	bounds: 86, 103, 16, 16
-sword
-	bounds: 86, 86, 16, 16
+	bounds: 75, 2, 7, 12
 tornShirt
-	bounds: 1, 1, 16, 16
+	bounds: 146, 21, 11, 9
 woodenFlipFlops
-	bounds: 86, 52, 16, 16
+	bounds: 173, 22, 11, 8

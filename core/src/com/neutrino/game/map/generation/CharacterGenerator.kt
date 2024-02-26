@@ -92,7 +92,7 @@ class CharacterGenerator(val params: GenerationParams) {
         character.addAttribute(DrawPosition())
         character.addAttribute(Position(coord.getX(), coord.getY(), params.chunk))
         character.addAttribute(com.neutrino.game.entities.map.attributes.Turn(currentTurn))
-        // TODO ECS Items
+        // TODO ECS Characters
 //        character.randomize(params.rng)
         return character
     }

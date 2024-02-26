@@ -3,6 +3,7 @@ package com.neutrino.game.map.generation
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.map.generation.util.GenerationParams
+import com.neutrino.game.utility.Probability
 import com.neutrino.generation.Tilesets
 import kotlin.math.abs
 import kotlin.math.max
@@ -15,8 +16,10 @@ class GenerateLevel() {
     fun generate(chunkCoords: ChunkCoords): Chunk {
         val chunk: Chunk = Chunk(chunkCoords)
         chunk.tagList = tagList
+        val params = getParams(chunk)
 
-        generateMap(chunk)
+        generateMap(chunk, params)
+        ItemGenerator(chunk, params).generate()
         chunk.afterMapGeneration()
         val generateCharacters = CharacterGenerator(getParams(chunk))
         chunk.characterArray = generateCharacters.generate()
@@ -25,8 +28,7 @@ class GenerateLevel() {
         return chunk
     }
 
-    private fun generateMap(chunk: Chunk) {
-        val params = getParams(chunk)
+    private fun generateMap(chunk: Chunk, params: GenerationParams) {
         for (generator in params.interpretedTags.mapGenerators) {
             generator.generate(params)
         }
@@ -35,7 +37,7 @@ class GenerateLevel() {
     private fun getParams(chunk: Chunk): GenerationParams {
         return GenerationParams(
             MapTagInterpretation(
-                tagGenerators.map { it.invoke() }.plus(tagList)
+                tagGenerators.map { it.invoke() }.plus(chunk.tagList)
             ),
             chunk.randomGenerator,
             chunk,
@@ -47,12 +49,14 @@ class GenerateLevel() {
         return MapTag(
             listOf(Tilesets.get("Dungeon")),
             listOf(Generators.get("Dungeon")),
-            listOf(),
-            listOf(),
-            TagParams(10f),
+            listOf("Mouse", "Slime"),
+            listOf(40f to "Gold", 15f to "Dagger").toProbabilityList(),
+            TagParams(100f),
             true
         )
     }
+
+    private fun List<Pair<Float, String>>.toProbabilityList() = map { Probability(it) }
 
     private fun getDifficultyFromDistance(xIndex: Int, yIndex: Int): Int {
         val distance = max(abs(xIndex), abs(yIndex))

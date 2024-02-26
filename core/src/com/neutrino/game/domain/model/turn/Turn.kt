@@ -132,7 +132,6 @@ object Turn {
                             )
                     }
                     is Action.ATTACK -> {
-                        val clickedCharacter = characterArray.get(action.x, action.y)!!
                         Player.get(OffensiveStats::class)!!.attack(Position(action.x, action.y, currentChunk))
                     }
                     is Action.INTERACTION -> {
@@ -140,15 +139,14 @@ object Turn {
                         when (action.interaction) {
                             is InteractionType.ITEM -> {
                                 // TODO ECS ITEM
-//                                val item = (action.entity as ItemEntity).item
-//                                if (Player.addToInventory(item)) {
+                                if (Player.get(Inventory::class)!!.add(action.entity)) {
 //                                    ActorVisuals.showPickedUpItem(Player, item)
-//                                    currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].removeLast()
-//                                } else {
-//                                    println("Inventory is full!")
-//                                }
+                                    val coords = Player.getSuper(Ai::class)!!.targetCoords
+                                    currentChunk.map[coords!!.second][coords.first].removeLast()
+                                } else println("Inventory is full")
+
+                                Player.get(Inventory::class)!!.printAll()
                             }
-                            // TODO ECS ATTACK
                             is InteractionType.DESTROY -> {
                                 action.entity.get(DefensiveStats::class)!!.getDamage(Player.get(OffensiveStats::class)!!)
                                 Player.get(Projectile::class)?.shoot(action.entity.get(Position::class)!!)
@@ -281,7 +279,6 @@ object Turn {
                         character.getSuper(Ai::class)!!.updateFov()
                     }
                     is Action.ATTACK -> {
-                        // TODO ECS Attack
                         character.get(OffensiveStats::class)!!.attack(Position(action.x, action.y, currentChunk))
                     }
                     is Action.SKILL -> {

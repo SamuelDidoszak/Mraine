@@ -1,11 +1,11 @@
 package com.neutrino.game.entities.shared.attributes
 
-import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.graphics.drawing.AnimationData
 import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.TextureSprite
+import com.neutrino.game.map.chunk.ChunkManager
 import kotlin.random.Random
 
 class Texture(
@@ -30,7 +30,7 @@ class Texture(
     }
 
     fun finalize() {
-        textures.removeIf { true }
+        textures.clear()
     }
 
     inner class TextureList: ArrayList<TextureSprite>(1) {

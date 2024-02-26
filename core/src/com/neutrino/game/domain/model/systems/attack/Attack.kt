@@ -25,11 +25,11 @@ abstract class Attack(
     abstract fun attack(character: Character, target: Coord)
 
     fun getTopmostAttackable(target: Coord): Attackable? {
-        // TODO ECS Attack
+        // TODO OLD Attack
 //        if (LevelArrays.getCharacterAt(target) is Attackable)
 //            return LevelArrays.getCharacterAt(target) as Attackable
 
-        // TODO ECS Attack
+        // TODO OLD Attack
 //        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {
 //            if (LevelArrays.getEntitiesAt(target)[z] is Attackable)
 //                return LevelArrays.getEntitiesAt(target)[z] as Attackable
@@ -39,11 +39,11 @@ abstract class Attack(
 
     fun getAllAttackable(target: Coord): List<Attackable> {
         val attackableList: ArrayList<Attackable> = ArrayList()
-        // TODO ECS Attack
+        // TODO OLD Attack
 //        if (LevelArrays.getCharacterAt(target) is Attackable)
 //            attackableList.add(LevelArrays.getCharacterAt(target) as Attackable)
 
-        // TODO ECS Attack
+        // TODO OLD Attack
 //        for (z in LevelArrays.getEntitiesAt(target).size - 1 downTo 0) {
 //            if (LevelArrays.getEntitiesAt(target)[z] is Attackable)
 //                attackableList.add(LevelArrays.getEntitiesAt(target)[z] as Attackable)

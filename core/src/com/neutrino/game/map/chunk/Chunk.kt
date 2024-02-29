@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.kryo5.io.Output
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
@@ -78,6 +79,11 @@ class Chunk(
             return
         if (!added)
             entity.get(Texture::class)?.textures?.clear()
+        else {
+            println("Setting textures")
+            println("Has drawer? ${entity.get(DrawerAttribute::class)}")
+            entity.get(Texture::class)?.setTextures(entity.get(Position::class)!!, Random)
+        }
     }
 
     private fun createCharacterMap(): List<MutableList<Entity?>> {

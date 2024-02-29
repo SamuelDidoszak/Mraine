@@ -2,14 +2,12 @@ package com.neutrino.game.UI.UIelements
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
-import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.utility.Inventory
 import ktx.scene2d.container
@@ -76,12 +74,12 @@ class Shop(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Group
         if (inventoryRows > rows)
             addInventoryPane(inventory)
 
-        (shopInventoryPane.actor as Table).children.forEach {
-            (it as Container<*>).actor = null
-            val cellNumber = it.name.toInt()
-            if (cellNumber < inventory.itemList.size)
-                it.actor = EqActor(inventory.itemList[cellNumber].item)
-        }
+//        (shopInventoryPane.actor as Table).children.forEach {
+//            (it as Container<*>).actor = null
+//            val cellNumber = it.name.toInt()
+//            if (cellNumber < inventory.itemList.size)
+//                it.actor = EqActor(inventory.itemList[cellNumber].item)
+//        }
     }
 
     private fun getCellDrawable(cellNumber: Int): Drawable {

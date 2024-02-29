@@ -1,108 +1,108 @@
 characters.png
-	size: 512, 64
+	size: 256, 128
 Slime_attack#1
-	bounds: 169, 2, 23, 15
+	bounds: 184, 46, 24, 16
 Slime_attack#2
-	bounds: 338, 42, 29, 20
+	bounds: 60, 56, 30, 21
 Slime_attack#3
-	bounds: 369, 45, 32, 17
+	bounds: 63, 79, 33, 18
 Slime_attack#4
-	bounds: 403, 47, 32, 15
+	bounds: 124, 82, 33, 16
 Slime_attack#5
-	bounds: 437, 47, 30, 15
+	bounds: 159, 82, 31, 16
 Slime_attack#6
-	bounds: 142, 19, 26, 15
+	bounds: 158, 64, 27, 16
 Slime_death#1
-	bounds: 469, 46, 28, 16
+	bounds: 92, 56, 29, 17
 Slime_death#2
-	bounds: 338, 29, 30, 11
+	bounds: 123, 56, 31, 12
 Slime_death#3
-	bounds: 106, 2, 31, 9
+	bounds: 124, 70, 32, 10
 Slime_death#4
-	bounds: 73, 2, 31, 7
+	bounds: 88, 30, 32, 8
 Slime_idle#1
-	bounds: 260, 17, 22, 18
+	bounds: 156, 25, 23, 19
 Slime_idle#2
-	bounds: 284, 17, 22, 18
+	bounds: 192, 78, 23, 19
 Slime_idle#3
-	bounds: 308, 17, 22, 17
+	bounds: 210, 58, 23, 18
 Slime_idle#4
-	bounds: 332, 9, 22, 18
+	bounds: 217, 78, 23, 19
 Slime_walk#1
-	bounds: 370, 30, 29, 13
+	bounds: 88, 40, 30, 14
 Slime_walk#2
-	bounds: 142, 2, 25, 15
+	bounds: 156, 46, 26, 16
 Slime_walk#8
-	bounds: 142, 2, 25, 15
+	bounds: 156, 46, 26, 16
 Slime_walk#3
-	bounds: 416, 26, 18, 19
+	bounds: 172, 3, 19, 20
 Slime_walk#7
-	bounds: 416, 26, 18, 19
+	bounds: 172, 3, 19, 20
 Slime_walk#4
-	bounds: 125, 13, 15, 21
+	bounds: 231, 8, 16, 22
 Slime_walk#5
-	bounds: 125, 13, 15, 21
+	bounds: 231, 8, 16, 22
 Slime_walk#6
-	bounds: 125, 13, 15, 21
+	bounds: 231, 8, 16, 22
 mouse_attack#1
-	bounds: 61, 36, 26, 26
+	bounds: 31, 69, 27, 27
 mouse_attack#2
-	bounds: 258, 37, 25, 25
+	bounds: 151, 100, 26, 26
 mouse_attack#3
-	bounds: 2, 35, 29, 27
+	bounds: 2, 98, 30, 28
 mouse_attack#4
-	bounds: 2, 6, 26, 27
+	bounds: 2, 68, 27, 28
 mouse_death#1
-	bounds: 89, 36, 26, 26
+	bounds: 63, 99, 27, 27
 mouse_idle#1
-	bounds: 89, 36, 26, 26
+	bounds: 63, 99, 27, 27
 mouse_death#2
-	bounds: 312, 36, 24, 26
+	bounds: 207, 99, 25, 27
 mouse_death#3
-	bounds: 73, 11, 25, 23
+	bounds: 60, 30, 26, 24
 mouse_death#4
-	bounds: 100, 13, 23, 21
+	bounds: 98, 75, 24, 22
 mouse_idle#2
-	bounds: 117, 36, 26, 26
+	bounds: 2, 9, 27, 27
 mouse_idle#3
-	bounds: 145, 36, 26, 26
+	bounds: 31, 40, 27, 27
 mouse_idle#4
-	bounds: 33, 35, 26, 27
+	bounds: 34, 98, 27, 28
 mouse_idle#5
-	bounds: 30, 6, 26, 27
+	bounds: 2, 38, 27, 28
 mouse_walk#1
-	bounds: 173, 36, 26, 26
+	bounds: 92, 99, 27, 27
 mouse_walk#2
-	bounds: 201, 37, 27, 25
+	bounds: 121, 100, 28, 26
 mouse_walk#3
-	bounds: 230, 36, 26, 26
+	bounds: 31, 11, 27, 27
 mouse_walk#4
-	bounds: 285, 37, 25, 25
+	bounds: 179, 100, 26, 26
 player_attack#1
-	bounds: 356, 4, 13, 23
+	bounds: 199, 20, 14, 24
 player_attack#2
-	bounds: 453, 22, 13, 23
+	bounds: 231, 32, 14, 24
 player_attack#3
-	bounds: 224, 10, 19, 24
+	bounds: 234, 101, 20, 25
 player_attack#4
-	bounds: 245, 10, 13, 24
+	bounds: 108, 3, 14, 25
 player_death#1
-	bounds: 468, 21, 13, 23
+	bounds: 215, 5, 14, 24
 player_death#2
-	bounds: 483, 24, 13, 20
+	bounds: 156, 2, 14, 21
 player_death#3
-	bounds: 436, 27, 15, 18
+	bounds: 181, 25, 16, 19
 player_death#4
-	bounds: 170, 19, 22, 8
+	bounds: 120, 45, 23, 9
 player_idle#1
-	bounds: 371, 4, 13, 24
+	bounds: 124, 18, 14, 25
 player_idle#2
-	bounds: 58, 2, 13, 25
+	bounds: 60, 2, 14, 26
 player_walk#1
-	bounds: 386, 4, 13, 24
+	bounds: 140, 18, 14, 25
 player_walk#2
-	bounds: 194, 2, 13, 25
+	bounds: 76, 2, 14, 26
 player_walk#3
-	bounds: 401, 19, 13, 24
+	bounds: 215, 31, 14, 25
 player_walk#4
-	bounds: 209, 2, 13, 25
+	bounds: 92, 2, 14, 26

@@ -6,24 +6,39 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.items.attributes.Amount
+import com.neutrino.game.entities.items.attributes.GoldValue
+import com.neutrino.game.entities.shared.attributes.DrawerAttribute
+import com.neutrino.game.graphics.drawing.SingleEntityDrawer
 import com.neutrino.game.util.Constants
-import com.neutrino.game.domain.model.items.Item
 
-class EqActor(val item: Item): Group(), PickupActor {
+class EqActor(val entity: Entity): Group(), PickupActor {
     // needed for resize
-    override val ogWidth = item.texture.regionWidth * 4f
-    override val ogHeight = item.texture.regionWidth * 4f
+    override val ogWidth = 64f
+    override val ogHeight = 64f
     private var actorWidth: Float = ogWidth
     private var actorHeight: Float = ogHeight
-
     private lateinit var numberText: TextraLabel
 
+    var amount: Int
+        get() = entity.get(Amount::class)!!.amount
+        set(value) { entity.get(Amount::class)!!.amount = value }
+
+    val maxStack: Int
+        get() = entity.get(Amount::class)!!.maxStack
+
     init {
-        if (item.goldValueOg != 0 && item.goldValueOg != item.goldValue) {
+        addActor(SingleEntityDrawer(entity, false))
+        children[0].setSize(64f, 64f)
+        children[0].setPosition(8f, 8f)
+
+        val comparedValue = entity.get(GoldValue::class)?.compareToOriginal()
+        if (comparedValue != null && comparedValue != 0) {
             val qualityImage =
-            if (item.goldValue > item.goldValueOg) {
+            if (comparedValue > 0)
                 Image(Constants.DefaultIconTexture.findRegion("itemBetter2"))
-            } else
+            else
                 Image(Constants.DefaultIconTexture.findRegion("itemWorse"))
             qualityImage.name = "itemQuality"
             addActor(qualityImage)
@@ -31,8 +46,8 @@ class EqActor(val item: Item): Group(), PickupActor {
             qualityImage.y += 4
         }
 
-        if (item.amount != null) {
-            numberText = TextraLabel("[#121212ff][@Cozette][%600][*]" + item.amount.toString(), KnownFonts.getStandardFamily())
+        if (entity.get(Amount::class)!!.maxStack > 1) {
+            numberText = TextraLabel("[#121212ff][@Cozette][%600][*]$amount", KnownFonts.getStandardFamily())
             numberText.name = "amount"
             numberText.setBounds(0f, 0f, 72f, 24f)
             numberText.align = Align.right
@@ -40,14 +55,13 @@ class EqActor(val item: Item): Group(), PickupActor {
             numberText.x += 5
             numberText.y += 4
         }
-        name = item.name
+        name = entity.name
     }
     override fun draw(batch: Batch?, parentAlpha: Float) {
         // required for fading
         val color: com.badlogic.gdx.graphics.Color = color
         batch?.setColor(color.r, color.g, color.b, color.a * parentAlpha)
 
-        batch?.draw(item.texture, this.x + 8, this.y + 8, actorWidth, actorHeight)
         super.draw(batch, parentAlpha)
 
         // required for fading
@@ -62,8 +76,13 @@ class EqActor(val item: Item): Group(), PickupActor {
     }
 
     fun refreshAmount() {
-        numberText.setText("[#121212ff][@Cozette][%600][*]" + item.amount.toString())
+        numberText.setText("[#121212ff][@Cozette][%600][*]" + entity.get(Amount::class)!!.amount.toString())
         numberText.setBounds(0f, 0f, 72f, 24f)
         numberText.align = Align.right
+    }
+
+    override fun remove(): Boolean {
+        entity.removeAttribute(DrawerAttribute::class)
+        return super.remove()
     }
 }

@@ -1,6 +1,5 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.domain.model.items.utility.SortType
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
@@ -10,10 +9,12 @@ import com.neutrino.game.entities.items.attributes.GoldValue
 import com.neutrino.game.util.lessThanDelta
 
 class Inventory(
-    var size: Int = 30,
+    var maxSize: Int = 30,
     items: List<Entity>? = null
 ): Attribute() {
     private val items: ArrayList<InventoryElement> = ArrayList()
+    val size: Int
+        get() = items.size
     init {
         if (items != null) {
             for (item in items) {
@@ -28,6 +29,14 @@ class Inventory(
 
     var sortType: SortType = SortType.SORT_DATE
     var isSortAscending: Boolean = false
+
+    fun get(i: Int): Entity {
+        return items[i].item
+    }
+
+    fun getElement(entity: Entity): InventoryElement? {
+        return items.find { it.item == entity }
+    }
 
     fun get(element: InventoryElement): InventoryElement? {
         return items.find { it == element }
@@ -53,14 +62,21 @@ class Inventory(
         return items.removeAll { it.item == item }
     }
 
+    fun add(inventoryElement: InventoryElement): Boolean {
+        if (items.size == maxSize)
+            return false
+        items.add(inventoryElement)
+        return true
+    }
+
     fun add(item: Entity): Boolean {
         if (addToStack(item))
             return true
-        if (items.size == size)
+        if (items.size == maxSize)
             return false
 
         var customItemPosition = if (items.isEmpty()) 0 else items.last().customPosition + 1
-        if (customItemPosition == size) {
+        if (customItemPosition == maxSize) {
             for (i in (0 .. items.size - 2).reversed()) {
                 customItemPosition = items[i].customPosition + 1
                 if (items[i + 1].customPosition != customItemPosition)
@@ -91,6 +107,7 @@ class Inventory(
     private fun addToStack(item: Entity): Boolean {
         val amount = item.get(Amount::class) ?: return false
         for (stackableItem in items) {
+            // TODO ECS ITEMS Compare if all of entity attributes are equal
             if (stackableItem.item.id != item.id)
                 continue
             val stackableItemAmount = stackableItem.item.get(Amount::class)!!

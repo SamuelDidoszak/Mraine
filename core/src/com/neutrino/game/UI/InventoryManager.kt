@@ -9,16 +9,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.TimeUtils
-import com.neutrino.game.UI.popups.EquipmentComparisonPopup
 import com.neutrino.game.UI.popups.ItemContextPopup
-import com.neutrino.game.UI.popups.ItemDetailsPopup
 import com.neutrino.game.UI.popups.SkillContextPopup
 import com.neutrino.game.UI.utility.*
-import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.items.EquipmentItem
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.items.utility.EqElement
-import com.neutrino.game.domain.model.items.utility.Inventory
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.Items
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Inventory
+import com.neutrino.game.entities.characters.attributes.util.InventoryElement
+import com.neutrino.game.entities.items.attributes.Amount
+import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.util.isIn
 import kotlin.math.ceil
 
@@ -35,7 +36,7 @@ class InventoryManager(private val uiStage: UiStage) {
     }
     
     private var originalContainer: Container<*>? = null
-    private var originalInventory: Inventory? = null
+    private var originalInventory: com.neutrino.game.entities.characters.attributes.Inventory? = null
     // possibly change to EqActor
     var clickedItem: Actor? = null
     private var dragItem: Boolean? = null
@@ -47,7 +48,7 @@ class InventoryManager(private val uiStage: UiStage) {
     // required for drag and drop
     private var timeClicked: Long = 0
 
-    private var displayedItem: Item? = null
+    private var displayedItem: Entity? = null
     private var detailsPopup: Actor? = null
     private var contextPopup: Actor? = null
     private val itemContextPopup = ItemContextPopup(uiStage.usedItemList, { item: Item -> uiStage.useItemOn = item})  {
@@ -71,7 +72,7 @@ class InventoryManager(private val uiStage: UiStage) {
         when (currentElement?.pane) {
             null -> return -1
             uiStage.inventory -> {
-                originalInventory = Player.inventory
+                originalInventory = Player.get(com.neutrino.game.entities.characters.attributes.Inventory::class)
             }
             uiStage.skills.skillTable -> {
 
@@ -116,7 +117,7 @@ class InventoryManager(private val uiStage: UiStage) {
             if (clickedItem !is EqActor)
                 return -1
 
-            if ((clickedItem as EqActor).item.amount != null) {
+            if ((clickedItem as EqActor).maxStack != 1) {
                 var dragStrength = (previousDragPosition - screenY)
 
                 // threshold
@@ -143,7 +144,7 @@ class InventoryManager(private val uiStage: UiStage) {
                     dragStrength = 0
                 }
 
-                val amount = originalStackItem!!.item.amount!! + (clickedItem as EqActor).item.amount!!
+                val amount = originalStackItem!!.amount + (clickedItem as EqActor).amount
 
                 var stackAmount = ((dragStrength / -125f) * amount).toInt()
                 if (stackAmount < 1)
@@ -181,7 +182,10 @@ class InventoryManager(private val uiStage: UiStage) {
 
             if (draggingStacking) {
                 if (originalContainer?.actor == null && clickedItem is EqActor) {
-                    originalContainer?.actor = originalStackItem
+                    if (originalStackItem?.amount == 0)
+                        originalContainer?.actor = null
+                    else
+                        originalContainer?.actor = originalStackItem
                     originalStackItem?.setScale(1f, 1f)
                 }
                 if (originalContainer == null && !itemFromHud)
@@ -230,8 +234,9 @@ class InventoryManager(private val uiStage: UiStage) {
                     val hoveredActor: Actor? = getInventoryCell(coord.x, coord.y, hoveredInv.pane)?.actor
                     if (hoveredActor != null) {
                         when (hoveredInv.type) {
-                            ManagerType.INVENTORY, ManagerType.EQUIPMENT ->
-                                contextPopup = itemContextPopup.createContextMenu((hoveredActor as EqActor).item, coord.x, coord.y)
+                            ManagerType.INVENTORY, ManagerType.EQUIPMENT -> {}
+                                // TODO ECS ITEMS Create popups
+//                                contextPopup = itemContextPopup.createContextMenu((hoveredActor as EqActor).entity, coord.x, coord.y)
                             ManagerType.SKILLS -> {
                                 val skill = (hoveredActor as SkillActor).skill
                                 contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
@@ -267,24 +272,25 @@ class InventoryManager(private val uiStage: UiStage) {
             hoveredItem = getInventoryCell(coord.x, coord.y, hoveredInv.pane)?.actor
             when (hoveredInv.type) {
                 ManagerType.INVENTORY, ManagerType.EQUIPMENT -> {
-                    if (hoveredItem != null && (hoveredItem as EqActor).item != displayedItem) {
+                    if (hoveredItem != null && (hoveredItem as EqActor).entity != displayedItem) {
                         if (detailsPopup != null)
                             uiStage.actors.removeValue(detailsPopup, true)
 
-                        val group = Group()
-                        val popup =
-                            if (hoveredItem.item is EquipmentItem)
-                                EquipmentComparisonPopup(hoveredItem.item as EquipmentItem)
-                            else
-                                ItemDetailsPopup(hoveredItem.item)
-                        group.setSize(popup.width, popup.height)
-                        group.setScale(uiStage.currentScale)
-                        group.addActor(popup)
-                        detailsPopup = group
-                        detailsPopup!!.setPosition(coord.x, coord.y)
-                        displayedItem = hoveredItem.item
-                        uiStage.addActor(detailsPopup)
-                        detailsPopup!!.setPosition(coord.x, coord.y)
+                        // TODO ECS ITEMS Create popups
+//                        val group = Group()
+//                        val popup =
+//                            if (hoveredItem.entity has com.neutrino.game.entities.items.attributes.EquipmentItem::class)
+//                                EquipmentComparisonPopup(hoveredItem.entity)
+//                            else
+//                                ItemDetailsPopup(hoveredItem.entity)
+//                        group.setSize(popup.width, popup.height)
+//                        group.setScale(uiStage.currentScale)
+//                        group.addActor(popup)
+//                        detailsPopup = group
+//                        detailsPopup!!.setPosition(coord.x, coord.y)
+//                        displayedItem = hoveredItem.entity
+//                        uiStage.addActor(detailsPopup)
+//                        detailsPopup!!.setPosition(coord.x, coord.y)
                     }
                 }
                 ManagerType.SKILLS -> {}
@@ -294,13 +300,14 @@ class InventoryManager(private val uiStage: UiStage) {
         when (currentElement?.type) {
             ManagerType.INVENTORY -> {
                 // delete or move the popup
-                if ((hoveredInv == null || hoveredItem == null)) {
-                    displayedItem = null
-                    uiStage.actors.removeValue(detailsPopup, true)
-                    detailsPopup = null
-                } else {
-                    detailsPopup!!.setPosition(coord.x, coord.y)
-                }
+                // TODO ECS ITEMS POPUP
+//                if ((hoveredInv == null || hoveredItem == null)) {
+//                    displayedItem = null
+//                    uiStage.actors.removeValue(detailsPopup, true)
+//                    detailsPopup = null
+//                } else {
+//                    detailsPopup!!.setPosition(coord.x, coord.y)
+//                }
             }
             ManagerType.SKILLS -> {
                 if (clickedItem == null)
@@ -328,9 +335,11 @@ class InventoryManager(private val uiStage: UiStage) {
 
     private fun createStack() {
         val itemPosition = Vector2(clickedItem!!.x, clickedItem!!.y)
-        val item = (clickedItem as EqActor).item.clone() as Item
+        // TODO ECS ITEMS Clone item for a new stack
+//        val item = (clickedItem as EqActor).entity.clone() as Item
+        val item = Items.new((clickedItem as EqActor).entity.id)
         originalStackItem = clickedItem as EqActor
-        item.amount = 0
+        item.get(Amount::class)!!.amount = 0
         clickedItem = EqActor(item)
         uiStage.addActor(clickedItem)
         clickedItem!!.setPosition(itemPosition.x, itemPosition.y)
@@ -346,12 +355,12 @@ class InventoryManager(private val uiStage: UiStage) {
         if (originalStackItem == null)
             return
 
-        val totalAmount = (clickedItem as EqActor).item.amount!! + originalStackItem!!.item.amount!!
-        (clickedItem as EqActor).item.amount = value
-        originalStackItem!!.item.amount = totalAmount - value
+        val totalAmount = (clickedItem as EqActor).amount + originalStackItem!!.amount
+        (clickedItem as EqActor).amount = value
+        originalStackItem!!.amount = totalAmount - value
         (clickedItem as EqActor).refreshAmount()
         originalStackItem!!.refreshAmount()
-        if (originalStackItem!!.item.amount == 0)
+        if (originalStackItem!!.amount == 0)
             originalContainer!!.actor = null
     }
 
@@ -363,20 +372,20 @@ class InventoryManager(private val uiStage: UiStage) {
     private fun changeStackAmount(value: Int) {
         if (originalStackItem == null)
             return
-        (clickedItem as EqActor).item.amount = (clickedItem as EqActor).item.amount!!.plus(value)
-        originalStackItem!!.item.amount = originalStackItem!!.item.amount!!.minus(value)
+        (clickedItem as EqActor).amount = (clickedItem as EqActor).amount.plus(value)
+        originalStackItem!!.amount = originalStackItem!!.amount.minus(value)
         (clickedItem as EqActor).refreshAmount()
         originalStackItem!!.refreshAmount()
-        if (originalStackItem!!.item.amount == 0)
+        if (originalStackItem!!.amount == 0)
             originalContainer!!.actor = null
     }
 
     private fun pickUpItem() {
         // Create a new stack of the item
-        if (dragItem == true && clickedItem is EqActor && (clickedItem as EqActor).item.amount != null) {
+        if (dragItem == true && clickedItem is EqActor && (clickedItem as EqActor).maxStack != 1) {
             originalContainer = clickedItem!!.parent as Container<*>
             createStack()
-            setStackAmount(ceil(originalStackItem!!.item.amount!! / 2f).toInt())
+            setStackAmount(ceil(originalStackItem!!.amount / 2f).toInt())
             return
         }
 
@@ -425,12 +434,10 @@ class InventoryManager(private val uiStage: UiStage) {
         if (clickedInv == null) {
             // Dropping the item
             if (clickedItem != null) {
-                uiStage.itemDropList.add((clickedItem as EqActor).item)
+                uiStage.itemDropList.add((clickedItem as EqActor).entity)
                 // TODO change the remove implementation to this after adding the sorting and user defined positions
 //                originalEq!!.itemList.removeAt(originalContainer!!.name.toInt())
-                originalInventory!!.itemList.remove(
-                    originalInventory!!.itemList.find { it.item == (clickedItem as EqActor).item }
-                )
+                originalInventory!!.removeItem(originalInventory!!.getItem((clickedItem as EqActor).entity)!!)
 
                 clickedItem!!.addAction(Actions.scaleTo(0f, 0f, 0.35f))
                 clickedItem!!.addAction(Actions.moveBy(32f * uiStage.currentScale, 32f * uiStage.currentScale, 0.35f))
@@ -448,9 +455,9 @@ class InventoryManager(private val uiStage: UiStage) {
         // if the area between cells was clicked, reset the item position
         val container = getInventoryCell(x, y, clickedInv.pane)
         // TODO checking the Player inventorySize here can cause bugs when other inventories will be displayed
-        if (container == null || container.name?.toInt()!! >= Player.inventory.size) {
+        if (container == null || container.name?.toInt()!! >= Player.get(Inventory::class)!!.maxSize) {
             if (originalStackItem != null) {
-                originalStackItem!!.item.amount = originalStackItem!!.item.amount?.plus((clickedItem as EqActor).item.amount!!)
+                originalStackItem!!.amount = originalStackItem!!.amount.plus((clickedItem as EqActor).amount)
                 originalStackItem!!.refreshAmount()
                 uiStage.actors.removeValue(clickedItem, true)
                 return true
@@ -464,18 +471,20 @@ class InventoryManager(private val uiStage: UiStage) {
         if (container.hasChildren()) {
             // Item dropped onto identical stackable item
             // sum item amounts
-            if ((container.actor as EqActor).item.amount != null &&
-                (clickedItem as EqActor).item.equalsIdentical((container.actor as EqActor).item)) {
-                (container.actor as EqActor).item.amount =
-                    (container.actor as EqActor).item.amount?.plus((clickedItem as EqActor).item.amount!!)
-                originalInventory!!.itemList.remove(
-                    originalInventory!!.itemList.find { it.item == (clickedItem as EqActor).item })
+            // TODO ECS ITEMS Stack check if entity attributes are equal
+            // OLD
+//            if ((container.actor as EqActor).maxStack != 1 &&
+//                (clickedItem as EqActor).entity.equalsIdentical((container.actor as EqActor).entity)) {
+            if ((container.actor as EqActor).maxStack != 1 && (clickedItem as EqActor).entity.id == (container.actor as EqActor).entity.id) {
+                (container.actor as EqActor).amount =
+                    (container.actor as EqActor).amount.plus((clickedItem as EqActor).amount)
+                originalInventory!!.getItem((clickedItem as EqActor).entity)?.let { originalInventory!!.removeItem(it) }
 
                 // Remove empty stack
                 if (originalStackItem != null) {
-                    val stackedItem = originalInventory!!.itemList.find { it.item == originalStackItem!!.item }
-                    if (stackedItem?.item?.amount == 0) {
-                        originalInventory!!.itemList.remove(stackedItem)
+                    val stackedItem = originalInventory!!.getItem(originalStackItem!!.entity)
+                    if (stackedItem?.get(Amount::class)!!.amount == 0) {
+                        originalInventory!!.removeItem(stackedItem)
                     }
                 }
 
@@ -487,7 +496,7 @@ class InventoryManager(private val uiStage: UiStage) {
                 // If original stack is 0 and container's actor was removed, create a new one
                 if (originalContainer?.actor == null)
                     originalContainer?.actor = originalStackItem
-                originalStackItem!!.item.amount = originalStackItem!!.item.amount?.plus((clickedItem as EqActor).item.amount!!)
+                originalStackItem!!.amount = originalStackItem!!.amount + (clickedItem as EqActor).amount
                 originalStackItem!!.refreshAmount()
                 uiStage.actors.removeValue(clickedItem, true)
                 uiStage.refreshHotBar()
@@ -497,14 +506,15 @@ class InventoryManager(private val uiStage: UiStage) {
         }
         // Creates a new item in inventory out of the stack
         if (originalStackItem != null) {
-            val stackedItem = originalInventory!!.itemList.find { it.item == originalStackItem!!.item }
+            val stackedItem = originalInventory!!.getElement(originalStackItem!!.entity)
             // Create a new item or move the existing one while preserving references
-            if (stackedItem!!.item.amount != 0) {
-                originalInventory!!.itemList.add(EqElement((clickedItem as EqActor).item, stackedItem.dateAdded))
+            if (stackedItem!!.item.get(Amount::class)!!.amount != 0) {
+//                originalInventory!!.add((clickedItem as EqActor).entity, stackedItem.dateAdded)
+                originalInventory!!.add(InventoryElement((clickedItem as EqActor).entity, stackedItem.dateAdded, container.name.toInt()))
                 container.actor = clickedItem
             }
             else {
-                originalStackItem!!.item.amount = originalStackItem!!.item.amount?.plus((clickedItem as EqActor).item.amount!!)
+                originalStackItem!!.amount = originalStackItem!!.amount + (clickedItem as EqActor).amount
                 originalStackItem?.refreshAmount()
                 container.actor = originalStackItem
             }
@@ -546,11 +556,7 @@ class InventoryManager(private val uiStage: UiStage) {
         var clickedChild = clickedEq.hit(coord.x, coord.y, false)
 
         // space between cells was hit
-        if (clickedChild is Table)
-            return null
-
-        // Skills require it for some reason
-        if (clickedChild !is Container<*>)
+        if (clickedChild is Table || clickedChild == null)
             return null
 
         while (clickedChild !is Container<*>) {
@@ -566,7 +572,7 @@ class InventoryManager(private val uiStage: UiStage) {
     /** Sets all values to null */
     fun nullifyAllValues() {
         if (originalStackItem != null && clickedItem != null) {
-            changeStackAmount((clickedItem as EqActor).item.amount!! * -1)
+            changeStackAmount((clickedItem as EqActor).amount * -1)
             uiStage.actors.removeValue(clickedItem, true)
             clickedItem = originalStackItem
             originalStackItem = null
@@ -597,7 +603,7 @@ class InventoryManager(private val uiStage: UiStage) {
 
     fun itemPassedToHud() {
         if (originalStackItem != null) {
-            changeStackAmount((clickedItem as EqActor).item.amount!! * -1)
+            changeStackAmount((clickedItem as EqActor).amount * -1)
             uiStage.actors.removeValue(clickedItem, true)
             clickedItem = originalStackItem
             originalStackItem = null

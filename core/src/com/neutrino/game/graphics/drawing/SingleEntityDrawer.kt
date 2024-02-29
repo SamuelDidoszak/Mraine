@@ -24,7 +24,8 @@ import java.util.*
 import kotlin.math.min
 import kotlin.random.Random
 
-class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
+class SingleEntityDrawer(entity: Entity,
+                         private val fillSpace: Boolean = true): Actor(), EntityDrawer {
 
     override val animations: Animations = Animations(this)
     override val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
@@ -41,7 +42,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
     }
 
     override var map: List<List<MutableList<Entity>>> = getEmptyEntityList()
-    private var entity: Entity = entity
+    var entity: Entity = entity
         set(value) {
             if (textureLayers.isNotEmpty())
                 textureLayers.clear()
@@ -52,6 +53,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
             field.addAttribute(DrawerAttribute(this))
             val textureAttribute = field.get(Texture::class) ?:
             field.addAttribute(Texture { _, _, _ ->}).get(Texture::class)!!
+            textureAttribute.textures.clear()
             textureAttribute.setTextures(null, Random)
             if (textureAttribute.textures.isEmpty()) {
                 System.err.println(entity.name + " has no texture set!")
@@ -71,9 +73,11 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
                         }
                     }
                 }
-                texture.xy(0f, 0f)
+                if (fillSpace)
+                    texture.xy(0f, 0f)
             }
-            updateScale()
+            if (fillSpace)
+                updateScale()
         }
 
     init {
@@ -91,7 +95,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
     }
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
-        textureLayers[texture.z]!!.removeIf { it.entity == entity && it.texture == texture }
+        textureLayers[texture.z]?.removeIf { it.entity == entity && it.texture == texture }
     }
 
     private fun getEmptyEntityList(): List<List<MutableList<Entity>>> {
@@ -163,7 +167,8 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
 
     override fun setSize(width: Float, height: Float) {
         super.setSize(width, height)
-        updateScale()
+        if (fillSpace)
+            updateScale()
     }
 
     private fun updateScale() {

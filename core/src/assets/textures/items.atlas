@@ -1,80 +1,82 @@
 items.png
 	size: 256, 32
 basicFireWand
-	bounds: 210, 21, 9, 9
+	bounds: 230, 20, 10, 10
 basicPoisonWand
-	bounds: 115, 10, 7, 7
+	bounds: 160, 9, 8, 8
 bigBow
-	bounds: 2, 3, 13, 13
+	bounds: 20, 16, 14, 14
 book
-	bounds: 49, 15, 11, 15
+	bounds: 84, 14, 12, 16
 brokenSword
-	bounds: 105, 10, 8, 7
+	bounds: 149, 9, 9, 8
 cuffedLinenPants
-	bounds: 232, 21, 8, 9
+	bounds: 118, 2, 9, 10
 curvedBow
-	bounds: 84, 3, 6, 11
-dagger
-	bounds: 124, 11, 7, 7
-extinguishedFireWand
-	bounds: 124, 2, 7, 7
-fireStaff
-	bounds: 19, 17, 13, 13
-gold1
-	bounds: 149, 6, 4, 4
-gold2
-	bounds: 242, 23, 10, 7
-gold3
-	bounds: 62, 5, 11, 11
-gold4
-	bounds: 107, 19, 11, 11
-gold5
-	bounds: 133, 2, 6, 4
-gold6
-	bounds: 92, 12, 11, 6
-gold7
-	bounds: 159, 23, 12, 7
-gold8
-	bounds: 47, 2, 13, 11
-knife
-	bounds: 62, 18, 12, 12
-leatherBoots
-	bounds: 76, 22, 15, 8
-leatherCap
-	bounds: 186, 22, 10, 8
-leatherJacket
-	bounds: 120, 20, 11, 10
-leatherSocks
-	bounds: 76, 16, 13, 4
-linenShirt
-	bounds: 133, 21, 11, 9
-meat
-	bounds: 93, 20, 12, 10
-pocketKnife
-	bounds: 141, 3, 6, 7
-reinforcedLeatherBoots
-	bounds: 2, 18, 15, 12
-reinforcedLeatherCap
-	bounds: 221, 21, 9, 9
-rippedPants
-	bounds: 140, 12, 7, 7
-rockWand
-	bounds: 149, 12, 7, 7
-scrollOfDefence
-	bounds: 17, 2, 13, 13
-scrollOfFireball
-	bounds: 32, 2, 13, 13
-scrollOfTeleportation
-	bounds: 34, 17, 13, 13
-smallBackpack
-	bounds: 92, 2, 7, 8
-smallBag
-	bounds: 198, 20, 10, 10
-smallBow
-	bounds: 133, 8, 5, 11
-smallHealingPotion
 	bounds: 75, 2, 7, 12
+dagger
+	bounds: 170, 9, 8, 8
+extinguishedFireWand
+	bounds: 180, 10, 8, 8
+fireStaff
+	bounds: 36, 16, 14, 14
+gold1
+	bounds: 158, 2, 5, 5
+gold2
+	bounds: 242, 13, 11, 8
+gold3
+	bounds: 33, 2, 12, 12
+gold4
+	bounds: 47, 2, 12, 12
+gold5
+	bounds: 149, 2, 7, 5
+gold6
+	bounds: 242, 23, 12, 7
+gold7
+	bounds: 188, 22, 13, 8
+gold8
+	bounds: 17, 2, 14, 12
+knife
+	bounds: 2, 2, 13, 13
+leatherBoots
+	bounds: 114, 21, 16, 9
+leatherCap
+	bounds: 217, 21, 11, 9
+leatherJacket
+	bounds: 147, 19, 12, 11
+leatherSocks
+	bounds: 114, 14, 14, 5
+linenShirt
+	bounds: 84, 2, 12, 10
+meat
+	bounds: 132, 19, 13, 11
+pocketKnife
+	bounds: 200, 11, 7, 8
+reinforcedLeatherBoots
+	bounds: 2, 17, 16, 13
+reinforcedLeatherCap
+	bounds: 106, 2, 10, 10
+rippedPants
+	bounds: 190, 12, 8, 8
+rockWand
+	bounds: 190, 2, 8, 8
+scrollOfDefence
+	bounds: 52, 16, 14, 14
+scrollOfFireball
+	bounds: 68, 16, 14, 14
+scrollOfTeleportation
+	bounds: 98, 16, 14, 14
+smallBackpack
+	bounds: 129, 2, 8, 9
+smallBag
+	bounds: 161, 19, 11, 11
+smallBow
+	bounds: 98, 2, 6, 12
+smallHealingPotion
+	bounds: 139, 4, 8, 13
+sword
+	bounds: 61, 2, 12, 12
 tornShirt
-	bounds: 146, 21, 11, 9
+	bounds: 174, 20, 12, 10
 woodenFlipFlops
-	bounds: 173, 22, 11, 8
+	bounds: 203, 21, 12, 9

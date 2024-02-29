@@ -140,6 +140,7 @@ object Turn {
                             is InteractionType.ITEM -> {
                                 // TODO ECS ITEM
                                 if (Player.get(Inventory::class)!!.add(action.entity)) {
+                                    GlobalData.notifyObservers(GlobalDataType.PICKUP, action.entity)
 //                                    ActorVisuals.showPickedUpItem(Player, item)
                                     val coords = Player.getSuper(Ai::class)!!.targetCoords
                                     currentChunk.map[coords!!.second][coords.first].removeLast()

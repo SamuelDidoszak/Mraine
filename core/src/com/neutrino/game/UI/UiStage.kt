@@ -23,13 +23,14 @@ import com.neutrino.game.UI.utility.ManagerType
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.Entity
 import com.neutrino.game.util.*
 
 
 class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewport) {
 
     /** FIFO of dropped items */
-    val itemDropList: ArrayDeque<Item> = ArrayDeque()
+    val itemDropList: ArrayDeque<Entity> = ArrayDeque()
 
     /** FIFO of used item actions */
     val usedItemList: ArrayDeque<Item> = ArrayDeque()

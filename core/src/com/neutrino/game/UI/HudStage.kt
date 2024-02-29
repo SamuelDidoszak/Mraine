@@ -24,20 +24,21 @@ import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.*
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.UI.popups.*
+import com.neutrino.game.UI.popups.Diagnostics
+import com.neutrino.game.UI.popups.SkillDetailsPopup
 import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.UI.utility.PickupActor
 import com.neutrino.game.UI.utility.SkillActor
-import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.items.*
-import com.neutrino.game.domain.model.systems.event.CausesCooldown
-import com.neutrino.game.domain.model.systems.event.Data
-import com.neutrino.game.domain.model.systems.event.types.CooldownType
+import com.neutrino.game.domain.model.items.ItemType
+import com.neutrino.game.domain.model.items.UseOn
 import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.DefensiveStats
+import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.graphics.utility.ColorUtils
+import com.neutrino.game.util.*
 import ktx.actors.alpha
 import ktx.scene2d.container
 import ktx.scene2d.horizontalGroup
@@ -47,7 +48,6 @@ import space.earlygrey.shapedrawer.ShapeDrawer
 import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.concurrent.schedule
-import com.neutrino.game.util.*
 
 class HudStage(viewport: Viewport): Stage(viewport) {
     private val hudAtlas = TextureAtlas("UI/hud.atlas")
@@ -124,9 +124,9 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         val barHeight = 16f
         hpMpBarGroup.addActor(HudHpBar(hotBarBorder.width, barHeight))
         val mpGroup: Group = Group()
-            mpGroup.addActor(HudMpBarBackground(hotBarBorder.width, barHeight))
-            mpGroup.addActor(HudMpBar(hotBarBorder.width, barHeight))
-            mpGroup.height = barHeight
+        mpGroup.addActor(HudMpBarBackground(hotBarBorder.width, barHeight))
+        mpGroup.addActor(HudMpBar(hotBarBorder.width, barHeight))
+        mpGroup.height = barHeight
         hpMpBarGroup.addActor(mpGroup)
         hpMpBarGroup.pack()
         hpMpBarGroup.height = barHeight * 2
@@ -178,14 +178,16 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                     return@schedule
                 }
                 1 -> {
-                    if (Player.mp.equalsDelta(Player.mpMax) && Player.hp.equalsDelta(Player.hpMax))
+                    val stats = Player.get(DefensiveStats::class)!!
+                    if (stats.mp.equalsDelta(stats.mpMax) && stats.hp.equalsDelta(stats.hpMax))
                         updateHpMpBarPosition(0)
                 }
                 2 -> {
+                    val stats = Player.get(DefensiveStats::class)!!
                     var position = 2
-                    if (Player.hp.equalsDelta(Player.hpMax))
+                    if (stats.hp.equalsDelta(stats.hpMax))
                         position -= 1
-                    if (Player.mp.equalsDelta(Player.mpMax))
+                    if (stats.mp.equalsDelta(stats.mpMax))
                         position -= 1
                     updateHpMpBarPosition(position)
                 }
@@ -200,10 +202,11 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                 if (data == 0)
                     return false
 
-                if (hpMpBarStatus == 1 && Player.hp.equalsDelta(Player.hpMax))
+                val stats = Player.get(DefensiveStats::class)!!
+                if (hpMpBarStatus == 1 && stats.hp.equalsDelta(stats.hpMax))
                     hideBarsOnTimeout()
 
-                if (hpMpBarGroup.hasActions() || !Player.mp.equalsDelta(Player.mpMax))
+                if (hpMpBarGroup.hasActions() || !stats.mp.equalsDelta(stats.mpMax))
                     return false
 
                 updateHpMpBarPosition(1)
@@ -216,10 +219,11 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                 if (data == 0)
                     return false
 
-                if (hpMpBarStatus == 2 && Player.mp.equalsDelta(Player.mpMax))
+                val stats = Player.get(DefensiveStats::class)!!
+                if (hpMpBarStatus == 2 && stats.mp.equalsDelta(stats.mpMax))
                     hideBarsOnTimeout()
 
-                if (Player.mp.equalsDelta(Player.mpMax) || hpMpBarGroup.hasActions())
+                if (stats.mp.equalsDelta(stats.mpMax) || hpMpBarGroup.hasActions())
                     return false
 
                 updateHpMpBarPosition(2)
@@ -241,8 +245,8 @@ class HudStage(viewport: Viewport): Stage(viewport) {
 
     /** ============================================================     HotBar and item parsing related variables     =============================================================================*/
 
-    private var hotBarDesignatedItems: MutableList<Item?> = MutableList(10) {null}
-    private var hotBarItemList: MutableList<Item?> = MutableList(10) {null}
+    private var hotBarDesignatedItems: MutableList<Entity?> = MutableList(10) {null}
+    private var hotBarItemList: MutableList<Entity?> = MutableList(10) {null}
     private var hotBarSkillList: MutableList<Skill?> = MutableList(10) {null}
 
     private var dragItem: Boolean? = false
@@ -254,15 +258,16 @@ class HudStage(viewport: Viewport): Stage(viewport) {
 
     private var originalContainer: Container<*>? = null
 
-    val usedItemList: ArrayDeque<Item> = ArrayDeque()
-    var useItemOn: Item? = null
+    val usedItemList: ArrayDeque<Entity> = ArrayDeque()
+    var useItemOn: Entity? = null
     var usedSkill: Skill? = null
-    private val itemContextPopup = ItemContextPopup(usedItemList, { item: Item -> useItemOn = item}, ::nullifyAllValues)
+    // TODO ECS ITEMS Popups
+//    private val itemContextPopup = ItemContextPopup(usedItemList, { item: Item -> useItemOn = item}, ::nullifyAllValues)
 
     /** ============================================================     HotBar related methods     =============================================================================*/
 
     /** Adds the picked up item into its designated position. Pass an item from player inventory */
-    fun parsePickedUpItem(item: Item) {
+    fun parsePickedUpItem(item: Entity) {
         for (i in 0..9) {
             if (item == hotBarDesignatedItems[i]) {
                 setItemToPosition(i, item)
@@ -282,14 +287,14 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     }
 
     /** Finds a particular item in the inventory and returns it */
-    private fun getItemFromInventory(item: Item): Item? {
-        return Player.inventory.itemList.find { it.item == item }?.item
+    private fun getItemFromInventory(item: Entity): Entity? {
+        return Player.get(Inventory::class)!!.getItem(item)
     }
 
-    private fun setItemToPosition(position: Int, item: Item?, eqActor: EqActor? = null) {
+    private fun setItemToPosition(position: Int, item: Entity?, eqActor: EqActor? = null) {
         hotBarSkillList[position] = null
-        hotBarItemList[position] = eqActor?.item ?: item
-        hotBarDesignatedItems[position] = eqActor?.item ?: item
+        hotBarItemList[position] = eqActor?.entity ?: item
+        hotBarDesignatedItems[position] = eqActor?.entity ?: item
         (hotBar.children[position] as Container<*>).actor =
             eqActor ?: if (item != null) EqActor(item)
             else null
@@ -403,24 +408,25 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             }
             else {
                 val clickedActor = actorAtGroup(coord.x, coord.y)
-                if (clickedActor != null && clickedActor is Container<*> && clickedActor.actor != null) {
-                    if (clickedActor.actor is EqActor) {
-                        contextPopup = itemContextPopup.createContextMenu((clickedActor.actor as EqActor).item, coord.x, coord.y)
-                        if (contextPopup != null) {
-                            addActor(contextPopup)
-                            contextPopup?.setPosition(coord.x, coord.y)
-                        }
-                    } else {
-                        val skill = (clickedActor.actor as SkillActor).skill
-                        contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
-                            usedSkill = skill
-                            nullifyAllValues()
-                        }
-                        addActor(contextPopup)
-                        contextPopup?.setPosition(coord.x, coord.y)
-                    }
-                    return true
-                }
+                // TODO ECS ITEMS Popups
+//                if (clickedActor != null && clickedActor is Container<*> && clickedActor.actor != null) {
+//                    if (clickedActor.actor is EqActor) {
+//                        contextPopup = itemContextPopup.createContextMenu((clickedActor.actor as EqActor).entity, coord.x, coord.y)
+//                        if (contextPopup != null) {
+//                            addActor(contextPopup)
+//                            contextPopup?.setPosition(coord.x, coord.y)
+//                        }
+//                    } else {
+//                        val skill = (clickedActor.actor as SkillActor).skill
+//                        contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
+//                            usedSkill = skill
+//                            nullifyAllValues()
+//                        }
+//                        addActor(contextPopup)
+//                        contextPopup?.setPosition(coord.x, coord.y)
+//                    }
+//                    return true
+//                }
             }
         }
 
@@ -463,7 +469,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
 
                 if (itemFromUi is EqActor) {
                     for (i in 0 .. 9) {
-                        if (hotBarItemList[i] == itemFromUi.item) {
+                        if (hotBarItemList[i] == itemFromUi.entity) {
                             setItemToPosition(i, null)
                             previousPosition = i
                         }
@@ -471,7 +477,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                     // Swaps items
                     if (previousPosition != null && hotBarItemList[clickedActor.name.toInt()] != null)
                         setItemToPosition(previousPosition, hotBarItemList[clickedActor.name.toInt()])
-                    setItemToPosition(clickedActor.name.toInt(), itemFromUi.item)
+                    setItemToPosition(clickedActor.name.toInt(), itemFromUi.entity)
                 }
 
                 uiStage.inventoryManager.itemPassedToHud()
@@ -517,24 +523,25 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                         popupCoord.x + hoveredActor.width * currentScale / 2 - detailsPopup!!.widthScaled() / 2f,
                         hotBarBorder.heightScaled() + 16f * currentScale)
                 }
-                if (hoveredActor is EqActor && ((detailsPopup == null || popupChild !is EqActor) ||
-                    (popupChild.item != hoveredActor.item))) {
-                    removeDetailsPopup()
-                    val group = Group()
-                    val popup =
-                        if (hoveredActor.item is EquipmentItem)
-                            EquipmentComparisonPopup(hoveredActor.item as EquipmentItem)
-                        else
-                            ItemDetailsPopup(hoveredActor.item)
-                    group.setSize(popup.width, popup.height)
-                    group.addActor(popup)
-                    detailsPopup = group
-                    addActor(detailsPopup)
-                    val popupCoord = hoveredActor.localToStageCoordinates(Vector2(hoveredActor.x, hoveredActor.y))
-                    detailsPopup!!.setPosition(
-                        popupCoord.x + hoveredActor.width * currentScale / 2 - detailsPopup!!.widthScaled() / 2f,
-                        hotBarBorder.heightScaled() + 16f * currentScale)
-                }
+                // TODO ECS ITEMS POPUPS
+//                if (hoveredActor is EqActor && ((detailsPopup == null || popupChild !is EqActor) ||
+//                    (popupChild.entity != hoveredActor.entity))) {
+//                    removeDetailsPopup()
+//                    val group = Group()
+//                    val popup =
+//                        if (hoveredActor.entity has EquipmentItem::class)
+//                            EquipmentComparisonPopup(hoveredActor.entity as EquipmentItem)
+//                        else
+//                            ItemDetailsPopup(hoveredActor.entity)
+//                    group.setSize(popup.width, popup.height)
+//                    group.addActor(popup)
+//                    detailsPopup = group
+//                    addActor(detailsPopup)
+//                    val popupCoord = hoveredActor.localToStageCoordinates(Vector2(hoveredActor.x, hoveredActor.y))
+//                    detailsPopup!!.setPosition(
+//                        popupCoord.x + hoveredActor.width * currentScale / 2 - detailsPopup!!.widthScaled() / 2f,
+//                        hotBarBorder.heightScaled() + 16f * currentScale)
+//                }
             } else
                 removeDetailsPopup()
         }
@@ -600,11 +607,11 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             else
 
             // sum item amounts
-            if ((clickedItem as EqActor).item.name == (clickedActor.actor as EqActor).item.name
-                && (clickedActor.actor as EqActor).item.amount != null) {
-                (clickedActor.actor as EqActor).item.amount =
-                    (clickedActor.actor as EqActor).item.amount?.plus((clickedItem as EqActor).item.amount!!
-                    )
+            // TODO ECS ITEMS Compare
+            if ((clickedItem as EqActor).entity.name == (clickedActor.actor as EqActor).entity.name
+                && (clickedActor.actor as EqActor).maxStack != 1) {
+                (clickedActor.actor as EqActor).amount =
+                    (clickedActor.actor as EqActor).amount + (clickedItem as EqActor).amount
                 uiStage.inventoryManager.itemPassedToHud()
                 return
             } else {
@@ -625,27 +632,29 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         if (clickedItem is SkillActor) {
             val skill = (clickedItem as SkillActor).skill
 
-            if (Player.eventArray.hasCooldown(CooldownType.SKILL(skill))) {
-                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Skill is on cooldown", KnownFonts.getStandardFamily())
-                addCooldownLabel(cooldownLabel, coord)
-                return
-            }
-            if (skill.manaCost != null && skill.manaCost!! > Player.mp) {
+            // TODO ECS EVENTS
+//            if (Player.eventArray.hasCooldown(CooldownType.SKILL(skill))) {
+//                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Skill is on cooldown", KnownFonts.getStandardFamily())
+//                addCooldownLabel(cooldownLabel, coord)
+//                return
+//            }
+            if (skill.manaCost != null && skill.manaCost!! > Player.get(DefensiveStats::class)!!.mp) {
                 val cooldownLabel = TextraLabel("[@Cozette][%600][*]Not enough mana", KnownFonts.getStandardFamily())
                 addCooldownLabel(cooldownLabel, coord)
                 return
             }
-            if (skill.manaCost == null && Player.eventArray.skillsOnCooldown == Player.maxSkills) {
-                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Used too many skills", KnownFonts.getStandardFamily())
-                addCooldownLabel(cooldownLabel, coord)
-                return
-            }
+            // TODO ECS EVENTS
+//            if (skill.manaCost == null && Player.eventArray.skillsOnCooldown == Player.maxSkills) {
+//                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Used too many skills", KnownFonts.getStandardFamily())
+//                addCooldownLabel(cooldownLabel, coord)
+//                return
+//            }
             usedSkill = skill
             nullifyAllValues()
             return
         }
 
-        val item = (clickedItem as EqActor).item
+        val item = (clickedItem as EqActor).entity
 
         // use on others as primary action
         if (item is ItemType.USABLE && (item.useOn == UseOn.TILE || item.useOn == UseOn.OTHERS_ONLY)) {
@@ -653,54 +662,57 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             return
         }
 
+        // TODO ECS EVENTS
+        // TODO ECS ITEMS USABLE
         when (item) {
-            is ItemType.EDIBLE -> {
-                if (Player.eventArray.hasCooldown((item as? CausesCooldown)?.cooldownType)) {
-                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]Food is on cooldown", KnownFonts.getStandardFamily())
-                    addCooldownLabel(cooldownLabel, coord)
-                    return
-                }
-                usedItemList.add(item)
-                nullifyAllValues()
-            }
-            is SkillBook -> {
-                if (item.skill.requirement.data.containsKey("character"))
-                    (item.skill.requirement.data["character"] as Data<Character>).setData(Player)
-                if (!item.skill.requirement.checkAll()) {
-                    val requirementLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
-                    addCooldownLabel(requirementLabel, coord)
-                    return
-                }
-                if (Player.skillList.find { it::class == item.skill::class } != null) {
-                    val skillLearntLabel = TextraLabel("[@Cozette][%600][*]Skill is already learnt", KnownFonts.getStandardFamily())
-                    addCooldownLabel(skillLearntLabel, coord)
-                    return
-                }
-                usedItemList.add(item)
-                nullifyAllValues()
-            }
-            is ItemType.EQUIPMENT -> {
-                if ((item as EquipmentItem).requirements.data.containsKey("character"))
-                    (item.requirements.data["character"] as Data<Character>).setData(Player)
-                if (!item.requirements.checkAll()) {
-                    val requirementsLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
-                    addCooldownLabel(requirementsLabel, coord)
-                    return
-                }
-
-                val itemType = Player.equipment.setItem(item as EquipmentItem)
-                GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, itemType)
-                nullifyAllValues()
-            }
-            is ItemType.USABLE -> {
-                if (Player.eventArray.hasCooldown((item as? CausesCooldown)?.cooldownType)) {
-                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]Item is on cooldown", KnownFonts.getStandardFamily())
-                    addCooldownLabel(cooldownLabel, coord)
-                    return
-                }
-                usedItemList.add(item)
-                nullifyAllValues()
-            }
+//            is ItemType.EDIBLE -> {
+//                if (Player.eventArray.hasCooldown((item as? CausesCooldown)?.cooldownType)) {
+//                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]Food is on cooldown", KnownFonts.getStandardFamily())
+//                    addCooldownLabel(cooldownLabel, coord)
+//                    return
+//                }
+//                usedItemList.add(item)
+//                nullifyAllValues()
+//            }
+//            is SkillBook -> {
+//                if (item.skill.requirement.data.containsKey("character"))
+//                    (item.skill.requirement.data["character"] as Data<Character>).setData(Player)
+//                if (!item.skill.requirement.checkAll()) {
+//                    val requirementLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
+//                    addCooldownLabel(requirementLabel, coord)
+//                    return
+//                }
+//                if (Player.skillList.find { it::class == item.skill::class } != null) {
+//                    val skillLearntLabel = TextraLabel("[@Cozette][%600][*]Skill is already learnt", KnownFonts.getStandardFamily())
+//                    addCooldownLabel(skillLearntLabel, coord)
+//                    return
+//                }
+//                usedItemList.add(item)
+//                nullifyAllValues()
+//            }
+            // TODO ECS ITEMS EQUIPMENT
+//            is ItemType.EQUIPMENT -> {
+//                if ((item as EquipmentItem).requirements.data.containsKey("character"))
+//                    (item.requirements.data["character"] as Data<Character>).setData(Player)
+//                if (!item.requirements.checkAll()) {
+//                    val requirementsLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met!", KnownFonts.getStandardFamily())
+//                    addCooldownLabel(requirementsLabel, coord)
+//                    return
+//                }
+//
+//                val itemType = Player.equipment.setItem(item as EquipmentItem)
+//                GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, itemType)
+//                nullifyAllValues()
+//            }
+//            is ItemType.USABLE -> {
+//                if (Player.eventArray.hasCooldown((item as? CausesCooldown)?.cooldownType)) {
+//                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]Item is on cooldown", KnownFonts.getStandardFamily())
+//                    addCooldownLabel(cooldownLabel, coord)
+//                    return
+//                }
+//                usedItemList.add(item)
+//                nullifyAllValues()
+//            }
         }
     }
 
@@ -788,24 +800,26 @@ class HudHpBar(private val initialWidth: Float, private val initialHeight: Float
         height = initialHeight
     }
 
-    var previousHp = Player.hp
+    var previousHp = Player.get(DefensiveStats::class)!!.hp
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
+        val stats = Player.get(DefensiveStats::class)!!
         if (drawer == null) {
             drawer = ShapeDrawer(batch, textureRegion)
             drawer!!.setColor(color())
         }
-        if (!Player.hp.equalsDelta(previousHp)) {
-            previousHp = Player.hp
+        if (!stats.hp.equalsDelta(previousHp)) {
+            previousHp = stats.hp
             drawer?.setColor(color())
         }
 
-        drawer!!.filledRectangle(0f, initialHeight, initialWidth * (Player.hp / Player.hpMax), initialHeight)
+        drawer!!.filledRectangle(0f, initialHeight, initialWidth * (stats.hp / stats.hpMax), initialHeight)
     }
 
     private fun color(): Color {
-        val red = if (Player.hp / Player.hpMax >= 0.5f) 1 - (Player.hp / Player.hpMax) else 1f
-        val green = if (Player.hp / Player.hpMax >= 0.5f) 1f else 2 * (Player.hp / Player.hpMax)
+        val stats = Player.get(DefensiveStats::class)!!
+        val red = if (stats.hp / stats.hpMax >= 0.5f) 1 - (stats.hp / stats.hpMax) else 1f
+        val green = if (stats.hp / stats.hpMax >= 0.5f) 1f else 2 * (stats.hp / stats.hpMax)
 
         return ColorUtils.applySaturation(Color(red, green, 0f, 1f), 0.8f)
     }
@@ -830,7 +844,8 @@ class HudMpBar(private val initialWidth: Float, private val initialHeight: Float
             drawer!!.setColor(ColorUtils.applySaturation(Color(0f, 0f, 1f, 1f), 0.6f))
         }
 
-        drawer!!.filledRectangle(0f, 0f, initialWidth * (Player.mp / Player.mpMax), initialHeight)
+        drawer!!.filledRectangle(0f, 0f,
+            initialWidth * (Player.get(DefensiveStats::class)!!.mp / Player.get(DefensiveStats::class)!!.mpMax), initialHeight)
     }
 
     override fun remove(): Boolean {

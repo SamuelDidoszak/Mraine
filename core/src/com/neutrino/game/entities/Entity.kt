@@ -38,6 +38,11 @@ open class Entity() {
         return this
     }
 
+    infix fun <T: Attribute> removeAttribute(attributeClass: KClass<T>): Entity {
+        attributes.remove(attributeClass)
+        return this
+    }
+
     infix fun <T: Attribute> get(attributeClass: KClass<T>): T? {
         return attributes[attributeClass] as? T?
     }

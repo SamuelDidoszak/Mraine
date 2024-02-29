@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
-import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.items.Item
@@ -97,9 +96,10 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
     fun refreshEquipment(type: EquipmentType) {
         val item: Item? = Player.equipment.getEquipped(type)
 
-        if (item != null)
-            equipmentMap[type]!!.actor = EqActor(item)
-        else if (equipmentMap[type]!!.hasChildren())
-            equipmentMap[type]!!.removeActorAt(0, false)
+        // TODO ECS ITEMS EQUIPMENT UI
+//        if (item != null)
+//            equipmentMap[type]!!.actor = EqActor(item)
+//        else if (equipmentMap[type]!!.hasChildren())
+//            equipmentMap[type]!!.removeActorAt(0, false)
     }
 }

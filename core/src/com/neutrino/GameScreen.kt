@@ -15,14 +15,16 @@ import com.neutrino.game.LevelInitialization
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.items.EquipmentType
-import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.gameplay.main.Gameplay
 import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.util.Constants
+import com.neutrino.game.util.x
+import com.neutrino.game.util.y
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
 import kotlin.math.absoluteValue
@@ -96,8 +98,12 @@ class GameScreen: KtxScreen {
             isEqVisible = false
             // drops items
             // TODO ECS ITEMS
-//            while (uiStage.itemDropList.isNotEmpty())
-//                gameStage.level!!.map[Player.yPos][Player.xPos].add(ItemEntity(uiStage.itemDropList.removeFirst()))
+            while (uiStage.itemDropList.isNotEmpty()) {
+                val item = uiStage.itemDropList.removeFirst()
+                // TODO ECS COPY
+                item.addAttribute(Position(Player.x, Player.y, Player.get(Position::class)!!.chunk))
+                Player.get(Position::class)!!.chunk.map[Player.y][Player.x].add(item)
+            }
         } else {
             Gdx.input.inputProcessor = uiInputMultiplexer
             hudStage.darkenScreen(true)
@@ -206,7 +212,7 @@ class GameScreen: KtxScreen {
                 else
                     uiStage.inventory.forceRefreshInventory = true
 
-                if (data is Item) {
+                if (data is Entity) {
                     hudStage.parsePickedUpItem(data)
                 }
 

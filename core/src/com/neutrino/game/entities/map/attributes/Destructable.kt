@@ -1,6 +1,7 @@
 package com.neutrino.game.entities.map.attributes
 
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.AttributeOperations
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.characters.callables.attack.EntityDiedCallable
@@ -17,7 +18,7 @@ class Destructable(
     airDefence: Float = 0f,
     poisonDefence: Float = 0f,
     evasion: Float = 0f
-): Attribute() {
+): Attribute(), AttributeOperations<Destructable> {
 
     private val defensiveStats = DefensiveStats(
         hpMax = hp,
@@ -48,4 +49,43 @@ class Destructable(
             return true
         }
     }
+
+    override fun plus(other: Destructable): Destructable {
+        return Destructable(
+            defensiveStats.hp + other.defensiveStats.hp,
+            destroyedTextureName,
+            defensiveStats.defence + other.defensiveStats.defence,
+            defensiveStats.fireDefence + other.defensiveStats.fireDefence,
+            defensiveStats.waterDefence + other.defensiveStats.waterDefence,
+            defensiveStats.airDefence + other.defensiveStats.airDefence,
+            defensiveStats.poisonDefence + other.defensiveStats.poisonDefence,
+            defensiveStats.evasion + other.defensiveStats.evasion
+        )
+    }
+
+    override fun minus(other: Destructable): Destructable {
+        return Destructable(
+            defensiveStats.hp - other.defensiveStats.hp,
+            destroyedTextureName,
+            defensiveStats.defence - other.defensiveStats.defence,
+            defensiveStats.fireDefence - other.defensiveStats.fireDefence,
+            defensiveStats.waterDefence - other.defensiveStats.waterDefence,
+            defensiveStats.airDefence - other.defensiveStats.airDefence,
+            defensiveStats.poisonDefence - other.defensiveStats.poisonDefence,
+            defensiveStats.evasion - other.defensiveStats.evasion
+        )
+    }
+    override fun clone(): Destructable {
+        return Destructable(
+            defensiveStats.hp,
+            destroyedTextureName,
+            defensiveStats.defence,
+            defensiveStats.fireDefence,
+            defensiveStats.waterDefence,
+            defensiveStats.airDefence,
+            defensiveStats.poisonDefence,
+            defensiveStats.evasion
+        )
+    }
+    override fun isEqual(other: Destructable): Boolean = entity.get(DefensiveStats::class)!!.isEqual(other.entity.get(DefensiveStats::class)!!)
 }

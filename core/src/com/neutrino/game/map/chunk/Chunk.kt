@@ -6,10 +6,10 @@ import com.esotericsoftware.kryo.kryo5.io.Output
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.MapTag
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.LevelChunkSize
@@ -80,8 +80,7 @@ class Chunk(
         if (!added)
             entity.get(Texture::class)?.textures?.clear()
         else {
-            println("Setting textures")
-            println("Has drawer? ${entity.get(DrawerAttribute::class)}")
+            entity.addAttribute(DrawPosition())
             entity.get(Texture::class)?.setTextures(entity.get(Position::class)!!, Random)
         }
     }

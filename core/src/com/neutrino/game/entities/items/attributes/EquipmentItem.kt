@@ -1,8 +1,9 @@
 package com.neutrino.game.entities.items.attributes
 
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.AttributeOperations
 
-class EquipmentItem(val type: EquipmentType): Attribute() {
+data class EquipmentItem(val type: EquipmentType): Attribute(), AttributeOperations<EquipmentItem> {
 
     override fun onEntityAttached() {
         if (entity.hasNot(ItemTier::class))
@@ -54,6 +55,11 @@ class EquipmentItem(val type: EquipmentType): Attribute() {
         }
         return false
     }
+
+    override fun plus(other: EquipmentItem): EquipmentItem = plusPrevious(other)
+    override fun minus(other: EquipmentItem): EquipmentItem = minusPrevious(other)
+    override fun clone(): EquipmentItem = copy()
+    override fun isEqual(other: EquipmentItem): Boolean = type == other.type
 }
 
 enum class EquipmentType {

@@ -1,15 +1,21 @@
 package com.neutrino.game.entities.items.attributes
 
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.AttributeOperations
 
-class HandheldEquipment(
+data class HandheldEquipment(
     val handheldType: HandheldEquipmentType,
     private val equipmentType: EquipmentType
-): Attribute(){
+): Attribute(), AttributeOperations<HandheldEquipment> {
 
     override fun onEntityAttached() {
         entity.addAttribute(EquipmentItem(equipmentType))
     }
+
+    override fun plus(other: HandheldEquipment): HandheldEquipment = plusPrevious(other)
+    override fun minus(other: HandheldEquipment): HandheldEquipment = minusPrevious(other)
+    override fun isEqual(other: HandheldEquipment): Boolean = handheldType == other.handheldType
+    override fun clone(): HandheldEquipment = copy()
 }
 
 enum class HandheldEquipmentType {

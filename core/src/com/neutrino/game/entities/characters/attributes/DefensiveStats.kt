@@ -5,6 +5,7 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.systems.CharacterTag.IncreaseStealthDamage
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.AttributeOperations
 import com.neutrino.game.entities.characters.callables.attack.AttackedAfterCallable
 import com.neutrino.game.entities.characters.callables.attack.AttackedBeforeCallable
 import com.neutrino.game.entities.characters.callables.attack.EntityDiedCallable
@@ -32,7 +33,7 @@ class DefensiveStats(
     var airDefence: Float = 0f,
     /** Range is 0 - 2, where 1+ heals instead of damaging */
     var poisonDefence: Float = 0f
-): Attribute() {
+): Attribute(), AttributeOperations<DefensiveStats> {
 
     fun getDamage(attacker: OffensiveStats) {
 //        if (!this.isAlive())
@@ -106,5 +107,59 @@ class DefensiveStats(
 
     fun isAlive(): Boolean {
         return hp.compareDelta(0f) == 1
+    }
+
+    override fun plus(other: DefensiveStats): DefensiveStats {
+        val newStats = DefensiveStats()
+        newStats.hpMax = hpMax + other.hpMax
+        newStats.hp = hp + other.hp
+        newStats.mpMax = mpMax + other.mpMax
+        newStats.mp = mpMax + other.mpMax
+        newStats.defence = defence + other.defence
+        newStats.evasion = evasion + other.evasion
+        newStats.movementSpeed = movementSpeed + other.movementSpeed
+        newStats.stealth = stealth + other.stealth
+        newStats.fireDefence = fireDefence + other.fireDefence
+        newStats.waterDefence = waterDefence + other.waterDefence
+        newStats.airDefence = airDefence + other.airDefence
+        newStats.poisonDefence = poisonDefence + other.poisonDefence
+        return newStats
+    }
+    override fun minus(other: DefensiveStats): DefensiveStats {
+        val newStats = DefensiveStats()
+        newStats.hpMax = hpMax - other.hpMax
+        newStats.hp = hp - other.hp
+        newStats.mpMax = mpMax - other.mpMax
+        newStats.mp = mpMax - other.mpMax
+        newStats.defence = defence - other.defence
+        newStats.evasion = evasion - other.evasion
+        newStats.movementSpeed = movementSpeed - other.movementSpeed
+        newStats.stealth = stealth - other.stealth
+        newStats.fireDefence = fireDefence - other.fireDefence
+        newStats.waterDefence = waterDefence - other.waterDefence
+        newStats.airDefence = airDefence - other.airDefence
+        newStats.poisonDefence = poisonDefence - other.poisonDefence
+        return newStats
+    }
+    override fun clone(): DefensiveStats {
+        return DefensiveStats(
+            hpMax, hp, mpMax, mp, defence, evasion,
+            movementSpeed, stealth, fireDefence,
+            waterDefence, airDefence, poisonDefence
+        )
+    }
+    override fun isEqual(other: DefensiveStats): Boolean {
+        return hpMax == other.hpMax &&
+                hp == other.hp &&
+                mpMax == other.mpMax &&
+                mpMax == other.mpMax &&
+                defence == other.defence &&
+                evasion == other.evasion &&
+                movementSpeed == other.movementSpeed &&
+                stealth == other.stealth &&
+                fireDefence == other.fireDefence &&
+                waterDefence == other.waterDefence &&
+                airDefence == other.airDefence &&
+                poisonDefence == other.poisonDefence
     }
 }

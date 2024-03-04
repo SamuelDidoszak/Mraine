@@ -1,5 +1,6 @@
 package com.neutrino.game.entities
 
+import com.neutrino.game.entities.shared.attributes.util.EqualityCheckLock
 import kotlin.reflect.KClass
 import kotlin.reflect.full.superclasses
 
@@ -98,5 +99,24 @@ open class Entity() {
     infix fun detach(callable: Callable): Entity {
         callables!!.remove(callable)
         return this
+    }
+
+
+    infix fun isEqual(other: Entity): Boolean {
+        for (attribute in attributes) {
+            if (other hasNot attribute.key)
+                return false
+            if (attribute.value is AttributeOperations<*>) {
+                if (!(attribute.value as AttributeOperations<Attribute>).isEqual(other.get(attribute.key)!!))
+                    return false
+            }
+        }
+        if (this has EqualityCheckLock::class)
+            return true
+
+        addAttribute(EqualityCheckLock())
+        val isEqual = other.isEqual(this)
+        removeAttribute(EqualityCheckLock::class)
+        return isEqual
     }
 }

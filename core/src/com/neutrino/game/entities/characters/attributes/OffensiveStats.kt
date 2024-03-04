@@ -1,6 +1,7 @@
 package com.neutrino.game.entities.characters.attributes
 
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.AttributeOperations
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
@@ -35,7 +36,7 @@ class OffensiveStats(
     var airDamageMax: Float = airDamageMin,
     var poisonDamageMin: Float = 0f,
     var poisonDamageMax: Float = poisonDamageMin
-): Attribute(), HasRange {
+): Attribute(), HasRange, AttributeOperations<OffensiveStats> {
 
     fun attack(target: Position) {
         if (entity has AreaAttack::class)
@@ -113,7 +114,7 @@ class OffensiveStats(
      * New range is max range
      * New entity is leftSide entity
      */
-    fun plus(other: OffensiveStats): OffensiveStats {
+    override fun plus(other: OffensiveStats): OffensiveStats {
         val newStats = OffensiveStats()
         newStats.entity = entity
         newStats.strength = strength + other.strength
@@ -139,5 +140,64 @@ class OffensiveStats(
         newStats.poisonDamageMax = poisonDamageMax + other.poisonDamageMax
 
         return newStats
+    }
+    override fun minus(other: OffensiveStats): OffensiveStats {
+        val newStats = OffensiveStats()
+        newStats.entity = entity
+        newStats.strength = strength - other.strength
+        newStats.dexterity = dexterity - other.dexterity
+        newStats.intelligence = intelligence - other.intelligence
+        newStats.luck = luck - other.luck
+        newStats.damageMin = damageMin - other.damageMin
+        newStats.damageMax = damageMax - other.damageMax
+        newStats.accuracy = min(accuracy, other.accuracy) - abs(accuracy - other.accuracy) / 2f
+        newStats.criticalChance = criticalChance - other.criticalChance
+        newStats.criticalDamage = criticalDamage - other.criticalDamage
+        newStats.attackSpeed = min(attackSpeed, other.attackSpeed) - abs(attackSpeed - other.attackSpeed) / 2f
+        val isOtherRangeBigger = other.range > range
+        newStats.range = min(range, other.range)
+        newStats.rangeType = if (isOtherRangeBigger) rangeType else other.rangeType
+        newStats.fireDamageMin = fireDamageMin - other.fireDamageMin
+        newStats.fireDamageMax = fireDamageMax - other.fireDamageMax
+        newStats.waterDamageMin = waterDamageMin - other.waterDamageMin
+        newStats.waterDamageMax = waterDamageMax - other.waterDamageMax
+        newStats.airDamageMin = airDamageMin - other.airDamageMin
+        newStats.airDamageMax = airDamageMax - other.airDamageMax
+        newStats.poisonDamageMin = poisonDamageMin - other.poisonDamageMin
+        newStats.poisonDamageMax = poisonDamageMax - other.poisonDamageMax
+
+        return newStats
+    }
+    override fun clone(): OffensiveStats {
+        return OffensiveStats(
+            strength, dexterity, intelligence, luck,
+            damageMin, damageMax, accuracy,
+            criticalChance, criticalDamage, attackSpeed,
+            range, rangeType, fireDamageMin, fireDamageMax,
+            waterDamageMin, waterDamageMax, airDamageMin,
+            airDamageMax, poisonDamageMin, poisonDamageMax
+        )
+    }
+    override fun isEqual(other: OffensiveStats): Boolean {
+        return strength == other.strength &&
+            dexterity == other.dexterity &&
+            intelligence == other.intelligence &&
+            luck == other.luck &&
+            damageMin == other.damageMin &&
+            damageMax == other.damageMax &&
+            accuracy == other.accuracy &&
+            criticalChance == other.criticalChance &&
+            criticalDamage == other.criticalDamage &&
+            attackSpeed == other.attackSpeed &&
+            range == other.range &&
+            rangeType == other.rangeType &&
+            fireDamageMin == other.fireDamageMin &&
+            fireDamageMax == other.fireDamageMax &&
+            waterDamageMin == other.waterDamageMin &&
+            waterDamageMax == other.waterDamageMax &&
+            airDamageMin == other.airDamageMin &&
+            airDamageMax == other.airDamageMax &&
+            poisonDamageMin == other.poisonDamageMin &&
+            poisonDamageMax == other.poisonDamageMax
     }
 }

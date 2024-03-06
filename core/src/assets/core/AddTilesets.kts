@@ -1,5 +1,5 @@
 import com.neutrino.game.entities.shared.attributes.Identity
-import com.neutrino.generation.Tilesets
+import com.neutrino.game.map.generation.Tilesets
 
 Tilesets.add("Dungeon", listOf(
     Identity.Wall() to "DungeonWall",

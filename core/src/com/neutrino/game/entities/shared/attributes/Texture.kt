@@ -2,6 +2,7 @@ package com.neutrino.game.entities.shared.attributes
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.graphics.drawing.AnimationData
 import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.TextureSprite
@@ -12,7 +13,7 @@ class Texture(
     private val setTextures: (position: Position?,
                               random: Random,
                               textures: ArrayList<TextureSprite>) -> Unit
-): Attribute() {
+): Attribute(), Cloneable<Texture> {
     val textures: TextureList = TextureList()
 
     fun setTextures(position: Position?, randomGenerator: Random) {
@@ -134,4 +135,6 @@ class Texture(
             }
         }
     }
+
+    override fun clone(): Texture = Texture(setTextures)
 }

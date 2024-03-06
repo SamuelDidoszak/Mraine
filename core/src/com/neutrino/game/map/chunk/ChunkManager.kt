@@ -25,6 +25,10 @@ object ChunkManager: ChunkManagerMethods {
     val middleChunk: Chunk
         get() = chunkMap[1][1]!!
 
+    fun getEntitiesAt(position: Position): EntityList {
+        return position.chunk.map[position.y][position.x]
+    }
+
     val characterMethods = CharacterMethods()
 
     fun addChunk(chunk: Chunk, levelDrawer: LevelDrawer) {

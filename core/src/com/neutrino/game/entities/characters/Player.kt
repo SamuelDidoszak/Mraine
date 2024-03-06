@@ -32,6 +32,7 @@ val Player = Character()
     })
     .addAttribute(CharacterTags())
     .addAttribute(Inventory())
+    .addAttribute(Equipment())
     .also { it.id = 21370 }
     .also {
         attachCallables(it)

@@ -1,11 +1,12 @@
 package com.neutrino.game.entities.items.attributes
 
 import com.neutrino.game.entities.Attribute
-import com.neutrino.game.entities.AttributeOperations
+import com.neutrino.game.entities.util.Cloneable
+import com.neutrino.game.entities.util.Equality
 
 data class GoldValue(
     var value: Int
-): Attribute(), AttributeOperations<GoldValue> {
+): Attribute(), Equality<GoldValue>, Cloneable<GoldValue> {
     private val originalValue = value
 
     /**
@@ -16,8 +17,6 @@ data class GoldValue(
         return value.compareTo(originalValue)
     }
 
-    override fun plus(other: GoldValue): GoldValue = GoldValue(value + other.value)
-    override fun minus(other: GoldValue): GoldValue = GoldValue(value - other.value)
     override fun isEqual(other: GoldValue): Boolean = value == other.value
     override fun clone(): GoldValue = GoldValue(value)
 }

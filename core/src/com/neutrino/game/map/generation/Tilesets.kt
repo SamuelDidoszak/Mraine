@@ -1,7 +1,6 @@
-package com.neutrino.generation
+package com.neutrino.game.map.generation
 
 import com.neutrino.game.entities.shared.attributes.Identity
-import com.neutrino.game.map.generation.Tileset
 import com.neutrino.game.util.EntityName
 
 object Tilesets {

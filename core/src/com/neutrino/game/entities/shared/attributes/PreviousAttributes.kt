@@ -1,7 +1,8 @@
 package com.neutrino.game.entities.shared.attributes
 
 import com.neutrino.game.entities.Attribute
-import com.neutrino.game.entities.AttributeOperations
+import com.neutrino.game.entities.util.AttributeOperations
+import com.neutrino.game.entities.util.Equality
 import kotlin.reflect.KClass
 
 class PreviousAttributes: Attribute(), AttributeOperations<PreviousAttributes> {
@@ -18,7 +19,7 @@ class PreviousAttributes: Attribute(), AttributeOperations<PreviousAttributes> {
 
     fun <T: Attribute> remove(attribute: T, attrClass: KClass<T>): T? {
         for (attr in attributeList) {
-            if (attr::class == attrClass && (attr as AttributeOperations<T>) isEqual attribute) {
+            if (attr::class == attrClass && (attr as Equality<T>) isEqual attribute) {
                 attributeList.remove(attr)
                 removeIfEmpty()
                 return attr as T
@@ -44,21 +45,13 @@ class PreviousAttributes: Attribute(), AttributeOperations<PreviousAttributes> {
     }
 
 
-    override fun plus(other: PreviousAttributes): PreviousAttributes {
-        val newAttrs = PreviousAttributes()
-        for (attr in attributeList)
-            newAttrs.add(attr)
+    override fun plusEquals(other: PreviousAttributes) {
         for (attr in other.attributeList)
-            newAttrs.add(attr)
-        return newAttrs
+            attributeList.add(attr)
     }
-    override fun minus(other: PreviousAttributes): PreviousAttributes {
-        val newAttrs = PreviousAttributes()
-        for (attr in attributeList)
-            newAttrs.add(attr)
+    override fun minusEquals(other: PreviousAttributes) {
         for (attr in other.attributeList)
-            newAttrs.remove(attr::class)
-        return newAttrs
+            attributeList.remove(attr)
     }
     override fun shouldRemove(): Boolean = attributeList.size == 0
     override fun clone(): PreviousAttributes {

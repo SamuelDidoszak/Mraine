@@ -1,6 +1,7 @@
 package com.neutrino.game.entities
 
 import com.neutrino.game.entities.shared.attributes.PreviousAttributes
+import com.neutrino.game.entities.util.AttributeOperations
 
 abstract class Attribute {
 
@@ -18,16 +19,15 @@ abstract class Attribute {
 
     open fun onEntityAttached() {}
 
-    protected inline fun <reified T: Attribute> plusPrevious(other: T): T {
+    protected inline fun <reified T: Attribute> plusPrevious(other: T) {
         val prevAttr = entity.get(PreviousAttributes::class) ?:
             entity.addAttribute(PreviousAttributes()).get(PreviousAttributes::class)!!
         prevAttr.add(this)
         val newInstance = (other as AttributeOperations<T>).clone()
         entity.addAttribute(newInstance)
-        return this as T
     }
 
-    protected inline fun <reified T: Attribute> minusPrevious(other: T): T {
+    protected inline fun <reified T: Attribute> minusPrevious(other: T) {
         val prevAttr = entity.get(PreviousAttributes::class)
         if ((this as AttributeOperations<T>) isEqual other) {
             entity.removeAttribute(T::class)
@@ -39,6 +39,5 @@ abstract class Attribute {
             if (attribute != null)
                 entity.addAttribute(attribute)
         }
-        return this as T
     }
 }

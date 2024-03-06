@@ -1,6 +1,7 @@
 package com.neutrino.game.entities
 
 import com.neutrino.game.entities.shared.attributes.util.EqualityCheckLock
+import com.neutrino.game.entities.util.Equality
 import kotlin.reflect.KClass
 import kotlin.reflect.full.superclasses
 
@@ -27,9 +28,9 @@ open class Entity() {
         }
 
 
-    private val attributes: HashMap<KClass<out Attribute>, Attribute> = HashMap()
+    protected val attributes: HashMap<KClass<out Attribute>, Attribute> = HashMap()
 
-    private var callables: ArrayList<Callable>? = null
+    protected var callables: ArrayList<Callable>? = null
 
 
     infix fun addAttribute(attribute: Attribute): Entity {
@@ -106,8 +107,8 @@ open class Entity() {
         for (attribute in attributes) {
             if (other hasNot attribute.key)
                 return false
-            if (attribute.value is AttributeOperations<*>) {
-                if (!(attribute.value as AttributeOperations<Attribute>).isEqual(other.get(attribute.key)!!))
+            if (attribute.value is Equality<*>) {
+                if (!(attribute.value as Equality<Attribute>).isEqual(other.get(attribute.key)!!))
                     return false
             }
         }

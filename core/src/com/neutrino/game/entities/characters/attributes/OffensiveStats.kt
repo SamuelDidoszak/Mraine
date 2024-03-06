@@ -1,11 +1,11 @@
 package com.neutrino.game.entities.characters.attributes
 
 import com.neutrino.game.entities.Attribute
-import com.neutrino.game.entities.AttributeOperations
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.util.add
 import kotlin.math.abs
 import kotlin.math.max
@@ -110,63 +110,54 @@ class OffensiveStats(
     }
 
     /**
-     * Returns new joined offensiveStats.
      * New range is max range
      * New entity is leftSide entity
      */
-    override fun plus(other: OffensiveStats): OffensiveStats {
-        val newStats = OffensiveStats()
-        newStats.entity = entity
-        newStats.strength = strength + other.strength
-        newStats.dexterity = dexterity + other.dexterity
-        newStats.intelligence = intelligence + other.intelligence
-        newStats.luck = luck + other.luck
-        newStats.damageMin = damageMin + other.damageMin
-        newStats.damageMax = damageMax + other.damageMax
-        newStats.accuracy = min(accuracy, other.accuracy) + abs(accuracy - other.accuracy) / 2f
-        newStats.criticalChance = criticalChance + other.criticalChance
-        newStats.criticalDamage = criticalDamage + other.criticalDamage
-        newStats.attackSpeed = min(attackSpeed, other.attackSpeed) + abs(attackSpeed - other.attackSpeed) / 2f
+    override fun plusEquals(other: OffensiveStats) {
+        strength += other.strength
+        dexterity += other.dexterity
+        intelligence += other.intelligence
+        luck += other.luck
+        damageMin += other.damageMin
+        damageMax += other.damageMax
+        accuracy = min(accuracy, other.accuracy) + abs(accuracy - other.accuracy) / 2f
+        criticalChance += other.criticalChance
+        criticalDamage += other.criticalDamage
+        attackSpeed = min(attackSpeed, other.attackSpeed) + abs(attackSpeed - other.attackSpeed) / 2f
         val isOtherRangeBigger = other.range > range
-        newStats.range = max(range, other.range)
-        newStats.rangeType = if (isOtherRangeBigger) other.rangeType else rangeType
-        newStats.fireDamageMin = fireDamageMin + other.fireDamageMin
-        newStats.fireDamageMax = fireDamageMax + other.fireDamageMax
-        newStats.waterDamageMin = waterDamageMin + other.waterDamageMin
-        newStats.waterDamageMax = waterDamageMax + other.waterDamageMax
-        newStats.airDamageMin = airDamageMin + other.airDamageMin
-        newStats.airDamageMax = airDamageMax + other.airDamageMax
-        newStats.poisonDamageMin = poisonDamageMin + other.poisonDamageMin
-        newStats.poisonDamageMax = poisonDamageMax + other.poisonDamageMax
-
-        return newStats
+        range = max(range, other.range)
+        rangeType = if (isOtherRangeBigger) other.rangeType else rangeType
+        fireDamageMin += other.fireDamageMin
+        fireDamageMax += other.fireDamageMax
+        waterDamageMin += other.waterDamageMin
+        waterDamageMax += other.waterDamageMax
+        airDamageMin += other.airDamageMin
+        airDamageMax += other.airDamageMax
+        poisonDamageMin += other.poisonDamageMin
+        poisonDamageMax += other.poisonDamageMax
     }
-    override fun minus(other: OffensiveStats): OffensiveStats {
-        val newStats = OffensiveStats()
-        newStats.entity = entity
-        newStats.strength = strength - other.strength
-        newStats.dexterity = dexterity - other.dexterity
-        newStats.intelligence = intelligence - other.intelligence
-        newStats.luck = luck - other.luck
-        newStats.damageMin = damageMin - other.damageMin
-        newStats.damageMax = damageMax - other.damageMax
-        newStats.accuracy = min(accuracy, other.accuracy) - abs(accuracy - other.accuracy) / 2f
-        newStats.criticalChance = criticalChance - other.criticalChance
-        newStats.criticalDamage = criticalDamage - other.criticalDamage
-        newStats.attackSpeed = min(attackSpeed, other.attackSpeed) - abs(attackSpeed - other.attackSpeed) / 2f
+    override fun minusEquals(other: OffensiveStats) {
+        strength -= other.strength
+        dexterity -= other.dexterity
+        intelligence -= other.intelligence
+        luck -= other.luck
+        damageMin -= other.damageMin
+        damageMax -= other.damageMax
+        accuracy = min(accuracy, other.accuracy) - abs(accuracy - other.accuracy) / 2f
+        criticalChance -= other.criticalChance
+        criticalDamage -= other.criticalDamage
+        attackSpeed = min(attackSpeed, other.attackSpeed) - abs(attackSpeed - other.attackSpeed) / 2f
         val isOtherRangeBigger = other.range > range
-        newStats.range = min(range, other.range)
-        newStats.rangeType = if (isOtherRangeBigger) rangeType else other.rangeType
-        newStats.fireDamageMin = fireDamageMin - other.fireDamageMin
-        newStats.fireDamageMax = fireDamageMax - other.fireDamageMax
-        newStats.waterDamageMin = waterDamageMin - other.waterDamageMin
-        newStats.waterDamageMax = waterDamageMax - other.waterDamageMax
-        newStats.airDamageMin = airDamageMin - other.airDamageMin
-        newStats.airDamageMax = airDamageMax - other.airDamageMax
-        newStats.poisonDamageMin = poisonDamageMin - other.poisonDamageMin
-        newStats.poisonDamageMax = poisonDamageMax - other.poisonDamageMax
-
-        return newStats
+        range = min(range, other.range)
+        rangeType = if (isOtherRangeBigger) rangeType else other.rangeType
+        fireDamageMin -= other.fireDamageMin
+        fireDamageMax -= other.fireDamageMax
+        waterDamageMin -= other.waterDamageMin
+        waterDamageMax -= other.waterDamageMax
+        airDamageMin -= other.airDamageMin
+        airDamageMax -= other.airDamageMax
+        poisonDamageMin -= other.poisonDamageMin
+        poisonDamageMax -= other.poisonDamageMax
     }
     override fun clone(): OffensiveStats {
         return OffensiveStats(

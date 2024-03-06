@@ -1,8 +1,9 @@
 package com.neutrino.game.entities.shared.attributes
 
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.util.Cloneable
 
-sealed class Identity: Attribute() {
+sealed class Identity: Attribute(), Cloneable<Identity> {
 
     class Any: Identity()
     class Floor: Identity()
@@ -24,4 +25,6 @@ sealed class Identity: Attribute() {
     override fun toString(): String {
         return this::class.simpleName!!
     }
+
+    override fun clone(): Identity = this::class.java.newInstance()
 }

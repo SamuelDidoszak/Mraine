@@ -14,11 +14,11 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.neutrino.game.LevelInitialization
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.characters.utility.DamageNumber
-import com.neutrino.game.domain.model.items.EquipmentType
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.gameplay.main.Gameplay
 import com.neutrino.game.map.chunk.ChunkCoords
@@ -223,8 +223,8 @@ class GameScreen: KtxScreen {
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.EQUIPMENT
             override fun update(data: Any?): Boolean {
-                if (data is EquipmentType || data == null) {
-                    uiStage.equipment.refreshEquipment(data as EquipmentType)
+                if (data is Equipment.EquipmentType || data == null) {
+                    uiStage.equipment.refreshEquipment(data as Equipment.EquipmentType)
                     uiStage.inventory.refreshInventory()
                     hudStage.refreshHotBar()
                 }

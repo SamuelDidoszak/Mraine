@@ -8,9 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
-import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.items.EquipmentType
-import com.neutrino.game.domain.model.items.Item
+import com.neutrino.game.UI.utility.EqActor
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.Items
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Equipment
+import com.neutrino.game.entities.characters.attributes.Inventory
+import com.neutrino.game.entities.items.attributes.Amount
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
@@ -21,7 +25,7 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
     val stats: Stats = Stats()
 
     private lateinit var equipmentTable: Table
-    private var equipmentMap: EnumMap<EquipmentType, Container<Actor>> = EnumMap(EquipmentType::class.java)
+    private var equipmentMap: EnumMap<Equipment.EquipmentType, Container<Actor>> = EnumMap(Equipment.EquipmentType::class.java)
 
     fun initialize(border: Image) {
         addEquipment(border)
@@ -36,11 +40,13 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
         name = "equipment"
         addActor(Image(uiElements["EquipmentScreen"]))
 
-        val namesList: List<Pair<String, EquipmentType>> = listOf(
-            Pair("hands", EquipmentType.HANDS), Pair("head", EquipmentType.HEAD), Pair("amulet", EquipmentType.AMULET),
-            Pair("lHand", EquipmentType.LHAND), Pair("torso", EquipmentType.TORSO), Pair("rHand", EquipmentType.RHAND),
-            Pair("lRing", EquipmentType.LRING), Pair("legs", EquipmentType.LEGS), Pair("rRing", EquipmentType.RRING),
-            Pair("money", EquipmentType.MONEY), Pair("feet", EquipmentType.FEET), Pair("bag", EquipmentType.BAG)
+        val namesList: List<Pair<String, Equipment.EquipmentType>> = listOf(
+            Pair("hands", Equipment.EquipmentType.HANDS), Pair("head", Equipment.EquipmentType.HEAD),
+            Pair("amulet", Equipment.EquipmentType.AMULET), Pair("lHand", Equipment.EquipmentType.LHAND),
+            Pair("torso", Equipment.EquipmentType.TORSO), Pair("rHand", Equipment.EquipmentType.RHAND),
+            Pair("lRing", Equipment.EquipmentType.LRING), Pair("legs", Equipment.EquipmentType.LEGS),
+            Pair("rRing", Equipment.EquipmentType.RRING), Pair("money", Equipment.EquipmentType.MONEY),
+            Pair("feet", Equipment.EquipmentType.FEET), Pair("bag", Equipment.EquipmentType.BAG)
         )
 
         equipmentTable = scene2d.table {
@@ -67,14 +73,13 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
         equipmentTable.setPosition(border.width - equipmentTable.width - 12 - 8, 38f)
 
         // Initialize Gold actor
-        // TODO ECS Items
-//        equipmentMap[EquipmentType.MONEY]!!.actor = EqActor(Gold())
-//        (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).item.amount = 0
-//        (equipmentMap[EquipmentType.MONEY]!!.actor as EqActor).refreshAmount()
+        equipmentMap[Equipment.EquipmentType.MONEY]!!.actor = EqActor(Items.new("Gold"))
+        (equipmentMap[Equipment.EquipmentType.MONEY]!!.actor as EqActor).amount = 0
+        (equipmentMap[Equipment.EquipmentType.MONEY]!!.actor as EqActor).refreshAmount()
     }
 
-    private fun setEquipmentDrawable(type: EquipmentType) {
-        val item: Item? = Player.equipment.getEquipped(type)
+    private fun setEquipmentDrawable(type: Equipment.EquipmentType) {
+        val item: Entity? = Player.get(Equipment::class)!!.getEquipped(type)
 
         if (item != null)
             equipmentMap[type]!!.background = TextureRegionDrawable(uiElements["equipmentDefault"])
@@ -83,23 +88,25 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
     }
 
     fun refreshGoldInEquipment() {
-//        val goldActor = equipmentMap[EquipmentType.MONEY]!!.actor as EqActor
-//        val prevAmount = goldActor.item.amount!!
-//        var goldAmount = 0
+        val goldActor = equipmentMap[Equipment.EquipmentType.MONEY]!!.actor as EqActor
+        val prevAmount = goldActor.amount
+        var goldAmount = 0
         // TODO ECS Items
-//        Player.inventory.itemList.forEach { if (it.item is Gold) goldAmount += it.item.amount!! }
-//        goldActor.item.amount = goldAmount
-//        if (prevAmount != goldAmount)
-//            goldActor.refreshAmount()
+        val goldList = Player.get(Inventory::class)!!.getAll { item: Entity -> item.id == Items.getId("Gold") }
+        goldList?.forEach { goldAmount += it.get(Amount::class)!!.amount }
+        goldActor.amount = goldAmount
+        if (prevAmount != goldAmount)
+            goldActor.refreshAmount()
     }
 
-    fun refreshEquipment(type: EquipmentType) {
-        val item: Item? = Player.equipment.getEquipped(type)
+    fun refreshEquipment(type: Equipment.EquipmentType) {
+        val item: Entity? = Player.get(Equipment::class)!!.getEquipped(type)
 
         // TODO ECS ITEMS EQUIPMENT UI
-//        if (item != null)
-//            equipmentMap[type]!!.actor = EqActor(item)
-//        else if (equipmentMap[type]!!.hasChildren())
-//            equipmentMap[type]!!.removeActorAt(0, false)
+        if (item != null)
+            equipmentMap[type]!!.actor = EqActor(item)
+
+        else if (equipmentMap[type]!!.hasChildren())
+            equipmentMap[type]!!.removeActorAt(0, false)
     }
 }

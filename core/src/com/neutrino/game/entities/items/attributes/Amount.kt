@@ -13,7 +13,6 @@ class Amount(
         set(value) {
             field = value
             entity.call(AmountChangedCallable::class, amount)
-            val gay: Attribute = clone()
         }
 
     fun canStackMore(): Boolean {

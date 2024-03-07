@@ -7,9 +7,9 @@ import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.util.Fonts
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.util.Fonts
 import com.neutrino.game.util.roundOneDecimal
 import com.neutrino.game.util.setTextSameWidth
 import ktx.scene2d.scene2d
@@ -308,12 +308,14 @@ class Stats: Table() {
         val uniqueStats: MutableSet<StatsEnum> = mutableSetOf()
         val otherData: MutableSet<String> = mutableSetOf()
 
-        for (data in GlobalData.getData(GlobalDataType.PLAYERSTAT)) {
-            when (data) {
-                is StatsEnum -> uniqueStats.add(data)
-                is String -> otherData.add(data)
-            }
-        }
+        StatsEnum.values().forEach { uniqueStats.add(it) }
+
+//        for (data in GlobalData.getData(GlobalDataType.PLAYERSTAT)) {
+//            when (data) {
+//                is StatsEnum -> uniqueStats.add(data)
+//                is String -> otherData.add(data)
+//            }
+//        }
 
         for (stat in uniqueStats)
             setStatLabelText(stat)

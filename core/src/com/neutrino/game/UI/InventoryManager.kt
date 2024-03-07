@@ -12,14 +12,12 @@ import com.badlogic.gdx.utils.TimeUtils
 import com.neutrino.game.UI.popups.ItemContextPopup
 import com.neutrino.game.UI.popups.SkillContextPopup
 import com.neutrino.game.UI.utility.*
-import com.neutrino.game.domain.model.items.Item
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.Items
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.characters.attributes.util.InventoryElement
 import com.neutrino.game.entities.items.attributes.Amount
-import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.util.isIn
 import kotlin.math.ceil
 
@@ -51,7 +49,7 @@ class InventoryManager(private val uiStage: UiStage) {
     private var displayedItem: Entity? = null
     private var detailsPopup: Actor? = null
     private var contextPopup: Actor? = null
-    private val itemContextPopup = ItemContextPopup(uiStage.usedItemList, { item: Item -> uiStage.useItemOn = item})  {
+    private val itemContextPopup = ItemContextPopup(uiStage.usedItemList, { item: Entity -> uiStage.useItemOn = item})  {
         uiStage.showInventory = false
         nullifyAllValues()
         uiStage.nullifyAllValues()
@@ -234,9 +232,9 @@ class InventoryManager(private val uiStage: UiStage) {
                     val hoveredActor: Actor? = getInventoryCell(coord.x, coord.y, hoveredInv.pane)?.actor
                     if (hoveredActor != null) {
                         when (hoveredInv.type) {
-                            ManagerType.INVENTORY, ManagerType.EQUIPMENT -> {}
-                                // TODO ECS ITEMS Create popups
-//                                contextPopup = itemContextPopup.createContextMenu((hoveredActor as EqActor).entity, coord.x, coord.y)
+                            ManagerType.INVENTORY, ManagerType.EQUIPMENT -> {
+                                contextPopup = itemContextPopup.createContextMenu((hoveredActor as EqActor).entity, coord.x, coord.y)
+                            }
                             ManagerType.SKILLS -> {
                                 val skill = (hoveredActor as SkillActor).skill
                                 contextPopup = SkillContextPopup(skill, coord.x, coord.y) {

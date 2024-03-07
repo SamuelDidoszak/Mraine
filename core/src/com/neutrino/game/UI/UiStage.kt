@@ -33,9 +33,9 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     val itemDropList: ArrayDeque<Entity> = ArrayDeque()
 
     /** FIFO of used item actions */
-    val usedItemList: ArrayDeque<Item> = ArrayDeque()
+    val usedItemList: ArrayDeque<Entity> = ArrayDeque()
     /** Item to use on another character / tile */
-    var useItemOn: Item? = null
+    var useItemOn: Entity? = null
 
     var showInventory: Boolean = true
 

@@ -26,6 +26,7 @@ import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.UI.popups.Diagnostics
+import com.neutrino.game.UI.popups.ItemContextPopup
 import com.neutrino.game.UI.popups.SkillDetailsPopup
 import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.UI.utility.PickupActor
@@ -261,8 +262,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
     val usedItemList: ArrayDeque<Entity> = ArrayDeque()
     var useItemOn: Entity? = null
     var usedSkill: Skill? = null
-    // TODO ECS ITEMS Popups
-//    private val itemContextPopup = ItemContextPopup(usedItemList, { item: Item -> useItemOn = item}, ::nullifyAllValues)
+    private val itemContextPopup = ItemContextPopup(usedItemList, { item: Entity -> useItemOn = item}, ::nullifyAllValues)
 
     /** ============================================================     HotBar related methods     =============================================================================*/
 
@@ -408,15 +408,16 @@ class HudStage(viewport: Viewport): Stage(viewport) {
             }
             else {
                 val clickedActor = actorAtGroup(coord.x, coord.y)
-                // TODO ECS ITEMS Popups
-//                if (clickedActor != null && clickedActor is Container<*> && clickedActor.actor != null) {
-//                    if (clickedActor.actor is EqActor) {
-//                        contextPopup = itemContextPopup.createContextMenu((clickedActor.actor as EqActor).entity, coord.x, coord.y)
-//                        if (contextPopup != null) {
-//                            addActor(contextPopup)
-//                            contextPopup?.setPosition(coord.x, coord.y)
-//                        }
-//                    } else {
+                if (clickedActor != null && clickedActor is Container<*> && clickedActor.actor != null) {
+                    if (clickedActor.actor is EqActor) {
+                        contextPopup = itemContextPopup.createContextMenu((clickedActor.actor as EqActor).entity, coord.x, coord.y)
+                        if (contextPopup != null) {
+                            addActor(contextPopup)
+                            contextPopup?.setPosition(coord.x, coord.y)
+                        }
+                    }
+                    // TODO ECS SKILLS Popups
+//                    else {
 //                        val skill = (clickedActor.actor as SkillActor).skill
 //                        contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
 //                            usedSkill = skill
@@ -425,8 +426,8 @@ class HudStage(viewport: Viewport): Stage(viewport) {
 //                        addActor(contextPopup)
 //                        contextPopup?.setPosition(coord.x, coord.y)
 //                    }
-//                    return true
-//                }
+                    return true
+                }
             }
         }
 

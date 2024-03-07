@@ -34,6 +34,17 @@ class Inventory(
         return items[i].item
     }
 
+    fun getAll(predicate: (item: Entity) -> Boolean): List<Entity>? {
+        val entityList = ArrayList<Entity>()
+        items.forEach {
+            if (predicate.invoke(it.item))
+                entityList.add(it.item)
+        }
+        return if (entityList.isNotEmpty())
+            entityList.toList()
+        else null
+    }
+
     fun getElement(entity: Entity): InventoryElement? {
         return items.find { it.item == entity }
     }

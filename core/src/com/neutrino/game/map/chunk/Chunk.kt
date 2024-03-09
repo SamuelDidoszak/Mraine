@@ -9,6 +9,7 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.entities.systems.events.EventArray
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.MapTag
 import com.neutrino.game.util.Constants
@@ -69,6 +70,9 @@ class Chunk(
      * Map of discovered and undiscovered tiles
      */
     val discoveredMap: List<MutableList<Boolean>> = List(sizeY) { MutableList(sizeX) {false} }
+
+    val events = EventArray()
+    val globalEvents = EventArray()
 
     fun afterMapGeneration() {
         isMapSet = true

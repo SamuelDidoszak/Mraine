@@ -221,9 +221,9 @@ class Equipment(val character: Character) {
                     modifier.event.start()
                 }
                 is TimedEvent -> {
-                    GlobalData.notifyObservers(GlobalDataType.EVENT, CharacterEvent(
-                        character, modifier, Turn.turn
-                    ))
+//                    GlobalData.notifyObservers(GlobalDataType.EVENT, CharacterEvent(
+//                        character, modifier, Turn.turn
+//                    ))
                 }
             }
         }

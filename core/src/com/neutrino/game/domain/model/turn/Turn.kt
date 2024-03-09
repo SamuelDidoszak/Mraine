@@ -5,8 +5,6 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.systems.CharacterTag
-import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
-import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
@@ -17,6 +15,8 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.entities.systems.events.EventArray
+import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkCoords
@@ -68,12 +68,12 @@ object Turn {
      * List containing various short term events, often related to characters.
      * Incorporates cooldowns, buffs, etc.
      */
-    var eventArray: EventArray = EventArray()
+    var eventArray = EventArray()
 
     /**
      * Stores time dependant global event information
      */
-    val globalEventArray: EventArray = EventArray()
+    val globalEventArray = EventArray()
 
     fun unsetLevel() {
         currentChunk.characterArray.clear()
@@ -313,27 +313,13 @@ object Turn {
             characterArray.move(character)
             while (updateBatch.firstOrNull() is Action.EVENT) {
                 println("Executing event from updatebatch")
-                executeEvent()
+                Events.execute()
                 updateBatch.removeFirst()
             }
 
-            // events
-            while (eventArray.isNotEmpty() && eventArray.get(turn) != null) {
-                executeEvent()
-            }
-            // global events
-            while (globalEventArray.isNotEmpty() && globalEventArray.get(turn) != null) {
-                val globalEvent = globalEventArray[0]
-            }
+            Events.execute()
         }
-        // events
-        while (eventArray.isNotEmpty() && eventArray.get(turn) != null) {
-            executeEvent()
-        }
-        // global events
-        while (globalEventArray.isNotEmpty() && globalEventArray.get(turn) != null) {
-            val globalEvent = globalEventArray[0]
-        }
+        Events.execute()
         tick()
     }
 
@@ -377,39 +363,8 @@ object Turn {
         characterArray.remove(Player)
     }
 
-    private fun executeEvent() {
-        try {
-            val event = eventArray.get(turn)!!
-
-            if (event.curRepeat >= event.executions) {
-                event.event.stop()
-                eventArray.stopEvent(event)
-                return
-            }
-
-            event.event.start()
-            event.turn += event.timeout
-            event.curRepeat++
-
-            eventArray.move(0)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
 
     private fun setObservers() {
-        GlobalData.registerObserver(object: GlobalDataObserver {
-            override val dataType: GlobalDataType = GlobalDataType.EVENT
-            override fun update(data: Any?): Boolean {
-                if (data != null && data is EventWrapper) {
-                    when (data) {
-                        is CharacterEvent -> eventArray.startEvent(data)
-                    }
-                }
-                return true
-            }
-        } )
 
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.CHARACTERDIED

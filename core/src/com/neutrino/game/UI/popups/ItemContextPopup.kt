@@ -1,11 +1,15 @@
 package com.neutrino.game.UI.popups
 
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
+import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraButton
+import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.items.ItemType
@@ -15,6 +19,10 @@ import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.items.attributes.EquipmentItem
+import com.neutrino.game.entities.systems.events.callables.AddCooldown
+import com.neutrino.game.entities.items.attributes.usable.Use
+import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
+import com.neutrino.game.entities.systems.events.attributes.EventList
 import com.neutrino.game.graphics.utility.BackgroundColor
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.scene2d
@@ -53,6 +61,38 @@ class ItemContextPopup(
 
                 if (item !is ItemType.USABLE || item.useOn != UseOn.OTHERS_ONLY)
                     add(equipButton).prefWidth(90f).prefHeight(40f)
+            }
+            if (item has Use::class || item has UseOnEntity::class) {
+                val useButton = TextraButton("[%150][@Cozette]Use", Scene2DSkin.defaultSkin)
+                useButton.addListener(object: ClickListener() {
+                    override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                        if (event?.button != Input.Buttons.LEFT)
+                            return
+                        super.clicked(event, x, y)
+                        val itemCooldowns = item.getCallables(AddCooldown::class)
+                        val activeCooldowns = itemCooldowns?.filter { Player.get(EventList::class)?.hasCooldown(it.type) == true }
+                        if (!activeCooldowns.isNullOrEmpty()) {
+                            for (cooldown in activeCooldowns) {
+                                val cooldownLabel = TextraLabel("[@Cozette][%600][*]${cooldown.type} is on cooldown", KnownFonts.getStandardFamily())
+                                cooldownLabel.name = "${cooldown.type} cooldown"
+                                parent.addActor(cooldownLabel)
+                                val coords = localToParentCoordinates(Vector2(x, y))
+                                cooldownLabel.setPosition(coords.x, coords.y + 8f)
+                                cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                                cooldownLabel.addAction(
+                                    Actions.sequence(
+                                        Actions.fadeOut(1.25f),
+                                        Actions.removeActor()))
+                            }
+                        } else {
+                            usedItemList.add(item)
+                            customUseMethod.invoke()
+                        }
+                    }
+                })
+
+                add(useButton).prefWidth(90f).prefHeight(40f)
+//                addUseOn(item, this)
             }
 
             pack()

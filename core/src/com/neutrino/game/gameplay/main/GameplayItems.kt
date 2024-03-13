@@ -8,9 +8,13 @@ import com.neutrino.HudStage
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.UseOn
+import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.characters.attributes.Inventory
+import com.neutrino.game.entities.items.attributes.Amount
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
@@ -25,18 +29,6 @@ class GameplayItems(
     val uiStage: UiStage
 ) {
     internal fun useItems() {
-        fun addCooldownIndicator(coords: Coord) {
-            val cooldownLabel = TextraLabel("[@Cozette][%600][*]Cooldown", KnownFonts.getStandardFamily())
-            cooldownLabel.name = "cooldown"
-            gameStage.addActor(cooldownLabel)
-            cooldownLabel.setPosition(coords.x * 64f, (6400f - coords.y * 64f) + 72f)
-            cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
-            cooldownLabel.addAction(
-                Actions.sequence(
-                    Actions.delay(1.25f),
-                    Actions.removeActor()))
-        }
-
         // If an item was used in eq, make an adequate use action
         val usedItemList = hudStage.usedItemList.ifEmpty { uiStage.usedItemList }
         // TODO Actions
@@ -45,25 +37,24 @@ class GameplayItems(
         if (usedItemList.isNotEmpty()) {
             // If user clicked, stop using items
             if (gameStage.clickedCoordinates != null) {
-                // Remove all items from the list, stopping them from being used
                 while (usedItemList.isNotEmpty()) {
                     usedItemList.removeFirst()
                 }
             }
-            // Use the item
+
             val item = usedItemList.removeFirst()
-            // TODO ECS Items Inventory
-//            Player.ai.action = Action.ITEM(item, Player)
-            // removing item from eq or decreasing its amount
-//            val itemInEq = Player.inventory.itemList.find { it.item == item }!!
-//            if (itemInEq.item.amount != null && itemInEq.item.amount!! > 1)
-//                itemInEq.item.amount = itemInEq.item.amount!! - 1
-//            else
-//                Player.inventory.itemList.remove(itemInEq)
+            Player.getSuper(Ai::class)!!.action = Action.ITEM(item, Player)
+            removeFromInventory(item)
 
             uiStage.inventory.forceRefreshInventory = true
             hudStage.refreshHotBar()
         }
+
+        // Use item on different characters
+        useItemOn()
+    }
+
+    private fun useItemOn() {
 
         // Use item on different characters
         val useItemOn = hudStage.useItemOn ?: uiStage.useItemOn
@@ -150,13 +141,8 @@ class GameplayItems(
 //                    }
 
                     // TODO ECS Items Inventory
-//                    Player.ai.action = Action.ITEM(useItemOn, character)
-                    // removing item from eq or decreasing its amount
-//                    val itemInEq = Player.inventory.itemList.find { it.item == useItemOn }!!
-//                    if (itemInEq.item.amount != null && itemInEq.item.amount!! > 1)
-//                        itemInEq.item.amount = itemInEq.item.amount!! - 1
-//                    else
-//                        Player.inventory.itemList.remove(itemInEq)
+                    Player.getSuper(Ai::class)!!.action = Action.ITEM(useItemOn, character)
+                    removeFromInventory(useItemOn)
 
                     uiStage.inventory.forceRefreshInventory = true
                     hudStage.refreshHotBar()
@@ -167,5 +153,25 @@ class GameplayItems(
                 else -> return
             }
         }
+    }
+
+    private fun removeFromInventory(item: Entity) {
+        val itemInEq = Player.get(Inventory::class)!!.getItem(item)!!
+        if (itemInEq.get(Amount::class)!!.amount > 1)
+            itemInEq.get(Amount::class)!!.amount -= 1
+        else
+            Player.get(Inventory::class)!!.removeItem(itemInEq)
+    }
+
+    private fun addCooldownIndicator(coords: Coord) {
+        val cooldownLabel = TextraLabel("[@Cozette][%600][*]Cooldown", KnownFonts.getStandardFamily())
+        cooldownLabel.name = "cooldown"
+        gameStage.addActor(cooldownLabel)
+        cooldownLabel.setPosition(coords.x * 64f, (6400f - coords.y * 64f) + 72f)
+        cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+        cooldownLabel.addAction(
+            Actions.sequence(
+                Actions.delay(1.25f),
+                Actions.removeActor()))
     }
 }

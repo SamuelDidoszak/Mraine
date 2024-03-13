@@ -62,6 +62,10 @@ object Events {
             globalEvents.add(EventArray.Identity.Chunk(chunk) to timedEvent)
     }
 
+    fun remove(event: TimedEvent) {
+        events.remove(event)
+    }
+
     fun remove(entity: Entity) {
         events.remove(entity)
         globalEvents.remove(entity)

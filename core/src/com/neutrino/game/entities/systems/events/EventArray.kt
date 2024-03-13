@@ -4,7 +4,6 @@ import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.systems.events.attributes.EventList
-import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.util.equalsDelta
 import com.neutrino.game.util.lessThanDelta
 
@@ -61,6 +60,20 @@ class EventArray: ArrayList<Pair<EventArray.Identity?, TimedEvent>>() {
         }
     }
 
+    fun remove(event: TimedEvent) {
+        val iterator = this.iterator()
+        while (iterator.hasNext()) {
+            if (iterator.next().second == event) {
+                if (iterator.next().first is Identity.Entity) {
+                    val entity = (iterator.next().first as Identity.Entity).entity
+                    entity.get(EventList::class)?.events?.remove(iterator.next().second)
+                }
+                iterator.remove()
+                break
+            }
+        }
+    }
+
     abstract class Identity {
         abstract fun getChunk(): com.neutrino.game.map.chunk.Chunk
 
@@ -70,7 +83,7 @@ class EventArray: ArrayList<Pair<EventArray.Identity?, TimedEvent>>() {
             }
         }
 
-        data class Chunk(val chunk: com.neutrino.game.map.chunk.Chunk): Identity() {
+        data class Chunk(private val chunk: com.neutrino.game.map.chunk.Chunk): Identity() {
             override fun getChunk(): com.neutrino.game.map.chunk.Chunk = chunk
         }
     }

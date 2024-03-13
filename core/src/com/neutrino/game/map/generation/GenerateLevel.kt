@@ -49,7 +49,7 @@ class GenerateLevel() {
             listOf(Tilesets.get("Dungeon")),
             listOf(Generators.get("Dungeon")),
             listOf("Mouse", "Slime"),
-            listOf(40f to "Gold", 15f to "Dagger").toProbabilityList(),
+            listOf(40f to "Gold", 5f to "Dagger", 15f to "Small healing potion", 60f to "Meat").toProbabilityList(),
             TagParams(100f),
             true
         )

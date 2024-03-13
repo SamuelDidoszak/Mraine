@@ -40,6 +40,7 @@ class Equipment: Attribute() {
 
         addItemAttributes(item as Item)
         entity.call(OnItemEquipped::class)
+        item.call(OnItemEquipped::class, entity)
     }
 
     fun unequipItem(item: Entity, addToInventory: Boolean = true) {
@@ -51,6 +52,7 @@ class Equipment: Attribute() {
 
         unsetItem(item, addToInventory)
         entity.call(OnItemUnequipped::class)
+        item.call(OnItemUnequipped::class, entity)
     }
 
     private fun addItemAttributes(item: Item) {

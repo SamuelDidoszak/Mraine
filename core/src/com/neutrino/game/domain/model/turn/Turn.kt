@@ -10,12 +10,15 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.*
 import com.neutrino.game.entities.characters.callables.VisionChangedCallable
+import com.neutrino.game.entities.items.attributes.usable.Use
+import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
+import com.neutrino.game.entities.items.attributes.usable.UseOnPosition
+import com.neutrino.game.entities.items.callables.UsedCallable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
-import com.neutrino.game.entities.systems.events.EventArray
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
@@ -63,17 +66,6 @@ object Turn {
     // TODO ECS Characters Initialize with Player inside
     var characterArray: CharacterArray = CharacterArray()
     lateinit var currentChunk: Chunk
-
-    /**
-     * List containing various short term events, often related to characters.
-     * Incorporates cooldowns, buffs, etc.
-     */
-    var eventArray = EventArray()
-
-    /**
-     * Stores time dependant global event information
-     */
-    val globalEventArray = EventArray()
 
     fun unsetLevel() {
         currentChunk.characterArray.clear()
@@ -138,7 +130,6 @@ object Turn {
                         // Entity position(x, y) can be derived from ai.entityTargetCoords
                         when (action.interaction) {
                             is InteractionType.ITEM -> {
-                                // TODO ECS ITEM
                                 if (Player.get(Inventory::class)!!.add(action.entity)) {
                                     GlobalData.notifyObservers(GlobalDataType.PICKUP, action.entity)
 //                                    ActorVisuals.showPickedUpItem(Player, item)
@@ -182,43 +173,23 @@ object Turn {
                         Player.getSuper(Ai::class)!!.targetCoords = null
                     }
                     // TODO ECS ITEM
-//                    is Action.ITEM -> {
+                    is Action.ITEM -> {
+                        // TODO ECS ACTOR VISUALS
 //                        ActorVisuals.showItemUsed(character, action.item)
-//
-//                        if (action.item is CausesEvents) {
-//                            for (wrapper in action.item.eventWrappers) {
-//                                if (wrapper.event.has("character"))
-//                                    wrapper.event.set("character", action.character)
-//
-//                                when (wrapper) {
-//                                    is TimedEvent -> {
-//                                        eventArray.startEvent(
-//                                            CharacterEvent(
-//                                                action.character, wrapper, turn
-//                                        ))
-//                                    }
-//                                    is OnOffEvent -> {
-//                                        eventArray.startEvent(
-//                                            CharacterEvent(
-//                                                action.character, wrapper, turn
-//                                            ))
-//                                    }
-//                                    is CharacterEvent -> {
-//                                        eventArray.startEvent(wrapper)
-//                                    }
-//                                }
-//                            }
-//                            updateBatch.addFirst(Action.EVENT)
-//                        }
-//                        if (action.item is CausesCooldown && action.item.cooldownType != CooldownType.NONE) {
-//                            eventArray.startEvent(
-//                                CharacterEvent(
-//                                action.character, turn, action.item.cooldownLength, 1,
-//                                EventCooldown(action.character, action.item.cooldownType, action.item.cooldownLength)
-//                            )
-//                            )
-//                        }
-//                    }
+
+                        if (action.targetEntity != null) {
+                            action.item.get(UseOnEntity::class)!!.use(action.targetEntity)
+                            action.item.call(UsedCallable::class, action.targetEntity)
+                        }
+                        else if (action.targetPosition != null) {
+                            action.item.get(UseOnPosition::class)!!.use(action.targetPosition)
+                            action.item.call(UsedCallable::class, Player)
+                        }
+                        else
+                            action.item.get(Use::class)!!.use()
+
+                        updateBatch.addFirst(Action.EVENT)
+                    }
                     is Action.SKILL -> {
                         when (action.skill) {
                             is Skill.ActiveSkill -> {
@@ -317,7 +288,7 @@ object Turn {
                 updateBatch.removeFirst()
             }
 
-            Events.execute()
+//            Events.execute()
         }
         Events.execute()
         tick()

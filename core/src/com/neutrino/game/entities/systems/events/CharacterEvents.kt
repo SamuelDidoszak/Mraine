@@ -2,7 +2,6 @@ package com.neutrino.game.entities.systems.events
 
 import com.neutrino.game.entities.Characters
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.characters.attributes.OffensiveStats
 import com.neutrino.game.entities.characters.attributes.util.Status
@@ -14,14 +13,21 @@ import com.neutrino.game.util.y
 
 abstract class CharacterEvents: Event {
 
-    class Heal(val entity: Entity, val power: Float): CharacterEvents(), Status {
+    private var _entity: Entity? = null
+    var entity: Entity
+        get() = _entity!!
+        set(value) { _entity = value}
+
+    class Heal(var power: Float): CharacterEvents(), Status {
         override fun apply() {
             val stats = entity.get(DefensiveStats::class) ?: return
+            println("Hp b4: ${stats.hp}")
 
             if (stats.hp + power > stats.hpMax)
                 stats.hp = stats.hpMax
             else
                 stats.hp += power
+            println("Hp after: ${stats.hp}")
 //            entity.findActor<HpBar>("hpBar").update(character.hp)
         }
 
@@ -29,7 +35,7 @@ abstract class CharacterEvents: Event {
         override val data: ArrayList<Pair<String, *>> = ArrayList()
     }
 
-    class ManaRegen(val entity: Entity, val regen: Float): CharacterEvents() {
+    class ManaRegen(val regen: Float): CharacterEvents() {
         override fun apply() {
             val stats = entity.get(DefensiveStats::class) ?: return
 
@@ -40,8 +46,8 @@ abstract class CharacterEvents: Event {
         }
     }
 
-    class Burn(val entity: Entity, fireDamageMin: Float, fireDamageMax: Float): CharacterEvents() {
-        constructor(entity: Entity, fireDamage: Float): this(entity, fireDamage, fireDamage)
+    class Burn(fireDamageMin: Float, fireDamageMax: Float): CharacterEvents() {
+        constructor(entity: Entity, fireDamage: Float): this(fireDamage, fireDamage)
         private val fakeEntity = Entity()
             .addAttribute(OffensiveStats(
                 fireDamageMin = fireDamageMin,
@@ -53,8 +59,8 @@ abstract class CharacterEvents: Event {
         }
     }
 
-    class Bleed(val entity: Entity, damageMin: Float, damageMax: Float): CharacterEvents() {
-        constructor(entity: Entity, damage: Float): this(entity, damage, damage)
+    class Bleed(damageMin: Float, damageMax: Float): CharacterEvents() {
+        constructor(damage: Float): this(damage, damage)
         private val fakeEntity = Entity()
             .addAttribute(OffensiveStats(
                 damageMin = damageMin,
@@ -66,7 +72,7 @@ abstract class CharacterEvents: Event {
         }
     }
 
-    class Teleport(val entity: Character, val position: Position): CharacterEvents() {
+    class Teleport(val position: Position): CharacterEvents() {
         override fun apply() {
             entity.get(Position::class)!!.chunk.characterMap[entity.y][entity.x] = null
             position.chunk.characterMap[position.y][position.x] = entity
@@ -75,7 +81,7 @@ abstract class CharacterEvents: Event {
     }
 
     class Spawn(val entity: EntityName, val position: Position,
-                val apply: (entity: Entity) -> Unit): EntityEvents() {
+                val apply: (entity: Entity) -> Unit): Event {
         override fun apply() {
             val addedEntity = Characters.new(entity)
             apply.invoke(addedEntity)

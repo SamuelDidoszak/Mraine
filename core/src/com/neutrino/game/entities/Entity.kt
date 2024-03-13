@@ -102,6 +102,19 @@ open class Entity() {
         return this
     }
 
+    infix fun <T: Callable> getCallables(callableClass: KClass<out T>): List<T>? {
+        val found = ArrayList<T>()
+        callables?.forEach {
+            if (it::class == callableClass)
+                found.add(it as T)
+        }
+        return if (found.isNotEmpty()) found.toList() else null
+    }
+
+    infix fun hasCallable(callableClass: KClass<out Callable>): Boolean {
+        return callables?.find { it::class == callableClass } != null
+    }
+
 
     infix fun isEqual(other: Entity): Boolean {
         for (attribute in attributes) {

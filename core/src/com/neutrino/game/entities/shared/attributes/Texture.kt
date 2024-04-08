@@ -1,12 +1,14 @@
 package com.neutrino.game.entities.shared.attributes
 
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.graphics.drawing.AnimationData
 import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.chunk.ChunkManager
+import com.neutrino.game.util.Constants
 import kotlin.random.Random
 
 class Texture(
@@ -32,6 +34,24 @@ class Texture(
 
     fun finalize() {
         textures.clear()
+    }
+
+    fun getHeight(): Int {
+        if (textures.size == 1)
+            return textures[0].height() + textures[0].y.toInt()
+        else {
+            var height = 0
+            textures.forEach {
+                val newHeight = it.height() + it.y.toInt()
+                if (newHeight > height)
+                    height = newHeight
+            }
+            return height
+        }
+    }
+
+    fun getHeightScaled(): Int {
+        return getHeight() * if (entity is Character) 2 else Constants.SCALE_INT
     }
 
     inner class TextureList: ArrayList<TextureSprite>(1) {

@@ -9,20 +9,24 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.map.chunk.Chunk
-import com.neutrino.game.util.Constants
-import com.neutrino.game.util.Constants.SCALE
-import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.graphics.drawing.layers.*
+import com.neutrino.game.graphics.drawing.layers.LayeredTexture
+import com.neutrino.game.graphics.drawing.layers.LayeredTextureList
+import com.neutrino.game.graphics.drawing.layers.LayeredTextureUnsorted
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
-import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.CharacterArray
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.EntityList
+import com.neutrino.game.util.Constants
+import com.neutrino.game.util.Constants.SCALE
+import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.util.Constants.TILE_SIZE
 import com.neutrino.game.util.Constants.TILE_SIZE_INT
 import java.util.*
@@ -53,6 +57,13 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
         textureLayers.clear()
     }
 
+    override fun addLayeredDraw(layeredDraw: LayeredDraw) {
+        if (textureLayers[layeredDraw.z] == null) {
+            textureLayers[layeredDraw.z] = LayeredTextureList()
+        }
+        textureLayers[layeredDraw.z]!!.add(layeredDraw)
+    }
+
     override fun addTexture(entity: Entity, texture: TextureSprite) {
         if (textureLayers[texture.z] == null) {
             textureLayers[texture.z] = LayeredTextureList()
@@ -64,7 +75,7 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
     }
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
-        textureLayers[texture.z]!!.removeIf { it.entity == entity && it.texture == texture }
+        textureLayers[texture.z]!!.removeIf { it.entity == entity && it is LayeredTexture && it.texture == texture }
     }
 
     init {
@@ -79,6 +90,8 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
             }
         })
     }
+
+    val drawTimeMillis = ArrayList<Long>()
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val gameCamera = parent.stage.camera as OrthographicCamera
@@ -130,15 +143,10 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
             for (layeredTexture in layer) {
                 textureX = layeredTexture.getX()
                 textureY = layeredTexture.getY()
-                textureWidth = layeredTexture.getWidth()
-                if (textureY + layeredTexture.getHeight() >= yBottom && textureY <= yTop &&
+                textureWidth = layeredTexture.width
+                if (textureY + layeredTexture.height >= yBottom && textureY <= yTop &&
                     textureX + textureWidth >= xLeft && textureX <= xRight) {
-                    texture = layeredTexture.texture
-                    batch!!.draw(texture.texture,
-                        if (!texture.mirrorX) x + textureX else x + textureX + textureWidth,
-                        y + textureY,
-                        textureWidth * if (!texture.mirrorX) 1f else -1f,
-                        layeredTexture.getHeight() * 1f)
+                    layeredTexture.draw(batch!!, x, y, parentAlpha)
                 }
             }
         }
@@ -199,6 +207,7 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
     fun initializeCharacterTextures(characterArray: CharacterArray, rng: Random = Random(Random.nextInt())) {
         for (character in characterArray) {
             character.get(Texture::class)?.setTextures(null, rng)
+            character.get(HpBar::class)?.attach()
         }
     }
 

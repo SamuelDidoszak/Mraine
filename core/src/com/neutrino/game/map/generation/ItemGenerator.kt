@@ -8,6 +8,7 @@ import com.neutrino.game.entities.items.attributes.GoldValue
 import com.neutrino.game.entities.items.attributes.ItemTier
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.shared.attributes.Randomization
+import com.neutrino.game.entities.shared.attributes.RandomizationSimple
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.EntityList
 import com.neutrino.game.map.generation.util.GenerationParams
@@ -52,6 +53,7 @@ class ItemGenerator(
                         chunk.randomGenerator,
                         generationParams.params.itemQuality,
                         generationParams.params.difficulty)
+                    generatedItem.get(RandomizationSimple::class)?.randomize(chunk.randomGenerator)
                     itemPool[generatedItem.get(ItemTier::class)?.tier ?: 1].add(generatedItem)
                     valuePool -= generatedItem.get(GoldValue::class)!!.value
                     break

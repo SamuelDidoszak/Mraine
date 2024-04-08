@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.drawing
+package com.neutrino.game.graphics.drawing.layers
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.graphics.textures.TextureSprite
@@ -9,6 +9,6 @@ internal class LayeredTextureUnsorted(
 ): LayeredTexture(entity, texture) {
 
     override fun getYSort(): Float {
-        return getYPos()
+        return drawPosition.y
     }
 }

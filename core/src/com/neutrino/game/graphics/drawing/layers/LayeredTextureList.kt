@@ -1,6 +1,6 @@
-package com.neutrino.game.graphics.drawing
+package com.neutrino.game.graphics.drawing.layers
 
-internal class LayeredTextureList: ArrayList<LayeredTexture>() {
+internal class LayeredTextureList: ArrayList<LayeredDraw>() {
 
     fun sort() {
         for (j in 1 until size){

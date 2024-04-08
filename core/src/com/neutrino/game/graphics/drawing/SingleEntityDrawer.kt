@@ -18,6 +18,9 @@ import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.DrawerAttribute
+import com.neutrino.game.graphics.drawing.layers.LayeredTexture
+import com.neutrino.game.graphics.drawing.layers.LayeredTextureList
+import com.neutrino.game.graphics.drawing.layers.LayeredTextureUnsorted
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.Chunk
 import java.util.*
@@ -95,7 +98,7 @@ class SingleEntityDrawer(entity: Entity,
     }
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
-        textureLayers[texture.z]?.removeIf { it.entity == entity && it.texture == texture }
+        textureLayers[texture.z]?.removeIf { it.entity == entity && it is LayeredTexture && it.texture == texture }
     }
 
     private fun getEmptyEntityList(): List<List<MutableList<Entity>>> {
@@ -127,7 +130,8 @@ class SingleEntityDrawer(entity: Entity,
         }
         for (layer in textureLayers) {
             for (layeredTexture in layer.value) {
-                val texture = layeredTexture.texture
+//                layeredTexture.draw(batch!!, x, y, parentAlpha)
+                val texture = (layeredTexture as LayeredTexture).texture
                 batch!!.draw(texture.texture,
                     if (!texture.mirrorX) x + texture.x * scale + offsetX
                     else x + texture.x * scale + offsetX + layeredTexture.texture.width() * scale,

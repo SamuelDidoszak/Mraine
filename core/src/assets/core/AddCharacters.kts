@@ -1,10 +1,7 @@
 
 import com.neutrino.game.entities.Characters
 import com.neutrino.game.entities.characters.Character
-import com.neutrino.game.entities.characters.attributes.CharacterTags
-import com.neutrino.game.entities.characters.attributes.EnemyAi
-import com.neutrino.game.entities.characters.attributes.Faction
-import com.neutrino.game.entities.characters.attributes.Stats
+import com.neutrino.game.entities.characters.attributes.*
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.drawing.layers.HpBar
@@ -30,6 +27,7 @@ Characters.add("Mouse") {
         })
         .addAttribute(CharacterTags())
         .addAttribute(HpBar())
+        .addAttribute(Name())
 }
 Characters.add("Slime") {
     Character()

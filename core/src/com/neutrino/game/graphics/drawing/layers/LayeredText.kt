@@ -22,6 +22,9 @@ open class LayeredText(
             field = value
             text.width = width.toFloat()
         }
+    override var height: Int
+        get() = text.prefHeight.toInt()
+        set(value) {}
     init {
         if (width == 0)
             this.text.width = this.text.prefWidth

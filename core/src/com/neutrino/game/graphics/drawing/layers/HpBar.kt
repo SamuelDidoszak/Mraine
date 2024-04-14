@@ -9,13 +9,13 @@ import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.Constants
 import space.earlygrey.shapedrawer.ShapeDrawer
 
-class HpBar: LayeredDraw(z = 1) {
+class HpBar: LayeredDraw() {
 
     private lateinit var stats: DefensiveStats
-    private lateinit var texture: Texture
     override fun onEntityAttached() {
         stats = entity.get(DefensiveStats::class)!!
-        texture = entity.get(Texture::class)!!
+        height = 8
+        width = 64
     }
 
     private val textureRegion: TextureRegion = TextureRegion(Constants.WhitePixel, 0, 0, 1, 1)
@@ -27,7 +27,7 @@ class HpBar: LayeredDraw(z = 1) {
             drawer!!.setColor(color())
         }
 
-        drawer!!.filledRectangle(getX() + 2f, getY() + texture.getHeightScaled() + 8f, 60f * (stats.hp / stats.hpMax), 8f)
+        drawer!!.filledRectangle(x + getX() + 2f, y + getY(), 60f * (stats.hp / stats.hpMax), 8f)
     }
 
     private fun color(): Color {

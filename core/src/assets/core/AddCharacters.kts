@@ -4,6 +4,7 @@ import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.*
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
 import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.graphics.drawing.layers.CharacterInfoGroup
 import com.neutrino.game.graphics.drawing.layers.HpBar
 import com.neutrino.game.graphics.textures.Textures
 
@@ -26,8 +27,7 @@ Characters.add("Mouse") {
             textures.add(Textures.get("mouse_idle"))
         })
         .addAttribute(CharacterTags())
-        .addAttribute(HpBar())
-        .addAttribute(Name())
+        .addAttribute(CharacterInfoGroup())
 }
 Characters.add("Slime") {
     Character()
@@ -47,7 +47,7 @@ Characters.add("Slime") {
             textures.add(Textures.get("Slime_idle"))
         })
         .addAttribute(CharacterTags())
-        .addAttribute(HpBar())
+        .addAttribute(CharacterInfoGroup())
 }
 
 

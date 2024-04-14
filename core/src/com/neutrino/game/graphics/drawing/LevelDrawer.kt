@@ -10,14 +10,12 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Name
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.drawing.layers.*
-import com.neutrino.game.graphics.drawing.layers.LayeredTexture
-import com.neutrino.game.graphics.drawing.layers.LayeredTextureList
-import com.neutrino.game.graphics.drawing.layers.LayeredTextureUnsorted
 import com.neutrino.game.graphics.shaders.Shaders
 import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
@@ -211,6 +209,7 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
             character.get(HpBar::class)?.attach()
             character.get(LayeredText::class)?.attach()
             character.get(Name::class)?.attach()
+            character.get(CharacterInfoGroup::class)?.attach()
         }
     }
 

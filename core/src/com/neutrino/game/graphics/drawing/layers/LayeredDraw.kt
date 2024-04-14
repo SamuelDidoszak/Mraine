@@ -14,17 +14,20 @@ import space.earlygrey.shapedrawer.ShapeDrawer
 abstract class LayeredDraw(
     var xOffset: Float = 0f,
     var yOffset: Float = 0f,
-    var z: Int = 0
+    var z: Int = 1
 ): Attribute() {
 
     open var width: Int = 0
     open var height: Int = 0
     var debug = false
+    private var isAttached = false
 
-    private companion object Defaults {
+    protected companion object Defaults {
         val drawPosition = DrawPosition()
-        private val textureRegion: TextureRegion = TextureRegion(Constants.WhitePixel, 0, 0, 1, 1)
-        private var drawer: ShapeDrawer? = null
+        @JvmStatic
+        protected val textureRegion: TextureRegion = TextureRegion(Constants.WhitePixel, 0, 0, 1, 1)
+        @JvmStatic
+        protected var drawer: ShapeDrawer? = null
     }
 
     protected var drawPosition: DrawPosition = Defaults.drawPosition
@@ -55,15 +58,24 @@ abstract class LayeredDraw(
         return this
     }
 
-    fun attach() {
-        drawPosition = entity.get(DrawPosition::class)!!
+    open fun attach() {
+        entity.get(DrawPosition::class)?.let { drawPosition = it }
+        if (isAttached)
+            return
         val drawer = entity.get(DrawerAttribute::class)?.drawer ?: entity.get(Position::class)?.chunk?.let { ChunkManager.getDrawer(it) }
-        drawer?.addLayeredDraw(this)
+        drawer?.addLayeredDraw(this)?.also { isAttached = true }
     }
 
-    fun detach() {
+    open fun detach() {
+        drawPosition = Defaults.drawPosition
         val drawer = entity.get(DrawerAttribute::class)?.drawer ?: entity.get(Position::class)?.chunk?.let { ChunkManager.getDrawer(it) }
         drawer?.removeLayeredDraw(this)
+        isAttached = false
+    }
+
+    fun addToGroup() {
+        detach()
+        isAttached = true
     }
 
     @Optimize
@@ -77,5 +89,10 @@ abstract class LayeredDraw(
             @Optimize
             drawer!!.rectangle(x + getX(), y + getY(), width.toFloat(), height.toFloat())
         }
+    }
+
+    protected fun setDrawer(batch: Batch) {
+        drawer = ShapeDrawer(batch, textureRegion)
+        drawer!!.setColor(0.1f, 0.85f, 0.15f, 1f)
     }
 }

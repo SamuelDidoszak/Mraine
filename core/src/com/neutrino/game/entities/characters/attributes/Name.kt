@@ -6,6 +6,5 @@ class Name: LayeredText(width = 64) {
 
     override fun onEntityAttached() {
         text.setText("[@Cozette][WHITE][%175]${entity.name}")
-        z = 1
     }
 }

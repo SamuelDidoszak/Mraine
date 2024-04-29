@@ -9,6 +9,7 @@ import com.neutrino.game.entities.characters.callables.attack.AttackedAfterCalla
 import com.neutrino.game.entities.characters.callables.attack.AttackedBeforeCallable
 import com.neutrino.game.entities.characters.callables.attack.EntityDiedCallable
 import com.neutrino.game.entities.characters.callables.attack.GotAttackedAfterCallable
+import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.compareDelta
@@ -83,8 +84,7 @@ class DefensiveStats(
 
         damageColor = ColorUtils.applySaturation(damageColor, 0.8f)
 
-        // TODO ECS Actors
-//        ActorVisuals.showDamage(this, damageColor, damage)
+        Visuals.showDamage(entity, damageColor, damage)
 
         hp -= damage
         hp = hp.roundOneDecimal()

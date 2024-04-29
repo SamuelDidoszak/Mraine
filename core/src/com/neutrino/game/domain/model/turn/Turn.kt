@@ -20,6 +20,7 @@ import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.entities.systems.events.Events
+import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkCoords
@@ -132,7 +133,7 @@ object Turn {
                             is InteractionType.ITEM -> {
                                 if (Player.get(Inventory::class)!!.add(action.entity)) {
                                     GlobalData.notifyObservers(GlobalDataType.PICKUP, action.entity)
-//                                    ActorVisuals.showPickedUpItem(Player, item)
+                                    Visuals.showPickedUpItem(Player, action.entity)
                                     val coords = Player.getSuper(Ai::class)!!.targetCoords
                                     currentChunk.map[coords!!.second][coords.first].removeLast()
                                 } else println("Inventory is full")
@@ -174,8 +175,7 @@ object Turn {
                     }
                     // TODO ECS ITEM
                     is Action.ITEM -> {
-                        // TODO ECS ACTOR VISUALS
-//                        ActorVisuals.showItemUsed(character, action.item)
+                        Visuals.showItemUsed(character, action.item)
 
                         if (action.targetEntity != null) {
                             action.item.get(UseOnEntity::class)!!.use(action.targetEntity)
@@ -264,8 +264,7 @@ object Turn {
                         println(character.name + " interacted with ${action.entity.name}")
                     }
                     is Action.ITEM -> {
-                        // TODO ECS ITEM
-//                        ActorVisuals.showItemUsed(character, action.item)
+                        Visuals.showItemUsed(character, action.item)
                         println(character.name + " used an item")
                     }
                     is Action.WAIT -> {

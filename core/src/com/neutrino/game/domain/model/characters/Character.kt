@@ -5,14 +5,11 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.utils.Pools
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.util.Constants.MoveSpeed
-import com.neutrino.game.util.compareDelta
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.systems.CharacterTag
@@ -30,7 +27,8 @@ import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.utility.ColorUtils
-
+import com.neutrino.game.util.Constants.MoveSpeed
+import com.neutrino.game.util.compareDelta
 import squidpony.squidmath.Coord
 import kotlin.random.Random
 import kotlin.reflect.KClass
@@ -299,9 +297,9 @@ abstract class Character(
         damageColor = ColorUtils.colorInterpolation(damageColor, color, 1)
         damageColor = ColorUtils.applySaturation(damageColor, 0.8f)
 
-        val damageNumber = Pools.get(DamageNumber::class.java).obtain()
-        this.addActor(damageNumber)
-        damageNumber.init(ColorUtils.toHexadecimal(damageColor), finalDamage)
+//        val damageNumber = Pools.get(DamageNumber::class.java).obtain()
+//        this.addActor(damageNumber)
+//        damageNumber.init(ColorUtils.toHexadecimal(damageColor), finalDamage)
 
         this.hp -= damage
         if (hp <= 0) {
@@ -372,7 +370,7 @@ abstract class Character(
 
         damageColor = ColorUtils.applySaturation(damageColor, 0.8f)
 
-        ActorVisuals.showDamage(this, damageColor, damage)
+//        ActorVisuals.showDamage(this, damageColor, damage)
 
         if (ai is EnemyAi)
             (ai as EnemyAi).gotAttackedBy = data.character

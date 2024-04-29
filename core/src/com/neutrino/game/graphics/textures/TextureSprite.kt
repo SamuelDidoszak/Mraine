@@ -1,6 +1,7 @@
 package com.neutrino.game.graphics.textures
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.neutrino.game.entities.util.Cloneable
 import kotlin.random.Random
 
 open class TextureSprite(
@@ -8,7 +9,7 @@ open class TextureSprite(
     var x: Float = 0f,
     var y: Float = 0f,
     var z: Int = 1
-) {
+): Cloneable<TextureSprite> {
     constructor(
         texture: TextureAtlas.AtlasRegion,
         lights: LightSources?,
@@ -50,5 +51,9 @@ open class TextureSprite(
         this.x = x
         this.y = y
         return this
+    }
+
+    override fun clone(): TextureSprite {
+        return TextureSprite(texture, lights, x, y, z)
     }
 }

@@ -36,7 +36,7 @@ class FamiliarAi(private val character: Character, private val master: Character
 //                searchTarget(Turn.characterMap)
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
-                    ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
+//                    ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
                     return decide()
                 }
 

@@ -3,6 +3,7 @@ package com.neutrino.game.graphics.drawing.layers
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.map.attributes.DrawPosition
@@ -58,6 +59,12 @@ abstract class LayeredDraw(
         return this
     }
 
+    fun setPosition(xOffset: Float, yOffset: Float): LayeredDraw {
+        this.xOffset = xOffset
+        this.yOffset = yOffset
+        return this
+    }
+
     open fun attach() {
         entity.get(DrawPosition::class)?.let { drawPosition = it }
         if (isAttached)
@@ -76,6 +83,12 @@ abstract class LayeredDraw(
     fun addToGroup() {
         detach()
         isAttached = true
+    }
+
+    fun initialize(newEntity: Entity) {
+        entity = newEntity
+        onEntityAttached()
+        attach()
     }
 
     @Optimize

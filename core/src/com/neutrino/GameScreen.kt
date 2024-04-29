@@ -13,13 +13,13 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.neutrino.game.LevelInitialization
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.domain.model.characters.utility.DamageNumber
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.systems.util.visuals.DamageNumber
 import com.neutrino.game.gameplay.main.Gameplay
 import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.util.Constants

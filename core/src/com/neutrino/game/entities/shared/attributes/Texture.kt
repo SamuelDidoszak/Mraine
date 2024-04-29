@@ -54,6 +54,24 @@ class Texture(
         return getHeight() * if (entity is Character) 2 else Constants.SCALE_INT
     }
 
+    fun getWidth(): Int {
+        if (textures.size == 1)
+            return textures[0].width() + textures[0].x.toInt()
+        else {
+            var width = 0
+            textures.forEach {
+                val newWidth = it.height() + it.y.toInt()
+                if (newWidth > width)
+                    width = newWidth
+            }
+            return width
+        }
+    }
+
+    fun getWidthScaled(): Int {
+        return getWidth() * if (entity is Character) 2 else Constants.SCALE_INT
+    }
+
     inner class TextureList: ArrayList<TextureSprite>(1) {
 
         override fun set(index: Int, element: TextureSprite): TextureSprite {

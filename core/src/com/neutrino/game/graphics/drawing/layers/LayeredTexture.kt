@@ -29,12 +29,12 @@ internal open class LayeredTexture(
 
     /** Returns scaled x position including map placement */
     override fun getX(): Float {
-        return drawPosition.x + texture.x * SCALE_INT * if (texture.mirrorX) -1 else 1
+        return drawPosition.x + xOffset + texture.x * SCALE_INT * if (texture.mirrorX) -1 else 1
     }
 
     /** Returns scaled y position including map placement */
     override fun getY(): Float {
-        return drawPosition.y + texture.y * SCALE_INT
+        return drawPosition.y + yOffset + texture.y * SCALE_INT
     }
 
     override fun getYSort(): Float {

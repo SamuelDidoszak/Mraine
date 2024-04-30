@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
-import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.Constants
 import space.earlygrey.shapedrawer.ShapeDrawer

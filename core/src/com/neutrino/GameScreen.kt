@@ -21,6 +21,7 @@ import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.systems.util.visuals.DamageNumber
 import com.neutrino.game.gameplay.main.Gameplay
+import com.neutrino.game.graphics.drawing.actions.Actions
 import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.x
@@ -130,6 +131,7 @@ class GameScreen: KtxScreen {
         gameplay.gameLoop()
 
 //        AnimatedActors.animateAll()
+        Actions.update(delta)
         gameStage.act(delta)
         gameStage.draw()
 

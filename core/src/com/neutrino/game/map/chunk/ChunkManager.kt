@@ -4,6 +4,7 @@ import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.turn.Turn.characterArray
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
@@ -11,6 +12,8 @@ import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.graphics.drawing.LevelDrawer
+import com.neutrino.game.graphics.drawing.actions.Action
+import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.util.ChunkManagerMethods
 import com.neutrino.game.util.Constants
 import squidpony.squidai.DijkstraMap
@@ -93,13 +96,23 @@ object ChunkManager: ChunkManagerMethods {
             val entityPosition = entity.get(Position::class)!!
             entityPosition.chunk.characterMap[entityPosition.y][entityPosition.x] = null
             position.chunk.characterMap[position.y][position.x] = entity
-            // TODO ECS Actions
-//        this.addAction(Actions.moveTo(xPos * 64f, parent.height - yPos * 64f, speed))
             if (position.x != entityPosition.x)
                 entity.get(Texture::class)!!.textures.mirror(position.x < entityPosition.x)
+
+            var xDiff = entity.get(DrawPosition::class)!!.x
+            var yDiff = entity.get(DrawPosition::class)!!.y
+
             entityPosition.x = position.x
             entityPosition.y = position.y
             entityPosition.chunk = position.chunk
+
+            xDiff = entity.get(DrawPosition::class)!!.x - xDiff
+            yDiff = entity.get(DrawPosition::class)!!.y - yDiff
+
+            entity.get(DrawPosition::class)!!.x -= xDiff
+            entity.get(DrawPosition::class)!!.y -= yDiff
+            // if there are movement bugs, it may be because there were multiple movement calls and actions stacked
+            entity.addAction(Action.MoveBy(xDiff, yDiff, Constants.MoveSpeed * entity.get(DefensiveStats::class)!!.movementSpeed.toFloat()))
         }
 
         // TODO Multiple Chunks

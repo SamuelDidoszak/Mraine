@@ -6,6 +6,8 @@ import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.DrawerAttribute
+import com.neutrino.game.graphics.drawing.actions.Action
+import com.neutrino.game.graphics.drawing.actions.Actions
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
@@ -107,5 +109,20 @@ abstract class LayeredDraw(
     protected fun setDrawer(batch: Batch) {
         drawer = ShapeDrawer(batch, textureRegion)
         drawer!!.setColor(0.1f, 0.85f, 0.15f, 1f)
+    }
+
+    fun addAction(action: Action, timeout: Float = 0f) {
+        if (action is Action.UsesLayeredDraw)
+            action.layeredDraw = this
+
+        if (timeout != 0f) {
+            Actions.addAction(
+                Action.Sequence(
+                    Action.Delay(timeout),
+                    action
+                ))
+            return
+        }
+        Actions.addAction(action)
     }
 }

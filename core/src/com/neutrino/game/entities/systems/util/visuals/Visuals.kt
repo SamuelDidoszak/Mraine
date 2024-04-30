@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Pools
 import com.neutrino.game.domain.model.characters.utility.IntentionIcon
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.graphics.drawing.layers.LayeredTexture
 import com.neutrino.game.graphics.utility.ColorUtils
 
@@ -30,6 +31,9 @@ object Visuals {
         itemDraw.xOffset = (entity.get(Texture::class)!!.getWidthScaled() - itemDraw.width) / 2f
         itemDraw.yOffset = entity.get(Texture::class)!!.getHeightScaled() + 32f
 
+        itemDraw.addAction(Action.MoveBy(0f, -32f, 3f))
+        itemDraw.addAction(Action.Delete(), 4f)
+
 //        itemActor.addAction(Actions.moveBy(0f, -32f, 1f))
 //        itemActor.addAction(
 //            Actions.sequence(
@@ -40,10 +44,14 @@ object Visuals {
     fun showPickedUpItem(entity: Entity, item: Entity) {
         val itemDraw = LayeredTexture(entity, item.get(Texture::class)!!.textures[0].clone())
         itemDraw.initialize(entity)
+        itemDraw.z = 2
         itemDraw.width *= 2
         itemDraw.height *= 2
         itemDraw.xOffset = (entity.get(Texture::class)!!.getWidthScaled() - itemDraw.width) / 2f
         itemDraw.yOffset = entity.get(Texture::class)!!.getHeightScaled().toFloat()
+
+        itemDraw.addAction(Action.MoveBy(0f, 36f, 1f))
+        itemDraw.addAction(Action.Delete(), 1.25f)
 
 //        itemActor.addAction(Actions.moveBy(0f, 36f, 1f))
 //        itemActor.addAction(

@@ -1,0 +1,82 @@
+package com.neutrino.game.graphics.drawing.actions
+
+import com.neutrino.game.entities.Entity
+import com.neutrino.game.graphics.drawing.layers.LayeredDraw
+import com.neutrino.game.map.attributes.DrawPosition
+import com.neutrino.game.util.equalsDelta
+
+sealed class Action(
+    protected var length: Float = 0f
+) {
+
+    protected var totalTime = 0f
+
+    /** @return true if action is finished */
+    abstract fun update(delta: Float): Boolean
+    protected fun getActionFrame(delta: Float): Float = delta / length
+    protected fun isActionFinished(): Boolean = (length - totalTime).equalsDelta(0f) || (length - totalTime) < 0f
+
+    interface UsesLayeredDraw {
+        var layeredDraw: LayeredDraw?
+    }
+    interface UsesEntity {
+        var entity: Entity?
+    }
+
+    class Sequence(vararg actions: Action): Action() {
+        val actions = ArrayList<Action>()
+        init {
+            this.actions.addAll(actions)
+        }
+
+        override fun update(delta: Float): Boolean {
+            actions.first().update(delta)
+            if (actions.first().isActionFinished())
+                actions.removeFirst()
+            return actions.isEmpty()
+        }
+    }
+
+    class Delay(time: Float): Action(time) {
+
+        override fun update(delta: Float): Boolean {
+            totalTime += delta
+            return isActionFinished()
+        }
+    }
+
+    class MoveBy(val x: Float, val y: Float, length: Float = 0f):
+        Action(length), UsesLayeredDraw, UsesEntity {
+
+        override var layeredDraw: LayeredDraw? = null
+        override var entity: Entity? = null
+
+        var i = 0
+
+        override fun update(delta: Float): Boolean {
+            if (layeredDraw != null) {
+                layeredDraw!!.xOffset += x * getActionFrame(delta)
+                layeredDraw!!.yOffset += y * getActionFrame(delta)
+            }
+            if (entity != null) {
+                entity!!.get(DrawPosition::class)!!.x += x * getActionFrame(delta)
+                entity!!.get(DrawPosition::class)!!.y += y * getActionFrame(delta)
+            }
+
+            totalTime += delta
+            return isActionFinished()
+        }
+    }
+
+    class Delete: Action(), UsesLayeredDraw {
+
+        override var layeredDraw: LayeredDraw? = null
+
+        override fun update(delta: Float): Boolean {
+            layeredDraw?.detach()
+            return true
+        }
+    }
+
+
+}

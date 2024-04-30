@@ -2,6 +2,8 @@ package com.neutrino.game.entities
 
 import com.neutrino.game.entities.shared.attributes.util.EqualityCheckLock
 import com.neutrino.game.entities.util.Equality
+import com.neutrino.game.graphics.drawing.actions.Action
+import com.neutrino.game.graphics.drawing.actions.Actions
 import kotlin.reflect.KClass
 import kotlin.reflect.full.superclasses
 
@@ -132,5 +134,20 @@ open class Entity() {
         val isEqual = other.isEqual(this)
         removeAttribute(EqualityCheckLock::class)
         return isEqual
+    }
+
+    fun addAction(action: Action, timeout: Float = 0f) {
+        if (action is Action.UsesEntity)
+            action.entity = this
+
+        if (timeout != 0f) {
+            Actions.addAction(
+                Action.Sequence(
+                    Action.Delay(timeout),
+                    action
+                ))
+            return
+        }
+        Actions.addAction(action)
     }
 }

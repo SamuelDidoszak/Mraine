@@ -19,7 +19,8 @@ internal open class LayeredTexture(
         drawPosition = entity.get(DrawPosition::class)!!
     }
 
-    override fun draw(batch: Batch, x: Float, y: Float, alpha: Float) {
+    override fun draw(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
+        batch.setAlpha(parentAlpha * alpha)
         batch.draw(texture.texture,
             if (!texture.mirrorX) x + getX() else x + getX() + width,
             y + getY(),

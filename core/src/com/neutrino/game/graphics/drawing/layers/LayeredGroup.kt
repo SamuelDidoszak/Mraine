@@ -31,10 +31,10 @@ open class LayeredGroup(
         return this
     }
 
-    override fun draw(batch: Batch, x: Float, y: Float, alpha: Float) {
+    override fun draw(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
         val x = x + getX()
         val y = y + getY()
-        children.forEach { it.draw(batch, x, y, alpha) }
+        children.forEach { it.draw(batch, x, y, parentAlpha * alpha) }
     }
 
     override var width: Int
@@ -64,10 +64,10 @@ open class LayeredGroup(
             return height
         }
 
-    override fun drawDebug(batch: Batch, x: Float, y: Float, alpha: Float) {
+    override fun drawDebug(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
         val xChild = x + getX()
         val yChild = y + getY()
-        children.forEach { it.drawDebug(batch, xChild, yChild, alpha) }
+        children.forEach { it.drawDebug(batch, xChild, yChild, parentAlpha * alpha) }
 //        super.drawDebug(batch, x, y, alpha)
         if (debug) {
             if (Defaults.drawer?.batch != batch) {
@@ -82,7 +82,7 @@ open class LayeredGroup(
 
     override fun attach() {
         super.attach()
-        children.forEach { it.detach() }
+        children.forEach { it.addToGroup() }
     }
 
 }

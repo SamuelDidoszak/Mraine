@@ -20,12 +20,13 @@ class HpBar: LayeredDraw() {
     private val textureRegion: TextureRegion = TextureRegion(Constants.WhitePixel, 0, 0, 1, 1)
     private var drawer: ShapeDrawer? = null
 
-    override fun draw(batch: Batch, x: Float, y: Float, alpha: Float) {
+    override fun draw(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
         if (drawer == null) {
             drawer = ShapeDrawer(batch, textureRegion)
             drawer!!.setColor(color())
         }
 
+        batch.setAlpha(parentAlpha * alpha)
         drawer!!.filledRectangle(x + getX() + 2f, y + getY(), 60f * (stats.hp / stats.hpMax), 8f)
     }
 

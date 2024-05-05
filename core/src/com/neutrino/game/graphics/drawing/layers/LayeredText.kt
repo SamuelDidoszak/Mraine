@@ -33,10 +33,10 @@ open class LayeredText(
         centerText()
     }
 
-    override fun draw(batch: Batch, x: Float, y: Float, alpha: Float) {
+    override fun draw(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
         text.x = x + getX()
         text.y = y + getY()
-        text.draw(batch, alpha)
+        text.draw(batch, parentAlpha * alpha)
     }
 
     private fun centerText() {

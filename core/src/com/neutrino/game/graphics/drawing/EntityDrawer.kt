@@ -16,4 +16,5 @@ interface EntityDrawer {
     fun addLayeredDraw(layeredDraw: LayeredDraw) {}
     fun removeLayeredDraw(layeredDraw: LayeredDraw) {}
     fun removeTexture(entity: Entity, texture: TextureSprite)
+    fun getTextures(entity: Entity): List<LayeredDraw>
 }

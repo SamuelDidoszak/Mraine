@@ -302,11 +302,6 @@ object Turn {
 
         // TODO ECS Attack levelling
 //        Player.experience += character.experience
-        val chunk = character.get(Position::class)!!.chunk
-        chunk.characterMap[character.y][character.x] = null
-        chunk.characterArray.remove(character)
-        characterArray.remove(character)
-        character.get(Texture::class)!!.textures.clear()
 
         // Drop its items
         // TODO ECS ITEM
@@ -318,6 +313,20 @@ object Turn {
 
         // TODO ECS Events
 //        eventArray.remove(character)
+
+//            shaders.clear()
+        // TODO ECS Actors
+        character.addAction(com.neutrino.game.graphics.drawing.actions.Action.Sequence(
+            com.neutrino.game.graphics.drawing.actions.Action.FadeOut(1.25f),
+            com.neutrino.game.graphics.drawing.actions.Action.Custom {
+                val chunk = character.get(Position::class)!!.chunk
+                chunk.characterMap[character.y][character.x] = null
+                chunk.characterArray.remove(character)
+                characterArray.remove(character)
+                character.get(Texture::class)!!.textures.clear()
+                character.getDrawables()?.forEach { it.detach() }
+            }
+        ))
     }
 
     private fun playerDied() {

@@ -10,7 +10,6 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Name
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
@@ -75,6 +74,17 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
         textureLayers[texture.z]!!.removeIf { it.entity == entity && it is LayeredTexture && it.texture == texture }
+    }
+
+    override fun getTextures(entity: Entity): List<LayeredDraw> {
+        val textureList = ArrayList<LayeredDraw>()
+        textureLayers.forEach { t, u ->
+            for (draw in u) {
+                if (draw.entity == entity)
+                    textureList.add(draw)
+            }
+        }
+        return textureList
     }
 
     init {
@@ -206,10 +216,7 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
     fun initializeCharacterTextures(characterArray: CharacterArray, rng: Random = Random(Random.nextInt())) {
         for (character in characterArray) {
             character.get(Texture::class)?.setTextures(null, rng)
-            character.get(HpBar::class)?.attach()
-            character.get(LayeredText::class)?.attach()
-            character.get(Name::class)?.attach()
-            character.get(CharacterInfoGroup::class)?.attach()
+            character.getDrawables()?.forEach { it.attach() }
         }
     }
 

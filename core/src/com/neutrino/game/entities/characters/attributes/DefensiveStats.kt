@@ -89,13 +89,6 @@ class DefensiveStats(
         hp -= damage
         hp = hp.roundOneDecimal()
         if (hp <= 0) {
-//            shaders.clear()
-            // TODO ECS Actors
-//            this.addAction(
-//                Actions.sequence(
-//                Actions.fadeOut(1.25f),
-//                Actions.removeActor()
-//            ))
             hp = 0f
             entity.call(EntityDiedCallable::class, entity)
             GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this.entity)

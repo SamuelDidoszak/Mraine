@@ -31,14 +31,11 @@ object Visuals {
         itemDraw.xOffset = (entity.get(Texture::class)!!.getWidthScaled() - itemDraw.width) / 2f
         itemDraw.yOffset = entity.get(Texture::class)!!.getHeightScaled() + 32f
 
-        itemDraw.addAction(Action.MoveBy(0f, -32f, 3f))
-        itemDraw.addAction(Action.Delete(), 4f)
-
-//        itemActor.addAction(Actions.moveBy(0f, -32f, 1f))
-//        itemActor.addAction(
-//            Actions.sequence(
-//                Actions.fadeOut(1.25f),
-//                Actions.removeActor()))
+        itemDraw.addAction(Action.MoveBy(0f, -32f, 1f))
+        itemDraw.addAction(Action.Sequence(
+            Action.FadeOut(1.25f),
+            Action.Delete()
+        ))
     }
 
     fun showPickedUpItem(entity: Entity, item: Entity) {
@@ -51,13 +48,10 @@ object Visuals {
         itemDraw.yOffset = entity.get(Texture::class)!!.getHeightScaled().toFloat()
 
         itemDraw.addAction(Action.MoveBy(0f, 36f, 1f))
-        itemDraw.addAction(Action.Delete(), 1.25f)
-
-//        itemActor.addAction(Actions.moveBy(0f, 36f, 1f))
-//        itemActor.addAction(
-//            Actions.sequence(
-//                Actions.fadeOut(1.25f),
-//                Actions.removeActor()))
+        itemDraw.addAction(Action.Sequence(
+            Action.FadeOut(1.25f),
+            Action.Delete()
+        ))
     }
 
     fun showAiIntention(entity: Entity, intention: IntentionIcon) {

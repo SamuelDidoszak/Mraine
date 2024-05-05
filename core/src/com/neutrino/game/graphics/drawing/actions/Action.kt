@@ -1,8 +1,11 @@
 package com.neutrino.game.graphics.drawing.actions
 
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.graphics.drawing.layers.LayeredDraw
 import com.neutrino.game.map.attributes.DrawPosition
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.equalsDelta
 
 sealed class Action(
@@ -13,6 +16,7 @@ sealed class Action(
 
     /** @return true if action is finished */
     abstract fun update(delta: Float): Boolean
+    protected fun addTime(delta: Float) { totalTime += delta }
     protected fun getActionFrame(delta: Float): Float = delta / length
     protected fun isActionFinished(): Boolean = (length - totalTime).equalsDelta(0f) || (length - totalTime) < 0f
 
@@ -68,12 +72,47 @@ sealed class Action(
         }
     }
 
+    class FadeOut(length: Float): Action(length), UsesLayeredDraw, UsesEntity {
+
+        override var layeredDraw: LayeredDraw? = null
+        override var entity: Entity? = null
+
+        // Entity always begints at 1f
+        var initialAlpha: Float = 1f
+
+        override fun update(delta: Float): Boolean {
+            if (layeredDraw != null) {
+                if (initialAlpha == 1f)
+                    initialAlpha = layeredDraw!!.alpha
+                layeredDraw!!.alpha -= initialAlpha * getActionFrame(delta)
+            }
+            if (entity != null) {
+                val layeredDraws = (entity!!.get(DrawerAttribute::class)?.drawer ?:
+                    ChunkManager.getDrawer(entity!!.get(Position::class)!!.chunk)).getTextures(entity!!)
+
+                layeredDraws.forEach {
+                    println(it::class)
+                    it.alpha -= initialAlpha * getActionFrame(delta)
+                }
+            }
+            totalTime += delta
+            return isActionFinished()
+        }
+    }
+
     class Delete: Action(), UsesLayeredDraw {
 
         override var layeredDraw: LayeredDraw? = null
 
         override fun update(delta: Float): Boolean {
             layeredDraw?.detach()
+            return true
+        }
+    }
+
+    class Custom(private val function: () -> Unit): Action() {
+        override fun update(delta: Float): Boolean {
+            function.invoke()
             return true
         }
     }

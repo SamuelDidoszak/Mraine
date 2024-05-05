@@ -18,6 +18,7 @@ import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.DrawerAttribute
+import com.neutrino.game.graphics.drawing.layers.LayeredDraw
 import com.neutrino.game.graphics.drawing.layers.LayeredTexture
 import com.neutrino.game.graphics.drawing.layers.LayeredTextureList
 import com.neutrino.game.graphics.drawing.layers.LayeredTextureUnsorted
@@ -99,6 +100,17 @@ class SingleEntityDrawer(entity: Entity,
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
         textureLayers[texture.z]?.removeIf { it.entity == entity && it is LayeredTexture && it.texture == texture }
+    }
+
+    override fun getTextures(entity: Entity): List<LayeredDraw> {
+        val textureList = ArrayList<LayeredDraw>()
+        textureLayers.forEach { t, u ->
+            for (draw in u) {
+                if (draw.entity == entity)
+                    textureList.add(draw)
+            }
+        }
+        return textureList
     }
 
     private fun getEmptyEntityList(): List<List<MutableList<Entity>>> {

@@ -22,6 +22,7 @@ abstract class LayeredDraw(
 
     open var width: Int = 0
     open var height: Int = 0
+    var alpha: Float = 1f
     var debug = false
     private var isAttached = false
 
@@ -35,7 +36,7 @@ abstract class LayeredDraw(
 
     protected var drawPosition: DrawPosition = Defaults.drawPosition
 
-    abstract fun draw(batch: Batch, x: Float, y: Float, alpha: Float)
+    abstract fun draw(batch: Batch, x: Float, y: Float, parentAlpha: Float)
 
     /** Returns scaled x position including map placement */
     open fun getX(): Float {
@@ -68,9 +69,9 @@ abstract class LayeredDraw(
     }
 
     open fun attach() {
-        entity.get(DrawPosition::class)?.let { drawPosition = it }
         if (isAttached)
             return
+        entity.get(DrawPosition::class)?.let { drawPosition = it }
         val drawer = entity.get(DrawerAttribute::class)?.drawer ?: entity.get(Position::class)?.chunk?.let { ChunkManager.getDrawer(it) }
         drawer?.addLayeredDraw(this)?.also { isAttached = true }
     }
@@ -94,8 +95,8 @@ abstract class LayeredDraw(
     }
 
     @Optimize
-    open fun drawDebug(batch: Batch, x: Float, y: Float, alpha: Float) {
-        draw(batch, x, y, alpha)
+    open fun drawDebug(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
+        draw(batch, x, y, parentAlpha)
         if (debug) {
             if (drawer?.batch != batch) {
                 drawer = ShapeDrawer(batch, textureRegion)
@@ -114,6 +115,11 @@ abstract class LayeredDraw(
     fun addAction(action: Action, timeout: Float = 0f) {
         if (action is Action.UsesLayeredDraw)
             action.layeredDraw = this
+        if (action is Action.Sequence)
+            action.actions.forEach {
+                if (it is Action.UsesLayeredDraw)
+                    it.layeredDraw = this
+            }
 
         if (timeout != 0f) {
             Actions.addAction(
@@ -124,5 +130,9 @@ abstract class LayeredDraw(
             return
         }
         Actions.addAction(action)
+    }
+
+    protected fun Batch.setAlpha(alpha: Float) {
+        this.setColor(this.color.r, this.color.g, this.color.b, alpha)
     }
 }

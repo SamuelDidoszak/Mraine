@@ -7,6 +7,7 @@ import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.*
 import com.neutrino.game.entities.characters.callables.VisionChangedCallable
@@ -315,14 +316,15 @@ object Turn {
 //        eventArray.remove(character)
 
 //            shaders.clear()
-        // TODO ECS Actors
+        val chunk = character.get(Position::class)!!.chunk
+        chunk.characterMap[character.y][character.x] = null
+        chunk.characterArray.remove(character)
+        characterArray.remove(character)
+        (character as Character).setAnimation("death")
         character.addAction(com.neutrino.game.graphics.drawing.actions.Action.Sequence(
-            com.neutrino.game.graphics.drawing.actions.Action.FadeOut(1.25f),
+            com.neutrino.game.graphics.drawing.actions.Action.Delay(1f),
+            com.neutrino.game.graphics.drawing.actions.Action.FadeOut(1f),
             com.neutrino.game.graphics.drawing.actions.Action.Custom {
-                val chunk = character.get(Position::class)!!.chunk
-                chunk.characterMap[character.y][character.x] = null
-                chunk.characterArray.remove(character)
-                characterArray.remove(character)
                 character.get(Texture::class)!!.textures.clear()
                 character.getDrawables()?.forEach { it.detach() }
             }

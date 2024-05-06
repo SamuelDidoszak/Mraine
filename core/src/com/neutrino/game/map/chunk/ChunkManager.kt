@@ -3,6 +3,8 @@ package com.neutrino.game.map.chunk
 import com.neutrino.game.domain.model.characters.utility.Fov
 import com.neutrino.game.domain.model.turn.Turn.characterArray
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Character
+import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
@@ -96,8 +98,10 @@ object ChunkManager: ChunkManagerMethods {
             val entityPosition = entity.get(Position::class)!!
             entityPosition.chunk.characterMap[entityPosition.y][entityPosition.x] = null
             position.chunk.characterMap[position.y][position.x] = entity
-            if (position.x != entityPosition.x)
-                entity.get(Texture::class)!!.textures.mirror(position.x < entityPosition.x)
+            val mirror =
+                if (position.x == entityPosition.x)
+                    entity.get(Texture::class)!!.textures.isMirrored()
+                else position.x < entityPosition.x
 
             var xDiff = entity.get(DrawPosition::class)!!.x
             var yDiff = entity.get(DrawPosition::class)!!.y
@@ -112,7 +116,17 @@ object ChunkManager: ChunkManagerMethods {
             entity.get(DrawPosition::class)!!.x -= xDiff
             entity.get(DrawPosition::class)!!.y -= yDiff
             // if there are movement bugs, it may be because there were multiple movement calls and actions stacked
-            entity.addAction(Action.MoveBy(xDiff, yDiff, Constants.MoveSpeed * entity.get(DefensiveStats::class)!!.movementSpeed.toFloat()))
+            entity.addAttribute(ActionBlock())
+            (entity as Character).setAnimation("walk")
+            entity.get(Texture::class)!!.textures.mirror(mirror)
+            entity.addAction(Action.Sequence(
+                Action.MoveBy(xDiff, yDiff, Constants.MoveSpeed * entity.get(DefensiveStats::class)!!.movementSpeed.toFloat()),
+                Action.Custom {
+                    entity.removeAttribute(ActionBlock::class)
+                    entity.setAnimation("idle")
+                    entity.get(Texture::class)!!.textures.mirror(mirror)
+                }
+            ))
         }
 
         // TODO Multiple Chunks

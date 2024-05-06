@@ -55,9 +55,20 @@ sealed class Action(
         override var layeredDraw: LayeredDraw? = null
         override var entity: Entity? = null
 
-        var i = 0
+        private var targetX = x
+        private var targetY = y
 
         override fun update(delta: Float): Boolean {
+            if (totalTime == 0f) {
+                if (entity != null) {
+                    targetX = entity!!.get(DrawPosition::class)!!.x + x
+                    targetY = entity!!.get(DrawPosition::class)!!.y + y
+                } else if (layeredDraw != null) {
+                    targetX = layeredDraw!!.xOffset + x
+                    targetY = layeredDraw!!.yOffset + y
+                }
+            }
+
             if (layeredDraw != null) {
                 layeredDraw!!.xOffset += x * getActionFrame(delta)
                 layeredDraw!!.yOffset += y * getActionFrame(delta)
@@ -68,6 +79,13 @@ sealed class Action(
             }
 
             totalTime += delta
+            if (isActionFinished()) {
+                layeredDraw?.xOffset = targetX
+                layeredDraw?.yOffset = targetY
+                entity?.get(DrawPosition::class)?.x = targetX
+                entity?.get(DrawPosition::class)?.y = targetY
+            }
+
             return isActionFinished()
         }
     }
@@ -91,7 +109,6 @@ sealed class Action(
                     ChunkManager.getDrawer(entity!!.get(Position::class)!!.chunk)).getTextures(entity!!)
 
                 layeredDraws.forEach {
-                    println(it::class)
                     it.alpha -= initialAlpha * getActionFrame(delta)
                 }
             }

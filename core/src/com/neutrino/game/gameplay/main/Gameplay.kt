@@ -6,6 +6,7 @@ import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
@@ -26,9 +27,7 @@ class Gameplay(
     internal var waitForAdditionalClick: Boolean = false
 
     fun gameLoop() {
-        // TODO Actions
-        // Before there was if ((Player.hasActions() || gameStage.focusPlayer) && ...
-        if ((gameStage.focusPlayer) && !gameStage.lookingAround) {
+        if ((Player.has(ActionBlock::class) || gameStage.focusPlayer) && !gameStage.lookingAround) {
             gameStage.gameCamera.moveCameraToEntity(Player)
             gameStage.focusPlayer = !gameStage.gameCamera.isPlayerFocused()
         }
@@ -48,10 +47,7 @@ class Gameplay(
             }
 
             // interact with an entity
-            // TODO Actions
-            // Before it was:
-            // if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && !Player.hasActions() && Player.getSuper(Ai::class)!!.targetCoords != null) {
-            if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && Player.getSuper(Ai::class)!!.targetCoords != null) {
+             if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && Player.hasNot(ActionBlock::class) && Player.getSuper(Ai::class)!!.targetCoords != null) {
                 val entityCoords = Player.getSuper(Ai::class)!!.targetCoords!!
                 val entity = Turn.currentChunk.getEntityWithAction(entityCoords.first, entityCoords.second)?.get(Interaction::class)
                 // Entity has disappeared in the meantime
@@ -75,10 +71,7 @@ class Gameplay(
             }
 
             // WASD movement
-            // TODO Actions
-            // Before it was:
-            // if (Player.ai.action is Action.NOTHING && gameStage.moveDirection != null && !Player.hasActions()) {
-            if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && gameStage.moveDirection != null) {
+             if (Player.getSuper(Ai::class)!!.action is Action.NOTHING && gameStage.moveDirection != null && Player.hasNot(ActionBlock::class)) {
                 val yChange = when (gameStage.moveDirection) {
                     7, 8, 9 -> -1
                     1, 2, 3 -> 1
@@ -95,14 +88,12 @@ class Gameplay(
                     return
 
                 Player.getSuper(Ai::class)!!.moveTo(wasdCoord.x, wasdCoord.y)
+                gameStage.lookingAround = false
             }
 
             // move the Player if a tile was clicked previously, or stop if user clicked during the movement
             // Add the move action if the movement animation has ended
-            // TODO Actions
-            // Before it was:
-            // if (Player.ai.moveList.isNotEmpty() && !Player.hasActions() && gameStage.clickedCoordinates == null && Player.ai.action is Action.NOTHING) {
-            if (Player.getSuper(Ai::class)!!.moveList.isNotEmpty() && gameStage.clickedCoordinates == null && Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
+             if (Player.getSuper(Ai::class)!!.moveList.isNotEmpty() && Player.hasNot(ActionBlock::class) && gameStage.clickedCoordinates == null && Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
                 if (Turn.updateBatch.firstOrNull() is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
                     Player.getSuper(Ai::class)!!.setMoveList(
                         Player.getSuper(Ai::class)!!.moveList.last().x, Player.getSuper(Ai::class)!!.moveList.last().y, true)
@@ -117,10 +108,7 @@ class Gameplay(
                 // calls this method until a tile is clicked
                 if (gameStage.clickedCoordinates == null) return
                 // player clicked during movement
-                // TODO Actions
-                // Before it was:
-                // if (Player.ai.moveList.isNotEmpty() || Player.hasActions()) {
-                if (Player.getSuper(Ai::class)!!.moveList.isNotEmpty()) {
+                if (Player.getSuper(Ai::class)!!.moveList.isNotEmpty() || Player.has(ActionBlock::class)) {
                     Player.getSuper(Ai::class)!!.moveList = ArrayDeque()
                     Player.getSuper(Ai::class)!!.targetCoords = null
                     gameStage.clickedCoordinates = null

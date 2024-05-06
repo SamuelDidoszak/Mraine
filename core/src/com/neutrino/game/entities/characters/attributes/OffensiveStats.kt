@@ -2,11 +2,14 @@ package com.neutrino.game.entities.characters.attributes
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.util.add
+import com.neutrino.game.util.x
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -39,6 +42,11 @@ class OffensiveStats(
 ): Attribute(), HasRange, AttributeOperations<OffensiveStats> {
 
     fun attack(target: Position) {
+        if (entity is Character) {
+            if (target.x != entity.x)
+                entity.get(Texture::class)!!.textures.mirror(target.x < entity.x)
+            (entity as Character).setAnimation("attack", "idle", true)
+        }
         if (entity has AreaAttack::class)
             return areaAttack(target, entity.get(AreaAttack::class)!!)
         if (entity has AroundAttack::class)

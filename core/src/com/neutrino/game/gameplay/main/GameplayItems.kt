@@ -12,6 +12,7 @@ import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.items.attributes.Amount
@@ -31,10 +32,7 @@ class GameplayItems(
     internal fun useItems() {
         // If an item was used in eq, make an adequate use action
         val usedItemList = hudStage.usedItemList.ifEmpty { uiStage.usedItemList }
-        // TODO Actions
-        // Before was:
-        // if (usedItemList.isNotEmpty() && !Player.hasActions()) {
-        if (usedItemList.isNotEmpty()) {
+        if (usedItemList.isNotEmpty() && Player.hasNot(ActionBlock::class)) {
             // If user clicked, stop using items
             if (gameStage.clickedCoordinates != null) {
                 while (usedItemList.isNotEmpty()) {

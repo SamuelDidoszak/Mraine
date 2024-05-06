@@ -1,11 +1,11 @@
 package com.neutrino.game.graphics.drawing
 
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Texture
 
 class Animations(val drawer: EntityDrawer) {
     private val animations = ArrayList<AnimationData>(10)
+    private val nextAnimations = ArrayList<AnimationData>()
 
     fun add(animation: AnimationData) {
         animations.add(animation)
@@ -40,13 +40,16 @@ class Animations(val drawer: EntityDrawer) {
             }
             if (remove) {
                 iterator.remove()
-                if (animation.nextAnimation == null)
-                    continue
-                animation.entity.get(Texture::class)!!
-                    .textures[animation.entity.get(Texture::class)!!.textures.indexOf(animation.animation)] = animation.nextAnimation
-                iterator.add(AnimationData(animation.nextAnimation, animation.entity, null))
+                if (animation.nextAnimation != null)
+                    nextAnimations.add(animation)
             }
         }
+
+        for (animation in nextAnimations) {
+            animation.entity.get(Texture::class)!!
+                .textures[animation.entity.get(Texture::class)!!.textures.indexOf(animation.animation)] = animation.nextAnimation!!
+        }
+        nextAnimations.clear()
     }
 
     fun clear() {

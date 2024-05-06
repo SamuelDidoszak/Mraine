@@ -123,6 +123,13 @@ class Texture(
             this.forEach { it.mirrorX = mirror }
         }
 
+        fun isMirrored(): Boolean {
+            var mirroredCount = 0
+            var notMirroredCount = 0
+            this.forEach { if (it.mirrorX) mirroredCount++ else notMirroredCount++  }
+            return mirroredCount > notMirroredCount
+        }
+
         private fun addToLevel(element: TextureSprite, animationData: AnimationData? = null) {
             val drawer = entity.get(DrawerAttribute::class)?.drawer ?: ChunkManager.getDrawer(entity.get(Position::class)!!.chunk)
             if (element.z != 0)

@@ -6,6 +6,7 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.util.InventoryElement
 import com.neutrino.game.entities.items.attributes.Amount
 import com.neutrino.game.entities.items.attributes.GoldValue
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.util.lessThanDelta
 
 class Inventory(
@@ -111,6 +112,7 @@ class Inventory(
             }
             items.add(i, inventoryElement)
         }
+        item.addAttribute(Position(Int.MIN_VALUE, Int.MIN_VALUE, item.get(Position::class)!!.chunk))
         return true
     }
 

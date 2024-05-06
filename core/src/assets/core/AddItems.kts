@@ -4,7 +4,6 @@ import com.neutrino.game.entities.Items
 import com.neutrino.game.entities.characters.attributes.OffensiveStats
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.items.attributes.*
-import com.neutrino.game.entities.systems.events.callables.AddCooldown
 import com.neutrino.game.entities.items.attributes.usable.EquipEvents
 import com.neutrino.game.entities.items.attributes.usable.UseEvents
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
@@ -18,14 +17,14 @@ import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Cooldown
 import com.neutrino.game.entities.systems.events.TimedEvent
+import com.neutrino.game.entities.systems.events.callables.AddCooldown
 import com.neutrino.game.graphics.textures.Textures
-import com.neutrino.game.util.add
 import kotlin.math.roundToInt
 
 Items.add("Gold") {
     Item()
         .addAttribute(Texture { position, random, textures -> run {
-            textures add Textures.get("gold1")
+            position?.entity?.call(AmountChangedCallable::class, position.entity.get(Amount::class)!!.amount)
         }})
         .addAttribute(Amount(maxStack = Int.MAX_VALUE))
         .addAttribute(GoldValue(1))
@@ -49,7 +48,7 @@ Items.add("Gold") {
                     else "gold8"
                 if (entity has Position::class) {
                     entity.get(Texture::class)!!.textures.clear()
-                    entity.get(Texture::class)!!.textures add (Textures get textureName)
+                    entity.get(Texture::class)!!.textures.add(Textures get textureName)
                 }
                 return true
             }

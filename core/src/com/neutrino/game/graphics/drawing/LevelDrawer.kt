@@ -63,9 +63,8 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
     }
 
     override fun addTexture(entity: Entity, texture: TextureSprite) {
-        if (textureLayers[texture.z] == null) {
+        if (textureLayers[texture.z] == null)
             textureLayers[texture.z] = LayeredTextureList()
-        }
         if (entity has StitchedSprite::class)
             textureLayers[texture.z]!!.add(LayeredTextureUnsorted(entity, texture))
         else

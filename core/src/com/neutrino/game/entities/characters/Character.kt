@@ -15,7 +15,7 @@ class Character: Entity() {
             field = value
         }
 
-    fun setAnimation(type: String, next: String? = null, remainMirrored: Boolean = false) {
+    fun setAnimation(type: String, next: String? = null, remainMirrored: Boolean = true) {
         fun getAnimation(name: String): AnimatedTextureSprite {
             val animation =  Textures.get(
                 (if (this == Player) "player" else Characters.getName(id).lowercase()) +

@@ -97,11 +97,9 @@ class GameScreen: KtxScreen {
             Gdx.input.inputProcessor = gameInputMultiplexer
             hudStage.darkenScreen(false)
             isEqVisible = false
-            // drops items
-            // TODO ECS ITEMS
+            // drop items
             while (uiStage.itemDropList.isNotEmpty()) {
                 val item = uiStage.itemDropList.removeFirst()
-                // TODO ECS COPY
                 item.addAttribute(Position(Player.x, Player.y, Player.get(Position::class)!!.chunk))
                 Player.get(Position::class)!!.chunk.map[Player.y][Player.x].add(item)
             }

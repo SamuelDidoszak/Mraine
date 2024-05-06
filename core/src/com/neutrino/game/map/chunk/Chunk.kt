@@ -14,6 +14,8 @@ import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.MapTag
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.LevelChunkSize
+import com.neutrino.game.util.x
+import com.neutrino.game.util.y
 import com.neutrino.game.utility.serialization.HeaderSerializable
 import kotlin.random.Random
 import kotlin.reflect.KClass
@@ -85,6 +87,7 @@ class Chunk(
             entity.get(Texture::class)?.textures?.clear()
         else {
             entity.addAttribute(DrawPosition())
+            entity.get(Position::class)!!.setPosition(entity.x, entity.y)
             entity.get(Texture::class)?.setTextures(entity.get(Position::class)!!, Random)
         }
     }

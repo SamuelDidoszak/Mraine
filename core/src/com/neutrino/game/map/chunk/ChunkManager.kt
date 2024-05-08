@@ -1,7 +1,6 @@
 package com.neutrino.game.map.chunk
 
-import com.neutrino.game.domain.model.characters.utility.Fov
-import com.neutrino.game.domain.model.turn.Turn.characterArray
+import com.neutrino.game.map.chunk.util.Fov
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.ActionBlock
@@ -13,6 +12,7 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.InteractionType
+import com.neutrino.game.gameplay.turn.Turn.characterArray
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.map.attributes.DrawPosition

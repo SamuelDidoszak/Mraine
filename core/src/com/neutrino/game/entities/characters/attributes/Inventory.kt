@@ -1,6 +1,6 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.util.InventoryElement

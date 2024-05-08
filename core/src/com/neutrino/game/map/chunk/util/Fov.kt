@@ -1,15 +1,12 @@
-package com.neutrino.game.domain.model.characters.utility
+package com.neutrino.game.map.chunk.util
 
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.characters.attributes.Ai
-import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.util.compareDelta
 import com.neutrino.game.util.hasIdentity
-import com.neutrino.game.utility.BArray
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.round

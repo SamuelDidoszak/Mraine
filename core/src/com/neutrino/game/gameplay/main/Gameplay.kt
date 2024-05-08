@@ -3,8 +3,8 @@ package com.neutrino.game.gameplay.main
 import com.neutrino.GameStage
 import com.neutrino.HudStage
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.domain.model.turn.Action
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai

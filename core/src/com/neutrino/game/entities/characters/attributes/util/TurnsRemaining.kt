@@ -1,6 +1,6 @@
 package com.neutrino.game.entities.characters.attributes.util
 
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.util.roundOneDecimal
 
 data class TurnsRemaining(

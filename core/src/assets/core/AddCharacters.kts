@@ -1,12 +1,15 @@
 
 import com.neutrino.game.entities.Characters
+import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.*
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
+import com.neutrino.game.entities.characters.attributes.util.LootElement
+import com.neutrino.game.entities.shared.attributes.RandomizationSimple
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.drawing.layers.CharacterInfoGroup
-import com.neutrino.game.graphics.drawing.layers.HpBar
 import com.neutrino.game.graphics.textures.Textures
+import kotlin.random.Random
 
 Characters.add("Mouse") {
     Character()
@@ -28,6 +31,10 @@ Characters.add("Mouse") {
         })
         .addAttribute(CharacterTags())
         .addAttribute(CharacterInfoGroup())
+        .addAttribute(Loot(LootElement(
+            "meat",
+            {entity: Entity, rng: Random -> entity.get(RandomizationSimple::class)?.randomize(rng) },
+            0.25f)))
 }
 Characters.add("Slime") {
     Character()

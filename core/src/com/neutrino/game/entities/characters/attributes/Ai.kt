@@ -1,6 +1,6 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.domain.model.turn.Action
+import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
@@ -100,6 +100,6 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
     fun canAttack(xTarget: Int, yTarget: Int): Boolean {
         return entity.get(OffensiveStats::class)!!.isInRange(
             entity.get(Position::class)!!,
-            Position(xTarget, yTarget, com.neutrino.game.domain.model.turn.Turn.currentChunk))
+            Position(xTarget, yTarget, com.neutrino.game.gameplay.turn.Turn.currentChunk))
     }
 }

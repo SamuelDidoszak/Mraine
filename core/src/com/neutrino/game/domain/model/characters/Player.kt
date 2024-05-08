@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.neutrino.EventDispatcher
+import com.neutrino.game.domain.use_case.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.util.Constants
@@ -21,7 +21,7 @@ import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.*
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.shared.util.RangeType
 
 import kotlin.reflect.KClass

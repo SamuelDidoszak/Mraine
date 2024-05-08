@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.systems.skills
 
-import com.neutrino.EventDispatcher
-import com.neutrino.LevelArrays
+import com.neutrino.game.domain.use_case.EventDispatcher
+import com.neutrino.game.domain.use_case.map.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
@@ -9,7 +9,7 @@ import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventTeleport
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.util.hasIdentity
 import squidpony.squidmath.Coord

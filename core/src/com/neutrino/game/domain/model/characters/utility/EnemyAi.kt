@@ -1,8 +1,8 @@
 package com.neutrino.game.domain.model.characters.utility
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.turn.Action
-import com.neutrino.game.utility.VectorOperations
+import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.util.VectorOperations
 import squidpony.squidmath.Coord
 import kotlin.math.pow
 import kotlin.random.Random

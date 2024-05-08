@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.model.utility
 
-import com.neutrino.LevelArrays
+import com.neutrino.game.domain.use_case.map.LevelArrays
 import com.neutrino.game.domain.model.characters.utility.StatsEnum
 
 enum class RandomizationTypes(val types: List<StatsEnum>) {

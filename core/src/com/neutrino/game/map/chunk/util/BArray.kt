@@ -1,4 +1,4 @@
-package com.neutrino.game.utility
+package com.neutrino.game.map.chunk.util
 
 import com.neutrino.game.util.Constants
 

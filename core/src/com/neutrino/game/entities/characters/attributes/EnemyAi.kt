@@ -1,12 +1,12 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.domain.model.turn.Action
+import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.callables.attack.GotAttackedAfterCallable
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
-import com.neutrino.game.utility.VectorOperations
+import com.neutrino.game.util.VectorOperations
 import squidpony.squidmath.Coord
 import kotlin.math.pow
 import kotlin.random.Random

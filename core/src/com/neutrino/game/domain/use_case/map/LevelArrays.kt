@@ -1,8 +1,8 @@
-package com.neutrino
+package com.neutrino.game.domain.use_case.map
 
-import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.MapParams
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
 import squidpony.squidmath.Coord

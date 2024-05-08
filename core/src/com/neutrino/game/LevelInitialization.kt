@@ -5,8 +5,8 @@ import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
 import com.esotericsoftware.kryo.kryo5.minlog.Log
 import com.neutrino.GameStage
-import com.neutrino.game.domain.model.turn.Turn
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkCoords

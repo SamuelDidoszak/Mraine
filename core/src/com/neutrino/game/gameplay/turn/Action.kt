@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.turn
+package com.neutrino.game.gameplay.turn
 
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.systems.skills.Skill

@@ -8,8 +8,8 @@ import com.neutrino.HudStage
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.UseOn
-import com.neutrino.game.domain.model.turn.Action
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.ActionBlock

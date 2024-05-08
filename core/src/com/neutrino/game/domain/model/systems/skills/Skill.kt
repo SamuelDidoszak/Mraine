@@ -1,13 +1,13 @@
 package com.neutrino.game.domain.model.systems.skills
 
-import com.neutrino.EventDispatcher
+import com.neutrino.game.domain.use_case.EventDispatcher
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.domain.model.systems.event.CausesCooldown
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.EventCooldown
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 import squidpony.squidmath.Coord
 import kotlin.reflect.KClass
 

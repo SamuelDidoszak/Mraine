@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.characters.utility
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.turn.Action
+import com.neutrino.game.gameplay.turn.Action
 import kotlin.math.abs
 
 class FamiliarAi(private val character: Character, private val master: Character): EnemyAi(character) {

@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.EventDispatcher
+import com.neutrino.game.domain.use_case.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.utility.*
@@ -21,7 +21,7 @@ import com.neutrino.game.domain.model.systems.event.types.EventBerserk
 import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.graphics.shaders.OutlineShader
@@ -172,11 +172,6 @@ abstract class Character(
 
         val turnBar = TurnBar(turn, movementSpeed)
         this.findActor<Group>("infoGroup").addActor(turnBar)
-    }
-
-    open fun randomize(randomGenerator: Random) {
-        if (this is HasDrops)
-            generateDropList(randomGenerator)
     }
 
     abstract val description: String

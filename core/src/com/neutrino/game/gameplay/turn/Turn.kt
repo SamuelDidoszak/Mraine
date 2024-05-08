@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.turn
+package com.neutrino.game.gameplay.turn
 
 import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
@@ -94,7 +94,9 @@ object Turn {
 
             if (updateBatch.firstOrNull() == Action.MOVE(
                     character.get(Position::class)!!.x,
-                    character.get(Position::class)!!.y)) {
+                    character.get(Position::class)!!.y
+                )
+            ) {
                 updateBatch.removeFirst()
                 println("resetting update batch")
             }
@@ -300,22 +302,11 @@ object Turn {
         // TODO ECS Attack levelling
 //        Player.experience += character.experience
 
-        // Drop its items
-        // TODO ECS ITEM
-//        if (character is HasDrops) {
-//            character.dropItems().forEach {
-//                currentLevel.map[character.yPos][character.xPos].add(ItemEntity(it))
-//            }
-//        }
-
-        // TODO ECS Events
-//        eventArray.remove(character)
-
-//            shaders.clear()
         val chunk = character.get(Position::class)!!.chunk
         chunk.characterMap[character.y][character.x] = null
         chunk.characterArray.remove(character)
         characterArray.remove(character)
+        Events.remove(character)
         (character as Character).setAnimation("death")
         character.addAction(com.neutrino.game.graphics.drawing.actions.Action.Sequence(
             com.neutrino.game.graphics.drawing.actions.Action.Delay(1f),
@@ -323,6 +314,7 @@ object Turn {
             com.neutrino.game.graphics.drawing.actions.Action.Custom {
                 character.get(Texture::class)!!.textures.clear()
                 character.getDrawables()?.forEach { it.detach() }
+//            shaders.clear()
             }
         ))
     }

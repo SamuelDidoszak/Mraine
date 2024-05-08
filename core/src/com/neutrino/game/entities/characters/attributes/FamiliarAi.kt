@@ -1,6 +1,6 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.domain.model.turn.Action
+import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
 import com.neutrino.game.entities.map.attributes.Position

@@ -1,7 +1,7 @@
 package com.neutrino.game.utility
 
 import com.badlogic.gdx.graphics.Color
-import com.neutrino.LevelArrays
+import com.neutrino.game.domain.use_case.map.LevelArrays
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.entities.Entity

@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.model.systems.skills
 
-import com.neutrino.EventDispatcher
+import com.neutrino.game.domain.use_case.EventDispatcher
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.entities.shared.util.RangeType
@@ -11,7 +11,7 @@ import com.neutrino.game.domain.model.systems.event.types.CooldownType
 import com.neutrino.game.domain.model.systems.event.types.EventBleed
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 
 class SkillBleed(override val character: Character): Skill.ActiveSkillCharacter {
     override val skillType: SkillType = SkillType.DEXTERITY

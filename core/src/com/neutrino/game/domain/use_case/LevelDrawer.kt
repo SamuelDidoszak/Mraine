@@ -1,4 +1,4 @@
-package com.neutrino
+package com.neutrino.game.domain.use_case
 
 import com.badlogic.gdx.scenes.scene2d.Group
 

@@ -56,7 +56,7 @@ object Textures {
     }
 
     infix fun get(name: String): TextureSprite {
-        return new(name)!!
+        return new(name) ?: throw Exception("no texture with name $name")
     }
 
     infix fun getOrNull(name: String?): TextureSprite? {

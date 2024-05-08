@@ -1,6 +1,6 @@
 package com.neutrino.game.entities.systems.events
 
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.util.roundOneDecimal
 import kotlin.math.absoluteValue
 

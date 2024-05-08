@@ -1,4 +1,4 @@
-package com.neutrino
+package com.neutrino.game.domain.use_case
 
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper

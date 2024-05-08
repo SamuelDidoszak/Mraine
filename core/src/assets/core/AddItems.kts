@@ -68,19 +68,19 @@ Items.add("Dagger") {
         ))
         .addAttribute(EquipEvents(TimedEvent(CharacterEvents.Heal(2f), 2.0, 10)))
 }
-Items.add("Sword") {
-    Item()
-        .addAttribute(EquipmentInitializer(
-            textureName = "sword",
-            goldValue = 30,
-            eqType = EquipmentType.RHAND,
-            handheldType = HandheldEquipmentType.SWORD
-        ))
-        .addAttribute(OffensiveStats(
-            damageMin = 3f,
-            damageMax = 4f,
-        ))
-}
+//Items.add("Sword") {
+//    Item()
+//        .addAttribute(EquipmentInitializer(
+//            textureName = "sword",
+//            goldValue = 30,
+//            eqType = EquipmentType.RHAND,
+//            handheldType = HandheldEquipmentType.SWORD
+//        ))
+//        .addAttribute(OffensiveStats(
+//            damageMin = 3f,
+//            damageMax = 4f,
+//        ))
+//}
 Items.add("Meat") {
     Item()
         .addAttribute(ItemInitializer(

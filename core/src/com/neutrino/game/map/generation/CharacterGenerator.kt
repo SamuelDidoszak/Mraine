@@ -1,9 +1,10 @@
 package com.neutrino.game.map.generation
 
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.Characters
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Loot
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
@@ -28,6 +29,7 @@ class CharacterGenerator(val params: GenerationParams) {
 
         addPlayerAtStairs()
         spawnEnemies()
+        generateLoot()
         return characterArray
     }
 
@@ -80,6 +82,12 @@ class CharacterGenerator(val params: GenerationParams) {
 //                println("Error: ${e.message}")
 //                break
 //            }
+        }
+    }
+
+    private fun generateLoot() {
+        characterArray.forEach {
+            it.get(Loot::class)?.generateLoot(params.rng)
         }
     }
 

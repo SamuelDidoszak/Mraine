@@ -1,4 +1,4 @@
-package com.neutrino.game.utility
+package com.neutrino.game.util
 
 import com.badlogic.gdx.math.MathUtils.atan2
 import com.badlogic.gdx.math.Vector2

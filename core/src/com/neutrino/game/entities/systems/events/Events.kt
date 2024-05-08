@@ -1,7 +1,7 @@
 package com.neutrino.game.entities.systems.events
 
 import com.neutrino.game.domain.model.characters.Player.roundToDecimalPlaces
-import com.neutrino.game.domain.model.turn.Turn
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.systems.events.attributes.EventList
 import com.neutrino.game.map.chunk.Chunk

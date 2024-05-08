@@ -29,9 +29,5 @@ sealed class InteractionType(var requiredDistance: Int, var isPrimary: Boolean, 
 
     class ITEM: InteractionType(0, true, "", turnCost = 1.0)
 
-    class DESTROY(): InteractionType(1, true, "", 1.0), RequiresEntityParameter {
-        override lateinit var entity: Entity
-    }
-
     class OPEN: InteractionType(1, true, "", 1.0)
 }

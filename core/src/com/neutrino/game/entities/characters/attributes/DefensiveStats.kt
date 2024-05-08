@@ -5,6 +5,7 @@ import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.systems.CharacterTag.IncreaseStealthDamage
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.callables.attack.AttackedAfterCallable
 import com.neutrino.game.entities.characters.callables.attack.AttackedBeforeCallable
 import com.neutrino.game.entities.characters.callables.attack.EntityDiedCallable
@@ -91,7 +92,8 @@ class DefensiveStats(
         if (hp <= 0) {
             hp = 0f
             entity.call(EntityDiedCallable::class, entity)
-            GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this.entity)
+            if (entity is Character)
+                GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this.entity)
         } else entity.call(GotAttackedAfterCallable::class, attacker.entity, damage)
         attacker.entity.call(AttackedAfterCallable::class, entity, damage)
         // TODO ECS Actors

@@ -2,8 +2,6 @@ package com.neutrino.game.utility
 
 import com.badlogic.gdx.graphics.Color
 import com.neutrino.LevelArrays
-import com.neutrino.game.domain.model.entities.utility.Destructable
-import com.neutrino.game.domain.model.entities.utility.Interactable
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.entities.Entity
@@ -14,7 +12,6 @@ import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.HasRange
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.graphics.shaders.ColorOverlayShader
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
@@ -171,20 +168,20 @@ class Highlighting {
 
         // TODO ECS Shaders
 //        outlinedOnHover = entity
-        shaderOnHover = OutlineShader(
-                if ((outlinedOnHover as Interactable).getPrimaryInteraction() is InteractionType.DESTROY) {
-                    if ((outlinedOnHover as Destructable).destroyed)
-                        OutlineShader.OUTLINE_CLEAR
-                    else
-                        OutlineShader.OUTLINE_RED
-                }
-                else
-                    OutlineShader.OUTLINE_GREEN,
-                2f,
-                (outlinedOnHover as TextureHaver).texture
-        )
-        outlinedOnHover?.shaders?.add(shaderOnHover)
-        return outlinedOnHover != null
+//        shaderOnHover = OutlineShader(
+//                if ((outlinedOnHover as Interactable).getPrimaryInteraction() is InteractionType.DESTROY) {
+//                    if ((outlinedOnHover as Destructable).destroyed)
+//                        OutlineShader.OUTLINE_CLEAR
+//                    else
+//                        OutlineShader.OUTLINE_RED
+//                }
+//                else
+//                    OutlineShader.OUTLINE_GREEN,
+//                2f,
+//                (outlinedOnHover as TextureHaver).texture
+//        )
+//        outlinedOnHover?.shaders?.add(shaderOnHover)
+//        return outlinedOnHover != null
     }
 
     private fun addCharacterOutlineOnHover(coord: Coord): Boolean {

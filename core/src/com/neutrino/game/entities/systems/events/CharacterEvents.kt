@@ -21,13 +21,11 @@ abstract class CharacterEvents: Event {
     class Heal(var power: Float): CharacterEvents(), Status {
         override fun apply() {
             val stats = entity.get(DefensiveStats::class) ?: return
-            println("Hp b4: ${stats.hp}")
 
             if (stats.hp + power > stats.hpMax)
                 stats.hp = stats.hpMax
             else
                 stats.hp += power
-            println("Hp after: ${stats.hp}")
 //            entity.findActor<HpBar>("hpBar").update(character.hp)
         }
 

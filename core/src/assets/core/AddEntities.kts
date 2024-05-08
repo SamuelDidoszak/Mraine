@@ -1,7 +1,10 @@
+
 import com.neutrino.game.entities.Entities
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.MapParams
+import com.neutrino.game.entities.map_entities.attributes.Container
+import com.neutrino.game.entities.map_entities.attributes.Destructable
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
@@ -130,10 +133,10 @@ Entities.add("CandleWhiteMultiple") {
 }
 Entities.add("ClayPot") {
 	Entity()
-		.addAttribute(Identity.Container())
-		.addAttribute(Interaction(arrayListOf(InteractionType.DESTROY())))
+		.addAttribute(Container(
+			Destructable(1f)
+		))
 		.addAttribute(MapParams(false, false))
-		.addAttribute(ChangesImpassable())
 		.addAttribute(Texture { position, random, textures -> run {
 			textures.add(
 				Textures.getRandomTexture(random, listOf(
@@ -143,16 +146,16 @@ Entities.add("ClayPot") {
 }
 Entities.add("ClayPotMultiple") {
 	Entity()
-		.addAttribute(Identity.Container())
+		.addAttribute(Container(
+			Destructable(5f)
+		))
 		.addAttribute(MapParams(false, false))
-		.addAttribute(Interaction(arrayListOf(InteractionType.DESTROY(), InteractionType.OPEN())))
 		.addAttribute(Texture { position, random, textures -> run {
 			textures.add(Textures.getOrNull(random, 70f, "clayPot$3"))
 			textures.add(Textures.getOrNull(random, 40f, "clayPot$4"))?.also {return@run}
 			textures.add(Textures.getOrNull(random, 60f, "clayPot$1"))
 			textures.add(Textures.getOrNull(random, 50f, "clayPot$2"))
 		}})
-		.addAttribute(ChangesImpassable())
 }
 Entities.add("StandingMetalTorch") {
 	Entity()
@@ -177,9 +180,9 @@ Entities.add("WoodenTorch") {
 }
 Entities.add("Barrel") {
 	Entity()
-		.addAttribute(Identity.Container())
-		.addAttribute(Interaction(arrayListOf(InteractionType.DESTROY())))
-		.addAttribute(ChangesImpassable())
+		.addAttribute(Container(
+			Destructable(10f)
+		))
 		.addAttribute(MapParams(false, false))
 		.addAttribute(Texture { position, random, textures -> run {
 			textures.add(Textures.get("barrel"))
@@ -187,9 +190,9 @@ Entities.add("Barrel") {
 }
 Entities.add("WoodenCrateBigger") {
 	Entity()
-		.addAttribute(Identity.Container())
-		.addAttribute(Interaction(arrayListOf(InteractionType.DESTROY())))
-		.addAttribute(ChangesImpassable())
+		.addAttribute(Container(
+			Destructable(15f)
+		))
 		.addAttribute(MapParams(false, false))
 		.addAttribute(Texture { position, random, textures -> run {
 			textures.add(Textures.get("crateBiggerDark"))
@@ -197,17 +200,17 @@ Entities.add("WoodenCrateBigger") {
 }
 Entities.add("WoodenCrateSmall") {
 	Entity()
-		.addAttribute(Identity.Container())
-		.addAttribute(Interaction(arrayListOf(InteractionType.DESTROY())))
+		.addAttribute(Container(
+			Destructable(7f)
+		))
 		.addAttribute(MapParams(false, false))
-		.addAttribute(ChangesImpassable())
 		.addAttribute(Texture { position, random, textures -> run {
 			textures.add(Textures.get("crateSmall"))
 		}})
 }
 Entities.add("WoodenChestMid") {
 	Entity()
-		.addAttribute(Identity.Container())
+		.addAttribute(Container(null))
 		.addAttribute(Interaction(arrayListOf(InteractionType.OPEN())))
 		.addAttribute(MapParams(false, false))
 		.addAttribute(ChangesImpassable())

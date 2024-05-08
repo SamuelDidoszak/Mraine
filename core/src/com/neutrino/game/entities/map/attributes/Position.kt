@@ -3,6 +3,7 @@ package com.neutrino.game.entities.map.attributes
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.Chunk
@@ -18,7 +19,7 @@ class Position(
     x: Int,
     y: Int,
     var chunk: Chunk
-): Attribute() {
+): Attribute(), Cloneable<Position> {
 
     constructor(coord: Coord, chunk: Chunk): this(coord.x, coord.y, chunk)
 
@@ -55,6 +56,10 @@ class Position(
 
     fun moveCharacter(position: Position) {
         ChunkManager.characterMethods.moveCharacter(entity, position)
+    }
+
+    override fun clone(): Position {
+        return Position(x, y, chunk)
     }
 
     private companion object {

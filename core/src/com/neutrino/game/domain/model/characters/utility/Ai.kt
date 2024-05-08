@@ -2,7 +2,6 @@ package com.neutrino.game.domain.model.characters.utility
 
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.turn.Action
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.util.Constants
 import squidpony.squidai.DijkstraMap
 import squidpony.squidmath.Coord
@@ -34,12 +33,7 @@ open class Ai (private val character: Character) {
                 is Action.MOVE -> character.movementSpeed
                 is Action.ATTACK -> character.attackSpeed
                 is Action.SKILL -> 1.0
-                is Action.INTERACTION -> {
-                    if (thisAction.interaction is InteractionType.DESTROY)
-                        character.attackSpeed
-                    else
-                        thisAction.interaction.turnCost
-                }
+                is Action.INTERACTION -> thisAction.interaction.turnCost
                 is Action.WAIT -> character.movementSpeed
                 is Action.NOTHING -> 0.0
                 is Action.ITEM -> 1.0

@@ -45,7 +45,7 @@ interface ChunkManagerMethods {
     fun allowsCharacterChangesImpassable(position: Position): Boolean {
         var allow = true
         for (entity in position.chunk.map[position.y][position.x]) {
-            if (!entity.get(MapParams::class)!!.allowCharacterOnTop && entity hasNot ChangesImpassable::class) {
+            if (entity.get(MapParams::class)?.allowCharacterOnTop == false && entity hasNot ChangesImpassable::class) {
                 allow = false
                 break
             }

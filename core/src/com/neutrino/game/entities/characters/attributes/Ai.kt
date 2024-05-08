@@ -4,7 +4,6 @@ import com.neutrino.game.domain.model.turn.Action
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.x
@@ -43,12 +42,7 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
                 is Action.MOVE -> entity.get(DefensiveStats::class)!!.movementSpeed
                 is Action.ATTACK -> entity.get(OffensiveStats::class)!!.attackSpeed
                 is Action.SKILL -> 1.0
-                is Action.INTERACTION -> {
-                    if (thisAction.interaction is InteractionType.DESTROY)
-                        entity.get(OffensiveStats::class)!!.attackSpeed
-                    else
-                        thisAction.interaction.turnCost
-                }
+                is Action.INTERACTION -> thisAction.interaction.turnCost
                 is Action.WAIT ->  {
                     if (entity.get(DefensiveStats::class)!!.movementSpeed < 1.0)
                         entity.get(DefensiveStats::class)!!.movementSpeed

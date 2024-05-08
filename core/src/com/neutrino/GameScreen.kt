@@ -23,9 +23,8 @@ import com.neutrino.game.entities.systems.util.visuals.DamageNumber
 import com.neutrino.game.gameplay.main.Gameplay
 import com.neutrino.game.graphics.drawing.actions.Actions
 import com.neutrino.game.map.chunk.ChunkCoords
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
-import com.neutrino.game.util.x
-import com.neutrino.game.util.y
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
 import kotlin.math.absoluteValue
@@ -100,8 +99,7 @@ class GameScreen: KtxScreen {
             // drop items
             while (uiStage.itemDropList.isNotEmpty()) {
                 val item = uiStage.itemDropList.removeFirst()
-                item.addAttribute(Position(Player.x, Player.y, Player.get(Position::class)!!.chunk))
-                Player.get(Position::class)!!.chunk.map[Player.y][Player.x].add(item)
+                ChunkManager.addEntityAt(Player.get(Position::class)!!, item)
             }
         } else {
             Gdx.input.inputProcessor = uiInputMultiplexer

@@ -21,6 +21,7 @@ import com.neutrino.game.util.Constants
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord
+import kotlin.random.Random
 
 object ChunkManager: ChunkManagerMethods {
 
@@ -32,6 +33,26 @@ object ChunkManager: ChunkManagerMethods {
 
     fun getEntitiesAt(position: Position): EntityList {
         return position.chunk.map[position.y][position.x]
+    }
+
+    fun addEntityAt(position: Position, entity: Entity, mapParams: MapParams = MapParams(true, true)) {
+        entity.addAttribute(DrawPosition())
+        entity.addAttribute(mapParams)
+        entity.addAttribute(position.clone())
+        if (entity.get(Texture::class)!!.textures.isEmpty())
+            entity.get(Texture::class)!!.setTextures(entity.get(Position::class), Random)
+        position.chunk.map[position.y][position.x].add(entity)
+    }
+
+    fun addEntityAt(position: Position, entities: List<Entity>, mapParams: MapParams = MapParams(true, true)) {
+        entities.forEach {
+            it.addAttribute(DrawPosition())
+            it.addAttribute(mapParams.clone())
+            it.addAttribute(position.clone())
+            if (it.get(Texture::class)!!.textures.isEmpty())
+                it.get(Texture::class)!!.setTextures(it.get(Position::class), Random)
+        }
+        position.chunk.map[position.y][position.x].addAll(entities)
     }
 
     val characterMethods = CharacterMethods()

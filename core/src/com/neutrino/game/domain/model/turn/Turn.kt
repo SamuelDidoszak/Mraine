@@ -141,10 +141,6 @@ object Turn {
 
                                 Player.get(Inventory::class)!!.printAll()
                             }
-                            is InteractionType.DESTROY -> {
-                                action.entity.get(DefensiveStats::class)!!.getDamage(Player.get(OffensiveStats::class)!!)
-                                Player.get(Projectile::class)?.shoot(action.entity.get(Position::class)!!)
-                            }
                             is InteractionType.OPEN -> {
 //                                currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].remove(action.entity)
 //                                for (item in (action.entity as Container).itemList) {

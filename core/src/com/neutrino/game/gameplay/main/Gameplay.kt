@@ -3,14 +3,14 @@ package com.neutrino.game.gameplay.main
 import com.neutrino.GameStage
 import com.neutrino.HudStage
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.gameplay.turn.Action
-import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.Interaction
+import com.neutrino.game.entities.map_entities.util.Interactable
+import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
@@ -97,17 +97,17 @@ class Gameplay(
 
     private fun entityInteraction() {
         val entityCoords = Player.getSuper(Ai::class)!!.targetCoords!!
-        val entity = Turn.currentChunk.getEntityWithAction(entityCoords.first, entityCoords.second)?.get(Interaction::class)
+        val entity = Turn.currentChunk.getEntityWithAction(entityCoords.first, entityCoords.second)
         // Entity has disappeared in the meantime
         if (entity == null)
             Player.getSuper(Ai::class)!!.targetCoords = null
         else {
-            val action = entity.getPrimaryInteraction()
+            val action = Interactable.getPrimaryInteraction(entity)
             if (action != null) {
                 // check the distance and act if close enough
                 if ((entityCoords.first in Player.x - action.requiredDistance .. Player.x + action.requiredDistance) &&
                     (entityCoords.second in Player.y - action.requiredDistance .. Player.y + action.requiredDistance)) {
-                    Player.getSuper(Ai::class)!!.action = Action.INTERACTION(entity.entity, action)
+                    Player.getSuper(Ai::class)!!.action = Action.INTERACTION(entity, action)
                     // Stop moving
                     Player.getSuper(Ai::class)!!.moveList = ArrayDeque()
                 }

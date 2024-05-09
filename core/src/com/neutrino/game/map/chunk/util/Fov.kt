@@ -1,10 +1,9 @@
 package com.neutrino.game.map.chunk.util
 
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.map_entities.attributes.Door
 import com.neutrino.game.entities.shared.attributes.Identity
-import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.util.HasRange
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.util.compareDelta
 import com.neutrino.game.util.hasIdentity
 import kotlin.math.ceil
@@ -96,8 +95,7 @@ class Fov(var map: List<List<MutableList<Entity>>>) {
      */
     fun transparent(x: Int, y: Int): Boolean {
         for (entity in map[y][x]) {
-            if (entity hasIdentity Identity.Wall::class || (entity hasIdentity Identity.Door::class &&
-                        entity.get(Interaction::class)?.getInteraction(InteractionType.DOOR::class)?.open == false))
+            if (entity hasIdentity Identity.Wall::class || entity.get(Door::class)?.open == false)
                 return false
         }
         return true

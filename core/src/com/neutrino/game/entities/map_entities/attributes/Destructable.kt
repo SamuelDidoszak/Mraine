@@ -66,8 +66,14 @@ class Destructable(
             entity.removeAttribute(HpBar::class)
             val texture = entity get Texture::class
             if (texture != null) {
-                destroyedTextureName = destroyedTextureName ?: (texture.textures[0].texture.name + "Destroyed")
-                texture.textures[0] = Textures.get(destroyedTextureName!!)
+                if (destroyedTextureName != null) {
+                    texture.textures.clear()
+                    texture.textures.add(Textures.get(destroyedTextureName!!))
+                } else {
+                    for (i in 0 until texture.textures.size) {
+                        texture.textures[i] = Textures.get(texture.textures[i].texture.name + "Destroyed")
+                    }
+                }
             }
             ChunkManager.characterMethods.removeImpassable(entity.get(Position::class)!!)
             return true

@@ -1,9 +1,8 @@
 package com.neutrino.game.entities.items.attributes
 
 import com.neutrino.game.entities.Attribute
-import com.neutrino.game.entities.shared.attributes.Interaction
+import com.neutrino.game.entities.map_entities.attributes.PickUp
 import com.neutrino.game.entities.shared.attributes.Texture
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.util.add
 
@@ -27,7 +26,7 @@ class EquipmentInitializer(
         else
             entity.addAttribute(EquipmentItem(eqType))
         entity.addAttribute(ItemTier(tier))
-        entity.addAttribute(Interaction(arrayListOf(InteractionType.ITEM())))
+        entity.addAttribute(PickUp())
         entity.removeAttribute(EquipmentInitializer::class)
     }
 }

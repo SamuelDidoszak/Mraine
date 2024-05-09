@@ -1,6 +1,5 @@
 package com.neutrino.game.map.chunk
 
-import com.neutrino.game.map.chunk.util.Fov
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.ActionBlock
@@ -9,14 +8,14 @@ import com.neutrino.game.entities.characters.attributes.DefensiveStats
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.Interaction
+import com.neutrino.game.entities.map_entities.attributes.Door
 import com.neutrino.game.entities.shared.attributes.Texture
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.gameplay.turn.Turn.characterArray
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.util.ChunkManagerMethods
+import com.neutrino.game.map.chunk.util.Fov
 import com.neutrino.game.util.Constants
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
@@ -225,7 +224,7 @@ object ChunkManager: ChunkManagerMethods {
             for (x in 0 until chunk.sizeX) {
                 for (entity in chunk.map[y][x]) {
                     if (entity has ChangesImpassable::class && !entity.get(MapParams::class)!!.allowCharacterOnTop) {
-                        if ((entity.get(Interaction::class)?.interactionList?.find { it is InteractionType.DOOR } as InteractionType.DOOR?)?.open == true)
+                        if (entity.get(Door::class)?.open == true)
                             continue
 
                         coordList.add(Coord.get(x, y))

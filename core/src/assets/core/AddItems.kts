@@ -9,11 +9,9 @@ import com.neutrino.game.entities.items.attributes.usable.UseEvents
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
 import com.neutrino.game.entities.items.callables.AmountChangedCallable
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.attributes.Randomization
 import com.neutrino.game.entities.shared.attributes.RandomizationSimple
 import com.neutrino.game.entities.shared.attributes.Texture
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Cooldown
 import com.neutrino.game.entities.systems.events.TimedEvent
@@ -29,7 +27,6 @@ Items.add("Gold") {
         .addAttribute(Amount(maxStack = Int.MAX_VALUE))
         .addAttribute(GoldValue(1))
         .addAttribute(ItemTier(1))
-        .addAttribute(Interaction(arrayListOf(InteractionType.ITEM())))
         .addAttribute(Randomization { rng, quality, difficulty, entity -> run {
             val randomAmount = rng.nextFloat() * (difficulty * 5) * quality
             entity.get(Amount::class)!!.amount = randomAmount.roundToInt()

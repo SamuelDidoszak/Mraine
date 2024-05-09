@@ -32,7 +32,7 @@ Characters.add("Mouse") {
         .addAttribute(CharacterTags())
         .addAttribute(CharacterInfoGroup())
         .addAttribute(Loot(LootElement(
-            "meat",
+            "Meat",
             {entity: Entity, rng: Random -> entity.get(RandomizationSimple::class)?.randomize(rng) },
             0.25f)))
 }

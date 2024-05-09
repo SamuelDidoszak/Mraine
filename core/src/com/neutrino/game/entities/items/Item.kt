@@ -3,6 +3,8 @@ package com.neutrino.game.entities.items
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.Items
+import com.neutrino.game.entities.items.attributes.Amount
+import com.neutrino.game.entities.map_entities.attributes.PickUp
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.entities.util.Cloneable
 
@@ -14,6 +16,10 @@ class Item: Entity(), Cloneable<Item> {
             nameSet = true
             field = value
         }
+
+    init {
+        addAttribute(PickUp())
+    }
 
     fun getItemAttributes(): List<Attribute> {
         val attributes = ArrayList<Attribute>()
@@ -34,5 +40,11 @@ class Item: Entity(), Cloneable<Item> {
                 item.addAttribute((attribute.value as Cloneable<Attribute>).clone())
         }
         return item
+    }
+
+    fun setAmount(amount: Int): Entity {
+        if (amount <= get(Amount::class)!!.maxStack)
+            get(Amount::class)!!.amount = amount
+        return this
     }
 }

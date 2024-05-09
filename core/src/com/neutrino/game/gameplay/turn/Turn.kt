@@ -15,17 +15,17 @@ import com.neutrino.game.entities.items.attributes.usable.Use
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
 import com.neutrino.game.entities.items.attributes.usable.UseOnPosition
 import com.neutrino.game.entities.items.callables.UsedCallable
-import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.map_entities.attributes.Chest
+import com.neutrino.game.entities.map_entities.attributes.Door
+import com.neutrino.game.entities.map_entities.attributes.PickUp
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkCoords
-import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.hasIdentity
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
@@ -133,41 +133,20 @@ object Turn {
                     is Action.INTERACTION -> {
                         // Entity position(x, y) can be derived from ai.entityTargetCoords
                         when (action.interaction) {
-                            is InteractionType.ITEM -> {
+                            is PickUp -> {
                                 if (Player.get(Inventory::class)!!.add(action.entity)) {
                                     GlobalData.notifyObservers(GlobalDataType.PICKUP, action.entity)
                                     Visuals.showPickedUpItem(Player, action.entity)
                                     val coords = Player.getSuper(Ai::class)!!.targetCoords
                                     currentChunk.map[coords!!.second][coords.first].removeLast()
                                 } else println("Inventory is full")
-
-                                Player.get(Inventory::class)!!.printAll()
                             }
-                            is InteractionType.OPEN -> {
-//                                currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].remove(action.entity)
-//                                for (item in (action.entity as Container).itemList) {
-//                                    currentLevel.map[Player.ai.entityTargetCoords!!.second][Player.ai.entityTargetCoords!!.first].add(ItemEntity(item))
-//                                }
-//                                mapImpassableList.remove(Coord.get(Player.ai.entityTargetCoords!!.first, Player.ai.entityTargetCoords!!.second))
-                            }
-                            is InteractionType.DOOR -> {
-                                action.interaction.act()
-                                if (action.entity.get(MapParams::class)?.allowCharacterOnTop == true)
-                                    ChunkManager.characterMethods.removeImpassable(Position(Coord.get(
-                                        character.getSuper(Ai::class)!!.targetCoords!!.first,
-                                        character.getSuper(Ai::class)!!.targetCoords!!.second),
-                                        character.get(Position::class)!!.chunk))
-                                else
-                                    ChunkManager.characterMethods.addImpassable(Position(Coord.get(
-                                        character.getSuper(Ai::class)!!.targetCoords!!.first,
-                                        character.getSuper(Ai::class)!!.targetCoords!!.second),
-                                        character.get(Position::class)!!.chunk))
+                            is Chest -> action.interaction.interact()
+                            is Door -> {
+                                action.interaction.interact()
 
                                 character.getSuper(Ai::class)!!.updateFov()
                                 Player.call(VisionChangedCallable::class)
-                            }
-                            else -> {
-                                action.interaction.act()
                             }
                         }
                         Player.getSuper(Ai::class)!!.targetCoords = null

@@ -1,5 +1,7 @@
 package com.neutrino.game.entities
 
+import com.neutrino.game.entities.items.Item
+
 object Items {
     private val itemIds: HashMap<String, Int> = HashMap()
     private val itemNames: ArrayList<String> = ArrayList()
@@ -11,20 +13,19 @@ object Items {
         itemFactory.add(item)
     }
 
-    fun new(name: String): Entity {
-//        try {
-            return new(itemIds[name]!!)
-//        } catch (_: Exception) {
-//            System.err.println("item with name: $name does not exist!")
-//        }
-//        throw Exception()
+    fun new(name: String): Item {
+        try {
+            return new(itemIds[name]!!) as Item
+        } catch (_: Exception) {
+            throw Exception("item with name: $name does not exist!")
+        }
     }
 
-    fun new(id: Int): Entity {
+    fun new(id: Int): Item {
 //        try {
             val item = itemFactory[id].invoke()
             item.id = id
-            return item
+            return item as Item
 //        } catch (_: Exception) {
 //            System.err.println("item with id: $id ${if (id < itemNames.size) "name: ${itemNames[id]} " else ""}does not exist!")
 //        }

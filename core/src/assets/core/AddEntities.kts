@@ -1,15 +1,16 @@
 
 import com.neutrino.game.entities.Entities
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.Items
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.MapParams
+import com.neutrino.game.entities.map_entities.attributes.Chest
 import com.neutrino.game.entities.map_entities.attributes.Container
 import com.neutrino.game.entities.map_entities.attributes.Destructable
+import com.neutrino.game.entities.map_entities.attributes.Door
 import com.neutrino.game.entities.shared.attributes.Identity
-import com.neutrino.game.entities.shared.attributes.Interaction
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.map.generation.util.NameOrIdentity
 import com.neutrino.game.util.add
@@ -91,10 +92,7 @@ Entities.add("DungeonWall") {
 }
 Entities.add("WoodenDoor") {
     Entity()
-        .addAttribute(Identity.Door())
-        .addAttribute(MapParams(false, false))
-        .addAttribute(Interaction(arrayListOf(InteractionType.DOOR())))
-        .addAttribute(ChangesImpassable())
+		.addAttribute(Door())
         .addAttribute(Texture { position, random, textures -> run {
             textures.add(position!!.check(listOf(2, 8), NameOrIdentity(Identity.Wall::class)) {
                 Textures.get("woodenDoorVerticalClosed")})?.also {return@run}
@@ -103,10 +101,7 @@ Entities.add("WoodenDoor") {
 }
 Entities.add("WoodenDoorArched") {
 	Entity()
-		.addAttribute(Identity.Door())
-		.addAttribute(Interaction(arrayListOf(InteractionType.DOOR())))
-		.addAttribute(ChangesImpassable())
-		.addAttribute(MapParams(false, false))
+		.addAttribute(Door())
 		.addAttribute(Texture { position, random, textures -> run {
             textures.add(position!!.check(listOf(2 to NameOrIdentity(Identity.Wall::class), 8 to NameOrIdentity(Identity.Wall::class))) {
                 Textures.get("woodenDoorArchedVerticalClosed")})?.also {return@run}
@@ -210,8 +205,8 @@ Entities.add("WoodenCrateSmall") {
 }
 Entities.add("WoodenChestMid") {
 	Entity()
-		.addAttribute(Container(null))
-		.addAttribute(Interaction(arrayListOf(InteractionType.OPEN())))
+		.addAttribute(Container(null, initItems = listOf(Items.new("Gold").setAmount(10))))
+		.addAttribute(Chest())
 		.addAttribute(MapParams(false, false))
 		.addAttribute(ChangesImpassable())
 		.addAttribute(Texture { position, random, textures -> run {

@@ -6,15 +6,13 @@ import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
 import com.neutrino.game.domain.model.entities.Entity
 import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.utility.serialization.HeaderSerializable
-
 import kotlin.random.Random
 
 
-class ItemEntity(@Transient val item: Item): Entity(), Interactable, HeaderSerializable {
+class ItemEntity(@Transient val item: Item): Entity(), HeaderSerializable {
 
     override fun serializeHeader(kryo: Kryo?, output: Output?) {
         kryo!!.writeClassAndObject(output, item)
@@ -36,11 +34,6 @@ class ItemEntity(@Transient val item: Item): Entity(), Interactable, HeaderSeria
     // Unnecessarily required for entity
 
     override fun pickTexture(onMapPosition: OnMapPosition, randomGenerator: Random) { }
-
-    @Transient
-    override val interactionList: List<InteractionType> = List(1) {
-        InteractionType.ITEM()
-    }
 
     @Transient
     override var shaders: ArrayList<ShaderParametered?> = arrayListOf(OutlineShader(OutlineShader.OUTLINE_BLACK, 2f, texture))

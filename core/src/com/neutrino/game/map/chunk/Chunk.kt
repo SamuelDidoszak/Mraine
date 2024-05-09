@@ -5,10 +5,13 @@ import com.esotericsoftware.kryo.kryo5.io.Input
 import com.esotericsoftware.kryo.kryo5.io.Output
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.items.Item
+import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.Interaction
+import com.neutrino.game.entities.map_entities.attributes.Chest
+import com.neutrino.game.entities.map_entities.attributes.Door
+import com.neutrino.game.entities.map_entities.attributes.PickUp
+import com.neutrino.game.entities.map_entities.util.Interactable
 import com.neutrino.game.entities.shared.attributes.Texture
-import com.neutrino.game.entities.shared.util.InteractionType
 import com.neutrino.game.entities.systems.events.EventArray
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.MapTag
@@ -18,7 +21,6 @@ import com.neutrino.game.util.x
 import com.neutrino.game.util.y
 import com.neutrino.game.utility.serialization.HeaderSerializable
 import kotlin.random.Random
-import kotlin.reflect.KClass
 
 class Chunk(
     @Transient
@@ -83,9 +85,11 @@ class Chunk(
     private fun onEntityChanged(entity: Entity, added: Boolean) {
         if (!isMapSet)
             return
-        if (!added)
+        if (!added) {
             entity.get(Texture::class)?.textures?.clear()
-        else {
+            if (entity has ChangesImpassable::class)
+                ChunkManager.characterMethods.removeImpassable(entity.get(Position::class)!!)
+        } else {
             entity.addAttribute(DrawPosition())
             entity.get(Position::class)!!.setPosition(entity.x, entity.y)
             entity.get(Texture::class)?.setTextures(entity.get(Position::class)!!, Random)
@@ -115,18 +119,23 @@ class Chunk(
     /** Returns topmost entity that has an action associated with it */
     fun getEntityWithAction(xPos: Int, yPos: Int): Entity? {
         for (entity in map[yPos][xPos].reversed()) {
-            if (entity has Interaction::class)
+            if (entity has PickUp::class || entity has Door::class || entity has Chest::class)
                 return entity
         }
         return null
     }
 
     /** Returns topmost entity with provided interaction type */
-    fun getEntityWithAction(xPos: Int, yPos: Int, interaction: KClass<InteractionType>): Entity? {
+    fun getEntityWithAction(xPos: Int, yPos: Int, interaction: Interactable): Entity? {
+        val interactionClass = when (interaction) {
+            is PickUp -> PickUp::class
+            is Door -> Door::class
+            is Chest -> Chest::class
+            else -> throw Exception("Interaction not supported")
+        }
         for (entity in map[yPos][xPos].reversed()) {
-            if (entity.get(Interaction::class)?.interactionList?.find { it::class == interaction } != null) {
+            if (entity has interactionClass)
                 return entity
-            }
         }
         return null
     }

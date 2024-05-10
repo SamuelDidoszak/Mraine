@@ -1,10 +1,10 @@
 package com.neutrino.game.domain.model.systems.event.types
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.entities.shared.util.RangeType
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.Event
+import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import kotlin.properties.Delegates
 
 class EventModifyStat(percent: Boolean = false): Event() {
@@ -56,7 +56,6 @@ class EventModifyStat(percent: Boolean = false): Event() {
             StatsEnum.INTELLIGENCE -> if (!percent) character.intelligence += value as Float else character.intelligence *= value as Float
             StatsEnum.LUCK -> if (!percent) character.luck += value as Float else character.luck *= value as Float
             StatsEnum.DAMAGE -> if (!percent) character.damage += value as Float else character.damage *= value as Float
-            StatsEnum.DAMAGE_VARIATION -> if (!percent) character.damageVariation = value as Float else character.damageVariation *= value as Float
             StatsEnum.DEFENCE -> if (!percent) character.defence += value as Float else character.defence *= value as Float
             StatsEnum.EVASION -> if (!percent) character.evasion += value as Float else character.evasion *= value as Float
             StatsEnum.ACCURACY -> if (!percent) character.accuracy += value as Float else character.accuracy *= value as Float
@@ -69,14 +68,13 @@ class EventModifyStat(percent: Boolean = false): Event() {
             StatsEnum.STEALTH -> if (!percent) character.stealth += value as Float else character.stealth *= value as Float
             StatsEnum.FIRE_DAMAGE -> if (!percent) character.fireDamage += value as Float else character.fireDamage *= value as Float
             StatsEnum.WATER_DAMAGE -> if (!percent) character.waterDamage += value as Float else character.waterDamage *= value as Float
-            StatsEnum.EARTH_DAMAGE -> if (!percent) character.earthDamage += value as Float else character.earthDamage *= value as Float
             StatsEnum.AIR_DAMAGE -> if (!percent) character.airDamage += value as Float else character.airDamage *= value as Float
             StatsEnum.POISON_DAMAGE -> if (!percent) character.poisonDamage += value as Float else character.poisonDamage *= value as Float
             StatsEnum.FIRE_DEFENCE -> if (!percent) character.fireDefence += value as Float else character.fireDefence *= value as Float
             StatsEnum.WATER_DEFENCE -> if (!percent) character.waterDefence += value as Float else character.waterDefence *= value as Float
-            StatsEnum.EARTH_DEFENCE -> if (!percent) character.earthDefence += value as Float else character.earthDefence *= value as Float
             StatsEnum.AIR_DEFENCE -> if (!percent) character.airDefence += value as Float else character.airDefence *= value as Float
             StatsEnum.POISON_DEFENCE -> if (!percent) character.poisonDefence += value as Float else character.poisonDefence *= value as Float
+            else -> {}
         }
     }
 
@@ -92,7 +90,6 @@ class EventModifyStat(percent: Boolean = false): Event() {
             StatsEnum.INTELLIGENCE -> if (!percent) character.intelligence -= value as Float else character.intelligence /= value as Float
             StatsEnum.LUCK -> if (!percent) character.luck -= value as Float else character.luck /= value as Float
             StatsEnum.DAMAGE -> if (!percent) character.damage -= value as Float else character.damage /= value as Float
-            StatsEnum.DAMAGE_VARIATION -> if (!percent) character.damageVariation = initialDamageVariation as Float else character.damageVariation /= value as Float
             StatsEnum.DEFENCE -> if (!percent) character.defence -= value as Float else character.defence /= value as Float
             StatsEnum.EVASION -> if (!percent) character.evasion -= value as Float else character.evasion /= value as Float
             StatsEnum.ACCURACY -> if (!percent) character.accuracy -= value as Float else character.accuracy /= value as Float
@@ -105,14 +102,13 @@ class EventModifyStat(percent: Boolean = false): Event() {
             StatsEnum.STEALTH -> if (!percent) character.stealth -= value as Float else character.stealth /= value as Float
             StatsEnum.FIRE_DAMAGE -> if (!percent) character.fireDamage -= value as Float else character.fireDamage /= value as Float
             StatsEnum.WATER_DAMAGE -> if (!percent) character.waterDamage -= value as Float else character.waterDamage /= value as Float
-            StatsEnum.EARTH_DAMAGE -> if (!percent) character.earthDamage -= value as Float else character.earthDamage /= value as Float
             StatsEnum.AIR_DAMAGE -> if (!percent) character.airDamage -= value as Float else character.airDamage /= value as Float
             StatsEnum.POISON_DAMAGE -> if (!percent) character.poisonDamage -= value as Float else character.poisonDamage /= value as Float
             StatsEnum.FIRE_DEFENCE -> if (!percent) character.fireDefence -= value as Float else character.fireDefence /= value as Float
             StatsEnum.WATER_DEFENCE -> if (!percent) character.waterDefence -= value as Float else character.waterDefence /= value as Float
-            StatsEnum.EARTH_DEFENCE -> if (!percent) character.earthDefence -= value as Float else character.earthDefence /= value as Float
             StatsEnum.AIR_DEFENCE -> if (!percent) character.airDefence -= value as Float else character.airDefence /= value as Float
             StatsEnum.POISON_DEFENCE -> if (!percent) character.poisonDefence -= value as Float else character.poisonDefence /= value as Float
+            else -> {}
         }
     }
 

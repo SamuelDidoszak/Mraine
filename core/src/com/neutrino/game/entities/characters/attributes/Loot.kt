@@ -4,7 +4,7 @@ import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.Items
 import com.neutrino.game.entities.characters.attributes.util.LootElement
-import com.neutrino.game.entities.characters.callables.attack.EntityDiedCallable
+import com.neutrino.game.entities.systems.attack.callables.EntityDiedCallable
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.map.chunk.ChunkManager
 import kotlin.random.Random
@@ -26,12 +26,11 @@ class Loot(
 
     override fun onEntityAttached() {
         entity.attach(object : EntityDiedCallable() {
-            override fun call(entity: Entity, vararg data: Any?): Boolean {
+            override fun call(entity: Entity, vararg data: Any?) {
                 ChunkManager.addEntityAt(
                     entity.get(Position::class)!!,
                     loot
                 )
-                return true
             }
         })
     }

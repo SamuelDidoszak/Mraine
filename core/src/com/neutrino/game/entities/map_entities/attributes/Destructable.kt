@@ -2,13 +2,13 @@ package com.neutrino.game.entities.map_entities.attributes
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.characters.attributes.DefensiveStats
-import com.neutrino.game.entities.characters.callables.attack.EntityDiedCallable
-import com.neutrino.game.entities.characters.callables.attack.GotAttackedAfterCallable
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.callables.EntityDiedCallable
+import com.neutrino.game.entities.systems.attack.callables.GotAttackedAfterCallable
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.entities.util.Equality
 import com.neutrino.game.graphics.drawing.layers.HpBar
@@ -44,7 +44,7 @@ class Destructable(
         entity.addAttribute(ChangesImpassable())
         entity.attach(DestroyedCallable())
         entity.attach(object : GotAttackedAfterCallable() {
-            override fun call(entity: Entity, vararg data: Any?): Boolean {
+            override fun call(entity: Entity, vararg data: Any?) {
                 if (entity hasNot HpBar::class) {
                     val hpBar = HpBar()
                     hpBar.xOffset = entity.get(Texture::class)!!.getWidthScaled().toFloat() - 64f
@@ -52,14 +52,11 @@ class Destructable(
                     entity.addAttribute(hpBar)
                     hpBar.attach()
                 }
-                return true
-            }
-        })
+        } })
     }
 
     private inner class DestroyedCallable: EntityDiedCallable() {
-
-        override fun call(entity: Entity, vararg data: Any?): Boolean {
+        override fun call(entity: Entity, vararg data: Any?) {
             entity.get(MapParams::class)?.allowOnTop = true
             entity.get(MapParams::class)?.allowCharacterOnTop = true
             entity.removeAttribute(DefensiveStats::class)
@@ -76,7 +73,6 @@ class Destructable(
                 }
             }
             ChunkManager.characterMethods.removeImpassable(entity.get(Position::class)!!)
-            return true
         }
     }
 
@@ -92,5 +88,6 @@ class Destructable(
             defensiveStats.evasion
         )
     }
-    override fun isEqual(other: Destructable): Boolean = entity.get(DefensiveStats::class)!!.isEqual(other.entity.get(DefensiveStats::class)!!)
+    override fun isEqual(other: Destructable): Boolean = entity.get(DefensiveStats::class)!!.isEqual(other.entity.get(
+        DefensiveStats::class)!!)
 }

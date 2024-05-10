@@ -1,9 +1,9 @@
 package com.neutrino.game.domain.model.systems.attack
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.utility.AttackData
 import com.neutrino.game.domain.model.systems.attack.utility.Attackable
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import squidpony.squidmath.Coord
 import kotlin.random.Random
 
@@ -18,7 +18,6 @@ abstract class Attack(
         StatsEnum.DAMAGE to 0f,
         StatsEnum.FIRE_DAMAGE to 0f,
         StatsEnum.WATER_DAMAGE to 0f,
-        StatsEnum.EARTH_DAMAGE to 0f,
         StatsEnum.AIR_DAMAGE to 0f,
         StatsEnum.POISON_DAMAGE to 0f))
 
@@ -56,7 +55,6 @@ abstract class Attack(
                 character.damage + acceptedDamageTypes[StatsEnum.DAMAGE]!! - character.damageVariation + Random.nextFloat() * character.damageVariation else 0f,
             if (acceptedDamageTypes.contains(StatsEnum.FIRE_DAMAGE)) character.fireDamage + acceptedDamageTypes[StatsEnum.FIRE_DAMAGE]!! else 0f,
             if (acceptedDamageTypes.contains(StatsEnum.WATER_DAMAGE)) character.waterDamage + acceptedDamageTypes[StatsEnum.WATER_DAMAGE]!! else 0f,
-            if (acceptedDamageTypes.contains(StatsEnum.EARTH_DAMAGE)) character.earthDamage + acceptedDamageTypes[StatsEnum.EARTH_DAMAGE]!! else 0f,
             if (acceptedDamageTypes.contains(StatsEnum.AIR_DAMAGE)) character.airDamage + acceptedDamageTypes[StatsEnum.AIR_DAMAGE]!! else 0f,
             if (acceptedDamageTypes.contains(StatsEnum.POISON_DAMAGE)) character.poisonDamage + acceptedDamageTypes[StatsEnum.POISON_DAMAGE]!! else 0f,
             if (acceptedDamageTypes.contains(StatsEnum.CRITICAL_CHANCE)) character.criticalChance + acceptedDamageTypes[StatsEnum.CRITICAL_CHANCE]!! else character.criticalChance,

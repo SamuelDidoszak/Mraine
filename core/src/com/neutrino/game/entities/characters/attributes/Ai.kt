@@ -4,6 +4,8 @@ import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.x

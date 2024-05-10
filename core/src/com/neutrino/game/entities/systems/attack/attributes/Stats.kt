@@ -1,7 +1,9 @@
-package com.neutrino.game.entities.characters.attributes
+package com.neutrino.game.entities.systems.attack.attributes
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 
 class Stats(
     hpMax: Float = 1f,

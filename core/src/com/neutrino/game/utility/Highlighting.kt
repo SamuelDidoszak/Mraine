@@ -7,7 +7,7 @@ import com.neutrino.game.domain.use_case.map.LevelArrays
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
-import com.neutrino.game.entities.characters.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange

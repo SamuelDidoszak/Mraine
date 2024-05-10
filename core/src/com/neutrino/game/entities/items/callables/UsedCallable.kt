@@ -5,5 +5,5 @@ import com.neutrino.game.entities.Entity
 
 abstract class UsedCallable: Callable {
     /** @param data [[0]]: Entity upon which use() was called */
-    abstract override fun call(entity: Entity, vararg data: Any?): Boolean
+    abstract override fun call(entity: Entity, vararg data: Any?)
 }

@@ -5,7 +5,7 @@ package com.neutrino.game.domain.model.items.equipment.weapons
 //import com.esotericsoftware.kryo.kryo5.io.Input
 //import com.neutrino.game.compareDelta
 //import com.neutrino.game.domain.model.characters.Character
-//import com.neutrino.game.domain.model.characters.utility.StatsEnum
+//import com.neutrino.game.entities.systems.attack.util.StatsEnum
 //import com.neutrino.game.domain.model.items.EquipmentItem
 //import com.neutrino.game.domain.model.items.HandedItemType
 //import com.neutrino.game.domain.model.items.ItemType

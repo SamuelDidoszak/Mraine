@@ -17,10 +17,9 @@ class AddCooldown(
 
     private var useEventClass: KClass<out Event>? = null
 
-    override fun call(entity: Entity, vararg data: Any?): Boolean {
+    override fun call(entity: Entity, vararg data: Any?) {
         val cooldown = Cooldown(data[0] as Entity, type,
             length ?: entity.get(UseEvents::class)!!.get(useEventClass!!)!!.getEventLength())
         Events.addEvent(data[0] as Entity, cooldown.asTimedEvent())
-        return true
     }
 }

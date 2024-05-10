@@ -30,10 +30,10 @@ fun Double.roundOneDecimal() = (this * 10).roundToInt() / 10.0
 
 /** Returns 0 if the values are the same. Returns -1 if the value is smaller than other and 1 if it's bigger */
 fun Float.compareDelta(other: Float) = if (this.equalsDelta(other)) 0
-else if (this.lessThanDelta(other)) -1 else 1
+    else if (this.lessThanDelta(other)) -1 else 1
 /** Returns 0 if the values are the same. Returns -1 if the value is smaller than other and 1 if it's bigger */
 fun Double.compareDelta(other: Double) = if (this.equalsDelta(other)) 0
-else if (this.lessThanDelta(other)) -1 else 1
+    else if (this.lessThanDelta(other)) -1 else 1
 
 
 fun <T> Array<T>.addInitial(element: T): Array<T> {

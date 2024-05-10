@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.systems.attack
 
 import com.neutrino.game.domain.model.characters.Character
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.utility.AttackableRequiresCoord
 
 import squidpony.squidmath.Coord

@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.items
 
 import com.neutrino.game.entities.shared.util.HasRange
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.Attack
 import com.neutrino.game.domain.model.systems.event.CausesCooldown
 import com.neutrino.game.domain.model.systems.event.CausesEvents

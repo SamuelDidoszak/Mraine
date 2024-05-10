@@ -1,9 +1,9 @@
 package com.neutrino.game.entities.systems.events
 
-import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.systems.events.attributes.EventList
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.util.equalsDelta
 import com.neutrino.game.util.lessThanDelta
 
@@ -12,6 +12,8 @@ class EventArray: ArrayList<Pair<EventArray.Identity?, TimedEvent>>() {
     override fun add(element: Pair<Identity?, TimedEvent>): Boolean {
         if (element.second.turn == null)
             element.second.turn = Turn.turn
+        if (element.second.event is CharacterEvents && element.first is Identity.Entity)
+            (element.second.event as CharacterEvents).entity = (element.first as Identity.Entity).entity
         for (i in 0 until this.size) {
             if (element.second.turn!!.lessThanDelta(this[i].second.turn!!)) {
                 this.add(i, element)

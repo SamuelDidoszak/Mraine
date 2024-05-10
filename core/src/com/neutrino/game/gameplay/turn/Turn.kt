@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.domain.model.systems.CharacterTag
+import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
@@ -21,6 +21,8 @@ import com.neutrino.game.entities.map_entities.attributes.Door
 import com.neutrino.game.entities.map_entities.attributes.PickUp
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.map.chunk.CharacterArray

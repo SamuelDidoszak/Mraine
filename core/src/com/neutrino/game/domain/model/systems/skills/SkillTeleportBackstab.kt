@@ -5,7 +5,7 @@ import com.neutrino.game.domain.use_case.map.LevelArrays
 import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.entities.shared.util.RangeType
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.domain.model.systems.attack.BasicAttack
 import com.neutrino.game.domain.model.systems.event.RequirementPrintable
 import com.neutrino.game.domain.model.systems.event.types.CooldownType

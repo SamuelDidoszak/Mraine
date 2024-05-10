@@ -1,7 +1,7 @@
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.Items
-import com.neutrino.game.entities.characters.attributes.OffensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.items.attributes.*
 import com.neutrino.game.entities.items.attributes.usable.EquipEvents
@@ -32,7 +32,7 @@ Items.add("Gold") {
             entity.get(Amount::class)!!.amount = randomAmount.roundToInt()
         } })
         .attach(object : AmountChangedCallable() {
-            override fun call(entity: Entity, vararg data: Any?): Boolean {
+            override fun call(entity: Entity, vararg data: Any?) {
                 val amount = data[0] as Int
                 val textureName =
                     if (amount < 10) "gold1"
@@ -47,7 +47,6 @@ Items.add("Gold") {
                     entity.get(Texture::class)!!.textures.clear()
                     entity.get(Texture::class)!!.textures.add(Textures get textureName)
                 }
-                return true
             }
         })
 }
@@ -59,10 +58,12 @@ Items.add("Dagger") {
             eqType = EquipmentType.RHAND,
             handheldType = HandheldEquipmentType.DAGGER
         ))
-        .addAttribute(OffensiveStats(
+        .addAttribute(
+            OffensiveStats(
             damageMin = 2f,
             damageMax = 3.5f,
-        ))
+        )
+        )
         .addAttribute(EquipEvents(TimedEvent(CharacterEvents.Heal(2f), 2.0, 10)))
 }
 //Items.add("Sword") {

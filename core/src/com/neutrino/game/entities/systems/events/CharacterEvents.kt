@@ -2,11 +2,11 @@ package com.neutrino.game.entities.systems.events
 
 import com.neutrino.game.entities.Characters
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.characters.attributes.DefensiveStats
-import com.neutrino.game.entities.characters.attributes.OffensiveStats
 import com.neutrino.game.entities.characters.attributes.util.Status
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.util.EntityName
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
@@ -17,6 +17,11 @@ abstract class CharacterEvents: Event {
     var entity: Entity
         get() = _entity!!
         set(value) { _entity = value}
+
+    fun setEntity(entity: Entity): CharacterEvents {
+        this.entity = entity
+        return this
+    }
 
     class Heal(var power: Float): CharacterEvents(), Status {
         override fun apply() {
@@ -47,10 +52,12 @@ abstract class CharacterEvents: Event {
     class Burn(fireDamageMin: Float, fireDamageMax: Float): CharacterEvents() {
         constructor(entity: Entity, fireDamage: Float): this(fireDamage, fireDamage)
         private val fakeEntity = Entity()
-            .addAttribute(OffensiveStats(
+            .addAttribute(
+                OffensiveStats(
                 fireDamageMin = fireDamageMin,
                 fireDamageMax = fireDamageMax,
-                accuracy = 1000f))
+                accuracy = 1000f)
+            )
 
         override fun apply() {
             entity.get(DefensiveStats::class)?.getDamage(fakeEntity.get(OffensiveStats::class)!!)
@@ -60,10 +67,12 @@ abstract class CharacterEvents: Event {
     class Bleed(damageMin: Float, damageMax: Float): CharacterEvents() {
         constructor(damage: Float): this(damage, damage)
         private val fakeEntity = Entity()
-            .addAttribute(OffensiveStats(
+            .addAttribute(
+                OffensiveStats(
                 damageMin = damageMin,
                 damageMax = damageMax,
-                accuracy = 1000f))
+                accuracy = 1000f)
+            )
 
         override fun apply() {
             entity.get(DefensiveStats::class)?.getDamage(fakeEntity.get(OffensiveStats::class)!!)

@@ -6,5 +6,5 @@ interface Callable {
     /**
      * @return false if call chain should stop
      */
-    fun call(entity: Entity, vararg data: Any?): Boolean
+    fun call(entity: Entity, vararg data: Any?)
 }

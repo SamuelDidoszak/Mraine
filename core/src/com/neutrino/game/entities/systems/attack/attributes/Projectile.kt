@@ -1,4 +1,4 @@
-package com.neutrino.game.entities.characters.attributes
+package com.neutrino.game.entities.systems.attack.attributes
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity

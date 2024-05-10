@@ -1,7 +1,7 @@
 package com.neutrino.game.domain.model.utility
 
 import com.neutrino.game.domain.use_case.map.LevelArrays
-import com.neutrino.game.domain.model.characters.utility.StatsEnum
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 
 enum class RandomizationTypes(val types: List<StatsEnum>) {
     /** Weapon without evasion or speed and with maxHp */
@@ -9,7 +9,6 @@ enum class RandomizationTypes(val types: List<StatsEnum>) {
         StatsEnum.STRENGTH,
         StatsEnum.LUCK,
         StatsEnum.DAMAGE,
-        StatsEnum.DAMAGE_VARIATION,
         StatsEnum.HP_MAX,
         StatsEnum.ACCURACY,
         StatsEnum.CRITICAL_CHANCE,
@@ -19,7 +18,6 @@ enum class RandomizationTypes(val types: List<StatsEnum>) {
         StatsEnum.STRENGTH,
         StatsEnum.LUCK,
         StatsEnum.DAMAGE,
-        StatsEnum.DAMAGE_VARIATION,
         StatsEnum.ACCURACY,
         StatsEnum.EVASION,
         StatsEnum.CRITICAL_CHANCE,
@@ -30,7 +28,6 @@ enum class RandomizationTypes(val types: List<StatsEnum>) {
         StatsEnum.DEXTERITY,
         StatsEnum.LUCK,
         StatsEnum.DAMAGE,
-        StatsEnum.DAMAGE_VARIATION,
         StatsEnum.ACCURACY,
         StatsEnum.EVASION,
         StatsEnum.CRITICAL_CHANCE,
@@ -40,14 +37,12 @@ enum class RandomizationTypes(val types: List<StatsEnum>) {
     STAFF(listOf(
         StatsEnum.INTELLIGENCE,
         StatsEnum.LUCK,
-        StatsEnum.DAMAGE_VARIATION,
         StatsEnum.CRITICAL_CHANCE,
         StatsEnum.CRITICAL_DAMAGE
     )),
     DEXSTAFF(listOf(
         StatsEnum.INTELLIGENCE,
         StatsEnum.LUCK,
-        StatsEnum.DAMAGE_VARIATION,
         StatsEnum.EVASION,
         StatsEnum.CRITICAL_CHANCE,
         StatsEnum.CRITICAL_DAMAGE,
@@ -80,14 +75,12 @@ enum class RandomizationTypes(val types: List<StatsEnum>) {
     ELEMENTALDAMAGE(listOf(
         StatsEnum.FIRE_DAMAGE,
         StatsEnum.WATER_DAMAGE,
-        StatsEnum.EARTH_DAMAGE,
         StatsEnum.AIR_DAMAGE,
         StatsEnum.POISON_DAMAGE
     )),
     ELEMENTALDEFENCE(listOf(
         StatsEnum.FIRE_DEFENCE,
         StatsEnum.WATER_DEFENCE,
-        StatsEnum.EARTH_DEFENCE,
         StatsEnum.AIR_DEFENCE,
         StatsEnum.POISON_DEFENCE
     ));

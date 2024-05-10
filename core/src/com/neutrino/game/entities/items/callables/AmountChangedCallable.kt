@@ -7,5 +7,5 @@ abstract class AmountChangedCallable: Callable {
     /**
      * @param data [[0]]: Current amount
      */
-    abstract override fun call(entity: Entity, vararg data: Any?): Boolean
+    abstract override fun call(entity: Entity, vararg data: Any?)
 }

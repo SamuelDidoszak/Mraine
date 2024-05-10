@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.domain.use_case.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
 import com.neutrino.game.domain.model.characters.utility.*
@@ -21,9 +20,11 @@ import com.neutrino.game.domain.model.systems.event.types.EventBerserk
 import com.neutrino.game.domain.model.systems.event.types.EventHeal
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
-import com.neutrino.game.gameplay.turn.Turn
+import com.neutrino.game.domain.use_case.EventDispatcher
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.utility.ColorUtils
@@ -117,7 +118,6 @@ abstract class Character(
     // environmental stats
     override var fireDamage: Float = 0f
     override var waterDamage: Float = 0f
-    override var earthDamage: Float = 0f
     override var airDamage: Float = 0f
     override var poisonDamage: Float = 0f
     override var fireDefence: Float = 0f
@@ -323,7 +323,6 @@ abstract class Character(
         val physicalDamage = data.physicalDamage * data.physicalDamage / (data.physicalDamage + defence)
         val fireDamage = data.fireDamage * (1 - fireDefence)
         val waterDamage = data.waterDamage * (1 - waterDefence)
-        val earthDamage = data.earthDamage * (1 - earthDefence)
         val airDamage = data.airDamage * (1 - airDefence)
         var poisonDamage = data.poisonDamage * (1 - poisonDefence)
         poisonDamage = if (hp - poisonDamage <= 1) hp - 1f else poisonDamage
@@ -331,7 +330,6 @@ abstract class Character(
         damage += physicalDamage
         damage += fireDamage
         damage += waterDamage
-        damage += earthDamage
         damage += airDamage
         damage += poisonDamage
 
@@ -359,7 +357,6 @@ abstract class Character(
         damageColor = ColorUtils.colorInterpolation(damageColor, Color(255f, 0f, 0f, 1f), (physicalDamage / damage).toInt())
         damageColor = ColorUtils.colorInterpolation(damageColor, Color(255f, 128f, 0f, 1f), (fireDamage / damage).toInt())
         damageColor = ColorUtils.colorInterpolation(damageColor, Color(0f, 0f, 255f, 1f), (waterDamage / damage).toInt())
-        damageColor = ColorUtils.colorInterpolation(damageColor, Color(0f, 255f, 0f, 1f), (earthDamage / damage).toInt())
         damageColor = ColorUtils.colorInterpolation(damageColor, Color(0f, 255f, 255f, 1f), (airDamage / damage).toInt())
         damageColor = ColorUtils.colorInterpolation(damageColor, Color(128f, 255f, 0f, 1f), (poisonDamage / damage).toInt())
 

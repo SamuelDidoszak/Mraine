@@ -6,7 +6,7 @@ import com.neutrino.game.UI.UiStage
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
-import com.neutrino.game.entities.characters.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map_entities.util.Interactable
 import com.neutrino.game.gameplay.turn.Action

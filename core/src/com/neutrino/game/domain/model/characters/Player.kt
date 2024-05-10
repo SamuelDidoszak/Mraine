@@ -4,11 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.neutrino.game.domain.use_case.EventDispatcher
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.util.Constants
-import com.neutrino.game.util.compareDelta
 import com.neutrino.game.domain.model.characters.utility.*
 import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.model.items.Equipment
@@ -21,9 +18,12 @@ import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
 import com.neutrino.game.domain.model.systems.skills.*
 import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
-import com.neutrino.game.gameplay.turn.Turn
+import com.neutrino.game.domain.use_case.EventDispatcher
 import com.neutrino.game.entities.shared.util.RangeType
-
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
+import com.neutrino.game.gameplay.turn.Turn
+import com.neutrino.game.util.Constants
+import com.neutrino.game.util.compareDelta
 import kotlin.reflect.KClass
 
 object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, HasPassives {
@@ -85,8 +85,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
     override var damageVariation: Float
         get() = super.damageVariation
         set(value) {
-            super.damageVariation = value
-            sendStatChangeData(StatsEnum.DAMAGE_VARIATION)}
+            super.damageVariation = value}
     override var defence: Float
         get() = super.defence
         set(value) {
@@ -132,8 +131,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         set(value) {field = value
         sendStatChangeData(StatsEnum.WATER_DAMAGE)}
     override var earthDamage: Float = 0f
-        set(value) {field = value
-        sendStatChangeData(StatsEnum.EARTH_DAMAGE)}
+        set(value) {field = value}
     override var airDamage: Float = 0f
         set(value) {field = value
         sendStatChangeData(StatsEnum.AIR_DAMAGE)}
@@ -148,8 +146,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         set(value) {field = value
         sendStatChangeData(StatsEnum.WATER_DEFENCE)}
     override var earthDefence: Float = 0f
-        set(value) {field = value
-        sendStatChangeData(StatsEnum.EARTH_DEFENCE)}
+        set(value) {field = value}
     override var airDefence: Float = 0f
         set(value) {field = value
         sendStatChangeData(StatsEnum.AIR_DEFENCE)}

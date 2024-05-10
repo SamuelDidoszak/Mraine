@@ -36,7 +36,7 @@ import com.neutrino.game.domain.model.items.UseOn
 import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
-import com.neutrino.game.entities.characters.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.*

@@ -2,8 +2,9 @@ package com.neutrino.game.entities.characters.attributes
 
 import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.characters.callables.attack.GotAttackedAfterCallable
+import com.neutrino.game.entities.systems.attack.callables.GotAttackedAfterCallable
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
 import com.neutrino.game.util.VectorOperations
@@ -15,10 +16,9 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
 
     override fun onEntityAttached() {
         entity.attach(object : GotAttackedAfterCallable() {
-            override fun call(entity: Entity, vararg data: Any?): Boolean {
+            override fun call(entity: Entity, vararg data: Any?) {
                 gotAttackedBy = data[0] as Entity
                 println("Got attacked! By $gotAttackedBy")
-                return true
             }
         })
     }
@@ -193,7 +193,8 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                     detectionProbability += 0.35f
             }
 
-            return Random.nextFloat() <= detectionProbability + entity.get(DefensiveStats::class)!!.stealth - enemy.get(DefensiveStats::class)!!.stealth
+            return Random.nextFloat() <= detectionProbability + entity.get(DefensiveStats::class)!!.stealth - enemy.get(
+                DefensiveStats::class)!!.stealth
         }
 
         val characterMap = entity.get(Position::class)!!.chunk.characterMap

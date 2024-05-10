@@ -3,7 +3,7 @@ package com.neutrino.game.entities.map_entities.attributes
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.Inventory
-import com.neutrino.game.entities.characters.callables.attack.DropItemsCallable
+import com.neutrino.game.entities.systems.attack.callables.DropItemsCallable
 import com.neutrino.game.entities.shared.attributes.Identity
 
 /**

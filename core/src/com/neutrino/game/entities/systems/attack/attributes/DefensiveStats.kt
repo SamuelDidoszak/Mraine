@@ -1,15 +1,15 @@
-package com.neutrino.game.entities.characters.attributes
+package com.neutrino.game.entities.systems.attack.attributes
 
 import com.badlogic.gdx.graphics.Color
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.domain.model.systems.CharacterTag.IncreaseStealthDamage
+import com.neutrino.game.entities.characters.attributes.util.CharacterTag.IncreaseStealthDamage
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.characters.Character
-import com.neutrino.game.entities.characters.callables.attack.AttackedAfterCallable
-import com.neutrino.game.entities.characters.callables.attack.AttackedBeforeCallable
-import com.neutrino.game.entities.characters.callables.attack.EntityDiedCallable
-import com.neutrino.game.entities.characters.callables.attack.GotAttackedAfterCallable
+import com.neutrino.game.entities.characters.attributes.CharacterTags
+import com.neutrino.game.entities.characters.attributes.EnemyAi
+import com.neutrino.game.entities.systems.attack.callables.*
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.graphics.utility.ColorUtils
@@ -19,9 +19,9 @@ import kotlin.random.Random
 
 class DefensiveStats(
     var hpMax: Float = 1f,
-    var hp: Float = hpMax,
+    hp: Float = hpMax,
     var mpMax: Float = 0f,
-    var mp: Float = mpMax,
+    mp: Float = mpMax,
     var defence: Float = 0f,
     /** Range is 0 - 1 which tells the probability of dodging */
     var evasion: Float = 0f,
@@ -36,6 +36,19 @@ class DefensiveStats(
     /** Range is 0 - 2, where 1+ heals instead of damaging */
     var poisonDefence: Float = 0f
 ): Attribute(), AttributeOperations<DefensiveStats> {
+
+    var hp = hp
+        set(value) {
+            val difference = value - hp
+            field = value
+            entity.call(StatsChangedCallable::class, StatsEnum.HP, difference)
+        }
+    var mp = mp
+        set(value) {
+            val difference = value - mp
+            field = value
+            entity.call(StatsChangedCallable::class, StatsEnum.MP, difference)
+        }
 
     fun getDamage(attacker: OffensiveStats) {
 //        if (!this.isAlive())
@@ -96,8 +109,6 @@ class DefensiveStats(
                 GlobalData.notifyObservers(GlobalDataType.CHARACTERDIED, this.entity)
         } else entity.call(GotAttackedAfterCallable::class, attacker.entity, damage)
         attacker.entity.call(AttackedAfterCallable::class, entity, damage)
-        // TODO ECS Actors
-//        this.findActor<HpBar>("hpBar")?.update(hp)
     }
 
     fun isAlive(): Boolean {

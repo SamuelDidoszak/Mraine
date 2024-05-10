@@ -6,7 +6,6 @@ data class AttackData (
     val physicalDamage: Float,
     val fireDamage: Float,
     val waterDamage: Float,
-    val earthDamage: Float,
     val airDamage: Float,
     val poisonDamage: Float,
 
@@ -18,6 +17,6 @@ data class AttackData (
     val character: Character
 ) {
     fun getDamageSum(): Float {
-        return physicalDamage + fireDamage + waterDamage + earthDamage + airDamage + poisonDamage
+        return physicalDamage + fireDamage + waterDamage + airDamage + poisonDamage
     }
 }

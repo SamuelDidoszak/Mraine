@@ -7,8 +7,10 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.util.add
+import com.neutrino.game.util.compareDelta
 import com.neutrino.game.util.x
 import kotlin.math.abs
 import kotlin.math.max
@@ -39,7 +41,7 @@ class OffensiveStats(
     var airDamageMax: Float = airDamageMin,
     var poisonDamageMin: Float = 0f,
     var poisonDamageMax: Float = poisonDamageMin
-): Attribute(), HasRange, AttributeOperations<OffensiveStats> {
+): Attribute(), HasRange, AttributeOperations<OffensiveStats>, PrintableInfo<OffensiveStats> {
 
     fun attack(target: Position) {
         if (entity is Character) {
@@ -116,6 +118,8 @@ class OffensiveStats(
     fun getPoisonDamage(): Float {
         return poisonDamageMin + (poisonDamageMax - poisonDamageMin) * Random.nextFloat()
     }
+
+    private companion object { val default = OffensiveStats() }
 
     /**
      * New range is max range
@@ -198,5 +202,33 @@ class OffensiveStats(
             airDamageMax == other.airDamageMax &&
             poisonDamageMin == other.poisonDamageMin &&
             poisonDamageMax == other.poisonDamageMax
+    }
+
+    override fun getPrintableInfo(other: OffensiveStats?): List<Pair<String, Any?>> {
+        fun getOtherField(name: String): Any? {
+            if (other == null) return null
+            val javaField = OffensiveStats::class.java.getDeclaredField(name)
+            javaField.trySetAccessible()
+            return javaField.get(other)!!
+        }
+
+        val printableInfo = ArrayList<Pair<String, Any>>()
+        val stats = clone()
+        stats.minusEquals(default)
+        stats.attackSpeed = 0.0
+        stats.accuracy = 0f
+        stats.range = 0
+        this::class.java.declaredFields.forEach {
+            val value = it.get(stats)
+            if (value is Float && value != 0f)
+                printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.getColor(value.compareDelta((getOtherField(it.name) as Float?) ?: 0f))}$value")
+            if (value is Double && value != 0.0)
+                printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.getColor(value.compareDelta((getOtherField(it.name) as Double?) ?: 0.0))}$value")
+            if (value is Int && value != 0)
+                printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.getColor(value.compareTo((getOtherField(it.name) as Int?) ?: 1))}$value")
+            if (value is RangeType && (value != RangeType.SQUARE || (other != null && other.rangeType != RangeType.SQUARE)))
+                printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.baseColor}$value")
+        }
+        return printableInfo
     }
 }

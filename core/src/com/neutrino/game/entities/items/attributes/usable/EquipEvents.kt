@@ -19,25 +19,32 @@ class EquipEvents(
         events.addAll(initialEvents)
     }
 
+//    override fun getPrintableInfo(other: EquipEvents?): List<Pair<String, Any>> {
+//        val printableInfo = ArrayList<Pair<String, Any>>()
+//        events.forEach {
+//            printableInfo.add(it.event::class.simpleName!! to "")
+//            printableInfo.add()
+//        }
+//        other.events
+//    }
+
     override fun onEntityAttached() {
         entity.attach(object : OnItemEquipped() {
-            override fun call(entity: Entity, vararg data: Any?): Boolean {
+            override fun call(entity: Entity, vararg data: Any?) {
                 events.forEach {
                     if (it.event is CharacterEvents)
                         it.event.entity = data[0] as Entity
                     Events.addEvent(data[0] as Entity, it) }
                 equippedEntity = data[0] as Entity
-                return true
             }
         })
         entity.attach(object : OnItemUnequipped() {
-            override fun call(entity: Entity, vararg data: Any?): Boolean {
+            override fun call(entity: Entity, vararg data: Any?) {
                 events.forEach {
                     if (it.event is CharacterEvents)
                         it.event.entity = data[0] as Entity
                     Events.remove(it) }
                 equippedEntity = null
-                return true
             }
         })
     }

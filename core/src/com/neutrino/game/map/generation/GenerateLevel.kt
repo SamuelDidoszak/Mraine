@@ -18,11 +18,13 @@ class GenerateLevel() {
         val params = getParams(chunk)
 
         generateMap(chunk, params)
-        ItemGenerator(chunk, params).generate()
-        chunk.afterMapGeneration()
+
         val generateCharacters = CharacterGenerator(getParams(chunk))
         chunk.characterArray = generateCharacters.generate()
         chunk.characterMap = generateCharacters.characterMap
+
+        ItemGenerator(chunk, params).generate()
+        chunk.afterMapGeneration()
 
         return chunk
     }
@@ -49,7 +51,7 @@ class GenerateLevel() {
             listOf(Tilesets.get("Dungeon")),
             listOf(Generators.get("Dungeon")),
             listOf("Mouse", "Slime"),
-            listOf(40f to "Gold", 5f to "Dagger", 15f to "Small healing potion", 60f to "Meat").toProbabilityList(),
+            listOf(40f to "Gold", 50f to "Dagger", 3f to "Small healing potion", 50f to "Broken sword", 50f to "Ripped pants", 50f to "Linen shirt", 50f to "Basic fire wand").toProbabilityList(),
             TagParams(100f),
             true
         )

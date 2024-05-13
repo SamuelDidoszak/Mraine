@@ -3,13 +3,14 @@ package com.neutrino.game.entities.systems.attack.attributes
 import com.badlogic.gdx.graphics.Color
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
-import com.neutrino.game.entities.characters.attributes.util.CharacterTag.IncreaseStealthDamage
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.CharacterTags
 import com.neutrino.game.entities.characters.attributes.EnemyAi
+import com.neutrino.game.entities.characters.attributes.util.CharacterTag.IncreaseStealthDamage
 import com.neutrino.game.entities.systems.attack.callables.*
 import com.neutrino.game.entities.systems.attack.util.StatsEnum
+import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.graphics.utility.ColorUtils
@@ -35,7 +36,7 @@ class DefensiveStats(
     var airDefence: Float = 0f,
     /** Range is 0 - 2, where 1+ heals instead of damaging */
     var poisonDefence: Float = 0f
-): Attribute(), AttributeOperations<DefensiveStats> {
+): Attribute(), AttributeOperations<DefensiveStats>, PrintableInfo<DefensiveStats> {
 
     var hp = hp
         set(value) {
@@ -115,6 +116,10 @@ class DefensiveStats(
         return hp.compareDelta(0f) == 1
     }
 
+    private companion object {
+        val default = DefensiveStats()
+    }
+
     override fun plusEquals(other: DefensiveStats) {
         hpMax += other.hpMax
         hp += other.hp
@@ -163,5 +168,36 @@ class DefensiveStats(
                 waterDefence == other.waterDefence &&
                 airDefence == other.airDefence &&
                 poisonDefence == other.poisonDefence
+    }
+
+    override fun getPrintableInfo(other: DefensiveStats?): List<Pair<String, Any?>> {
+        val printableInfo = ArrayList<Pair<String, Any>>()
+
+        if (hpMax != default.hpMax)
+            printableInfo.add("Hp max" to "${PrintableInfo.getColor(hpMax.compareDelta(other?.hpMax ?: 0f))}$hpMax")
+        if (hp != default.hp)
+            printableInfo.add("Hp" to "${PrintableInfo.getColor(hp.compareDelta(other?.hp ?: 0f))}$hp")
+        if (mpMax != default.mpMax)
+            printableInfo.add("Mp max" to "${PrintableInfo.getColor(mpMax.compareDelta(other?.mpMax ?: 0f))}$mpMax")
+        if (mp != default.mp)
+            printableInfo.add("Mp" to "${PrintableInfo.getColor(mp.compareDelta(other?.mpMax ?: 0f))}$mpMax")
+        if (defence != default.defence)
+            printableInfo.add("Defence" to "${PrintableInfo.getColor(defence.compareDelta(other?.defence ?: 0f))}$defence")
+        if (evasion != default.evasion)
+            printableInfo.add("Evasion" to "${PrintableInfo.getColor(stealth.compareDelta(other?.evasion ?: 0f))}$evasion")
+        if (movementSpeed != default.movementSpeed)
+            printableInfo.add("Movement speed" to "${PrintableInfo.getColor(movementSpeed.compareDelta(other?.movementSpeed ?: 0.0))}$movementSpeed")
+        if (stealth != default.stealth)
+            printableInfo.add("Stealth" to "${PrintableInfo.getColor(stealth.compareDelta(other?.stealth ?: 0f))}$stealth")
+        if (fireDefence != default.fireDefence)
+            printableInfo.add("Fire defence" to "${PrintableInfo.getColor(fireDefence.compareDelta(other?.fireDefence ?: 0f))}$fireDefence")
+        if (waterDefence != default.waterDefence)
+            printableInfo.add("Water defence" to "${PrintableInfo.getColor(waterDefence.compareDelta(other?.waterDefence ?: 0f))}$waterDefence")
+        if (airDefence != default.airDefence)
+            printableInfo.add("Air defence" to "${PrintableInfo.getColor(airDefence.compareDelta(other?.airDefence ?: 0f))}$airDefence")
+        if (poisonDefence != default.poisonDefence)
+            printableInfo.add("Poison defence" to "${PrintableInfo.getColor(poisonDefence.compareDelta(other?.poisonDefence ?: 0f))}$poisonDefence")
+
+        return printableInfo
     }
 }

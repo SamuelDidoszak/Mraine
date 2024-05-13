@@ -4,13 +4,16 @@ import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.*
+import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.entities.characters.callables.VisionChangedCallable
+import com.neutrino.game.entities.items.Item
+import com.neutrino.game.entities.items.attributes.EquipmentItem
 import com.neutrino.game.entities.items.attributes.usable.Use
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
 import com.neutrino.game.entities.items.attributes.usable.UseOnPosition
@@ -24,6 +27,8 @@ import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.events.Events
+import com.neutrino.game.entities.systems.requirements.PrintableInfo
+import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
@@ -141,6 +146,24 @@ object Turn {
                                     Visuals.showPickedUpItem(Player, action.entity)
                                     val coords = Player.getSuper(Ai::class)!!.targetCoords
                                     currentChunk.map[coords!!.second][coords.first].removeLast()
+                                    if (action.entity has Requirements.Stats::class) {
+                                        println(action.entity.get(Requirements.Stats::class)!!.check(Player))
+                                        action.entity.get(Requirements.Stats::class)!!.print(Player).forEach { println(it) }
+                                    }
+                                    if (action.entity has EquipmentItem::class) {
+                                        println("Info: ")
+                                        val item = action.entity as Item
+                                        val itemToCompare = Player.get(Equipment::class)!!.getEquipped(item.get(EquipmentItem::class)!!.getEquipmentType()) as Item?
+                                        for (attribute in item.getItemAttributes()) {
+                                            if (attribute is PrintableInfo<*>) {
+                                                (attribute as PrintableInfo<Attribute>).getPrintableInfo(itemToCompare?.get(attribute::class)).forEach {
+                                                    println(it.first)
+                                                    println("\t${it.second}")
+                                                }
+                                            }
+                                        }
+                                    }
+
                                 } else println("Inventory is full")
                             }
                             is Chest -> action.interaction.interact()

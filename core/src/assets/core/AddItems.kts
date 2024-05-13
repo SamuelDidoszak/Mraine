@@ -1,7 +1,6 @@
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.Items
-import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.items.attributes.*
 import com.neutrino.game.entities.items.attributes.usable.EquipEvents
@@ -12,10 +11,13 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Randomization
 import com.neutrino.game.entities.shared.attributes.RandomizationSimple
 import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Cooldown
 import com.neutrino.game.entities.systems.events.TimedEvent
 import com.neutrino.game.entities.systems.events.callables.AddCooldown
+import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.graphics.textures.Textures
 import kotlin.math.roundToInt
 
@@ -49,6 +51,10 @@ Items.add("Gold") {
                 }
             }
         })
+        .addAttribute(Requirements.Stats(
+            strength = 4f,
+            hpMax = 30f,
+            movementSpeed = 0.5))
 }
 Items.add("Dagger") {
     Item()
@@ -66,19 +72,58 @@ Items.add("Dagger") {
         )
         .addAttribute(EquipEvents(TimedEvent(CharacterEvents.Heal(2f), 2.0, 10)))
 }
-//Items.add("Sword") {
-//    Item()
-//        .addAttribute(EquipmentInitializer(
-//            textureName = "sword",
-//            goldValue = 30,
-//            eqType = EquipmentType.RHAND,
-//            handheldType = HandheldEquipmentType.SWORD
-//        ))
-//        .addAttribute(OffensiveStats(
-//            damageMin = 3f,
-//            damageMax = 4f,
-//        ))
-//}
+Items.add("Broken sword") {
+    Item()
+        .addAttribute(EquipmentInitializer(
+            textureName = "brokenSword",
+            goldValue = 20,
+            eqType = EquipmentType.RHAND,
+            handheldType = HandheldEquipmentType.SWORD
+        ))
+        .addAttribute(OffensiveStats(
+            damageMin = 2f,
+            damageMax = 3f,
+            strength = 2f,
+            waterDamageMax = 3f
+        ))
+        .addAttribute(Requirements.Stats(strength = 1f, defence = 0f))
+}
+Items.add("Basic fire wand") {
+    Item()
+        .addAttribute(EquipmentInitializer(
+            textureName = "basicFireWand",
+            goldValue = 30,
+            eqType = EquipmentType.RHAND,
+            handheldType = HandheldEquipmentType.WAND
+        ))
+        .addAttribute(OffensiveStats(
+            fireDamageMin = 2f,
+            fireDamageMax = 4f
+        ))
+        .addAttribute(Requirements.Stats(intelligence = 3f))
+}
+Items.add("Ripped pants") {
+    Item()
+        .addAttribute(EquipmentInitializer(
+            textureName = "rippedPants",
+            goldValue = 30,
+            eqType = EquipmentType.LEGS
+        ))
+        .addAttribute(DefensiveStats(
+            defence = 2f
+        ))
+}
+Items.add("Linen shirt") {
+    Item()
+        .addAttribute(EquipmentInitializer(
+            textureName = "linenShirt",
+            goldValue = 50,
+            eqType = EquipmentType.LEGS
+        ))
+        .addAttribute(DefensiveStats(
+            defence = 4f
+        ))
+}
 Items.add("Meat") {
     Item()
         .addAttribute(ItemInitializer(

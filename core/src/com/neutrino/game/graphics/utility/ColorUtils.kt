@@ -14,8 +14,9 @@ object ColorUtils {
     val SUMMONING: Color = Color.MAROON
 
     // Requirements
+    val BLACK: Color = Color(0f, 0f, 0f, 1f)
     val REQ_MET: Color = Color.FOREST
-    val REQ_UNMET: Color = applySaturation(Color.RED, 0.6f)
+    val REQ_UNMET: Color = applySaturation(Color.RED, 0.7f)
 
     // Items
     val GOLD: Color = Color.GOLD

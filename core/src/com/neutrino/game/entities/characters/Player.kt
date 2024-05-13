@@ -19,7 +19,6 @@ val Player = Character()
     .addAttribute(
         Stats(
         strength = 1f,
-        intelligence = 10f,
         hpMax = 30f,
         mpMax = 10f,
         damageMin = 2f,

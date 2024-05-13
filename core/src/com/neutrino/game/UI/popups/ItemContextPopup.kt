@@ -19,10 +19,11 @@ import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.items.attributes.EquipmentItem
-import com.neutrino.game.entities.systems.events.callables.AddCooldown
 import com.neutrino.game.entities.items.attributes.usable.Use
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
 import com.neutrino.game.entities.systems.events.attributes.EventList
+import com.neutrino.game.entities.systems.events.callables.AddCooldown
+import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.graphics.utility.BackgroundColor
 import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.scene2d
@@ -45,17 +46,30 @@ class ItemContextPopup(
                             return
                         super.clicked(event, x, y)
 
-                        // TODO ECS ITEMS REQUIREMENTS
-
-                        Player.get(Equipment::class)!!.equipItem(item)
-                        Player.get(Inventory::class)!!.removeItem(item)
-                        if (item.get(EquipmentItem::class)!!.isTwoHanded()) {
-                            GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, Equipment.EquipmentType.LHAND)
-                            GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, Equipment.EquipmentType.RHAND)
+                        if (item.get(Requirements.Stats::class)?.check(Player) == false ||
+                            item.get(Requirements.Custom::class)?.check(Player) == false) {
+                            val unmetLabel = TextraLabel("[@Cozette][%600][*]Requirements not met", KnownFonts.getStandardFamily())
+                            unmetLabel.name = "UnmetRequirements"
+                            parent.addActor(unmetLabel)
+                            val coords = localToParentCoordinates(Vector2(x, y))
+                            unmetLabel.setPosition(coords.x, coords.y + 8f)
+                            unmetLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                            unmetLabel.addAction(
+                                Actions.sequence(
+                                    Actions.fadeOut(1.25f),
+                                    Actions.removeActor()))
+                        } else {
+                            Player.get(Equipment::class)!!.equipItem(item)
+                            Player.get(Inventory::class)!!.removeItem(item)
+                            if (item.get(EquipmentItem::class)!!.isTwoHanded()) {
+                                GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, Equipment.EquipmentType.LHAND)
+                                GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, Equipment.EquipmentType.RHAND)
+                            }
+                            else
+                                GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, item.get(EquipmentItem::class)!!.getEquipmentType())
+                            customUseMethod.invoke()
                         }
-                        else
-                            GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, item.get(EquipmentItem::class)!!.getEquipmentType())
-                        customUseMethod.invoke()
+
                     }
                 })
 

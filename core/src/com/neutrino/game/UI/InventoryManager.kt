@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.TimeUtils
+import com.neutrino.game.UI.popups.EquipmentComparisonPopup
 import com.neutrino.game.UI.popups.ItemContextPopup
 import com.neutrino.game.UI.popups.SkillContextPopup
 import com.neutrino.game.UI.utility.*
@@ -17,7 +18,9 @@ import com.neutrino.game.entities.Items
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.characters.attributes.util.InventoryElement
+import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.items.attributes.Amount
+import com.neutrino.game.entities.items.attributes.EquipmentItem
 import com.neutrino.game.util.isIn
 import kotlin.math.ceil
 
@@ -274,21 +277,22 @@ class InventoryManager(private val uiStage: UiStage) {
                         if (detailsPopup != null)
                             uiStage.actors.removeValue(detailsPopup, true)
 
-                        // TODO ECS ITEMS Create popups
-//                        val group = Group()
-//                        val popup =
-//                            if (hoveredItem.entity has com.neutrino.game.entities.items.attributes.EquipmentItem::class)
-//                                EquipmentComparisonPopup(hoveredItem.entity)
-//                            else
-//                                ItemDetailsPopup(hoveredItem.entity)
-//                        group.setSize(popup.width, popup.height)
-//                        group.setScale(uiStage.currentScale)
-//                        group.addActor(popup)
-//                        detailsPopup = group
-//                        detailsPopup!!.setPosition(coord.x, coord.y)
-//                        displayedItem = hoveredItem.entity
-//                        uiStage.addActor(detailsPopup)
-//                        detailsPopup!!.setPosition(coord.x, coord.y)
+                        val group = Group()
+                        val popup =
+                            if (hoveredItem.entity has EquipmentItem::class)
+                                EquipmentComparisonPopup(hoveredItem.entity as Item)
+                            // TODO ECS ITEMS Create popups
+                            else
+                                Table()
+//                                ItemDetailsPopup(hoveredItem.entity as Item)
+                        group.setSize(popup.width, popup.height)
+                        group.setScale(uiStage.currentScale)
+                        group.addActor(popup)
+                        detailsPopup = group
+                        detailsPopup!!.setPosition(coord.x, coord.y)
+                        displayedItem = hoveredItem.entity
+                        uiStage.addActor(detailsPopup)
+                        detailsPopup!!.setPosition(coord.x, coord.y)
                     }
                 }
                 ManagerType.SKILLS -> {}
@@ -298,14 +302,13 @@ class InventoryManager(private val uiStage: UiStage) {
         when (currentElement?.type) {
             ManagerType.INVENTORY -> {
                 // delete or move the popup
-                // TODO ECS ITEMS POPUP
-//                if ((hoveredInv == null || hoveredItem == null)) {
-//                    displayedItem = null
-//                    uiStage.actors.removeValue(detailsPopup, true)
-//                    detailsPopup = null
-//                } else {
-//                    detailsPopup!!.setPosition(coord.x, coord.y)
-//                }
+                if ((hoveredInv == null || hoveredItem == null)) {
+                    displayedItem = null
+                    uiStage.actors.removeValue(detailsPopup, true)
+                    detailsPopup = null
+                } else {
+                    detailsPopup!!.setPosition(coord.x, coord.y)
+                }
             }
             ManagerType.SKILLS -> {
                 if (clickedItem == null)

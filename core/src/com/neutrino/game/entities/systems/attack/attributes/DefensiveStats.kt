@@ -19,14 +19,14 @@ import com.neutrino.game.util.roundOneDecimal
 import kotlin.random.Random
 
 class DefensiveStats(
-    var hpMax: Float = 1f,
+    var hpMax: Float = 0f,
     hp: Float = hpMax,
     var mpMax: Float = 0f,
     mp: Float = mpMax,
     var defence: Float = 0f,
     /** Range is 0 - 1 which tells the probability of dodging */
     var evasion: Float = 0f,
-    var movementSpeed: Double = 1.0,
+    var movementSpeed: Double = 0.0,
     var stealth: Float = 0f,
     /** Range is 0 - 2, where 1+ heals instead of damaging */
     var fireDefence: Float = 0f,
@@ -50,6 +50,18 @@ class DefensiveStats(
             field = value
             entity.call(StatsChangedCallable::class, StatsEnum.MP, difference)
         }
+
+    override fun onEntityAttached() {
+        if (entity !is Character)
+            return
+
+        if (hpMax == 0f) {
+            hpMax = 1f
+            this.hp = hpMax
+        }
+        if (movementSpeed == 0.0)
+            movementSpeed = 1.0
+    }
 
     fun getDamage(attacker: OffensiveStats) {
 //        if (!this.isAlive())
@@ -116,10 +128,6 @@ class DefensiveStats(
         return hp.compareDelta(0f) == 1
     }
 
-    private companion object {
-        val default = DefensiveStats()
-    }
-
     override fun plusEquals(other: DefensiveStats) {
         hpMax += other.hpMax
         hp += other.hp
@@ -173,29 +181,29 @@ class DefensiveStats(
     override fun getPrintableInfo(other: DefensiveStats?): List<Pair<String, Any?>> {
         val printableInfo = ArrayList<Pair<String, Any>>()
 
-        if (hpMax != default.hpMax)
+        if (hpMax != 0f)
             printableInfo.add("Hp max" to "${PrintableInfo.getColor(hpMax.compareDelta(other?.hpMax ?: 0f))}$hpMax")
-        if (hp != default.hp)
+        if (hp != 0f)
             printableInfo.add("Hp" to "${PrintableInfo.getColor(hp.compareDelta(other?.hp ?: 0f))}$hp")
-        if (mpMax != default.mpMax)
+        if (mpMax != 0f)
             printableInfo.add("Mp max" to "${PrintableInfo.getColor(mpMax.compareDelta(other?.mpMax ?: 0f))}$mpMax")
-        if (mp != default.mp)
+        if (mp != 0f)
             printableInfo.add("Mp" to "${PrintableInfo.getColor(mp.compareDelta(other?.mpMax ?: 0f))}$mpMax")
-        if (defence != default.defence)
+        if (defence != 0f)
             printableInfo.add("Defence" to "${PrintableInfo.getColor(defence.compareDelta(other?.defence ?: 0f))}$defence")
-        if (evasion != default.evasion)
+        if (evasion != 0f)
             printableInfo.add("Evasion" to "${PrintableInfo.getColor(stealth.compareDelta(other?.evasion ?: 0f))}$evasion")
-        if (movementSpeed != default.movementSpeed)
+        if (movementSpeed != 0.0)
             printableInfo.add("Movement speed" to "${PrintableInfo.getColor(movementSpeed.compareDelta(other?.movementSpeed ?: 0.0))}$movementSpeed")
-        if (stealth != default.stealth)
+        if (stealth != 0f)
             printableInfo.add("Stealth" to "${PrintableInfo.getColor(stealth.compareDelta(other?.stealth ?: 0f))}$stealth")
-        if (fireDefence != default.fireDefence)
+        if (fireDefence != 0f)
             printableInfo.add("Fire defence" to "${PrintableInfo.getColor(fireDefence.compareDelta(other?.fireDefence ?: 0f))}$fireDefence")
-        if (waterDefence != default.waterDefence)
+        if (waterDefence != 0f)
             printableInfo.add("Water defence" to "${PrintableInfo.getColor(waterDefence.compareDelta(other?.waterDefence ?: 0f))}$waterDefence")
-        if (airDefence != default.airDefence)
+        if (airDefence != 0f)
             printableInfo.add("Air defence" to "${PrintableInfo.getColor(airDefence.compareDelta(other?.airDefence ?: 0f))}$airDefence")
-        if (poisonDefence != default.poisonDefence)
+        if (poisonDefence != 0f)
             printableInfo.add("Poison defence" to "${PrintableInfo.getColor(poisonDefence.compareDelta(other?.poisonDefence ?: 0f))}$poisonDefence")
 
         return printableInfo

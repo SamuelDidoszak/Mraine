@@ -2,6 +2,7 @@ package com.neutrino.game.entities.systems.requirements
 
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.graphics.utility.ColorUtils.toHexaDecimal
+import com.neutrino.game.util.compareDelta
 
 interface PrintableInfo<T: Any> {
 
@@ -18,6 +19,14 @@ interface PrintableInfo<T: Any> {
                 0 -> baseColor
                 else -> betterColor
             }
+        }
+
+        fun getColoredNumber(number: Float, other: Float): String {
+            return getColor(number.compareDelta(other)) + number.toString()
+        }
+
+        fun getColoredNumber(number: Double, other: Double): String {
+            return getColor(number.compareDelta(other)) + number.toString()
         }
     }
 }

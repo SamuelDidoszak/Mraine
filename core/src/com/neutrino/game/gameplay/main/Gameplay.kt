@@ -6,9 +6,10 @@ import com.neutrino.game.UI.UiStage
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
-import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map_entities.util.Interactable
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.map.chunk.ChunkManager
@@ -152,7 +153,7 @@ class Gameplay(
         val y = gameStage.clickedCoordinates!!.y
 
         val attackableEntity = Turn.characterArray.get(x, y) ?:
-            ChunkManager.getEntitiesAt(Position(x, y, Turn.currentChunk)).firstOrNull { it has DefensiveStats::class }
+            ChunkManager.getEntitiesAt(Position(x, y, Turn.currentChunk)).firstOrNull { it has DefensiveStats::class && it !is Item }
 
         if(attackableEntity == Player) {
             gameStage.focusPlayer = true

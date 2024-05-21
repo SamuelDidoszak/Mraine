@@ -7,10 +7,11 @@ import com.neutrino.game.entities.characters.callables.OnItemUnequipped
 import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.systems.events.TimedEvent
+import com.neutrino.game.entities.systems.requirements.PrintableInfo
 
 class EquipEvents(
     vararg initialEvents: TimedEvent
-): Attribute() {
+): Attribute(), PrintableInfo<EquipEvents> {
 
     private val events: ArrayList<TimedEvent> = ArrayList()
     private var equippedEntity: Entity? = null
@@ -19,14 +20,14 @@ class EquipEvents(
         events.addAll(initialEvents)
     }
 
-//    override fun getPrintableInfo(other: EquipEvents?): List<Pair<String, Any>> {
-//        val printableInfo = ArrayList<Pair<String, Any>>()
-//        events.forEach {
-//            printableInfo.add(it.event::class.simpleName!! to "")
-//            printableInfo.add()
-//        }
-//        other.events
-//    }
+    override fun getPrintableInfo(other: EquipEvents?): List<Pair<String, Any?>> {
+        val printableInfo = ArrayList<Pair<String, Any?>>()
+        events.forEach { timedEvent ->
+            printableInfo.add(timedEvent.name to
+                    timedEvent.printable(other?.events?.find { it.name == timedEvent.name }))
+        }
+        return printableInfo
+    }
 
     override fun onEntityAttached() {
         entity.attach(object : OnItemEquipped() {

@@ -11,11 +11,14 @@ import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.items.attributes.EquipmentItem
 import com.neutrino.game.entities.items.attributes.GoldValue
+import com.neutrino.game.entities.items.attributes.usable.EquipEvents
+import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
 import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.graphics.utility.ColorUtils.toTextraColor
 import com.neutrino.game.util.Fonts
+import com.neutrino.game.util.add
 import ktx.scene2d.Scene2DSkin
 import java.lang.Float.max
 
@@ -51,7 +54,7 @@ class EquipmentComparisonPopup(val item: Item): Table() {
 //        table.row()
 
         for (attribute in item.getItemAttributes()) {
-            if (attribute !is PrintableInfo<*>)
+            if (attribute !is PrintableInfo<*> || attribute is UseOnEntity || attribute is EquipEvents)
                 continue
 
             val printableList = (attribute as PrintableInfo<Attribute>).getPrintableInfo(itemToCompare?.get(attribute::class))
@@ -104,6 +107,27 @@ class EquipmentComparisonPopup(val item: Item): Table() {
         }
 
         table.row()
+
+        val eventAttributes = ArrayList<Attribute>()
+        eventAttributes.add(item.get(UseOnEntity::class))
+        eventAttributes.add(item.get(EquipEvents::class))
+        for (attribute in eventAttributes) {
+            val printableList = (attribute as PrintableInfo<Attribute>).getPrintableInfo(itemToCompare?.get(attribute::class))
+            for (printable in printableList) {
+                val value = TextraLabel("[%75]" + printable.first, Fonts.MATCHUP, Color.BLACK)
+                value.wrap = true
+                value.alignment = Align.center
+                table.add(value).center().growX().colspan(10).spaceBottom(8f)
+                table.row()
+
+                val valueLabel = TextraLabel("[%75]" + printable.second.toString(), Fonts.MATCHUP)
+                valueLabel.alignment = Align.left
+                valueLabel.wrap = true
+                valueLabel.debug()
+                table.add(valueLabel).left().growX().colspan(10).spaceBottom(8f)
+                table.row()
+            }
+        }
 
         val requirements: ArrayList<Pair<String, String>> = ArrayList()
         item.get(Requirements.Stats::class)?.print(Player)?.forEach { requirements.add(it) }

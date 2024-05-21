@@ -68,8 +68,7 @@ Items.add("Dagger") {
             OffensiveStats(
             damageMin = 2f,
             damageMax = 3.5f,
-        )
-        )
+        ))
         .addAttribute(EquipEvents(TimedEvent(CharacterEvents.Heal(2f), 2.0, 10)))
 }
 Items.add("Broken sword") {

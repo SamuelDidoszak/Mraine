@@ -7,6 +7,7 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
+import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.util.EntityName
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
@@ -23,6 +24,8 @@ abstract class CharacterEvents: Event {
         return this
     }
 
+    open val color: String = PrintableInfo.baseColor
+
     class Heal(var power: Float): CharacterEvents(), Status {
         override fun apply() {
             val stats = entity.get(DefensiveStats::class) ?: return
@@ -34,8 +37,12 @@ abstract class CharacterEvents: Event {
 //            entity.findActor<HpBar>("hpBar").update(character.hp)
         }
 
+        override val color = "#e4265c"
         override val name: String = "Heal"
-        override val data: ArrayList<Pair<String, *>> = ArrayList()
+        override fun printable(other: Event?): String {
+            return "[$color]Heals " +
+                    PrintableInfo.getColoredNumber(power, (other as? Heal)?.power ?: power) + "[$color]hp"
+        }
     }
 
     class ManaRegen(val regen: Float): CharacterEvents() {
@@ -46,6 +53,11 @@ abstract class CharacterEvents: Event {
                 stats.mp = stats.mpMax
             else
                 stats.mp += regen
+        }
+
+        override val color = "#4929d6"
+        override fun printable(other: Event?): String {
+            return "[$color]Regenerates " + PrintableInfo.getColoredNumber(regen, (other as? ManaRegen)?.regen ?: regen) + "[$color]mp"
         }
     }
 
@@ -58,9 +70,19 @@ abstract class CharacterEvents: Event {
                 fireDamageMax = fireDamageMax,
                 accuracy = 1000f)
             )
+        private val offensiveStats: OffensiveStats
+            get() = fakeEntity.get(OffensiveStats::class)!!
 
         override fun apply() {
-            entity.get(DefensiveStats::class)?.getDamage(fakeEntity.get(OffensiveStats::class)!!)
+            entity.get(DefensiveStats::class)?.getDamage(offensiveStats)
+        }
+
+        override fun printable(other: Event?): String {
+            return "Applies " +
+                    PrintableInfo.getColoredNumber(offensiveStats.fireDamageMin, (other as? Burn)?.offensiveStats?.fireDamageMin ?: offensiveStats.fireDamageMin) +
+                    " - " +
+                    PrintableInfo.getColoredNumber(offensiveStats.fireDamageMax, (other as? Burn)?.offensiveStats?.fireDamageMax ?: offensiveStats.fireDamageMax) +
+                    " fire damage"
         }
     }
 
@@ -73,9 +95,19 @@ abstract class CharacterEvents: Event {
                 damageMax = damageMax,
                 accuracy = 1000f)
             )
+        private val offensiveStats: OffensiveStats
+            get() = fakeEntity.get(OffensiveStats::class)!!
 
         override fun apply() {
-            entity.get(DefensiveStats::class)?.getDamage(fakeEntity.get(OffensiveStats::class)!!)
+            entity.get(DefensiveStats::class)?.getDamage(offensiveStats)
+        }
+
+        override fun printable(other: Event?): String {
+            return "Applies " +
+                    PrintableInfo.getColoredNumber(offensiveStats.damageMin, (other as? Bleed)?.offensiveStats?.damageMin ?: offensiveStats.damageMin) +
+                    " - " +
+                    PrintableInfo.getColoredNumber(offensiveStats.damageMax, (other as? Bleed)?.offensiveStats?.damageMax ?: offensiveStats.damageMax) +
+                    " damage"
         }
     }
 
@@ -85,6 +117,8 @@ abstract class CharacterEvents: Event {
             position.chunk.characterMap[position.y][position.x] = entity
             entity.addAttribute(position)
         }
+
+        override fun printable(other: Event?): String = "Teleports character"
     }
 
     class Spawn(val entity: EntityName, val position: Position,
@@ -97,6 +131,8 @@ abstract class CharacterEvents: Event {
             position.chunk.characterArray.add(addedEntity)
             position.chunk.characterMap[position.y][position.x] = addedEntity
         }
+
+        override fun printable(other: Event?): String = "Spawns $entity"
     }
 }
 

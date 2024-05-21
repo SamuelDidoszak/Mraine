@@ -3,6 +3,7 @@ package com.neutrino.game.entities.systems.attack.attributes
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
+import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.HasRange
@@ -25,11 +26,11 @@ class OffensiveStats(
     var damageMin: Float = 0f,
     var damageMax: Float = damageMin,
     /** Range is 0 - 2 which tells the probability of hitting the enemy */
-    var accuracy: Float = 1f,
+    var accuracy: Float = 0f,
     var criticalChance: Float = 0f,
     /** Damage multiplier applied on critical hit */
-    var criticalDamage: Float = 1.2f,
-    var attackSpeed: Double = 1.0,
+    var criticalDamage: Float = 0f,
+    var attackSpeed: Double = 0.0,
     override var range: Int = 1,
     override var rangeType: RangeType = RangeType.SQUARE,
     // elemental
@@ -42,6 +43,18 @@ class OffensiveStats(
     var poisonDamageMin: Float = 0f,
     var poisonDamageMax: Float = poisonDamageMin
 ): Attribute(), HasRange, AttributeOperations<OffensiveStats>, PrintableInfo<OffensiveStats> {
+
+    override fun onEntityAttached() {
+        if (entity !is Character)
+            return
+
+        if (accuracy == 0f)
+            accuracy = 1f
+        if (criticalDamage == 0f)
+            criticalDamage = 1.2f
+        if (attackSpeed == 0.0)
+            attackSpeed = 1.0
+    }
 
     fun attack(target: Position) {
         if (entity is Character) {
@@ -86,7 +99,7 @@ class OffensiveStats(
 
     private fun getTopAttackable(target: Position): Entity? {
         return target.chunk.characterMap[target.y][target.x] ?:
-            target.chunk.map[target.y][target.x].asReversed().firstOrNull { it has DefensiveStats::class }
+            target.chunk.map[target.y][target.x].asReversed().firstOrNull { it has DefensiveStats::class && it !is Item }
     }
 
     private fun getAllAttackables(target: Position): List<Entity>? {
@@ -118,8 +131,6 @@ class OffensiveStats(
     fun getPoisonDamage(): Float {
         return poisonDamageMin + (poisonDamageMax - poisonDamageMin) * Random.nextFloat()
     }
-
-    private companion object { val default = OffensiveStats() }
 
     /**
      * New range is max range
@@ -214,10 +225,6 @@ class OffensiveStats(
 
         val printableInfo = ArrayList<Pair<String, Any>>()
         val stats = clone()
-        stats.minusEquals(default)
-        stats.attackSpeed = 0.0
-        stats.accuracy = 0f
-        stats.range = 0
         this::class.java.declaredFields.forEach {
             val value = it.get(stats)
             if (value is Float && value != 0f)
@@ -229,6 +236,8 @@ class OffensiveStats(
             if (value is RangeType && (value != RangeType.SQUARE || (other != null && other.rangeType != RangeType.SQUARE)))
                 printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.baseColor}$value")
         }
+        if (range == 1 && (other == null || other.range == 1))
+            printableInfo.removeIf { it.first == "Range" }
         return printableInfo
     }
 }

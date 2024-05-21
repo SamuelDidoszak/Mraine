@@ -1,6 +1,8 @@
 package com.neutrino.game.entities.systems.events
 
+import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.gameplay.turn.Turn
+import com.neutrino.game.util.compareDelta
 import com.neutrino.game.util.roundOneDecimal
 import kotlin.math.absoluteValue
 
@@ -18,6 +20,8 @@ class TimedEvent(
 
     fun getEventLength(): Double = (refreshTime * executions).roundOneDecimal()
     fun turnsRemaining(): Double = (Turn.turn - turn!!).absoluteValue
+    val name: String
+        get() = event::class.simpleName!!
 
     class TimedData(
         var power: Float,
@@ -32,5 +36,12 @@ class TimedEvent(
         fun getEventPower(): Float = power / executions
 
         fun toTimedEvent(event: (TimedData) -> Event): TimedEvent = TimedEvent(event.invoke(this), this)
+    }
+
+    fun printable(other: TimedEvent?): String {
+        val otherEvent = if (other != null && other.event::class == event::class) other.event else null
+        return event.printable(otherEvent) + " ${PrintableInfo.baseColor}" + if (executions == 1) "instantly." else
+            "per $refreshTime turn" + (if (refreshTime.compareDelta(1.0) == 1) "s " else " ") +
+            "$executions times"
     }
 }

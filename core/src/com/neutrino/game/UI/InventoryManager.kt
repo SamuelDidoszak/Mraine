@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.TimeUtils
 import com.neutrino.game.UI.popups.EquipmentComparisonPopup
 import com.neutrino.game.UI.popups.ItemContextPopup
+import com.neutrino.game.UI.popups.ItemDetailsPopup
 import com.neutrino.game.UI.popups.SkillContextPopup
 import com.neutrino.game.UI.utility.*
 import com.neutrino.game.entities.Entity
@@ -283,8 +284,7 @@ class InventoryManager(private val uiStage: UiStage) {
                                 EquipmentComparisonPopup(hoveredItem.entity as Item)
                             // TODO ECS ITEMS Create popups
                             else
-                                Table()
-//                                ItemDetailsPopup(hoveredItem.entity as Item)
+                                ItemDetailsPopup(hoveredItem.entity as Item)
                         group.setSize(popup.width, popup.height)
                         group.setScale(uiStage.currentScale)
                         group.addActor(popup)

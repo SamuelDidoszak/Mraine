@@ -13,6 +13,7 @@ import com.neutrino.game.entities.items.attributes.EquipmentItem
 import com.neutrino.game.entities.items.attributes.GoldValue
 import com.neutrino.game.entities.items.attributes.usable.EquipEvents
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
+import com.neutrino.game.entities.shared.attributes.Description
 import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.graphics.textures.Textures
@@ -42,16 +43,16 @@ class EquipmentComparisonPopup(val item: Item): Table() {
         itemName.wrap = true
         itemName.alignment = Align.center
 
-        // TODO Description
-//        val description = TextraLabel("[%75]" + item.description, Fonts.MATCHUP, Color.BLACK)
-//        description.wrap = true
-//        description.alignment = Align.left
-
         table.add(itemName).growX().center().colspan(10).spaceBottom(12f)
         table.row()
-        // TODO Description
-//        table.add(description).growX().colspan(10).spaceBottom(12f)
-//        table.row()
+
+        if (item has Description::class) {
+            val description = TextraLabel("[%75]" + item.get(Description::class)!!.description, Fonts.MATCHUP, Color.BLACK)
+            description.wrap = true
+            description.alignment = Align.left
+            table.add(description).growX().colspan(10).spaceBottom(12f)
+            table.row()
+        }
 
         for (attribute in item.getItemAttributes()) {
             if (attribute !is PrintableInfo<*> || attribute is UseOnEntity || attribute is EquipEvents)
@@ -123,7 +124,6 @@ class EquipmentComparisonPopup(val item: Item): Table() {
                 val valueLabel = TextraLabel("[%75]" + printable.second.toString(), Fonts.MATCHUP)
                 valueLabel.alignment = Align.left
                 valueLabel.wrap = true
-                valueLabel.debug()
                 table.add(valueLabel).left().growX().colspan(10).spaceBottom(8f)
                 table.row()
             }

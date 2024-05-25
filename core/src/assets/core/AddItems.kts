@@ -127,6 +127,7 @@ Items.add("Meat") {
     Item()
         .addAttribute(ItemInitializer(
             textureName = "meat",
+            description = "Raw meat. Somehow, it doesn't make you sick",
             goldValue = 5,
             maxStack = 10,
             tier = 1
@@ -142,7 +143,7 @@ Items.add("Meat") {
             rng.nextFloat().let {
                 when {
                     it < 0.2 -> {
-                        entity.name = "Rotten meat"
+                        entity.name = "Old meat"
                         heal.power = 0.15f
                         entity.get(GoldValue::class)!!.value -= 2
                     }
@@ -157,6 +158,7 @@ Items.add("Small healing potion") {
     Item()
         .addAttribute(ItemInitializer(
             "smallHealingPotion",
+            "Small flask of a healing concoction",
             15,
             10,
             2

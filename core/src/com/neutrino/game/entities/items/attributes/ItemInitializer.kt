@@ -2,12 +2,14 @@ package com.neutrino.game.entities.items.attributes
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map_entities.attributes.PickUp
+import com.neutrino.game.entities.shared.attributes.Description
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.util.add
 
 class ItemInitializer(
     val textureName: String,
+    val description: String = "",
     val goldValue: Int,
     val maxStack: Int,
     val tier: Int
@@ -17,6 +19,8 @@ class ItemInitializer(
         entity.addAttribute(Texture { position, random, textures -> run {
             textures add Textures.get(textureName)
         }})
+        if (description.isNotEmpty())
+            entity.addAttribute(Description(description))
         entity.addAttribute(GoldValue(goldValue))
         entity.addAttribute(Amount(maxStack = maxStack))
         entity.addAttribute(ItemTier(tier))

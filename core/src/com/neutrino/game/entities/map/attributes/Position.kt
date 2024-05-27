@@ -26,14 +26,18 @@ class Position(
     var x: Int = x
         set(value) {
             field = value
-            entity.get(DrawPosition::class)?.x = value * 16 * SCALE
+            try {
+                entity.get(DrawPosition::class)?.x = value * 16 * SCALE
+            } catch (_: Exception) {}
         }
 
     var y: Int = y
         set(value) {
             field = value
-            entity.get(DrawPosition::class)?.y =
-                chunk.map.size * 16 * SCALE_INT - value * 16 * SCALE
+            try {
+                entity.get(DrawPosition::class)?.y =
+                    chunk.map.size * 16 * SCALE_INT - value * 16 * SCALE
+            } catch (_: Exception) {}
         }
 
     override fun onEntityAttached() {

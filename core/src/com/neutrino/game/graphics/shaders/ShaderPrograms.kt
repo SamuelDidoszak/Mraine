@@ -3,11 +3,7 @@ package com.neutrino.game.graphics.shaders
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 
-object Shaders {
-    val fragmentAlphas: ShaderProgram = ShaderProgram(
-        Gdx.files.internal("shaders/vertex.vert").readString(),
-        Gdx.files.internal("shaders/fragmentAlphas.frag").readString()
-    )
+object ShaderPrograms {
     val defaultShader: ShaderProgram = ShaderProgram(
         Gdx.files.internal("shaders/vertex.vert").readString(),
         Gdx.files.internal("shaders/fragmentDefault.frag").readString()
@@ -26,6 +22,6 @@ object Shaders {
     )
     val colorOverlayShader: ShaderProgram = ShaderProgram(
         Gdx.files.internal("shaders/vertex.vert").readString(),
-        Gdx.files.internal("shaders/colorOverlay.frag").readString()
+        Gdx.files.internal("shaders/colorOverlayUniforms.frag").readString()
     )
 }

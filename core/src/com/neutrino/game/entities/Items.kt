@@ -16,8 +16,9 @@ object Items {
     fun new(name: String): Item {
         try {
             return new(itemIds[name]!!) as Item
-        } catch (_: Exception) {
-            throw Exception("item with name: $name does not exist!")
+        } catch (e: Exception) {
+            throw e
+//            throw Exception("item with name: $name does not exist!")
         }
     }
 

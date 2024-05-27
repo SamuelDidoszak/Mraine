@@ -51,10 +51,6 @@ Items.add("Gold") {
                 }
             }
         })
-        .addAttribute(Requirements.Stats(
-            strength = 4f,
-            hpMax = 30f,
-            movementSpeed = 0.5))
 }
 Items.add("Dagger") {
     Item()

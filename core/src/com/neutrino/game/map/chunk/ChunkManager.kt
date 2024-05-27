@@ -4,12 +4,13 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
-import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.characters.callables.OnMoveCallable
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map_entities.attributes.Door
 import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.gameplay.turn.Turn.characterArray
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.drawing.actions.Action
@@ -147,6 +148,7 @@ object ChunkManager: ChunkManagerMethods {
                     entity.get(Texture::class)!!.textures.mirror(mirror)
                 }
             ))
+            entity.call(OnMoveCallable::class)
         }
 
         // TODO Multiple Chunks

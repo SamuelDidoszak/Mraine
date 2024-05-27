@@ -9,13 +9,18 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
+import com.neutrino.game.domain.model.characters.Player.texture
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.characters.attributes.Name
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.shared.attributes.LayeredDraws
+import com.neutrino.game.entities.shared.attributes.Shaders
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
-import com.neutrino.game.graphics.drawing.layers.*
-import com.neutrino.game.graphics.shaders.Shaders
+import com.neutrino.game.graphics.drawing.layers.LayeredDraw
+import com.neutrino.game.graphics.drawing.layers.LayeredTexture
+import com.neutrino.game.graphics.drawing.layers.LayeredTextureList
+import com.neutrino.game.graphics.drawing.layers.LayeredTextureUnsorted
+import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
@@ -56,34 +61,42 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
     }
 
     override fun addLayeredDraw(layeredDraw: LayeredDraw) {
-        if (textureLayers[layeredDraw.z] == null) {
+        if (textureLayers[layeredDraw.z] == null)
             textureLayers[layeredDraw.z] = LayeredTextureList()
-        }
+
+        layeredDraw.entity.get(Shaders::class)?.shaders?.forEach { layeredDraw.addShader(it) }
         textureLayers[layeredDraw.z]!!.add(layeredDraw)
+        if (layeredDraw.entity hasNot LayeredDraws::class)
+            layeredDraw.entity.addAttribute(LayeredDraws())
+        layeredDraw.entity.get(LayeredDraws::class)!!.addLayeredDraw(layeredDraw)
+    }
+
+    override fun removeLayeredDraw(layeredDraw: LayeredDraw) {
+        layeredDraw.entity.get(LayeredDraws::class)?.removeLayeredDraw(layeredDraw)
+        textureLayers[layeredDraw.z]!!.remove(layeredDraw)
     }
 
     override fun addTexture(entity: Entity, texture: TextureSprite) {
         if (textureLayers[texture.z] == null)
             textureLayers[texture.z] = LayeredTextureList()
-        if (entity has StitchedSprite::class)
-            textureLayers[texture.z]!!.add(LayeredTextureUnsorted(entity, texture))
-        else
-            textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
+
+        val layeredTexture =
+            if (entity has StitchedSprite::class)
+                LayeredTextureUnsorted(entity, texture)
+            else
+                LayeredTexture(entity, texture)
+        entity.get(Shaders::class)?.shaders?.forEach { layeredTexture.addShader(it) }
+
+        textureLayers[texture.z]!!.add(layeredTexture)
+        if (entity hasNot LayeredDraws::class)
+            entity.addAttribute(LayeredDraws())
+        entity.get(LayeredDraws::class)!!.addLayeredDraw(layeredTexture)
     }
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
-        textureLayers[texture.z]!!.removeIf { it.entity == entity && it is LayeredTexture && it.texture == texture }
-    }
-
-    override fun getTextures(entity: Entity): List<LayeredDraw> {
-        val textureList = ArrayList<LayeredDraw>()
-        textureLayers.forEach { t, u ->
-            for (draw in u) {
-                if (draw.entity == entity)
-                    textureList.add(draw)
-            }
-        }
-        return textureList
+        val layeredDraw = entity.get(LayeredDraws::class)?.removeLayeredDraw {
+            it.entity == entity && it is LayeredTexture && it.texture == texture }
+        textureLayers[texture.z]!!.remove(layeredDraw)
     }
 
     init {
@@ -123,12 +136,24 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
                 for (entity in map[y][x]) {
                     val textures = entity.get(Texture::class)!!.textures
                     for (texture in textures) {
-                        if (texture.z == 0)
+                        if (texture.z == 0) {
                             batch!!.draw(
                                 texture.texture, if (!texture.mirrorX) screenX else screenX + texture.texture.regionWidth * SCALE,
                                 screenY,
                                 texture.texture.regionWidth * if (!texture.mirrorX) SCALE else -1 * SCALE,
                                 texture.texture.regionHeight * SCALE)
+
+                            if (entity has Shaders::class)
+                                entity.get(Shaders::class)?.shaders?.forEach {
+                                    it.applyToBatch(batch)
+                                    batch.draw(
+                                        texture.texture, if (!texture.mirrorX) screenX else screenX + texture.texture.regionWidth * SCALE,
+                                        screenY,
+                                        texture.texture.regionWidth * if (!texture.mirrorX) SCALE else -1 * SCALE,
+                                        texture.texture.regionHeight * SCALE)
+                                    it.cleanUp(batch)
+                                }
+                        }
                     }
                 }
                 screenX += TILE_SIZE_INT
@@ -155,6 +180,8 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
                 if (textureY + layeredTexture.height >= yBottom && textureY <= yTop &&
                     textureX + textureWidth >= xLeft && textureX <= xRight) {
                     layeredTexture.drawDebug(batch!!, x, y, parentAlpha)
+                    if (layeredTexture.getShaders() != null)
+                        layeredTexture.drawShaders(batch, x, y, parentAlpha)
                 }
             }
         }
@@ -168,14 +195,14 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
 
 
         if (fogOfWar.drawFovFow % 3 == 0) {
-            batch?.shader = Shaders.defaultShader
+            batch?.shader = ShaderPrograms.defaultShader
             batch?.draw(fogOfWar.blurredFogOfWar.colorBufferTexture, 0f, 64f)
             batch?.shader = null
         }
     }
 
     private fun drawLights(batch: Batch?) {
-        batch?.shader = Shaders.lightShader
+        batch?.shader = ShaderPrograms.lightShader
         batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE)
         for (light in lights) {
             val drawPositionAttribute = light.first.get(DrawPosition::class)!!

@@ -8,6 +8,8 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.graphics.drawing.actions.Actions
+import com.neutrino.game.graphics.shaders.OutlineShader
+import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
@@ -25,6 +27,8 @@ abstract class LayeredDraw(
     var alpha: Float = 1f
     var debug = false
     private var isAttached = false
+
+    protected var shaders: ArrayList<ShaderParametered>? = null
 
     protected companion object Defaults {
         val drawPosition = DrawPosition()
@@ -134,5 +138,28 @@ abstract class LayeredDraw(
 
     protected fun Batch.setAlpha(alpha: Float) {
         this.setColor(this.color.r, this.color.g, this.color.b, alpha)
+    }
+
+    fun addShader(shader: ShaderParametered) {
+        if (shaders == null)
+            shaders = ArrayList()
+        shaders!!.add(shader)
+
+        if (shader is OutlineShader && this is LayeredTexture)
+            shader.setTexture(this)
+    }
+
+    fun getShaders(): List<ShaderParametered>? = shaders
+
+    fun removeShader(shader: ShaderParametered) {
+        shaders?.remove(shader)
+    }
+
+    fun drawShaders(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
+        shaders?.forEach {
+            it.applyToBatch(batch)
+            draw(batch, x, y, parentAlpha)
+            it.cleanUp(batch)
+        }
     }
 }

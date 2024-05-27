@@ -19,6 +19,8 @@ abstract class Attribute {
 
     open fun onEntityAttached() {}
 
+    open fun onEntityDetached() {}
+
     protected inline fun <reified T: Attribute> plusPrevious(other: T) {
         val prevAttr = entity.get(PreviousAttributes::class) ?:
             entity.addAttribute(PreviousAttributes()).get(PreviousAttributes::class)!!

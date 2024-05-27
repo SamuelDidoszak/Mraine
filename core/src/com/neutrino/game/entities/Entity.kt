@@ -38,6 +38,7 @@ open class Entity() {
 
 
     infix fun addAttribute(attribute: Attribute): Entity {
+        attributes[attribute::class]?.onEntityDetached()
         attributes.put(attribute::class, attribute)
         attribute.entity = this
         attribute.onEntityAttached()
@@ -45,6 +46,7 @@ open class Entity() {
     }
 
     infix fun <T: Attribute> removeAttribute(attributeClass: KClass<T>): Entity {
+        attributes[attributeClass]?.onEntityDetached()
         attributes.remove(attributeClass)
         return this
     }

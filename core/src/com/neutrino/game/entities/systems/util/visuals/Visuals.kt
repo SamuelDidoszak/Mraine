@@ -40,12 +40,12 @@ object Visuals {
 
     fun showPickedUpItem(entity: Entity, item: Entity) {
         val itemDraw = LayeredTexture(entity, item.get(Texture::class)!!.textures[0].clone())
-        itemDraw.initialize(entity)
         itemDraw.z = 2
         itemDraw.width *= 2
         itemDraw.height *= 2
         itemDraw.xOffset = (entity.get(Texture::class)!!.getWidthScaled() - itemDraw.width) / 2f
         itemDraw.yOffset = entity.get(Texture::class)!!.getHeightScaled().toFloat()
+        itemDraw.initialize(entity)
 
         itemDraw.addAction(Action.MoveBy(0f, 36f, 1f))
         itemDraw.addAction(Action.Sequence(

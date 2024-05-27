@@ -12,7 +12,7 @@ import com.neutrino.game.UI.popups.EntityLookupPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.graphics.drawing.LevelDrawer
-import com.neutrino.game.graphics.shaders.Shaders
+import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
@@ -21,7 +21,7 @@ import kotlin.math.abs
 class GameStage(
     viewport: Viewport
 ): Stage(viewport,
-    SpriteBatch(1000, Shaders.fragmentAlphas)) {
+    SpriteBatch(1000, ShaderPrograms.defaultShader)) {
 
     val gameCamera = GameCamera(camera, this)
 

@@ -1,11 +1,9 @@
 package com.neutrino.game.graphics.drawing.actions
 
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.DrawerAttribute
+import com.neutrino.game.entities.shared.attributes.LayeredDraws
 import com.neutrino.game.graphics.drawing.layers.LayeredDraw
 import com.neutrino.game.map.attributes.DrawPosition
-import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.equalsDelta
 
 sealed class Action(
@@ -105,10 +103,9 @@ sealed class Action(
                 layeredDraw!!.alpha -= initialAlpha * getActionFrame(delta)
             }
             if (entity != null) {
-                val layeredDraws = (entity!!.get(DrawerAttribute::class)?.drawer ?:
-                    ChunkManager.getDrawer(entity!!.get(Position::class)!!.chunk)).getTextures(entity!!)
+                val layeredDraws = entity!!.get(LayeredDraws::class)?.getLayeredDraws()
 
-                layeredDraws.forEach {
+                layeredDraws?.forEach {
                     it.alpha -= initialAlpha * getActionFrame(delta)
                 }
             }

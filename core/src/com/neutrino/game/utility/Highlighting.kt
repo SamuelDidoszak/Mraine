@@ -1,16 +1,15 @@
 package com.neutrino.game.utility
 
 import com.badlogic.gdx.graphics.Color
-import com.neutrino.game.domain.model.entities.utility.TextureHaver
 import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.domain.use_case.map.LevelArrays
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
-import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.graphics.shaders.ColorOverlayShader
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
@@ -205,7 +204,7 @@ class Highlighting {
         shaderOnHover = OutlineShader(
             OutlineShader.OUTLINE_RED,
             2f,
-            (outlinedOnHover as TextureHaver).texture
+//            (outlinedOnHover as TextureHaver).texture
         )
         outlinedOnHover?.shaders?.add(shaderOnHover)
         return outlinedOnHover != null

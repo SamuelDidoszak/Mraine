@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 
 class ColorOverlayShader(var color: Color): ShaderParametered() {
-    override val shader: ShaderProgram = Shaders.colorOverlayShader
+    override val shader: ShaderProgram = ShaderPrograms.colorOverlayShader
 
     companion object colors {
         val LIGHT_RED = Color(0.8f, 0.3f, 0.3f, 0.3f)
@@ -15,7 +15,7 @@ class ColorOverlayShader(var color: Color): ShaderParametered() {
 
     override fun applyToBatch(batch: Batch?) {
         try {
-            batch?.color = color
+//            batch?.color = color
             batch?.shader = shader
             applyParameters()
         } catch (e: Exception) {
@@ -24,8 +24,13 @@ class ColorOverlayShader(var color: Color): ShaderParametered() {
         }
     }
 
+    override fun applyParameters() {
+        shader.setUniformf("u_color", color)
+    }
+
     override fun cleanUp(batch: Batch?) {
-        batch?.color = Color.WHITE
+//        batch?.color = Color.WHITE
+        batch?.shader = null
     }
 
 }

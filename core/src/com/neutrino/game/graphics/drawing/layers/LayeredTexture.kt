@@ -7,7 +7,7 @@ import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.util.Constants.SCALE_INT
 
-internal open class LayeredTexture(
+open class LayeredTexture(
     entity: Entity,
     val texture: TextureSprite
 ): LayeredDraw() {

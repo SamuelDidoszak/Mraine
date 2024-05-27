@@ -25,7 +25,6 @@ import com.neutrino.game.domain.use_case.Shaderable
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.gameplay.turn.Turn
-import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.Constants.MoveSpeed
@@ -218,8 +217,8 @@ abstract class Character(
         batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
 
         for (shader in shaders) {
-            if (shader is OutlineShader)
-                shader.setBoundaries(texture)
+//            if (shader is OutlineShader)
+//                shader.setBoundaries(texture)
             shader?.applyToBatch(batch)
             batch?.draw(textureHaver.texture, if (!mirrored) x else x + width, y, originX, originY, if (!mirrored) width else width * -1, height, scaleX, scaleY, rotation)
         }

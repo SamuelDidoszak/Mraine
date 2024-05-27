@@ -5,8 +5,10 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.Items
 import com.neutrino.game.entities.items.attributes.Amount
 import com.neutrino.game.entities.map_entities.attributes.PickUp
+import com.neutrino.game.entities.shared.attributes.Shaders
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.entities.util.Cloneable
+import com.neutrino.game.graphics.shaders.OutlineShader
 
 class Item: Entity(), Cloneable<Item> {
 
@@ -19,6 +21,7 @@ class Item: Entity(), Cloneable<Item> {
 
     init {
         addAttribute(PickUp())
+        addAttribute(Shaders(OutlineShader(OutlineShader.OUTLINE_BLACK, 2f)))
     }
 
     fun getItemAttributes(): List<Attribute> {

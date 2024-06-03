@@ -8,8 +8,6 @@ import com.neutrino.HudStage
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.UseOn
-import com.neutrino.game.gameplay.turn.Action
-import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.ActionBlock
@@ -19,6 +17,8 @@ import com.neutrino.game.entities.items.attributes.Amount
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
@@ -66,7 +66,7 @@ class GameplayItems(
                 UseOn.SELF_AND_OTHERS, UseOn.OTHERS_ONLY -> {
                     if (!gameplay.waitForAdditionalClick) {
                         gameplay.waitForAdditionalClick = true
-                        gameStage.highlighting.highlightArea(range, Player.get(Position::class)!!.getPosition(), useItemOn.useOn == UseOn.OTHERS_ONLY, true)
+                        gameStage.highlighting.highlightArea(range, Player.get(Position::class)!!, useItemOn.useOn == UseOn.OTHERS_ONLY, true)
                         gameStage.highlightRange = object: HasRange {
                             override var range: Int = 0
                             override var rangeType: RangeType = RangeType.SQUARE
@@ -110,7 +110,7 @@ class GameplayItems(
                 UseOn.TILE -> {
                     if (!gameplay.waitForAdditionalClick) {
                         gameplay.waitForAdditionalClick = true
-                        gameStage.highlighting.highlightArea(range, Player.get(Position::class)!!.getPosition(), false, true)
+                        gameStage.highlighting.highlightArea(range, Player.get(Position::class)!!, false, true)
                         gameStage.highlightRange = if (useItemOn is HasRange) useItemOn else object: HasRange {
                             override var range: Int = 0
                             override var rangeType: RangeType = RangeType.SQUARE

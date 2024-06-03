@@ -3,6 +3,12 @@ package com.neutrino.game.graphics.shaders
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 
+
+/**
+ * If shaderParametered uses different values per texture,
+ * for example it uses its texture coordinates,
+ * implement Cloneable and Equality interfaces
+ */
 sealed class ShaderParametered {
     abstract val shader: ShaderProgram
 

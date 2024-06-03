@@ -10,7 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.UI.popups.EntityLookupPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.utility.Highlighting
@@ -224,25 +227,26 @@ class GameStage(
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         val coord = gameCamera.getTile(screenX, screenY)
+        val position = Position(coord, Turn.currentChunk)
 
-//        when (highlightMode) {
-//            Highlighting.Companion.HighlightModes.NORMAL -> {
-//                if (LevelArrays.getDiscoveredAt(coord))
-//                    highlighting.highlightOnHover(coord)
-//            }
-//            Highlighting.Companion.HighlightModes.AREA -> {
-//                if (skillRange!!.isInRange(Player.get(Position::class)!!.getPosition(), coord))
-//                    highlighting.highlightAttackArea(highlightRange!!, coord, false)
-//                else
-//                    highlighting.deHighlight(true)
-//            }
-//            Highlighting.Companion.HighlightModes.ONLY_CHARACTERS -> {
-//                if (skillRange!!.isInRange(Player.get(Position::class)!!.getPosition(), coord))
-//                    highlighting.highlightAttackArea(highlightRange!!, coord, true)
-//                else
-//                    highlighting.deHighlight(true)
-//            }
-//        }
+        when (highlightMode) {
+            Highlighting.Companion.HighlightModes.NORMAL -> {
+                if (position.chunk.discoveredMap[position.y][position.x])
+                    highlighting.highlightOnHover(position)
+            }
+            Highlighting.Companion.HighlightModes.AREA -> {
+                if (skillRange!!.isInRange(Player.get(Position::class)!!, position))
+                    highlighting.highlightAttackArea(highlightRange!!, position, false)
+                else
+                    highlighting.deHighlight(true)
+            }
+            Highlighting.Companion.HighlightModes.ONLY_CHARACTERS -> {
+                if (skillRange!!.isInRange(Player.get(Position::class)!!, position))
+                    highlighting.highlightAttackArea(highlightRange!!, position, true)
+                else
+                    highlighting.deHighlight(true)
+            }
+        }
 
 
         return super.mouseMoved(screenX, screenY)

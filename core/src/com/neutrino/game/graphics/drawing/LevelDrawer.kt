@@ -9,17 +9,18 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.domain.model.characters.Player.texture
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.LayeredDraws
 import com.neutrino.game.entities.shared.attributes.Shaders
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.graphics.drawing.layers.LayeredDraw
 import com.neutrino.game.graphics.drawing.layers.LayeredTexture
 import com.neutrino.game.graphics.drawing.layers.LayeredTextureList
 import com.neutrino.game.graphics.drawing.layers.LayeredTextureUnsorted
+import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
@@ -85,7 +86,13 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
                 LayeredTextureUnsorted(entity, texture)
             else
                 LayeredTexture(entity, texture)
-        entity.get(Shaders::class)?.shaders?.forEach { layeredTexture.addShader(it) }
+
+        entity.get(Shaders::class)?.shaders?.forEach {
+            if (entity.get(LayeredDraws::class)?.getBaseTextures()?.isNotEmpty() == true && it is Cloneable<*>)
+                layeredTexture.addShader(it.clone() as ShaderParametered)
+            else
+                layeredTexture.addShader(it)
+        }
 
         textureLayers[texture.z]!!.add(layeredTexture)
         if (entity hasNot LayeredDraws::class)

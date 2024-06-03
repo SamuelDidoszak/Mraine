@@ -6,6 +6,8 @@ import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.DrawerAttribute
+import com.neutrino.game.entities.util.Cloneable
+import com.neutrino.game.entities.util.Equality
 import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.graphics.drawing.actions.Actions
 import com.neutrino.game.graphics.shaders.OutlineShader
@@ -153,6 +155,8 @@ abstract class LayeredDraw(
 
     fun removeShader(shader: ShaderParametered) {
         shaders?.remove(shader)
+        if (shader is Cloneable<*> && shader is Equality<*>)
+            shaders?.removeAll { it::class == shader::class && (shader as Equality<ShaderParametered>).isEqual(it) }
     }
 
     fun drawShaders(batch: Batch, x: Float, y: Float, parentAlpha: Float) {

@@ -19,7 +19,7 @@ interface Interactable {
             interactions.add(entity.get(PickUp::class) as? Interactable)
             interactions.add(entity.get(Door::class) as? Interactable)
             interactions.add(entity.get(Chest::class) as? Interactable)
-            return interactions
+            return interactions.ifEmpty { null }
         }
 
         fun getPrimaryInteraction(entity: Entity): Interactable? {

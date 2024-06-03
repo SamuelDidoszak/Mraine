@@ -4,13 +4,13 @@ import com.neutrino.GameStage
 import com.neutrino.HudStage
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.domain.model.systems.skills.Skill
-import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.utility.Highlighting
 
@@ -35,7 +35,7 @@ class GameplaySkills(
             is Skill.ActiveSkillCharacter -> {
                 if (!gameplay.waitForAdditionalClick) {
                     gameplay.waitForAdditionalClick = true
-                    gameStage.highlighting.highlightArea(usedSkill, Player.get(Position::class)!!.getPosition(), true, true)
+                    gameStage.highlighting.highlightArea(usedSkill, Player.get(Position::class)!!, true, true)
                     gameStage.highlightRange = object: HasRange {
                         override var range: Int = 0
                         override var rangeType: RangeType = RangeType.SQUARE
@@ -65,7 +65,7 @@ class GameplaySkills(
             is Skill.ActiveSkillTile -> {
                 if (!gameplay.waitForAdditionalClick) {
                     gameplay.waitForAdditionalClick = true
-                    gameStage.highlighting.highlightArea(usedSkill, Player.get(Position::class)!!.getPosition(), true, true)
+                    gameStage.highlighting.highlightArea(usedSkill, Player.get(Position::class)!!, true, true)
                     gameStage.highlightRange = object: HasRange {
                         override var range: Int = 0
                         override var rangeType: RangeType = RangeType.SQUARE
@@ -88,7 +88,7 @@ class GameplaySkills(
             is Skill.ActiveSkillArea -> {
                 if (!gameplay.waitForAdditionalClick) {
                     gameplay.waitForAdditionalClick = true
-                    gameStage.highlighting.highlightArea(usedSkill, Player.get(Position::class)!!.getPosition(), false, true)
+                    gameStage.highlighting.highlightArea(usedSkill, Player.get(Position::class)!!, false, true)
                     gameStage.highlightRange = usedSkill.area
                     gameStage.highlightMode = Highlighting.Companion.HighlightModes.AREA
                     gameStage.skillRange = usedSkill

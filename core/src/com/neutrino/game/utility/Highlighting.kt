@@ -1,29 +1,32 @@
 package com.neutrino.game.utility
 
 import com.badlogic.gdx.graphics.Color
-import com.neutrino.game.domain.use_case.Shaderable
-import com.neutrino.game.domain.use_case.map.LevelArrays
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.map_entities.util.Interactable
+import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.entities.shared.attributes.Shaders
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.graphics.shaders.ColorOverlayShader
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.map.chunk.ChunkManager
-import squidpony.squidmath.Coord
+import com.neutrino.game.util.hasIdentity
 
 class Highlighting {
-    private var outlinedOnHover: Shaderable? = null
+    private var outlinedOnHover: Entity? = null
     private var shaderOnHover: ShaderParametered? = null
 
-    private val highlightedList = ArrayList<Pair<Shaderable, ShaderParametered>>()
-    private val selectionHighlightedList = ArrayList<Pair<Shaderable, ShaderParametered>>()
+    private val highlightedList = ArrayList<Pair<Entity, ShaderParametered>>()
+    private val selectionHighlightedList = ArrayList<Pair<Entity, ShaderParametered>>()
 
-    private var previousAttackCoord: Coord? = null
+    private var previousAttackPosition: Position? = null
 
     companion object {
         enum class HighlightModes {
@@ -33,49 +36,47 @@ class Highlighting {
         }
     }
 
-    fun highlightOnHover(coord: Coord) {
-        if (!addCharacterOutlineOnHover(coord))
-            addInteractableOutlineOnHover(coord)
+    fun highlightOnHover(position: Position) {
+        if (!addCharacterOutlineOnHover(position))
+            addInteractableOutlineOnHover(position, null)
     }
 
-    fun highlightArea(range: HasRange, center: Coord, omitCenter: Boolean = false, highlightCharacters: Boolean = true) {
+    fun highlightArea(range: HasRange, center: Position, omitCenter: Boolean = false, highlightCharacters: Boolean = true) {
         highlightTiles(range, center, omitCenter, ColorOverlayShader.LIGHT_RED)
         if (highlightCharacters)
             highlightCharacters(range, center, omitCenter, ColorOverlayShader.LIGHT_RED)
     }
 
-    private fun highlightTiles(range: HasRange, center: Coord, omitCenter: Boolean, color: Color) {
-//        for (tile in range.getTilesInRange(center, omitCenter)) {
-//            val entities = LevelArrays.getEntitiesAt(tile)
-//            for (z in entities.size - 1 downTo 0) {
-//                if (entities[z] hasIdentity Identity.Floor::class) {
-//                    val shader = ColorOverlayShader(color)
-                    // TODO ECS Shaders
-//                    entities[z].shaders.add(shader)
-//                    highlightedList.add(Pair(entities[z], shader))
-//                }
-//            }
-//        }
+    private fun highlightTiles(range: HasRange, center: Position, omitCenter: Boolean, color: Color) {
+        for (tile in range.getTilesInRange(center, omitCenter)) {
+            for (entity in ChunkManager.getEntitiesAt(tile).asReversed()) {
+                if (entity hasIdentity Identity.Floor::class) {
+                    val shader = ColorOverlayShader(color)
+                    addShader(entity, shader)
+                    highlightedList.add(Pair(entity, shader))
+                }
+            }
+        }
     }
 
-    private fun highlightCharacters(range: HasRange, center: Coord, omitCenter: Boolean, color: Color) {
-//        for (tile in range.getTilesInRange(center, omitCenter)) {
-            // TODO ECS Shaders
-//            val character = LevelArrays.getCharacterAt(tile)
-//            if (character != null) {
-//                val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, character.texture)
-//                character.shaders.add(shader)
-//                highlightedList.add(Pair(character, shader))
-//            }
-//        }
+    private fun highlightCharacters(range: HasRange, center: Position, omitCenter: Boolean, color: Color) {
+        for (tile in range.getTilesInRange(center, omitCenter)) {
+            val character = ChunkManager.getCharacterAt(tile)
+
+            if (character != null) {
+                val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f)
+                addShader(character, shader)
+                highlightedList.add(Pair(character, shader))
+            }
+        }
     }
 
     fun highlightAttackArea(range: HasRange, center: Position, requireCharacter: Boolean) {
-//        if (center == previousAttackCoord)
-//            return
+        if (center == previousAttackPosition)
+            return
 
         deHighlight(true)
-//        previousAttackCoord = center
+        previousAttackPosition = center
 
         if ((requireCharacter && ChunkManager.getCharacterAt(center) == null) ||
             (requireCharacter && ChunkManager.getCharacterAt(center) == Player))
@@ -84,29 +85,27 @@ class Highlighting {
         for (tile in range.getTilesInRange(center)) {
             val character = ChunkManager.getCharacterAt(tile)
             // TODO ECS Shaders
-//            if (character != null) {
-//                val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, character.texture)
-//                character.shaders.add(shader)
-//                selectionHighlightedList.add(Pair(character, shader))
-//            }
+            if (character != null) {
+                val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f)
+                addShader(character, shader)
+                selectionHighlightedList.add(Pair(character, shader))
+            }
 
-//            val entities = LevelArrays.getEntitiesAt(tile)
+            val entities = ChunkManager.getEntitiesAt(tile)
             var floorHighlighted = false
-//            for (z in entities.size - 1 downTo 0) {
-//                if (entities[z] has DefensiveStats::class) {
-                    // TODO ECS Shaders
-//                    val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f, entities[z].texture)
-//                    entities[z].shaders.add(shader)
-//                    selectionHighlightedList.add(Pair(entities[z], shader))
-//                }
-//                if (!floorHighlighted && entities[z] hasIdentity Identity.Floor::class) {
-                    // TODO ECS Shaders
-//                    val shader = ColorOverlayShader(ColorOverlayShader.DARK_RED)
-//                    entities[z].shaders.add(shader)
-//                    selectionHighlightedList.add(Pair(entities[z], shader))
-//                    floorHighlighted = true
-//                }
-//            }
+            for (z in entities.size - 1 downTo 0) {
+                if (entities[z] has DefensiveStats::class && entities[z] !is Item) {
+                    val shader = OutlineShader(ColorOverlayShader.DARK_RED, 2f)
+                    addShader(entities[z], shader)
+                    selectionHighlightedList.add(Pair(entities[z], shader))
+                }
+                if (!floorHighlighted && entities[z] hasIdentity Identity.Floor::class) {
+                    val shader = ColorOverlayShader(ColorOverlayShader.DARK_RED)
+                    addShader(entities[z], shader)
+                    selectionHighlightedList.add(Pair(entities[z], shader))
+                    floorHighlighted = true
+                }
+            }
         }
     }
 
@@ -120,93 +119,94 @@ class Highlighting {
     fun deHighlight(isMouseSelection: Boolean? = null) {
         if (isMouseSelection != true) {
             for (highlighted in highlightedList) {
-                highlighted.first.shaders.remove(highlighted.second)
+                removeShader(highlighted.first, highlighted.second)
             }
             highlightedList.clear()
         }
         if (isMouseSelection != false) {
             for (highlighted in selectionHighlightedList) {
-                highlighted.first.shaders.remove(highlighted.second)
+                removeShader(highlighted.first, highlighted.second)
             }
             selectionHighlightedList.clear()
         }
     }
 
     fun deHighlightOnHover() {
-        outlinedOnHover?.shaders?.remove(shaderOnHover)
+        removeShader(outlinedOnHover, shaderOnHover)
         outlinedOnHover = null
     }
 
-    private fun addInteractableOutlineOnHover(coord: Coord): Boolean {
-        val entity = LevelArrays.getLevel().getEntityWithAction(coord.x, coord.y)
-        // TODO ECS Shaders
-        return false
-//        if (entity != null && entity == outlinedOnHover)
-//            return true
-        if (entity != null && entity !is Item)
+    private fun addInteractableOutlineOnHover(position: Position, interaction: Interactable? = null): Boolean {
+        val entity = position.chunk.getEntityWithAction(position.x, position.y) ?: getAttackable(position)
+        if (entity != null && entity == outlinedOnHover)
+            return true
+        if (entity != null && entity is Item)
             return false
 
-        outlinedOnHover?.shaders?.remove(shaderOnHover)
+        removeShader(outlinedOnHover, shaderOnHover)
         outlinedOnHover = null
 
         if (entity == null)
             return false
 
-        if (entity has DefensiveStats::class) {
-            if (!Player.getSuper(Ai::class)!!.canAttack(coord.x, coord.y))
-                return false
-        }
-//        else if (entity has Interaction::class) {
-//            val requiredDistance = entity.get(Interaction::class)?.getPrimaryInteraction()?.requiredDistance
-//                ?: return false
-//            if ((coord.x !in Player.get(Position::class)!!.x - requiredDistance .. Player.get(Position::class)!!.x + requiredDistance) ||
-//                (coord.y !in Player.get(Position::class)!!.y - requiredDistance .. Player.get(Position::class)!!.y + requiredDistance))
-//                return false
-//        }
+        val interaction = interaction ?: Interactable.getPrimaryInteraction(entity)
 
-        // TODO ECS Shaders
-//        outlinedOnHover = entity
-//        shaderOnHover = OutlineShader(
-//                if ((outlinedOnHover as Interactable).getPrimaryInteraction() is InteractionType.DESTROY) {
-//                    if ((outlinedOnHover as Destructable).destroyed)
-//                        OutlineShader.OUTLINE_CLEAR
-//                    else
-//                        OutlineShader.OUTLINE_RED
-//                }
-//                else
-//                    OutlineShader.OUTLINE_GREEN,
-//                2f,
-//                (outlinedOnHover as TextureHaver).texture
-//        )
-//        outlinedOnHover?.shaders?.add(shaderOnHover)
-//        return outlinedOnHover != null
-    }
-
-    private fun addCharacterOutlineOnHover(coord: Coord): Boolean {
-        val character: Entity? = ChunkManager.getCharacterAt(coord)
-        // TODO ECS Shaders
-//        if (character != null && character == outlinedOnHover)
-//            return true
-        if (character == Player)
+        if (interaction == null && entity hasNot DefensiveStats::class)
             return false
 
-        outlinedOnHover?.shaders?.remove(shaderOnHover)
+
+        val requiredDistance = interaction?.requiredDistance ?: Player.get(OffensiveStats::class)!!.range
+        if ((position.x !in Player.get(Position::class)!!.x - requiredDistance .. Player.get(Position::class)!!.x + requiredDistance) ||
+            (position.y !in Player.get(Position::class)!!.y - requiredDistance .. Player.get(Position::class)!!.y + requiredDistance))
+            return false
+
+        outlinedOnHover = entity
+        val color = if (interaction != null) OutlineShader.OUTLINE_GREEN else OutlineShader.OUTLINE_RED
+        shaderOnHover = OutlineShader(color, 2f)
+        addShader(outlinedOnHover!!, shaderOnHover!!)
+        return outlinedOnHover != null
+    }
+
+    private fun addCharacterOutlineOnHover(position: Position): Boolean {
+        val character: Entity? = ChunkManager.getCharacterAt(position)
+        if (character != null && character == outlinedOnHover)
+            return true
+        if (character == Player || (character == null && outlinedOnHover != null && outlinedOnHover !is Character))
+            return false
+
+        removeShader(outlinedOnHover, shaderOnHover)
         outlinedOnHover = null
 
         if (character == null || !Player.getSuper(Ai::class)!!.canAttack(character.get(Position::class)!!.x, character.get(Position::class)!!.y))
             return false
 
-        // TODO ECS Shaders
-//        outlinedOnHover = character
-        if (character?.get(DefensiveStats::class)?.isAlive() != true)
+        outlinedOnHover = character
+        if (character.get(DefensiveStats::class)?.isAlive() != true)
             return false
 
         shaderOnHover = OutlineShader(
             OutlineShader.OUTLINE_RED,
-            2f,
-//            (outlinedOnHover as TextureHaver).texture
+            2f
         )
-        outlinedOnHover?.shaders?.add(shaderOnHover)
+        addShader(outlinedOnHover!!, shaderOnHover!!)
         return outlinedOnHover != null
+    }
+
+    private fun addShader(entity: Entity, shader: ShaderParametered) {
+        if (entity hasNot Shaders::class)
+            entity.addAttribute(Shaders())
+        entity.get(Shaders::class)!!.shaders.add(shader)
+    }
+
+    private fun removeShader(entity: Entity?, shader: ShaderParametered?) {
+        if (entity == null || shader == null)
+            return
+        entity.get(Shaders::class)?.shaders?.remove(shader)
+        if (entity.get(Shaders::class)?.shaders?.isEmpty() == true)
+            entity.removeAttribute(Shaders::class)
+    }
+
+    private fun getAttackable(position: Position): Entity? {
+        return position.chunk.map[position.y][position.x].asReversed().firstOrNull { it has DefensiveStats::class && it !is Item }
     }
 }

@@ -1,4 +1,4 @@
-package com.neutrino.game.domain.model.systems.skills
+package com.neutrino.game.entities.systems.skills
 
 enum class SkillType {
     STRENGTH,

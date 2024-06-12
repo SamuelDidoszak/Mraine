@@ -5,12 +5,14 @@ import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.callables.OnMoveCallable
+import com.neutrino.game.entities.characters.callables.VisionChangedCallable
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map_entities.attributes.Door
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.gameplay.turn.Turn.characterArray
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.drawing.actions.Action
@@ -21,6 +23,8 @@ import com.neutrino.game.util.Constants
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.random.Random
 
 object ChunkManager: ChunkManagerMethods {
@@ -85,11 +89,31 @@ object ChunkManager: ChunkManagerMethods {
     /**
      * @return Corrected position with correct chunk
      */
+    fun getCorrectPosition(position: Position, xDiff: Int, yDiff: Int): Position {
+        return getCorrectPosition(Position(position.x + xDiff, position.y + yDiff, position.chunk))
+    }
+
+    /**
+     * @return Corrected position with correct chunk
+     */
     fun getCorrectPosition(position: Position): Position {
-        val xChunkDiff: Int = position.x / Constants.LevelChunkSize
-        val yChunkDiff: Int = position.y / Constants.LevelChunkSize
+        fun getChunkDiff(position: Float): Int {
+            if (position < 0)
+                return floor(position).toInt()
+            if (position > 1)
+                return ceil(position).toInt()
+            return position.toInt()
+        }
+        val xChunkDiff: Int = getChunkDiff(position.x.toFloat() / Constants.LevelChunkSize)
+        val yChunkDiff: Int = getChunkDiff(position.y.toFloat() / Constants.LevelChunkSize)
         if (xChunkDiff == 0 && yChunkDiff == 0)
             return position
+        // TODO CHUNKS
+        return Position(
+            position.x.coerceIn(0 until 100),
+            position.y.coerceIn(0 until 100),
+            Turn.currentChunk
+        )
         val chunkCoords = position.chunk.chunkCoords
         return Position(
             position.x - xChunkDiff * Constants.LevelChunkSize,
@@ -130,6 +154,8 @@ object ChunkManager: ChunkManagerMethods {
             entityPosition.x = position.x
             entityPosition.y = position.y
             entityPosition.chunk = position.chunk
+            entity.getSuper(Ai::class)!!.updateFov()
+            entity.call(VisionChangedCallable::class)
 
             xDiff = entity.get(DrawPosition::class)!!.x - xDiff
             yDiff = entity.get(DrawPosition::class)!!.y - yDiff
@@ -178,6 +204,18 @@ object ChunkManager: ChunkManagerMethods {
 
         fun removeImpassable(position: Position) {
             mapImpassableList.remove(Coord.get(position.x, position.y))
+        }
+
+        fun isImpassable(position: Position): Boolean {
+            for (entity in getEntitiesAt(position)) {
+                if (entity has ChangesImpassable::class && !entity.get(MapParams::class)!!.allowCharacterOnTop) {
+                    if (entity.get(Door::class)?.open == true)
+                        continue
+
+                    return true
+                }
+            }
+            return false
         }
 
         private fun getImpassable(): List<Coord> {

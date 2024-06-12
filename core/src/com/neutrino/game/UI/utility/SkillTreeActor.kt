@@ -4,30 +4,18 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.neutrino.game.util.Constants
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.entities.utility.TextureHaver
-import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.systems.skills.Skill
+import com.neutrino.game.graphics.textures.Textures
+import com.neutrino.game.util.Constants
 
 
-class SkillTreeActor(val skill: Skill.PassiveSkill): Group(), TextureHaver {
-    override val textureNames: List<String> = listOf(skill.textureName)
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
-    override var mirrored: Boolean = false
+class SkillTreeActor(val skill: Skill.PassiveSkill): Group() {
+    val texture: TextureAtlas.AtlasRegion = Textures.get(skill.textureName).texture
 
     private val backgroundTexture = Constants.DefaultUITexture.findRegion("skillBackground")
     private val highlightOverlay = Image(Constants.DefaultUITexture.findRegion("skillHighlight"))
     private val darkenOverlay = Image(Constants.DefaultUITexture.findRegion("skillDarken"))
-
-    override fun getTexture(name: String): TextureAtlas.AtlasRegion {
-        try {
-            return Constants.DefaultIconTexture.findRegion(name)
-        } catch (e: NullPointerException) {
-            println("TextureName:\t$name\tdoesn't exist")
-            // Default texture
-            return Constants.DefaultEntityTexture.findRegion(textureNames[0])
-        }
-    }
 
     init {
         name = skill.name

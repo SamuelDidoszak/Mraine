@@ -25,19 +25,22 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.UI.popups.Diagnostics
-import com.neutrino.game.UI.popups.ItemContextPopup
-import com.neutrino.game.UI.popups.SkillDetailsPopup
+import com.neutrino.game.UI.popups.*
 import com.neutrino.game.UI.utility.EqActor
 import com.neutrino.game.UI.utility.PickupActor
 import com.neutrino.game.UI.utility.SkillActor
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.UseOn
-import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
-import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.characters.attributes.Inventory
+import com.neutrino.game.entities.characters.attributes.Skills
+import com.neutrino.game.entities.items.Item
+import com.neutrino.game.entities.items.attributes.EquipmentItem
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.events.Cooldown
+import com.neutrino.game.entities.systems.events.attributes.EventList
+import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.*
 import ktx.actors.alpha
@@ -416,16 +419,15 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                             contextPopup?.setPosition(coord.x, coord.y)
                         }
                     }
-                    // TODO ECS SKILLS Popups
-//                    else {
-//                        val skill = (clickedActor.actor as SkillActor).skill
-//                        contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
-//                            usedSkill = skill
-//                            nullifyAllValues()
-//                        }
-//                        addActor(contextPopup)
-//                        contextPopup?.setPosition(coord.x, coord.y)
-//                    }
+                    else {
+                        val skill = (clickedActor.actor as SkillActor).skill
+                        contextPopup = SkillContextPopup(skill, coord.x, coord.y) {
+                            usedSkill = skill
+                            nullifyAllValues()
+                        }
+                        addActor(contextPopup)
+                        contextPopup?.setPosition(coord.x, coord.y)
+                    }
                     return true
                 }
             }
@@ -524,25 +526,24 @@ class HudStage(viewport: Viewport): Stage(viewport) {
                         popupCoord.x + hoveredActor.width * currentScale / 2 - detailsPopup!!.widthScaled() / 2f,
                         hotBarBorder.heightScaled() + 16f * currentScale)
                 }
-                // TODO ECS ITEMS POPUPS
-//                if (hoveredActor is EqActor && ((detailsPopup == null || popupChild !is EqActor) ||
-//                    (popupChild.entity != hoveredActor.entity))) {
-//                    removeDetailsPopup()
-//                    val group = Group()
-//                    val popup =
-//                        if (hoveredActor.entity has EquipmentItem::class)
-//                            EquipmentComparisonPopup(hoveredActor.entity as EquipmentItem)
-//                        else
-//                            ItemDetailsPopup(hoveredActor.entity)
-//                    group.setSize(popup.width, popup.height)
-//                    group.addActor(popup)
-//                    detailsPopup = group
-//                    addActor(detailsPopup)
-//                    val popupCoord = hoveredActor.localToStageCoordinates(Vector2(hoveredActor.x, hoveredActor.y))
-//                    detailsPopup!!.setPosition(
-//                        popupCoord.x + hoveredActor.width * currentScale / 2 - detailsPopup!!.widthScaled() / 2f,
-//                        hotBarBorder.heightScaled() + 16f * currentScale)
-//                }
+                if (hoveredActor is EqActor && ((detailsPopup == null || popupChild !is EqActor) ||
+                    (popupChild.entity != hoveredActor.entity))) {
+                    removeDetailsPopup()
+                    val group = Group()
+                    val popup =
+                        if (hoveredActor.entity has EquipmentItem::class)
+                            EquipmentComparisonPopup(hoveredActor.entity as Item)
+                        else
+                            ItemDetailsPopup(hoveredActor.entity as Item)
+                    group.setSize(popup.width, popup.height)
+                    group.addActor(popup)
+                    detailsPopup = group
+                    addActor(detailsPopup)
+                    val popupCoord = hoveredActor.localToStageCoordinates(Vector2(hoveredActor.x, hoveredActor.y))
+                    detailsPopup!!.setPosition(
+                        popupCoord.x + hoveredActor.width * currentScale / 2 - detailsPopup!!.widthScaled() / 2f,
+                        hotBarBorder.heightScaled() + 16f * currentScale)
+                }
             } else
                 removeDetailsPopup()
         }
@@ -633,23 +634,26 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         if (clickedItem is SkillActor) {
             val skill = (clickedItem as SkillActor).skill
 
-            // TODO ECS EVENTS
-//            if (Player.eventArray.hasCooldown(CooldownType.SKILL(skill))) {
-//                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Skill is on cooldown", KnownFonts.getStandardFamily())
-//                addCooldownLabel(cooldownLabel, coord)
-//                return
-//            }
+            if (Player.get(EventList::class)?.hasCooldown(Cooldown.Type.SKILL(skill)) == true) {
+                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Skill is on cooldown", KnownFonts.getStandardFamily())
+                addCooldownLabel(cooldownLabel, coord)
+                return
+            }
             if (skill.manaCost != null && skill.manaCost!! > Player.get(DefensiveStats::class)!!.mp) {
                 val cooldownLabel = TextraLabel("[@Cozette][%600][*]Not enough mana", KnownFonts.getStandardFamily())
                 addCooldownLabel(cooldownLabel, coord)
                 return
             }
-            // TODO ECS EVENTS
-//            if (skill.manaCost == null && Player.eventArray.skillsOnCooldown == Player.maxSkills) {
-//                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Used too many skills", KnownFonts.getStandardFamily())
-//                addCooldownLabel(cooldownLabel, coord)
-//                return
-//            }
+            if (skill.manaCost == null && Player.get(EventList::class)?.skillsOnCooldown == Player.get(Skills::class)!!.maxConsecutiveSkills) {
+                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Used too many skills", KnownFonts.getStandardFamily())
+                addCooldownLabel(cooldownLabel, coord)
+                return
+            }
+            if (skill.requirements?.map { it.check(Player) }?.any { it == false } == true) {
+                val cooldownLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met", KnownFonts.getStandardFamily())
+                addCooldownLabel(cooldownLabel, coord)
+                return
+            }
             usedSkill = skill
             nullifyAllValues()
             return

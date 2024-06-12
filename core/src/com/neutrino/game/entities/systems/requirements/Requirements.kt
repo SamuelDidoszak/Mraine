@@ -23,7 +23,10 @@ sealed class Requirements: Attribute() {
         private val printValue: String
     ): Requirements() {
         override fun check(entity: Entity): Boolean = check.invoke(entity)
-        override fun print(entity: Entity): List<Pair<String, String>> = listOf(print to printValue)
+        override fun print(entity: Entity): List<Pair<String, String>> = listOf(
+            (if (check(entity))PrintableInfo.betterColor else PrintableInfo.worseColor) + print
+                to
+            (if (check(entity))PrintableInfo.betterColor else PrintableInfo.worseColor) + printValue)
     }
     
     class Stats(

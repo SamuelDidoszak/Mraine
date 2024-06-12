@@ -144,7 +144,7 @@ project(":core") {
         api 'com.squidpony:squidlib-util:3.0.6'
 
         // libGDX improvements
-        implementation "com.github.tommyettinger:textratypist:0.10.0"
+        implementation "com.github.tommyettinger:textratypist:0.9.0"
         implementation "com.github.raeleus.TenPatch:tenpatch:5.2.3"
         api "space.earlygrey:shapedrawer:2.5.0"
     }

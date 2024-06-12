@@ -16,13 +16,12 @@ import com.neutrino.GlobalDataType
 import com.neutrino.HudStage
 import com.neutrino.game.UI.UIelements.Equipment
 import com.neutrino.game.UI.UIelements.Shop
-import com.neutrino.game.UI.UIelements.Skills
+import com.neutrino.game.UI.UIelements.SkillsUI
 import com.neutrino.game.UI.UIelements.Tabs
 import com.neutrino.game.UI.utility.ManagedElement
 import com.neutrino.game.UI.utility.ManagerType
 import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.items.Item
-import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.util.*
 
@@ -93,7 +92,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
     val equipment: Equipment = Equipment(uiElements)
     val inventory: com.neutrino.game.UI.UIelements.Inventory = com.neutrino.game.UI.UIelements.Inventory(uiElements)
-    lateinit var skills: Skills
+    lateinit var skills: SkillsUI
     val quests = Group()
     val map = Group()
 
@@ -116,7 +115,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         addActor(equipment)
         equipment.isVisible = false
 
-        skills = Skills(uiElements)
+        skills = SkillsUI(uiElements)
         skills.initialize(border)
         addActor(skills)
         skills.isVisible = false

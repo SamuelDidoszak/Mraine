@@ -5,8 +5,8 @@ import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.domain.model.systems.event.types.EventLearnSkill
 import com.neutrino.game.domain.model.systems.event.wrappers.EventWrapper
 import com.neutrino.game.domain.model.systems.event.wrappers.OnOffEvent
-import com.neutrino.game.domain.model.systems.skills.Skill
-import com.neutrino.game.domain.model.systems.skills.SkillType
+import com.neutrino.game.entities.systems.skills.Skill
+import com.neutrino.game.entities.systems.skills.SkillType
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.graphics.utility.ColorUtils.toTextraColor
 

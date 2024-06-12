@@ -6,7 +6,7 @@ import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.Event
 import com.neutrino.game.domain.model.systems.event.Timed
-import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.utility.Serialize
 
 import kotlin.reflect.KClass

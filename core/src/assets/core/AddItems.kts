@@ -77,9 +77,7 @@ Items.add("Broken sword") {
         ))
         .addAttribute(OffensiveStats(
             damageMin = 2f,
-            damageMax = 3f,
-            strength = 2f,
-            waterDamageMax = 3f
+            damageMax = 3f
         ))
         .addAttribute(Requirements.Stats(strength = 1f, defence = 0f))
 }

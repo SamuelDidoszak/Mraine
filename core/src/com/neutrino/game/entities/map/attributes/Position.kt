@@ -291,4 +291,17 @@ class Position(
             return null
         return textureSprites
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is Position)
+            return false
+        return x == other.x && y == other.y && chunk == other.chunk
+    }
+
+    override fun hashCode(): Int {
+        var result = chunk.hashCode()
+        result = 31 * result + x
+        result = 31 * result + y
+        return result
+    }
 }

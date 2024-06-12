@@ -3,6 +3,7 @@ package com.neutrino.game.entities.systems.attack.attributes
 import com.badlogic.gdx.graphics.Color
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
+import com.neutrino.game.domain.model.characters.Player.criticalDamage
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.CharacterTags
@@ -15,6 +16,7 @@ import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.compareDelta
+import com.neutrino.game.util.equalsDelta
 import com.neutrino.game.util.roundOneDecimal
 import kotlin.random.Random
 
@@ -59,6 +61,10 @@ class DefensiveStats(
             hpMax = 1f
             this.hp = hpMax
         }
+        if (mpMax == 0f) {
+            mpMax = hpMax / 2
+            this.mp = mpMax
+        }
         if (movementSpeed == 0.0)
             movementSpeed = 1.0
     }
@@ -85,20 +91,24 @@ class DefensiveStats(
         var poisonDamage = attacker.getPoisonDamage() * (1 - poisonDefence)
         poisonDamage = if (hp - poisonDamage <= 1) hp - 1f else poisonDamage
 
-        damage += physicalDamage
+        if (!(attackerDmg + defence).equalsDelta(0f))
+            damage += physicalDamage
         damage += fireDamage
         damage += waterDamage
         damage += airDamage
         damage += poisonDamage
 
-        if (entity.get(EnemyAi::class)?.sensedEnemyArray?.contains(attacker.entity) == false) {
+        if (attacker.entity is Character && entity.get(EnemyAi::class)?.sensedEnemyArray?.contains(attacker.entity) == false) {
             println("Stealth hit!")
             val multiplier = attacker.entity.get(CharacterTags::class)?.getTag(IncreaseStealthDamage::class)?.incrementPercent ?: 1f
-            damage *= attacker.criticalDamage * multiplier
+            if (!(attacker.criticalDamage * multiplier).equalsDelta(0f))
+                damage *= attacker.criticalDamage * multiplier
         }
         else if (Random.nextFloat() < attacker.criticalChance) {
             println("Critical hit!")
-            damage *= attacker.criticalDamage
+            println("critical damage: $criticalDamage")
+            if (!criticalDamage.equalsDelta(0f))
+                damage *= attacker.criticalDamage
         }
 
         // get damage color from interpolation

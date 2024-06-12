@@ -25,8 +25,8 @@ interface PrintableInfo<T: Any> {
             return getColor(number.compareDelta(other)) + number.toString()
         }
 
-        fun getColoredNumber(number: Double, other: Double): String {
-            return getColor(number.compareDelta(other)) + number.toString()
+        fun getColoredNumber(number: Double, other: Double?): String {
+            return getColor(number.compareDelta(other ?: number)) + number.toString()
         }
     }
 }

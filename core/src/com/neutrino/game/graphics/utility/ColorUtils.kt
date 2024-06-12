@@ -1,7 +1,7 @@
 package com.neutrino.game.graphics.utility
 
 import com.badlogic.gdx.graphics.Color
-import com.neutrino.game.domain.model.systems.skills.SkillType
+import com.neutrino.game.entities.systems.skills.SkillType
 import kotlin.math.max
 import kotlin.math.min
 

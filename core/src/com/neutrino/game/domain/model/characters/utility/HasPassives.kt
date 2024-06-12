@@ -1,6 +1,6 @@
 package com.neutrino.game.domain.model.characters.utility
 
-import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.systems.skills.Skill
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 

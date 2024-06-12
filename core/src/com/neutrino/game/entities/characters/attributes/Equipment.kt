@@ -9,6 +9,8 @@ import com.neutrino.game.entities.characters.callables.OnItemEquipped
 import com.neutrino.game.entities.characters.callables.OnItemUnequipped
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.items.attributes.EquipmentItem
+import com.neutrino.game.entities.items.attributes.HandheldEquipment
+import com.neutrino.game.entities.items.attributes.HandheldEquipmentType
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.entities.util.Cloneable
@@ -87,6 +89,14 @@ class Equipment: Attribute() {
 //            item.requirements.set("character", character)
 //
 //        return item.requirements.checkAll()
+    }
+
+    fun getWeapon(): Entity? {
+        if (getEquipped(EquipmentType.RHAND) != null)
+            return getEquipped(EquipmentType.RHAND)
+        if (getEquipped(EquipmentType.LHAND)?.get(HandheldEquipment::class)?.handheldType != HandheldEquipmentType.SHIELD)
+            return getEquipped(EquipmentType.LHAND)
+        return null
     }
 
     enum class EquipmentType {

@@ -4,7 +4,7 @@ import com.neutrino.game.domain.model.characters.Character
 import com.neutrino.game.domain.model.characters.utility.HasSkills
 import com.neutrino.game.domain.model.systems.event.Data
 import com.neutrino.game.domain.model.systems.event.Event
-import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.systems.skills.Skill
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 

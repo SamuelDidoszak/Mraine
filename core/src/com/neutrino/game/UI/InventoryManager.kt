@@ -282,7 +282,6 @@ class InventoryManager(private val uiStage: UiStage) {
                         val popup =
                             if (hoveredItem.entity has EquipmentItem::class)
                                 EquipmentComparisonPopup(hoveredItem.entity as Item)
-                            // TODO ECS ITEMS Create popups
                             else
                                 ItemDetailsPopup(hoveredItem.entity as Item)
                         group.setSize(popup.width, popup.height)

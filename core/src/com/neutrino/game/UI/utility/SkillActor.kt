@@ -1,34 +1,20 @@
 package com.neutrino.game.UI.utility
 
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.neutrino.game.entities.systems.skills.Skill
+import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.util.Constants
-import com.neutrino.game.domain.model.entities.utility.TextureHaver
-import com.neutrino.game.domain.model.systems.skills.Skill
 
-class SkillActor(val skill: Skill): Group(), TextureHaver, PickupActor {
+class SkillActor(val skill: Skill): Group(), PickupActor {
     // needed for resize
     override val ogWidth = 84f
     override val ogHeight = 84f
     private var actorWidth: Float = ogWidth
     private var actorHeight: Float = ogHeight
 
-    override val textureNames: List<String> = listOf(skill.textureName)
-    override var texture: TextureAtlas.AtlasRegion = setTexture()
-    override var mirrored: Boolean = false
-
     val backgroundTexture = Constants.DefaultUITexture.findRegion("skillBackground")
-
-    override fun getTexture(name: String): TextureAtlas.AtlasRegion {
-        try {
-            return Constants.DefaultIconTexture.findRegion(name)
-        } catch (e: NullPointerException) {
-            println("TextureName:\t$name\tdoesn't exist")
-            // Default texture
-            return Constants.DefaultEntityTexture.findRegion(textureNames[0])
-        }
-    }
+    private val texture = Textures.get(skill.textureName).texture
 
     init {
         name = skill.name

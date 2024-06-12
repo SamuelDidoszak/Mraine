@@ -9,9 +9,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraButton
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.domain.model.systems.event.types.CooldownType
-import com.neutrino.game.domain.model.systems.skills.Skill
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Skills
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.events.Cooldown
+import com.neutrino.game.entities.systems.events.attributes.EventList
+import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.graphics.utility.BackgroundColor
 import ktx.scene2d.Scene2DSkin
 
@@ -23,7 +26,7 @@ class SkillContextPopup(val skill: Skill, x: Float, y: Float, val customUseMetho
                 if (event?.button != Input.Buttons.LEFT)
                     return
                 super.clicked(event, x, y)
-                if (Player.eventArray.hasCooldown(CooldownType.SKILL(skill))) {
+                if (Player.get(EventList::class)?.hasCooldown(Cooldown.Type.SKILL(skill)) == true) {
                     val cooldownLabel = TextraLabel("[@Cozette][%600][*]Skill is on cooldown", KnownFonts.getStandardFamily())
                     cooldownLabel.name = "cooldown"
                     parent.addActor(cooldownLabel)
@@ -36,7 +39,7 @@ class SkillContextPopup(val skill: Skill, x: Float, y: Float, val customUseMetho
                             Actions.removeActor()))
                     return
                 }
-                if (skill.manaCost != null && skill.manaCost!! > Player.mp) {
+                if (skill.manaCost != null && skill.manaCost!! > Player.get(DefensiveStats::class)!!.mp) {
                     val cooldownLabel = TextraLabel("[@Cozette][%600][*]Not enough mana", KnownFonts.getStandardFamily())
                     cooldownLabel.name = "noMana"
                     parent.addActor(cooldownLabel)
@@ -49,8 +52,22 @@ class SkillContextPopup(val skill: Skill, x: Float, y: Float, val customUseMetho
                             Actions.removeActor()))
                     return
                 }
-                if (skill.manaCost == null && Player.eventArray.skillsOnCooldown == Player.maxSkills) {
+                if (skill.manaCost == null && Player.get(EventList::class)?.skillsOnCooldown == Player.get(Skills::class)!!.maxConsecutiveSkills) {
                     val cooldownLabel = TextraLabel("[@Cozette][%600][*]Used too many skills", KnownFonts.getStandardFamily())
+                    cooldownLabel.name = "tooManySkills"
+                    parent.addActor(cooldownLabel)
+                    val coords = localToParentCoordinates(Vector2(x, y))
+                    cooldownLabel.setPosition(coords.x, coords.y + 8f)
+                    cooldownLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                    cooldownLabel.addAction(
+                        Actions.sequence(
+                            Actions.fadeOut(1.25f),
+                            Actions.removeActor()))
+                    return
+                }
+
+                if (skill.requirements?.map { it.check(Player) }?.any { it == false } == true) {
+                    val cooldownLabel = TextraLabel("[@Cozette][%600][*]Requirements are not met", KnownFonts.getStandardFamily())
                     cooldownLabel.name = "tooManySkills"
                     parent.addActor(cooldownLabel)
                     val coords = localToParentCoordinates(Vector2(x, y))

@@ -2,7 +2,9 @@ package com.neutrino.game.entities.systems.events
 
 import com.neutrino.game.entities.Characters
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.util.Status
+import com.neutrino.game.entities.characters.callables.VisionChangedCallable
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
@@ -23,6 +25,8 @@ abstract class CharacterEvents: Event {
         this.entity = entity
         return this
     }
+
+    fun asTimedEvent(): TimedEvent = TimedEvent(this, 0.0, 1)
 
     open val color: String = PrintableInfo.baseColor
 
@@ -62,7 +66,7 @@ abstract class CharacterEvents: Event {
     }
 
     class Burn(fireDamageMin: Float, fireDamageMax: Float): CharacterEvents() {
-        constructor(entity: Entity, fireDamage: Float): this(fireDamage, fireDamage)
+        constructor(fireDamage: Float): this(fireDamage, fireDamage)
         private val fakeEntity = Entity()
             .addAttribute(
                 OffensiveStats(
@@ -88,15 +92,11 @@ abstract class CharacterEvents: Event {
 
     class Bleed(damageMin: Float, damageMax: Float): CharacterEvents() {
         constructor(damage: Float): this(damage, damage)
-        private val fakeEntity = Entity()
-            .addAttribute(
-                OffensiveStats(
-                damageMin = damageMin,
-                damageMax = damageMax,
-                accuracy = 1000f)
-            )
-        private val offensiveStats: OffensiveStats
-            get() = fakeEntity.get(OffensiveStats::class)!!
+        private val offensiveStats = OffensiveStats(
+            damageMin = damageMin,
+            damageMax = damageMax,
+            accuracy = 1000f
+        ).also {it.entity = Entity()}
 
         override fun apply() {
             entity.get(DefensiveStats::class)?.getDamage(offensiveStats)
@@ -111,11 +111,32 @@ abstract class CharacterEvents: Event {
         }
     }
 
+    class SlowDown(val power: Double): CharacterEvents() {
+        private var belowZero = 0.0
+        override fun apply() {
+            val stats = entity.get(DefensiveStats::class)!!
+            stats.movementSpeed -= power
+            if (stats.movementSpeed < 0.0) {
+                belowZero = stats.movementSpeed
+                stats.movementSpeed = 0.0
+            }
+        }
+
+        override fun stop() {
+            entity.get(DefensiveStats::class)!!.movementSpeed += power + belowZero
+        }
+
+        override fun printable(other: Event?): String = "Slows down by " +
+                PrintableInfo.getColoredNumber(power, (other as SlowDown?)?.power)
+    }
+
     class Teleport(val position: Position): CharacterEvents() {
         override fun apply() {
             entity.get(Position::class)!!.chunk.characterMap[entity.y][entity.x] = null
             position.chunk.characterMap[position.y][position.x] = entity
             entity.addAttribute(position)
+            entity.getSuper(Ai::class)!!.updateFov()
+            entity.call(VisionChangedCallable::class)
         }
 
         override fun printable(other: Event?): String = "Teleports character"

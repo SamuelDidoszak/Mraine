@@ -16,11 +16,12 @@ import com.neutrino.game.domain.model.systems.CharacterTag
 import com.neutrino.game.domain.model.systems.event.types.EventManaRegen
 import com.neutrino.game.domain.model.systems.event.wrappers.CharacterEvent
 import com.neutrino.game.domain.model.systems.event.wrappers.TimedEvent
-import com.neutrino.game.domain.model.systems.skills.*
-import com.neutrino.game.domain.model.systems.skills.passive.IncreaseTwohandedDamage
 import com.neutrino.game.domain.use_case.EventDispatcher
+import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.systems.attack.util.StatsEnum
+import com.neutrino.game.entities.systems.skills.Skill
+import com.neutrino.game.entities.systems.skills.passive.IncreaseTwohandedDamage
 import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.compareDelta
@@ -209,12 +210,12 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         infoGroup.isVisible = false
         inventory.size = 30
 
-        skillList.add(SkillBleed(this))
-        skillList.add(SkillCripplingSpin(this))
-        skillList.add(SkillTeleport(this))
-        skillList.add(SkillTeleportToStairs(this))
-        skillList.add(SkillTeleportToStairsDown(this))
-        skillList.add(SkillMeteorite(this))
+//        skillList.add(SkillBleed(this))
+//        skillList.add(SkillCripplingSpin(this))
+//        skillList.add(SkillTeleport(this))
+//        skillList.add(SkillTeleportToStairs(this))
+//        skillList.add(SkillTeleportToStairsDown(this))
+//        skillList.add(SkillMeteorite(this))
 //        skillList.add(SkillTeleportBackstab(this))
 //        skillList.add(SkillManaDrain(this))
 //        skillList.add(SkillShieldBash(this))
@@ -229,7 +230,7 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         addTag(CharacterTag.IncreaseOnehandedDamage(400f))
         addTag(CharacterTag.IncreaseStealthDamage(1.5f))
 
-        addPassive(IncreaseTwohandedDamage(this, 1.1f))
+        addPassive(IncreaseTwohandedDamage(Entity(), 1.1f))
 
 //        addTag(CharacterTag.BerserkLowerHpHigherDmg(0.8f, 2f))
 

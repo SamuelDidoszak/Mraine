@@ -9,6 +9,7 @@ import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.callables.EntityDiedCallable
 import com.neutrino.game.entities.systems.attack.callables.GotAttackedAfterCallable
+import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.entities.util.Equality
 import com.neutrino.game.graphics.drawing.layers.HpBar
@@ -72,6 +73,7 @@ class Destructable(
                     }
                 }
             }
+            Events.remove(entity)
             ChunkManager.characterMethods.removeImpassable(entity.get(Position::class)!!)
         }
     }

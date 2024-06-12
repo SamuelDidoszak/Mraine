@@ -97,19 +97,21 @@ class OffensiveStats(
         }
     }
 
-    private fun getTopAttackable(target: Position): Entity? {
-        return target.chunk.characterMap[target.y][target.x] ?:
-            target.chunk.map[target.y][target.x].asReversed().firstOrNull { it has DefensiveStats::class && it !is Item }
-    }
-
-    private fun getAllAttackables(target: Position): List<Entity>? {
-        val list = ArrayList<Entity>()
-        list.add(target.chunk.characterMap[target.y][target.x])
-        target.chunk.map[target.y][target.x].forEach {
-            if (it has DefensiveStats::class)
-                list.add(it)
+    companion object {
+        fun getTopAttackable(target: Position): Entity? {
+            return target.chunk.characterMap[target.y][target.x] ?: target.chunk.map[target.y][target.x].asReversed()
+                .firstOrNull { it has DefensiveStats::class && it !is Item }
         }
-        return if (list.isEmpty()) null else list
+
+        fun getAllAttackables(target: Position): List<Entity>? {
+            val list = ArrayList<Entity>()
+            list.add(target.chunk.characterMap[target.y][target.x])
+            target.chunk.map[target.y][target.x].forEach {
+                if (it has DefensiveStats::class && it !is Item)
+                    list.add(it)
+            }
+            return if (list.isEmpty()) null else list
+        }
     }
 
     fun getDamage(): Float {

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.domain.model.systems.skills.Skill
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
@@ -29,6 +28,7 @@ import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.entities.systems.requirements.Requirements
+import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
@@ -116,8 +116,6 @@ object Turn {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
                         character.get(Position::class)!!.moveCharacter(Position(action.x, action.y, currentChunk))
-                        character.getSuper(Ai::class)!!.updateFov()
-                        Player.call(VisionChangedCallable::class)
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
                         if (currentChunk.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
@@ -199,16 +197,19 @@ object Turn {
                                 action.skill.use()
                             }
                             is Skill.ActiveSkillCharacter -> {
-                                action.skill.use(action.target!!)
+                                action.skill.use(action.data as Character)
                             }
-                            is Skill.ActiveSkillTile -> {
-                                action.skill.use(action.tile!!)
+                            is Skill.ActiveSkillEntity -> {
+                                action.skill.use(action.data as Entity)
+                            }
+                            is Skill.ActiveSkillPosition -> {
+                                action.skill.use(action.data as Position)
                             }
                             is Skill.ActiveSkillArea -> {
-                                action.skill.use(action.tile!!)
+                                action.skill.use(action.data as Position)
                             }
                             is Skill.PassiveSkill -> {
-                                throw Exception("Skill cannot be used")
+                                throw Exception("Passive skill cannot be used")
                             }
                         }
                         if (action.skill.manaCost != null) {
@@ -251,7 +252,6 @@ object Turn {
 
                         character.get(Position::class)!!.moveCharacter(Position(action.x, action.y, currentChunk))
                         setMovementUpdateBatch(Action.MOVE(action.x, action.y))
-                        character.getSuper(Ai::class)!!.updateFov()
                     }
                     is Action.ATTACK -> {
                         character.get(OffensiveStats::class)!!.attack(Position(action.x, action.y, currentChunk))

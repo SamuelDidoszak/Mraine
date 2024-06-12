@@ -20,6 +20,7 @@ class CharacterTags(
 
     fun addTag(tag: CharacterTag) {
         tags.put(tag::class, tag)
+        tag.onEntityAttached(entity)
     }
 
     fun <K: CharacterTag> getTag(tag: KClass<K>): K? {
@@ -30,6 +31,6 @@ class CharacterTags(
     }
 
     fun <K: CharacterTag> removeTag(tag: KClass<K>) {
-        tags.remove(tag)
+        tags.remove(tag)?.onEntityDetached(entity)
     }
 }

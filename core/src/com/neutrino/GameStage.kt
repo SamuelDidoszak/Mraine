@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.game.UI.popups.EntityLookupPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.PlayerAi
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.gameplay.turn.Turn
@@ -181,6 +182,7 @@ class GameStage(
                     9 -> 6
                     else -> moveDirection
                 }
+                Player.get(PlayerAi::class)!!.playerMoving = false
             }
             Input.Keys.S, Input.Keys.DOWN -> {
                 moveDirection = when (moveDirection) {
@@ -189,6 +191,7 @@ class GameStage(
                     3 -> 6
                     else -> moveDirection
                 }
+                Player.get(PlayerAi::class)!!.playerMoving = false
             }
             Input.Keys.D, Input.Keys.RIGHT -> {
                 moveDirection = when (moveDirection) {
@@ -197,6 +200,7 @@ class GameStage(
                     9 -> 8
                     else -> moveDirection
                 }
+                Player.get(PlayerAi::class)!!.playerMoving = false
             }
             Input.Keys.A, Input.Keys.LEFT -> {
                 moveDirection = when (moveDirection) {
@@ -205,6 +209,7 @@ class GameStage(
                     7 -> 8
                     else -> moveDirection
                 }
+                Player.get(PlayerAi::class)!!.playerMoving = false
             }
         }
         return super.keyUp(keyCode)

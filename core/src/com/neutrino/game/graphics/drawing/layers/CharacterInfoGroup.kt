@@ -8,6 +8,7 @@ class CharacterInfoGroup: LayeredGroup(z = 1) {
 
     val hpBar = HpBar()
     val name = Name()
+    val margin = 5f
 
     override fun onEntityAttached() {
 //        attach()
@@ -18,12 +19,12 @@ class CharacterInfoGroup: LayeredGroup(z = 1) {
     }
 
     override fun draw(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
-        yOffset = entity.get(Texture::class)!!.getHeightScaled().toFloat()
+        yOffset = entity.get(Texture::class)!!.getHeightScaled().toFloat() + margin
         super.draw(batch, x, y, parentAlpha)
     }
 
     override fun drawDebug(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
-        yOffset = entity.get(Texture::class)!!.getHeightScaled().toFloat()
+        yOffset = entity.get(Texture::class)!!.getHeightScaled().toFloat() + margin
         super.drawDebug(batch, x, y, parentAlpha)
     }
 }

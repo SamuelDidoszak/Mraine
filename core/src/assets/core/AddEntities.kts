@@ -168,8 +168,10 @@ Entities.add("WoodenTorch") {
 		.addAttribute(Identity.Torch())
 		.addAttribute(MapParams(true, true))
 		.addAttribute(Texture { position, random, textures -> run {
-            textures.add(position!!.check(listOf(4), Identity.Wall::class, false, true) {
+            textures.add(position!!.check(listOf(4), Identity.Wall::class) {
                 Textures.get("torchSide")})?.also {return@run}
+            textures.add(position!!.check(listOf(6), Identity.Wall::class) {
+                Textures.get("torchSide").mirrorX().xy(1f, 0f)})?.also {return@run}
             textures.add(Textures.get("torchFront"))
 		}})
 }

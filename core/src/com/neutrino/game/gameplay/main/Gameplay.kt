@@ -6,6 +6,7 @@ import com.neutrino.game.UI.UiStage
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.characters.attributes.PlayerAi
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map_entities.util.Interactable
@@ -129,9 +130,12 @@ class Gameplay(
         }
 
         val wasdCoord = Position(Player.x + xChange, Player.y + yChange, Player.get(Position::class)!!.chunk)
-        if (!ChunkManager.allowsCharacter(wasdCoord) || ChunkManager.getCharacterAt(wasdCoord) != null)
+        if (!ChunkManager.allowsCharacter(wasdCoord) || ChunkManager.getCharacterAt(wasdCoord) != null) {
+            Player.get(PlayerAi::class)!!.playerMoving = false
             return
+        }
 
+        Player.get(PlayerAi::class)!!.playerMoving = Player.get(Position::class)!! != wasdCoord
         Player.getSuper(Ai::class)!!.moveTo(wasdCoord.x, wasdCoord.y)
         gameStage.lookingAround = false
     }
@@ -141,6 +145,7 @@ class Gameplay(
             Player.getSuper(Ai::class)!!.setMoveList(
                 Player.getSuper(Ai::class)!!.moveList.last().x, Player.getSuper(Ai::class)!!.moveList.last().y, true)
         val tile = Player.getSuper(Ai::class)!!.getMove()
+        Player.get(PlayerAi::class)!!.playerMoving = !Player.getSuper(Ai::class)!!.moveList.isEmpty()
         Player.getSuper(Ai::class)!!.action = Action.MOVE(tile.x, tile.y)
         if (!gameStage.lookingAround)
             gameStage.focusPlayer = true

@@ -1,0 +1,82 @@
+iconsSkills.png
+	size: 512, 32
+exclamationMark#1
+	bounds: 90, 9, 9, 3
+exclamationMark#2
+	bounds: 59, 6, 9, 6
+exclamationMark#3
+	bounds: 18, 2, 10, 10
+exclamationMark#4
+	bounds: 491, 16, 11, 14
+exclamationMark#5
+	bounds: 451, 14, 11, 16
+exclamationMark#6
+	bounds: 464, 15, 11, 15
+heart
+	bounds: 434, 2, 12, 11
+itemBetter
+	bounds: 70, 4, 8, 8
+itemWorse
+	bounds: 80, 4, 8, 8
+skilBlock
+	bounds: 2, 2, 14, 10
+skillActiveShield
+	bounds: 434, 15, 15, 15
+skillBerserk
+	bounds: 2, 14, 16, 16
+skillBleed
+	bounds: 477, 16, 12, 14
+skillCripplingShot
+	bounds: 20, 14, 16, 16
+skillCripplingSpin
+	bounds: 38, 14, 16, 16
+skillDaggerThrow
+	bounds: 56, 14, 16, 16
+skillDualWield
+	bounds: 74, 14, 16, 16
+skillDualWield2
+	bounds: 92, 14, 16, 16
+skillExecution
+	bounds: 110, 14, 16, 16
+skillFocus
+	bounds: 128, 14, 16, 16
+skillGutAttack
+	bounds: 146, 14, 16, 16
+skillIncreaseArrowDamage
+	bounds: 164, 14, 16, 16
+skillIncreaseMeleeDamage
+	bounds: 182, 14, 16, 16
+skillIncreaseOnehandedDamage
+	bounds: 200, 14, 16, 16
+skillIncreaseShieldDefence
+	bounds: 218, 14, 16, 16
+skillIncreaseTwohandedDamage
+	bounds: 236, 14, 16, 16
+skillLastManStanding
+	bounds: 254, 14, 16, 16
+skillLuckyClover
+	bounds: 272, 14, 16, 16
+skillParry
+	bounds: 290, 14, 16, 16
+skillShadowCloak
+	bounds: 308, 14, 16, 16
+skillShieldBash
+	bounds: 326, 14, 16, 16
+skillSilentWalk
+	bounds: 344, 14, 16, 16
+skillTeleport
+	bounds: 362, 14, 16, 16
+skillTeleportBackstab
+	bounds: 380, 14, 16, 16
+skillThorns
+	bounds: 398, 14, 16, 16
+skillTwoshot
+	bounds: 416, 14, 16, 16
+threeDots#1
+	bounds: 504, 23, 5, 7
+threeDots#2
+	bounds: 47, 5, 10, 7
+threeDots#3
+	bounds: 30, 5, 15, 7
+threeDots#4
+	bounds: 30, 5, 15, 7

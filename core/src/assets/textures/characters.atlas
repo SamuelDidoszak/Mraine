@@ -1,108 +1,290 @@
 characters.png
-	size: 256, 128
-Slime_attack#1
-	bounds: 184, 46, 24, 16
-Slime_attack#2
-	bounds: 60, 56, 30, 21
-Slime_attack#3
-	bounds: 63, 79, 33, 18
-Slime_attack#4
-	bounds: 124, 82, 33, 16
-Slime_attack#5
-	bounds: 159, 82, 31, 16
-Slime_attack#6
-	bounds: 158, 64, 27, 16
-Slime_death#1
-	bounds: 92, 56, 29, 17
-Slime_death#2
-	bounds: 123, 56, 31, 12
-Slime_death#3
-	bounds: 124, 70, 32, 10
-Slime_death#4
-	bounds: 88, 30, 32, 8
-Slime_idle#1
-	bounds: 156, 25, 23, 19
-Slime_idle#2
-	bounds: 192, 78, 23, 19
-Slime_idle#3
-	bounds: 210, 58, 23, 18
-Slime_idle#4
-	bounds: 217, 78, 23, 19
-Slime_walk#1
-	bounds: 88, 40, 30, 14
-Slime_walk#2
-	bounds: 156, 46, 26, 16
-Slime_walk#8
-	bounds: 156, 46, 26, 16
-Slime_walk#3
-	bounds: 172, 3, 19, 20
-Slime_walk#7
-	bounds: 172, 3, 19, 20
-Slime_walk#4
-	bounds: 231, 8, 16, 22
-Slime_walk#5
-	bounds: 231, 8, 16, 22
-Slime_walk#6
-	bounds: 231, 8, 16, 22
-mouse_attack#1
-	bounds: 31, 69, 27, 27
-mouse_attack#2
-	bounds: 151, 100, 26, 26
-mouse_attack#3
-	bounds: 2, 98, 30, 28
-mouse_attack#4
-	bounds: 2, 68, 27, 28
-mouse_death#1
-	bounds: 63, 99, 27, 27
+	size: 1024, 128
+mouseAttack#1
+	bounds: 2, 2, 27, 27
+mouseAttack#2
+	bounds: 229, 69, 26, 26
+mouseAttack#3
+	bounds: 204, 98, 31, 28
+mouseAttack#4
+	bounds: 638, 98, 27, 28
+mouseDeath#1
+	bounds: 31, 2, 27, 27
+mouseIdle#1
+	bounds: 31, 2, 27, 27
+mouseIdle#2
+	bounds: 31, 2, 27, 27
+mouseIdle#3
+	bounds: 31, 2, 27, 27
+mouseIdle#4
+	bounds: 31, 2, 27, 27
+mouseDeath#2
+	bounds: 285, 68, 25, 27
+mouseDeath#3
+	bounds: 385, 69, 26, 24
+mouseDeath#4
+	bounds: 161, 38, 25, 22
+mouseIdle#5
+	bounds: 60, 2, 27, 27
+mouseIdle#6
+	bounds: 89, 2, 27, 27
+mouseIdle#7
+	bounds: 667, 98, 27, 28
+mouseIdle#8
+	bounds: 696, 98, 27, 28
+mouseWalk#1
+	bounds: 725, 99, 27, 27
+mouseWalk#2
+	bounds: 608, 100, 28, 26
+mouseWalk#3
+	bounds: 754, 99, 27, 27
+mouseWalk#4
+	bounds: 257, 69, 26, 26
 mouse_idle#1
-	bounds: 63, 99, 27, 27
-mouse_death#2
-	bounds: 207, 99, 25, 27
-mouse_death#3
-	bounds: 60, 30, 26, 24
-mouse_death#4
-	bounds: 98, 75, 24, 22
+	bounds: 132, 39, 27, 31
 mouse_idle#2
-	bounds: 2, 9, 27, 27
+	bounds: 333, 95, 27, 31
 mouse_idle#3
-	bounds: 31, 40, 27, 27
+	bounds: 362, 95, 27, 31
 mouse_idle#4
-	bounds: 34, 98, 27, 28
+	bounds: 391, 95, 27, 31
 mouse_idle#5
-	bounds: 2, 38, 27, 28
-mouse_walk#1
-	bounds: 92, 99, 27, 27
-mouse_walk#2
-	bounds: 121, 100, 28, 26
-mouse_walk#3
-	bounds: 31, 11, 27, 27
-mouse_walk#4
-	bounds: 179, 100, 26, 26
-player_attack#1
-	bounds: 199, 20, 14, 24
-player_attack#2
-	bounds: 231, 32, 14, 24
-player_attack#3
-	bounds: 234, 101, 20, 25
-player_attack#4
-	bounds: 108, 3, 14, 25
-player_death#1
-	bounds: 215, 5, 14, 24
-player_death#2
-	bounds: 156, 2, 14, 21
-player_death#3
-	bounds: 181, 25, 16, 19
-player_death#4
-	bounds: 120, 45, 23, 9
-player_idle#1
-	bounds: 124, 18, 14, 25
-player_idle#2
-	bounds: 60, 2, 14, 26
-player_walk#1
-	bounds: 140, 18, 14, 25
-player_walk#2
-	bounds: 76, 2, 14, 26
-player_walk#3
-	bounds: 215, 31, 14, 25
-player_walk#4
-	bounds: 92, 2, 14, 26
+	bounds: 420, 95, 27, 31
+playerAttack#1
+	bounds: 161, 62, 19, 36
+playerAttack#2
+	bounds: 188, 26, 18, 36
+playerAttack#3
+	bounds: 2, 31, 34, 36
+playerAttack#4
+	bounds: 38, 31, 27, 36
+playerAttack#5
+	bounds: 182, 64, 19, 36
+playerAttack2#1
+	bounds: 100, 41, 30, 29
+playerAttack2#2
+	bounds: 237, 97, 30, 29
+playerAttack2#3
+	bounds: 269, 97, 30, 29
+playerAttack2#4
+	bounds: 2, 69, 44, 29
+playerAttack2#5
+	bounds: 67, 41, 31, 29
+playerAttack2#6
+	bounds: 301, 97, 30, 29
+playerAttack3#1
+	bounds: 48, 72, 39, 26
+playerAttack3#2
+	bounds: 54, 100, 40, 26
+playerAttack3#3
+	bounds: 2, 100, 50, 26
+playerAttack3#4
+	bounds: 96, 100, 34, 26
+playerAttack3#5
+	bounds: 89, 72, 34, 26
+playerAttack3#6
+	bounds: 132, 100, 34, 26
+playerCast#1
+	bounds: 381, 6, 21, 26
+playerCast#2
+	bounds: 649, 45, 18, 26
+playerCast#3
+	bounds: 713, 49, 18, 26
+playerCast#4
+	bounds: 783, 100, 27, 26
+playerCast#5
+	bounds: 812, 100, 27, 26
+playerCastLong#1
+	bounds: 274, 40, 23, 26
+playerCastLong#2
+	bounds: 533, 28, 20, 26
+playerCastLong#3
+	bounds: 627, 45, 20, 26
+playerCastLong#4
+	bounds: 515, 100, 29, 26
+playerCastLong#5
+	bounds: 546, 100, 29, 26
+playerCastLong#7
+	bounds: 546, 100, 29, 26
+playerCastLong#6
+	bounds: 577, 100, 29, 26
+playerCastLong#8
+	bounds: 577, 100, 29, 26
+playerCrouch#1
+	bounds: 118, 2, 20, 22
+playerCrouch#2
+	bounds: 140, 2, 20, 22
+playerCrouch#3
+	bounds: 733, 47, 20, 22
+playerCrouch#4
+	bounds: 795, 76, 20, 22
+playerCrouch#5
+	bounds: 795, 76, 20, 22
+playerCrouch#6
+	bounds: 795, 76, 20, 22
+playerDeath#1
+	bounds: 318, 9, 18, 29
+playerDeath#2
+	bounds: 338, 13, 18, 29
+playerDeath#3
+	bounds: 312, 66, 19, 29
+playerDeath#4
+	bounds: 252, 6, 20, 29
+playerDeath#5
+	bounds: 274, 9, 20, 29
+playerDeath#6
+	bounds: 296, 9, 20, 29
+playerHurt#1
+	bounds: 600, 3, 18, 24
+playerHurt#2
+	bounds: 755, 47, 18, 24
+playerHurt#3
+	bounds: 775, 73, 18, 24
+playerIdle#1
+	bounds: 208, 34, 20, 30
+playerIdle#2
+	bounds: 208, 34, 20, 30
+playerIdle#3
+	bounds: 208, 34, 20, 30
+playerIdle#4
+	bounds: 208, 2, 20, 30
+playerIdle#5
+	bounds: 230, 37, 20, 30
+playerIdle#6
+	bounds: 252, 37, 20, 30
+playerIdle#7
+	bounds: 230, 5, 20, 30
+playerIdleFight#1
+	bounds: 425, 39, 20, 28
+playerIdleFight#2
+	bounds: 425, 39, 20, 28
+playerIdleFight#3
+	bounds: 427, 9, 20, 28
+playerIdleFight#4
+	bounds: 358, 15, 21, 28
+playerIdleFight#5
+	bounds: 402, 39, 21, 28
+playerIdleFight#6
+	bounds: 447, 53, 20, 28
+playerItem#1
+	bounds: 669, 49, 20, 26
+playerItem#2
+	bounds: 1000, 100, 22, 26
+playerItem#3
+	bounds: 555, 28, 19, 26
+playerItem#4
+	bounds: 555, 28, 19, 26
+playerKick#1
+	bounds: 598, 29, 19, 24
+playerKick#2
+	bounds: 556, 2, 20, 24
+playerKick#3
+	bounds: 841, 102, 29, 24
+playerKick#4
+	bounds: 903, 102, 28, 24
+playerKick2#1
+	bounds: 733, 71, 19, 26
+playerKick2#2
+	bounds: 125, 72, 34, 26
+playerKick2#3
+	bounds: 162, 10, 24, 26
+playerKick2#4
+	bounds: 691, 49, 20, 26
+playerPunch#1
+	bounds: 576, 28, 20, 25
+playerPunch#2
+	bounds: 578, 55, 21, 25
+playerPunch#3
+	bounds: 449, 101, 31, 25
+playerPunch#4
+	bounds: 613, 73, 23, 25
+playerPunch2#1
+	bounds: 1000, 74, 22, 24
+playerPunch2#2
+	bounds: 299, 40, 22, 24
+playerPunch2#3
+	bounds: 168, 102, 34, 24
+playerPunch2#4
+	bounds: 482, 102, 31, 24
+playerPunch2#5
+	bounds: 413, 69, 26, 24
+playerPunch3#1
+	bounds: 754, 73, 19, 24
+playerPunch3#2
+	bounds: 872, 102, 29, 24
+playerPunch3#3
+	bounds: 533, 2, 21, 24
+playerPunch3#4
+	bounds: 578, 2, 20, 24
+playerRun#1
+	bounds: 404, 9, 21, 28
+playerRun#2
+	bounds: 469, 53, 20, 28
+playerRun#3
+	bounds: 491, 56, 20, 28
+playerRun#4
+	bounds: 333, 65, 24, 28
+playerRun#5
+	bounds: 513, 56, 20, 28
+playerRun#6
+	bounds: 535, 56, 20, 28
+playerWalk#1
+	bounds: 381, 34, 19, 29
+playerWalk#2
+	bounds: 557, 57, 19, 29
+playerWalk#3
+	bounds: 449, 22, 19, 29
+playerWalk#4
+	bounds: 470, 22, 19, 29
+playerWalk#5
+	bounds: 491, 25, 19, 29
+playerWalk#6
+	bounds: 512, 25, 19, 29
+slimeAttack#1
+	bounds: 601, 55, 24, 16
+slimeAttack#2
+	bounds: 933, 105, 30, 21
+slimeAttack#3
+	bounds: 965, 108, 33, 18
+slimeAttack#4
+	bounds: 965, 90, 33, 16
+slimeAttack#5
+	bounds: 449, 83, 31, 16
+slimeAttack#6
+	bounds: 449, 4, 27, 16
+slimeDeath#1
+	bounds: 933, 86, 30, 17
+slimeDeath#2
+	bounds: 515, 86, 31, 12
+slimeDeath#3
+	bounds: 548, 88, 32, 10
+slimeDeath#4
+	bounds: 67, 31, 32, 8
+slimeIdle#1
+	bounds: 665, 77, 27, 19
+slimeIdle#2
+	bounds: 665, 77, 27, 19
+slimeIdle#3
+	bounds: 665, 77, 27, 19
+slimeIdle#4
+	bounds: 694, 77, 27, 19
+slimeIdle#5
+	bounds: 352, 45, 27, 18
+slimeIdle#6
+	bounds: 323, 44, 27, 19
+slimeWalk#1
+	bounds: 482, 86, 31, 14
+slimeWalk#2
+	bounds: 582, 82, 29, 16
+slimeWalk#8
+	bounds: 582, 82, 29, 16
+slimeWalk#3
+	bounds: 638, 73, 25, 23
+slimeWalk#7
+	bounds: 638, 73, 25, 23
+slimeWalk#4
+	bounds: 359, 65, 24, 28
+slimeWalk#6
+	bounds: 359, 65, 24, 28
+slimeWalk#5
+	bounds: 203, 66, 24, 30

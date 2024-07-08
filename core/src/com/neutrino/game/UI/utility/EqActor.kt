@@ -11,7 +11,7 @@ import com.neutrino.game.entities.items.attributes.Amount
 import com.neutrino.game.entities.items.attributes.GoldValue
 import com.neutrino.game.entities.shared.attributes.DrawerAttribute
 import com.neutrino.game.graphics.drawing.SingleEntityDrawer
-import com.neutrino.game.util.Constants
+import com.neutrino.game.graphics.textures.Textures
 
 class EqActor(val entity: Entity): Group(), PickupActor {
     // needed for resize
@@ -37,9 +37,9 @@ class EqActor(val entity: Entity): Group(), PickupActor {
         if (comparedValue != null && comparedValue != 0) {
             val qualityImage =
             if (comparedValue > 0)
-                Image(Constants.DefaultIconTexture.findRegion("itemBetter2"))
+                Image(Textures.get("itemBetter").texture)
             else
-                Image(Constants.DefaultIconTexture.findRegion("itemWorse"))
+                Image(Textures.get("itemWorse").texture)
             qualityImage.name = "itemQuality"
             addActor(qualityImage)
             qualityImage.align = Align.bottomLeft

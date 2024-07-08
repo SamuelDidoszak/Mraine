@@ -2,8 +2,10 @@ package com.neutrino.game.map.chunk
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
+import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.characters.attributes.PlayerAi
 import com.neutrino.game.entities.characters.callables.OnMoveCallable
 import com.neutrino.game.entities.characters.callables.VisionChangedCallable
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
@@ -20,6 +22,8 @@ import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.util.ChunkManagerMethods
 import com.neutrino.game.map.chunk.util.Fov
 import com.neutrino.game.util.Constants
+import com.neutrino.game.util.x
+import com.neutrino.game.util.y
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord
@@ -127,6 +131,7 @@ object ChunkManager: ChunkManagerMethods {
         private val fov = Fov(fullMap)
         val dijkstraMap = DijkstraMap()
         private var mapImpassableList: ArrayList<Coord> = ArrayList()
+        private val walkingCharacterList: ArrayList<Character> = ArrayList()
 
         fun resetMap() {
             fullMap = generateMap()
@@ -164,17 +169,30 @@ object ChunkManager: ChunkManagerMethods {
             entity.get(DrawPosition::class)!!.y -= yDiff
             // if there are movement bugs, it may be because there were multiple movement calls and actions stacked
             entity.addAttribute(ActionBlock())
-            (entity as Character).setAnimation("walk")
+            if (!entity.get(Texture::class)!!.textures[0].name.endsWith("Walk"))
+                (entity as Character).setAnimation("walk")
             entity.get(Texture::class)!!.textures.mirror(mirror)
             entity.addAction(Action.Sequence(
                 Action.MoveBy(xDiff, yDiff, Constants.MoveSpeed * entity.get(DefensiveStats::class)!!.movementSpeed.toFloat()),
                 Action.Custom {
                     entity.removeAttribute(ActionBlock::class)
-                    entity.setAnimation("idle")
+                    // Setting idle animations properly
+                    if (!Player.get(PlayerAi::class)!!.playerMoving ||
+                        (entity != Player && entity.getSuper(Ai::class)!!.moveList.isEmpty() &&
+                                !(entity.getSuper(Ai::class)!!.canAttack(Player.x, Player.y) &&
+                                Player.get(PlayerAi::class)!!.playerMoving)))
+                        (entity as Character).setAnimation("idle")
+                    else
+                        walkingCharacterList.add(entity as Character)
                     entity.get(Texture::class)!!.textures.mirror(mirror)
                 }
             ))
             entity.call(OnMoveCallable::class)
+        }
+
+        fun stopWalkAnimations() {
+            walkingCharacterList.forEach { it.setAnimation("idle") }
+            walkingCharacterList.clear()
         }
 
         // TODO Multiple Chunks

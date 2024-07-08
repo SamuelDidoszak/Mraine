@@ -2,7 +2,10 @@
 import com.neutrino.game.entities.Characters
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
-import com.neutrino.game.entities.characters.attributes.*
+import com.neutrino.game.entities.characters.attributes.CharacterTags
+import com.neutrino.game.entities.characters.attributes.EnemyAi
+import com.neutrino.game.entities.characters.attributes.Faction
+import com.neutrino.game.entities.characters.attributes.Loot
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
 import com.neutrino.game.entities.characters.attributes.util.LootElement
 import com.neutrino.game.entities.shared.attributes.RandomizationSimple
@@ -30,7 +33,7 @@ Characters.add("Mouse") {
         .addAttribute(EnemyAi(viewDistance = 8))
         .addAttribute(Faction(FactionEnum.ENEMY))
         .addAttribute(Texture { position, random, textures ->
-            textures.add(Textures.get("mouse_idle"))
+            textures.add(Textures.get("mouseIdle").xy(0f, 5f))
         })
         .addAttribute(CharacterTags())
         .addAttribute(CharacterInfoGroup())
@@ -56,7 +59,7 @@ Characters.add("Slime") {
         .addAttribute(EnemyAi(viewDistance = 8))
         .addAttribute(Faction(FactionEnum.ENEMY))
         .addAttribute(Texture { position, random, textures ->
-            textures.add(Textures.get("Slime_idle"))
+            textures.add(Textures.get("SlimeIdle").xy(0f, 5f))
         })
         .addAttribute(CharacterTags())
         .addAttribute(CharacterInfoGroup())

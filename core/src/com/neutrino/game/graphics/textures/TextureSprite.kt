@@ -39,6 +39,9 @@ open class TextureSprite(
         return this
     }
 
+    open val name: String
+        get() = texture.name
+
     fun width(): Int {
         return texture.regionWidth
     }

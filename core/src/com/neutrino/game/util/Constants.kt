@@ -37,7 +37,6 @@ object Constants {
     val DefaultItemTexture: TextureAtlas = TextureAtlas("textures/items.atlas")
     val DefaultEntityTexture: TextureAtlas = TextureAtlas("textures/entitiesOld.atlas")
     val DefaultProjectileTexture: TextureAtlas = TextureAtlas("textures/projectiles.atlas")
-    val DefaultIconTexture: TextureAtlas = TextureAtlas("textures/icons.atlas")
     val DefaultUITexture: TextureAtlas = TextureAtlas("UI/ui.atlas")
     val WhitePixel: Texture = Texture("whitePixel.png")
     val TransparentPixel: Texture = Texture("transparentPixel.png")
@@ -59,7 +58,6 @@ object Constants {
         DefaultItemTexture.textures.forEach { textureArrayMap.put(it, DefaultItemTexture) }
         DefaultEntityTexture.textures.forEach { textureArrayMap.put(it, DefaultEntityTexture) }
         DefaultProjectileTexture.textures.forEach { textureArrayMap.put(it, DefaultProjectileTexture) }
-        DefaultIconTexture.textures.forEach { textureArrayMap.put(it, DefaultIconTexture) }
         DefaultUITexture.textures.forEach { textureArrayMap.put(it, DefaultUITexture) }
 //        textureHashCodes[WhitePixel.hashCode()] = WhitePixel
     }

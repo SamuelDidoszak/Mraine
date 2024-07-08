@@ -7,11 +7,13 @@ import com.badlogic.gdx.utils.Array
 class AnimatedTextureSprite(
     textureList: Array<TextureAtlas.AtlasRegion>,
     private val looping: Boolean = true,
-    val animationSpeed: Float = 0.16666667f,
+    var animationSpeed: Float = 0.16666667f,
     x: Float = 0f,
     y: Float = 0f,
     z: Int = 1
 ): TextureSprite(textureList[0], x, y, z) {
+
+    var mirrorPivot = getMinWidth(textureList)
 
     constructor(
         textureList: Array<TextureAtlas.AtlasRegion>,
@@ -23,6 +25,15 @@ class AnimatedTextureSprite(
         z: Int = 1
     ): this(textureList, looping, animationSpeed, x, y, z) {
         this.lights = lightSources
+        mirrorPivot = getMinWidth(textureList)
+    }
+
+    override val name: String
+        get() = texture.name.substringBefore('#')
+
+    private fun getMinWidth(textureArray: Array<TextureAtlas.AtlasRegion>): Int {
+        return textureArray[0].regionWidth
+        return textureArray.minBy { it.regionWidth }.regionWidth
     }
 
     private val animation = Animation<TextureAtlas.AtlasRegion>(

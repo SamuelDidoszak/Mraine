@@ -3,11 +3,11 @@ package com.neutrino.game.entities.systems.util.visuals
 import com.github.tommyettinger.textra.KnownFonts
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.drawing.actions.Action
-import com.neutrino.game.graphics.drawing.layers.LayeredText
+import com.neutrino.game.graphics.drawing.layers.DrawableText
 import kotlin.math.round
 import kotlin.random.Random
 
-class DamageNumber: LayeredText("") {
+class DamageNumber: DrawableText("") {
     init {
         text.font = KnownFonts.getCozette()
         z = 2

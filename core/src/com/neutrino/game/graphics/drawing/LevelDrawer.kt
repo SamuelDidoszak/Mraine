@@ -11,15 +11,15 @@ import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.LayeredDraws
+import com.neutrino.game.entities.shared.attributes.Drawables
 import com.neutrino.game.entities.shared.attributes.Shaders
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.util.Cloneable
-import com.neutrino.game.graphics.drawing.layers.LayeredDraw
-import com.neutrino.game.graphics.drawing.layers.LayeredTexture
-import com.neutrino.game.graphics.drawing.layers.LayeredTextureList
-import com.neutrino.game.graphics.drawing.layers.LayeredTextureUnsorted
+import com.neutrino.game.graphics.drawing.layers.Drawable
+import com.neutrino.game.graphics.drawing.layers.DrawableTexture
+import com.neutrino.game.graphics.drawing.layers.LayeredDrawableList
+import com.neutrino.game.graphics.drawing.layers.DrawableTextureUnsorted
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.graphics.textures.Light
@@ -40,7 +40,7 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
 
     override val animations: Animations = Animations(this)
     override val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
-    private val textureLayers: SortedMap<Int, LayeredTextureList> = sortedMapOf()
+    private val drawableLayers: SortedMap<Int, LayeredDrawableList> = sortedMapOf()
 
     var chunk: Chunk = chunk
         set(value) {
@@ -57,53 +57,53 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
     fun clearAll() {
         animations.clear()
         lights.clear()
-        textureLayers.forEach { t, u -> u.clear() }
-        textureLayers.clear()
+        drawableLayers.forEach { t, u -> u.clear() }
+        drawableLayers.clear()
     }
 
-    override fun addLayeredDraw(layeredDraw: LayeredDraw) {
-        if (textureLayers[layeredDraw.z] == null)
-            textureLayers[layeredDraw.z] = LayeredTextureList()
+    override fun addDrawable(drawable: Drawable) {
+        if (drawableLayers[drawable.z] == null)
+            drawableLayers[drawable.z] = LayeredDrawableList()
 
-        layeredDraw.entity.get(Shaders::class)?.shaders?.forEach { layeredDraw.addShader(it) }
-        textureLayers[layeredDraw.z]!!.add(layeredDraw)
-        if (layeredDraw.entity hasNot LayeredDraws::class)
-            layeredDraw.entity.addAttribute(LayeredDraws())
-        layeredDraw.entity.get(LayeredDraws::class)!!.addLayeredDraw(layeredDraw)
+        drawable.entity.get(Shaders::class)?.shaders?.forEach { drawable.addShader(it) }
+        drawableLayers[drawable.z]!!.add(drawable)
+        if (drawable.entity hasNot Drawables::class)
+            drawable.entity.addAttribute(Drawables())
+        drawable.entity.get(Drawables::class)!!.addDrawable(drawable)
     }
 
-    override fun removeLayeredDraw(layeredDraw: LayeredDraw) {
-        layeredDraw.entity.get(LayeredDraws::class)?.removeLayeredDraw(layeredDraw)
-        textureLayers[layeredDraw.z]!!.remove(layeredDraw)
+    override fun removeDrawable(drawable: Drawable) {
+        drawable.entity.get(Drawables::class)?.removeDrawable(drawable)
+        drawableLayers[drawable.z]!!.remove(drawable)
     }
 
     override fun addTexture(entity: Entity, texture: TextureSprite) {
-        if (textureLayers[texture.z] == null)
-            textureLayers[texture.z] = LayeredTextureList()
+        if (drawableLayers[texture.z] == null)
+            drawableLayers[texture.z] = LayeredDrawableList()
 
-        val layeredTexture =
+        val drawableTexture =
             if (entity has StitchedSprite::class)
-                LayeredTextureUnsorted(entity, texture)
+                DrawableTextureUnsorted(entity, texture)
             else
-                LayeredTexture(entity, texture)
+                DrawableTexture(entity, texture)
 
         entity.get(Shaders::class)?.shaders?.forEach {
-            if (entity.get(LayeredDraws::class)?.getBaseTextures()?.isNotEmpty() == true && it is Cloneable<*>)
-                layeredTexture.addShader(it.clone() as ShaderParametered)
+            if (entity.get(Drawables::class)?.getBaseTextures()?.isNotEmpty() == true && it is Cloneable<*>)
+                drawableTexture.addShader(it.clone() as ShaderParametered)
             else
-                layeredTexture.addShader(it)
+                drawableTexture.addShader(it)
         }
 
-        textureLayers[texture.z]!!.add(layeredTexture)
-        if (entity hasNot LayeredDraws::class)
-            entity.addAttribute(LayeredDraws())
-        entity.get(LayeredDraws::class)!!.addLayeredDraw(layeredTexture)
+        drawableLayers[texture.z]!!.add(drawableTexture)
+        if (entity hasNot Drawables::class)
+            entity.addAttribute(Drawables())
+        entity.get(Drawables::class)!!.addDrawable(drawableTexture)
     }
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
-        val layeredDraw = entity.get(LayeredDraws::class)?.removeLayeredDraw {
-            it.entity == entity && it is LayeredTexture && it.texture == texture }
-        textureLayers[texture.z]!!.remove(layeredDraw)
+        val layeredDraw = entity.get(Drawables::class)?.removeDrawable {
+            it.entity == entity && it is DrawableTexture && it.texture == texture }
+        drawableLayers[texture.z]!!.remove(layeredDraw)
     }
 
     init {
@@ -178,7 +178,7 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
         var textureY = 0f
         var textureWidth = 0
         var texture: TextureSprite
-        textureLayers.forEach { key, layer ->
+        drawableLayers.forEach { key, layer ->
             layer.sort()
             for (layeredTexture in layer) {
                 textureX = layeredTexture.getX()

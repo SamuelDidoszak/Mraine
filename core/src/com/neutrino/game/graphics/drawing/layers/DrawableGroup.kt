@@ -3,31 +3,31 @@ package com.neutrino.game.graphics.drawing.layers
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.neutrino.game.utility.Optimize
 
-open class LayeredGroup(
+open class DrawableGroup(
     val stackable: Boolean = false,
     val addAbove: Boolean = true,
     xOffset: Float = 0f,
     yOffset: Float = 0f,
     z: Int = 0
-): LayeredDraw(xOffset, yOffset, z) {
+): Drawable(xOffset, yOffset, z) {
 
-    private val children: ArrayList<LayeredDraw> = ArrayList()
+    private val children: ArrayList<Drawable> = ArrayList()
 
-    fun add(layeredDraw: LayeredDraw, yMargin: Float = 0f): LayeredGroup {
-        layeredDraw.entity = entity
-        layeredDraw.onEntityAttached()
-        layeredDraw.addToGroup()
+    fun add(drawable: Drawable, yMargin: Float = 0f): DrawableGroup {
+        drawable.entity = entity
+        drawable.onEntityAttached()
+        drawable.addToGroup()
         if (stackable) {
-            layeredDraw.yOffset = yMargin
-            children.add(layeredDraw)
+            drawable.yOffset = yMargin
+            children.add(drawable)
             return this
         }
         var yOffset = yMargin
         children.lastOrNull()?.let { yOffset += it.height + it.yOffset }
         if (!addAbove)
             yOffset *= -1
-        layeredDraw.yOffset = yOffset
-        children.add(layeredDraw)
+        drawable.yOffset = yOffset
+        children.add(drawable)
         return this
     }
 

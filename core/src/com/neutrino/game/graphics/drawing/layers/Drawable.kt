@@ -19,7 +19,7 @@ import com.neutrino.game.util.Constants
 import com.neutrino.game.utility.Optimize
 import space.earlygrey.shapedrawer.ShapeDrawer
 
-abstract class LayeredDraw(
+abstract class Drawable(
     var xOffset: Float = 0f,
     var yOffset: Float = 0f,
     var z: Int = 1
@@ -77,17 +77,17 @@ abstract class LayeredDraw(
         return getY()
     }
 
-    operator fun compareTo(value: LayeredDraw): Int {
+    operator fun compareTo(value: Drawable): Int {
         return compareValues(getY(), value.getY())
     }
 
-    fun setSize(width: Int, height: Int): LayeredDraw {
+    fun setSize(width: Int, height: Int): Drawable {
         this.width = width
         this.height = height
         return this
     }
 
-    fun setPosition(xOffset: Float, yOffset: Float): LayeredDraw {
+    fun setPosition(xOffset: Float, yOffset: Float): Drawable {
         this.xOffset = xOffset
         this.yOffset = yOffset
         return this
@@ -98,13 +98,13 @@ abstract class LayeredDraw(
             return
         entity.get(DrawPosition::class)?.let { drawPosition = it }
         val drawer = entity.get(DrawerAttribute::class)?.drawer ?: entity.get(Position::class)?.chunk?.let { ChunkManager.getDrawer(it) }
-        drawer?.addLayeredDraw(this)?.also { isAttached = true }
+        drawer?.addDrawable(this)?.also { isAttached = true }
     }
 
     open fun detach() {
         drawPosition = Defaults.drawPosition
         val drawer = entity.get(DrawerAttribute::class)?.drawer ?: entity.get(Position::class)?.chunk?.let { ChunkManager.getDrawer(it) }
-        drawer?.removeLayeredDraw(this)
+        drawer?.removeDrawable(this)
         isAttached = false
     }
 
@@ -148,12 +148,12 @@ abstract class LayeredDraw(
     }
 
     fun addAction(action: Action, timeout: Float = 0f) {
-        if (action is Action.UsesLayeredDraw)
-            action.layeredDraw = this
+        if (action is Action.UsesDrawable)
+            action.drawable = this
         if (action is Action.Sequence)
             action.actions.forEach {
-                if (it is Action.UsesLayeredDraw)
-                    it.layeredDraw = this
+                if (it is Action.UsesDrawable)
+                    it.drawable = this
             }
 
         if (timeout != 0f) {
@@ -176,7 +176,7 @@ abstract class LayeredDraw(
             shaders = ArrayList()
         shaders!!.add(shader)
 
-        if (shader is OutlineShader && this is LayeredTexture)
+        if (shader is OutlineShader && this is DrawableTexture)
             shader.setTexture(this)
     }
 

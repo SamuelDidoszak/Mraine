@@ -2,7 +2,7 @@ package com.neutrino.game.entities.shared.attributes
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.util.Cloneable
-import com.neutrino.game.graphics.drawing.layers.LayeredTexture
+import com.neutrino.game.graphics.drawing.layers.DrawableTexture
 import com.neutrino.game.graphics.shaders.ShaderParametered
 
 class Shaders(
@@ -48,7 +48,7 @@ class Shaders(
         shaders.clear()
     }
 
-    private fun getLayeredTextures(): List<LayeredTexture> {
-        return entity.get(LayeredDraws::class)?.getBaseTextures() ?: listOf()
+    private fun getLayeredTextures(): List<DrawableTexture> {
+        return entity.get(Drawables::class)?.getBaseTextures() ?: listOf()
     }
 }

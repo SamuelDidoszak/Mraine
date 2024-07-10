@@ -4,7 +4,7 @@ import com.neutrino.game.entities.shared.attributes.util.EqualityCheckLock
 import com.neutrino.game.entities.util.Equality
 import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.graphics.drawing.actions.Actions
-import com.neutrino.game.graphics.drawing.layers.LayeredDraw
+import com.neutrino.game.graphics.drawing.layers.Drawable
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.superclasses
@@ -69,16 +69,16 @@ open class Entity() {
         return null
     }
 
-    fun getDrawables(): List<LayeredDraw>? {
-        val layeredDraws = ArrayList<LayeredDraw>()
+    fun getDrawables(): List<Drawable>? {
+        val drawables = ArrayList<Drawable>()
 
         attributes.keys.forEach { attribute ->
             attribute.allSuperclasses.forEach {
-                if (it == LayeredDraw::class)
-                    layeredDraws.add(attributes[attribute] as LayeredDraw)
+                if (it == Drawable::class)
+                    drawables.add(attributes[attribute] as Drawable)
             }
         }
-        return layeredDraws.ifEmpty { null }
+        return drawables.ifEmpty { null }
     }
 
     infix fun has(attributeClass: KClass<out Attribute>): Boolean {

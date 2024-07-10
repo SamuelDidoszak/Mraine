@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.neutrino.game.entities.characters.attributes.Name
 import com.neutrino.game.entities.shared.attributes.Texture
 
-class CharacterInfoGroup: LayeredGroup(z = 1) {
+class CharacterInfoGroup: DrawableGroup(z = 1) {
 
     val hpBar = HpBar()
     val name = Name()

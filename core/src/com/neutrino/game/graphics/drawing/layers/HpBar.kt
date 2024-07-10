@@ -10,7 +10,7 @@ import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.Constants
 import space.earlygrey.shapedrawer.ShapeDrawer
 
-class HpBar: LayeredDraw() {
+class HpBar: Drawable() {
 
     private lateinit var stats: DefensiveStats
     override fun onEntityAttached() {

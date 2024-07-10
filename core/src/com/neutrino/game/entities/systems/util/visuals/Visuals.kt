@@ -6,8 +6,8 @@ import com.neutrino.game.domain.model.characters.utility.IntentionIcon
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.drawing.actions.Action
-import com.neutrino.game.graphics.drawing.layers.LayeredText
-import com.neutrino.game.graphics.drawing.layers.LayeredTexture
+import com.neutrino.game.graphics.drawing.layers.DrawableText
+import com.neutrino.game.graphics.drawing.layers.DrawableTexture
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.height
 
@@ -26,7 +26,7 @@ object Visuals {
     }
 
     fun showItemUsed(entity: Entity, item: Entity) {
-        val itemDraw = LayeredTexture(entity, item.get(Texture::class)!!.textures[0].clone())
+        val itemDraw = DrawableTexture(entity, item.get(Texture::class)!!.textures[0].clone())
         itemDraw.z = 2
         itemDraw.initialize(entity)
         itemDraw.scale = 1.5f
@@ -41,7 +41,7 @@ object Visuals {
     }
 
     fun showPickedUpItem(entity: Entity, item: Entity) {
-        val itemDraw = LayeredTexture(entity, item.get(Texture::class)!!.textures[0].clone())
+        val itemDraw = DrawableTexture(entity, item.get(Texture::class)!!.textures[0].clone())
         itemDraw.z = 2
         itemDraw.scale = 1.5f
         itemDraw.xOffset = (64 - itemDraw.width) / 2f
@@ -56,7 +56,7 @@ object Visuals {
     }
 
     fun showAiIntention(entity: Entity, intention: IntentionIcon) {
-        val intentionTexture = LayeredTexture(entity, intention.statusTexture)
+        val intentionTexture = DrawableTexture(entity, intention.statusTexture)
         intentionTexture.centerOnEntity = true
         intentionTexture.z = 2
         intentionTexture.scale = 1.5f
@@ -72,7 +72,7 @@ object Visuals {
     }
 
     fun showText(entity: Entity, text: String) {
-        val textDraw = LayeredText(text, true, entity.get(Texture::class)!!.getWidthScaled() * 6)
+        val textDraw = DrawableText(text, true, entity.get(Texture::class)!!.getWidthScaled() * 6)
         textDraw.centerOnEntity = true
         textDraw.z = 3
         textDraw.yOffset = entity.height + 32f

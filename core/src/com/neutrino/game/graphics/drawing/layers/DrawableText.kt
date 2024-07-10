@@ -5,11 +5,11 @@ import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
 
-open class LayeredText(
+open class DrawableText(
     text: String = "",
     centered: Boolean = true,
     width: Int = 0
-): LayeredDraw() {
+): Drawable() {
 
     var text = TextraLabel(text, KnownFonts.getStandardFamily())
     var centered: Boolean = centered

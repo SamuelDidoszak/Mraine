@@ -10,10 +10,10 @@ import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.util.Constants.SCALE_INT
 import kotlin.math.roundToInt
 
-open class LayeredTexture(
+open class DrawableTexture(
     entity: Entity,
     val texture: TextureSprite
-): LayeredDraw() {
+): Drawable() {
     private var sizeScale: Float = if (entity == Player) 2.5f else if (entity is Character) 2f else SCALE_INT.toFloat()
     var scale: Float = 1f
         set(value) {

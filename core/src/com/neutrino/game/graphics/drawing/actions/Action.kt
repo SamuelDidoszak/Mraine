@@ -1,8 +1,8 @@
 package com.neutrino.game.graphics.drawing.actions
 
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.shared.attributes.LayeredDraws
-import com.neutrino.game.graphics.drawing.layers.LayeredDraw
+import com.neutrino.game.entities.shared.attributes.Drawables
+import com.neutrino.game.graphics.drawing.layers.Drawable
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.util.equalsDelta
 
@@ -18,8 +18,8 @@ sealed class Action(
     protected fun getActionFrame(delta: Float): Float = delta / length
     protected fun isActionFinished(): Boolean = (length - totalTime).equalsDelta(0f) || (length - totalTime) < 0f
 
-    interface UsesLayeredDraw {
-        var layeredDraw: LayeredDraw?
+    interface UsesDrawable {
+        var drawable: Drawable?
     }
     interface UsesEntity {
         var entity: Entity?
@@ -48,9 +48,9 @@ sealed class Action(
     }
 
     class MoveBy(val x: Float, val y: Float, length: Float = 0f):
-        Action(length), UsesLayeredDraw, UsesEntity {
+        Action(length), UsesDrawable, UsesEntity {
 
-        override var layeredDraw: LayeredDraw? = null
+        override var drawable: Drawable? = null
         override var entity: Entity? = null
 
         private var targetX = x
@@ -61,15 +61,15 @@ sealed class Action(
                 if (entity != null) {
                     targetX = entity!!.get(DrawPosition::class)!!.x + x
                     targetY = entity!!.get(DrawPosition::class)!!.y + y
-                } else if (layeredDraw != null) {
-                    targetX = layeredDraw!!.xOffset + x
-                    targetY = layeredDraw!!.yOffset + y
+                } else if (drawable != null) {
+                    targetX = drawable!!.xOffset + x
+                    targetY = drawable!!.yOffset + y
                 }
             }
 
-            if (layeredDraw != null) {
-                layeredDraw!!.xOffset += x * getActionFrame(delta)
-                layeredDraw!!.yOffset += y * getActionFrame(delta)
+            if (drawable != null) {
+                drawable!!.xOffset += x * getActionFrame(delta)
+                drawable!!.yOffset += y * getActionFrame(delta)
             }
             if (entity != null) {
                 entity!!.get(DrawPosition::class)!!.x += x * getActionFrame(delta)
@@ -78,8 +78,8 @@ sealed class Action(
 
             totalTime += delta
             if (isActionFinished()) {
-                layeredDraw?.xOffset = targetX
-                layeredDraw?.yOffset = targetY
+                drawable?.xOffset = targetX
+                drawable?.yOffset = targetY
                 entity?.get(DrawPosition::class)?.x = targetX
                 entity?.get(DrawPosition::class)?.y = targetY
             }
@@ -88,24 +88,24 @@ sealed class Action(
         }
     }
 
-    class FadeOut(length: Float): Action(length), UsesLayeredDraw, UsesEntity {
+    class FadeOut(length: Float): Action(length), UsesDrawable, UsesEntity {
 
-        override var layeredDraw: LayeredDraw? = null
+        override var drawable: Drawable? = null
         override var entity: Entity? = null
 
         // Entity always begints at 1f
         var initialAlpha: Float = 1f
 
         override fun update(delta: Float): Boolean {
-            if (layeredDraw != null) {
+            if (drawable != null) {
                 if (initialAlpha == 1f)
-                    initialAlpha = layeredDraw!!.alpha
-                layeredDraw!!.alpha -= initialAlpha * getActionFrame(delta)
+                    initialAlpha = drawable!!.alpha
+                drawable!!.alpha -= initialAlpha * getActionFrame(delta)
             }
             if (entity != null) {
-                val layeredDraws = entity!!.get(LayeredDraws::class)?.getLayeredDraws()
+                val drawables = entity!!.get(Drawables::class)?.getDrawables()
 
-                layeredDraws?.forEach {
+                drawables?.forEach {
                     it.alpha -= initialAlpha * getActionFrame(delta)
                 }
             }
@@ -114,12 +114,12 @@ sealed class Action(
         }
     }
 
-    class Delete: Action(), UsesLayeredDraw {
+    class Delete: Action(), UsesDrawable {
 
-        override var layeredDraw: LayeredDraw? = null
+        override var drawable: Drawable? = null
 
         override fun update(delta: Float): Boolean {
-            layeredDraw?.detach()
+            drawable?.detach()
             return true
         }
     }

@@ -40,4 +40,13 @@ class LayeredDraws: Attribute() {
                     textureNames.all { it != layeredDraw.texture.texture.name }
         } as List<LayeredTexture>
     }
+
+    fun getHeight(): Float {
+        var maxHeight = 0f
+        for (draw in layeredDrawArray) {
+            if (draw.height + draw.yOffset > maxHeight)
+                maxHeight = draw.height + draw.yOffset
+        }
+        return maxHeight
+    }
 }

@@ -1,9 +1,13 @@
 package com.neutrino.game.entities.systems.attack.attributes
 
+import com.neutrino.game.domain.model.characters.Player.animation
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.items.Item
+import com.neutrino.game.entities.items.attributes.EquipmentItem
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.HasRange
@@ -57,11 +61,8 @@ class OffensiveStats(
     }
 
     fun attack(target: Position) {
-        if (entity is Character) {
-            if (target.x != entity.x)
-                entity.get(Texture::class)!!.textures.mirror(target.x < entity.x)
-            (entity as Character).setAnimation("attack", "idle", true)
-        }
+        playAttackAnimation(target)
+
         if (entity has AreaAttack::class)
             return areaAttack(target, entity.get(AreaAttack::class)!!)
         if (entity has AroundAttack::class)
@@ -95,6 +96,37 @@ class OffensiveStats(
                 projectile?.shoot(entity)
             }
         }
+    }
+
+    private fun playAttackAnimation(target: Position) {
+        if (entity !is Character)
+            return
+
+        if (target.x != entity.x)
+            entity.get(Texture::class)!!.textures.mirror(target.x < entity.x)
+        if (entity == Player) {
+            val weapon = entity.get(Equipment::class)!!.getWeapon()?.get(EquipmentItem::class)
+            val currentTextureName = Player.get(Texture::class)!!.textures[0].name
+            val animation =
+                if (weapon?.isMelee() == true) {
+                    if (currentTextureName.endsWith("Attack"))
+                        "attack2"
+                    else if (currentTextureName.endsWith("Attack2"))
+                        "attack3"
+                    else "attack"
+                }
+                else if (weapon?.isRanged() == true)
+                    "bow"
+                else if (weapon?.isMagicWeapon() == true)
+                    "cast"
+                else if (currentTextureName.endsWith("Punch"))
+                    "punch2"
+                else if (currentTextureName.endsWith("Punch2"))
+                    "punch3"
+                else "punch"
+            (entity as Character).setAnimation(animation, "idle", true)
+        } else
+            (entity as Character).setAnimation("attack", "idle", true)
     }
 
     companion object {

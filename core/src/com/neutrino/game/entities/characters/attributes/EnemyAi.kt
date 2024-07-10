@@ -1,13 +1,15 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.domain.model.characters.utility.AiIntentionIcons
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.entities.systems.attack.callables.GotAttackedAfterCallable
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.callables.GotAttackedAfterCallable
+import com.neutrino.game.entities.systems.util.visuals.Visuals
+import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.util.VectorOperations
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
-import com.neutrino.game.util.VectorOperations
 import squidpony.squidmath.Coord
 import kotlin.math.pow
 import kotlin.random.Random
@@ -48,9 +50,8 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                 searchTarget()
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
-                    // TODO ECS Actors
-//                    if (displayDetection)
-//                        ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
+                    if (displayDetection)
+                        Visuals.showAiIntention(entity, AiIntentionIcons.ENEMY_DETECTED())
                 }
             }
             field = value
@@ -87,8 +88,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                 searchTarget()
                 if (targettedEnemy != null) {
                     currentBehavior = AiBehavior.TARGET_ENEMY
-                    // TODO ECS Actors
-//                    ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
+                    Visuals.showAiIntention(entity, AiIntentionIcons.ENEMY_DETECTED())
                     return decide()
                 }
 
@@ -116,8 +116,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                         searchTarget()
                     if (targettedEnemy != null && Random.nextFloat() <= 0.5) {
                         currentBehavior = AiBehavior.TARGET_ENEMY
-                        // TODO ECS Actors
-//                        ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
+                        Visuals.showAiIntention(entity, AiIntentionIcons.ENEMY_DETECTED())
                         return decide()
                     }
 
@@ -135,8 +134,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                 action = Action.WAIT
                 energy++
                 energyRecharged++
-                // TODO ECS Actors
-//                ActorVisuals.showAiIntention(character, AiIntentionIcons.WAITING())
+                Visuals.showAiIntention(entity, AiIntentionIcons.WAITING())
             }
             AiBehavior.RETURN -> {
                 if (entity.get(Position::class)!!.x == designatedPosition!!.x && entity.get(Position::class)!!.y == designatedPosition!!.y) {
@@ -149,8 +147,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                     searchTarget()
                 // If the enemy is still sensed, add a probability to attack it
                 if (targettedEnemy != null && Random.nextFloat() <= 0.137) {
-                    // TODO ECS Actors
-//                    ActorVisuals.showAiIntention(character, AiIntentionIcons.ENEMY_DETECTED())
+                    Visuals.showAiIntention(entity, AiIntentionIcons.ENEMY_DETECTED())
                     currentBehavior = AiBehavior.TARGET_ENEMY
                     return decide()
                 }

@@ -14,7 +14,13 @@ open class LayeredTexture(
     entity: Entity,
     val texture: TextureSprite
 ): LayeredDraw() {
-    private val sizeScale: Float = if (entity == Player) 2.25f else if (entity is Character) 2f else SCALE_INT.toFloat()
+    private var sizeScale: Float = if (entity == Player) 2.5f else if (entity is Character) 2f else SCALE_INT.toFloat()
+    var scale: Float = 1f
+        set(value) {
+            sizeScale /= field
+            sizeScale *= value
+            field = value
+        }
     init {
         this.entity = entity
         drawPosition = entity.get(DrawPosition::class)!!
@@ -46,11 +52,17 @@ open class LayeredTexture(
         return getY()
     }
 
-//    override var width: Int
-//        get() = texture.texture.regionWidth * sizeScale
-//        set(value) {}
-//
-//    override var height: Int
-//        get() = texture.texture.regionHeight * sizeScale
-//        set(value) {}
+    /**
+     * Set width only by using scale
+     */
+    override var width: Int
+        get() = ((texture.width() + texture.x) * sizeScale).toInt()
+        set(value) {}
+
+    /**
+     * Set height only by using scale
+     */
+    override var height: Int
+        get() = ((texture.height() + texture.y) * sizeScale).toInt()
+        set(value) {}
 }

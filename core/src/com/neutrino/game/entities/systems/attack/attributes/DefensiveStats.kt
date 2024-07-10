@@ -9,6 +9,7 @@ import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.CharacterTags
 import com.neutrino.game.entities.characters.attributes.EnemyAi
 import com.neutrino.game.entities.characters.attributes.util.CharacterTag.IncreaseStealthDamage
+import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.callables.*
 import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.entities.systems.requirements.PrintableInfo
@@ -121,6 +122,8 @@ class DefensiveStats(
 
         damageColor = ColorUtils.applySaturation(damageColor, 0.8f)
 
+        if (entity is Character && entity.get(Texture::class)!!.textures[0].name.contains("Idle"))
+            (entity as Character).setAnimation("hurt", "idle")
         Visuals.showDamage(entity, damageColor, damage)
 
         hp -= damage

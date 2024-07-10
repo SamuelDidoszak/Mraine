@@ -18,10 +18,12 @@ class Character: Entity() {
 
     fun setAnimation(type: String, next: String? = null, remainMirrored: Boolean = true) {
         fun getAnimation(name: String): AnimatedTextureSprite {
-            val animation = Textures.get(
+            val animation = Textures.getOrNull(
                 (if (this == Player) "player" else Characters.getName(id).lowercase()) +
                         name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-                ) as AnimatedTextureSprite
+                ) as AnimatedTextureSprite?
+            if (animation == null)
+                return get(Texture::class)!!.textures[0] as AnimatedTextureSprite
             if (remainMirrored)
                 animation.mirrorX = get(Texture::class)!!.textures.isMirrored()
             animation.y += 5f

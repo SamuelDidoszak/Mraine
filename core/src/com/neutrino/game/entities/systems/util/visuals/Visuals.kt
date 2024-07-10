@@ -6,8 +6,10 @@ import com.neutrino.game.domain.model.characters.utility.IntentionIcon
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.drawing.actions.Action
+import com.neutrino.game.graphics.drawing.layers.LayeredText
 import com.neutrino.game.graphics.drawing.layers.LayeredTexture
 import com.neutrino.game.graphics.utility.ColorUtils
+import com.neutrino.game.util.height
 
 object Visuals {
     fun showDamage(entity: Entity, color: Color, number: Float) {
@@ -25,10 +27,10 @@ object Visuals {
 
     fun showItemUsed(entity: Entity, item: Entity) {
         val itemDraw = LayeredTexture(entity, item.get(Texture::class)!!.textures[0].clone())
+        itemDraw.z = 2
         itemDraw.initialize(entity)
-        itemDraw.width *= 2
-        itemDraw.height *= 2
-        itemDraw.xOffset = (entity.get(Texture::class)!!.getWidthScaled() - itemDraw.width) / 2f
+        itemDraw.scale = 1.5f
+        itemDraw.xOffset = (64 - itemDraw.width) / 2f
         itemDraw.yOffset = entity.get(Texture::class)!!.getHeightScaled() + 32f
 
         itemDraw.addAction(Action.MoveBy(0f, -32f, 1f))
@@ -41,9 +43,8 @@ object Visuals {
     fun showPickedUpItem(entity: Entity, item: Entity) {
         val itemDraw = LayeredTexture(entity, item.get(Texture::class)!!.textures[0].clone())
         itemDraw.z = 2
-        itemDraw.width *= 2
-        itemDraw.height *= 2
-        itemDraw.xOffset = (entity.get(Texture::class)!!.getWidthScaled() - itemDraw.width) / 2f
+        itemDraw.scale = 1.5f
+        itemDraw.xOffset = (64 - itemDraw.width) / 2f
         itemDraw.yOffset = entity.get(Texture::class)!!.getHeightScaled().toFloat()
         itemDraw.initialize(entity)
 
@@ -55,17 +56,32 @@ object Visuals {
     }
 
     fun showAiIntention(entity: Entity, intention: IntentionIcon) {
-//        group.findActor<Image>("intention")?.remove()
-//        val intentionActor = Image(intention.statusTexture)
-//        intentionActor.setSize(intentionActor.width * 4, intentionActor.height * 4)
-//        intentionActor.name = "intention"
-//
-//        group.addActor(intentionActor)
-//        intentionActor.setPosition(0f, group.height + 32f)
-//        intentionActor.addAction(
-//            Actions.sequence(
-//                Actions.delay(intention.displayTime),
-//                Actions.fadeOut(0.1f),
-//                Actions.removeActor()))
+        val intentionTexture = LayeredTexture(entity, intention.statusTexture)
+        intentionTexture.centerOnEntity = true
+        intentionTexture.z = 2
+        intentionTexture.scale = 1.5f
+        intentionTexture.yOffset = entity.height + 32f
+        intentionTexture.initialize(entity)
+
+        intentionTexture.addAction(
+            Action.Sequence(
+                Action.Delay(intention.displayTime),
+                Action.FadeOut(0.1f),
+                Action.Delete())
+        )
+    }
+
+    fun showText(entity: Entity, text: String) {
+        val textDraw = LayeredText(text, true, entity.get(Texture::class)!!.getWidthScaled() * 6)
+        textDraw.centerOnEntity = true
+        textDraw.z = 3
+        textDraw.yOffset = entity.height + 32f
+        textDraw.initialize(entity)
+
+        textDraw.addAction(Action.Sequence(
+            Action.Delay(1f + text.length / 20f),
+            Action.FadeOut(1.25f),
+            Action.Delete()
+        ))
     }
 }

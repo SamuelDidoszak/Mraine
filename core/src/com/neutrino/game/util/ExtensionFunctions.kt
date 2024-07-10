@@ -10,6 +10,8 @@ import com.neutrino.game.entities.Entities
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Identity
+import com.neutrino.game.entities.shared.attributes.LayeredDraws
+import com.neutrino.game.entities.shared.attributes.Texture
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
@@ -124,3 +126,11 @@ var Entity.x: Int
 var Entity.y: Int
     get() = get(Position::class)!!.y
     set(value) { get(Position::class)!!.y = value }
+
+val Entity.height: Float
+    get() {
+        return if (this has LayeredDraws::class)
+            this.get(LayeredDraws::class)!!.getHeight()
+        else
+            this.get(Texture::class)!!.getHeightScaled().toFloat()
+    }

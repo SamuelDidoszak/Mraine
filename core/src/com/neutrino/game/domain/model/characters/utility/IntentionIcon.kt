@@ -1,9 +1,9 @@
 package com.neutrino.game.domain.model.characters.utility
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.neutrino.game.graphics.textures.TextureSprite
 
 interface IntentionIcon {
     val statusName: String
-    val statusTexture: TextureRegion
+    val statusTexture: TextureSprite
     val displayTime: Float
 }

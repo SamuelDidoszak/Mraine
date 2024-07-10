@@ -30,6 +30,7 @@ open class LayeredText(
             this.text.width = this.text.prefWidth
         else
             this.width = width
+        this.text.wrap = true
         centerText()
     }
 

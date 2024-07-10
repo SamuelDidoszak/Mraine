@@ -6,6 +6,7 @@ import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.DrawerAttribute
+import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.entities.util.Equality
 import com.neutrino.game.graphics.drawing.actions.Action
@@ -41,6 +42,24 @@ abstract class LayeredDraw(
     }
 
     protected var drawPosition: DrawPosition = Defaults.drawPosition
+
+    var centerOnEntity: Boolean = false
+        set(value) {
+            field = value
+            if (!isAttached)
+                return
+            val entityWidth = entity.get(Texture::class)!!.getWidthScaled()
+            val centeredWidth =
+                if (width <= entityWidth)
+                    (entityWidth - width) / 2f
+                else
+                    (-1f * width / 2f) + (entityWidth / 2f)
+
+            if (centerOnEntity)
+                xOffset += centeredWidth
+            else
+                xOffset -= centeredWidth
+        }
 
     abstract fun draw(batch: Batch, x: Float, y: Float, parentAlpha: Float)
 
@@ -98,6 +117,16 @@ abstract class LayeredDraw(
         entity = newEntity
         onEntityAttached()
         attach()
+
+        val entityWidth = entity.get(Texture::class)!!.getWidthScaled()
+        val centeredWidth =
+            if (width <= entityWidth)
+                (entityWidth - width) / 2f
+            else
+                (-1f * width / 2f) + (entityWidth / 2f)
+
+        if (centerOnEntity)
+            xOffset += centeredWidth
     }
 
     @Optimize

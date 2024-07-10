@@ -2,6 +2,7 @@ package com.neutrino.game.entities.shared.attributes
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.characters.Character
+import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.graphics.drawing.AnimationData
@@ -9,6 +10,7 @@ import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class Texture(
@@ -51,7 +53,7 @@ class Texture(
     }
 
     fun getHeightScaled(): Int {
-        return getHeight() * if (entity is Character) 2 else Constants.SCALE_INT
+        return (getHeight() * if (entity == Player) 2.5f else if (entity is Character) 2f else Constants.SCALE_INT.toFloat()).roundToInt()
     }
 
     fun getWidth(): Int {
@@ -69,7 +71,7 @@ class Texture(
     }
 
     fun getWidthScaled(): Int {
-        return getWidth() * if (entity is Character) 2 else Constants.SCALE_INT
+        return (getWidth() * if (entity == Player) 2.5f else if (entity is Character) 2f else Constants.SCALE_INT.toFloat()).roundToInt()
     }
 
     inner class TextureList: ArrayList<TextureSprite>(1) {

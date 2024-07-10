@@ -4,15 +4,15 @@ import com.badlogic.gdx.Gdx
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
-import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.Player
-import com.neutrino.game.entities.characters.attributes.*
+import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.characters.attributes.CharacterTags
+import com.neutrino.game.entities.characters.attributes.EnemyAi
+import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.entities.characters.callables.VisionChangedCallable
-import com.neutrino.game.entities.items.Item
-import com.neutrino.game.entities.items.attributes.EquipmentItem
 import com.neutrino.game.entities.items.attributes.usable.Use
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
 import com.neutrino.game.entities.items.attributes.usable.UseOnPosition
@@ -26,7 +26,6 @@ import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.events.Events
-import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.systems.util.visuals.Visuals
@@ -140,6 +139,7 @@ object Turn {
                         when (action.interaction) {
                             is PickUp -> {
                                 if (Player.get(Inventory::class)!!.add(action.entity)) {
+                                    (Player as Character).setAnimation("crouch", "idle")
                                     GlobalData.notifyObservers(GlobalDataType.PICKUP, action.entity)
                                     Visuals.showPickedUpItem(Player, action.entity)
                                     val coords = Player.getSuper(Ai::class)!!.targetCoords
@@ -148,26 +148,14 @@ object Turn {
                                         println(action.entity.get(Requirements.Stats::class)!!.check(Player))
                                         action.entity.get(Requirements.Stats::class)!!.print(Player).forEach { println(it) }
                                     }
-                                    if (action.entity has EquipmentItem::class) {
-                                        println("Info: ")
-                                        val item = action.entity as Item
-                                        val itemToCompare = Player.get(Equipment::class)!!.getEquipped(item.get(EquipmentItem::class)!!.getEquipmentType()) as Item?
-                                        for (attribute in item.getItemAttributes()) {
-                                            if (attribute is PrintableInfo<*>) {
-                                                (attribute as PrintableInfo<Attribute>).getPrintableInfo(itemToCompare?.get(attribute::class)).forEach {
-                                                    println(it.first)
-                                                    println("\t${it.second}")
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                } else println("Inventory is full")
+                                } else Visuals.showText(Player, "Inventory is full")
                             }
-                            is Chest -> action.interaction.interact()
+                            is Chest -> {
+                                (Player as Character).setAnimation("crouch", "idle")
+                                action.interaction.interact()
+                            }
                             is Door -> {
                                 action.interaction.interact()
-
                                 character.getSuper(Ai::class)!!.updateFov()
                                 Player.call(VisionChangedCallable::class)
                             }
@@ -176,6 +164,7 @@ object Turn {
                     }
                     // TODO ECS ITEM
                     is Action.ITEM -> {
+                        (Player as Character).setAnimation("item", "idle")
                         Visuals.showItemUsed(character, action.item)
 
                         if (action.targetEntity != null) {

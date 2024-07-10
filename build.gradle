@@ -9,7 +9,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.4.2'
 //        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.16'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 //        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"

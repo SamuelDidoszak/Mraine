@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.drawing.layers
+package com.neutrino.game.graphics.drawing.drawables
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.utils.Align

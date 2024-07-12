@@ -3,11 +3,11 @@ characters.png
 mouseAttack#1
 	bounds: 2, 2, 27, 27
 mouseAttack#2
-	bounds: 229, 69, 26, 26
+	bounds: 966, 100, 26, 26
 mouseAttack#3
-	bounds: 204, 98, 31, 28
+	bounds: 132, 42, 31, 28
 mouseAttack#4
-	bounds: 638, 98, 27, 28
+	bounds: 484, 98, 27, 28
 mouseDeath#1
 	bounds: 31, 2, 27, 27
 mouseIdle#1
@@ -19,59 +19,59 @@ mouseIdle#3
 mouseIdle#4
 	bounds: 31, 2, 27, 27
 mouseDeath#2
-	bounds: 285, 68, 25, 27
+	bounds: 224, 72, 25, 27
 mouseDeath#3
-	bounds: 385, 69, 26, 24
+	bounds: 333, 49, 26, 24
 mouseDeath#4
-	bounds: 161, 38, 25, 22
+	bounds: 428, 25, 25, 22
 mouseIdle#5
 	bounds: 60, 2, 27, 27
 mouseIdle#6
 	bounds: 89, 2, 27, 27
 mouseIdle#7
-	bounds: 667, 98, 27, 28
+	bounds: 513, 98, 27, 28
 mouseIdle#8
-	bounds: 696, 98, 27, 28
+	bounds: 542, 98, 27, 28
 mouseWalk#1
-	bounds: 725, 99, 27, 27
+	bounds: 821, 99, 27, 27
 mouseWalk#2
-	bounds: 608, 100, 28, 26
+	bounds: 791, 100, 28, 26
 mouseWalk#3
-	bounds: 754, 99, 27, 27
+	bounds: 850, 99, 27, 27
 mouseWalk#4
-	bounds: 257, 69, 26, 26
+	bounds: 196, 72, 26, 26
 mouse_idle#1
-	bounds: 132, 39, 27, 31
+	bounds: 339, 95, 27, 31
 mouse_idle#2
-	bounds: 333, 95, 27, 31
+	bounds: 368, 95, 27, 31
 mouse_idle#3
-	bounds: 362, 95, 27, 31
+	bounds: 397, 95, 27, 31
 mouse_idle#4
-	bounds: 391, 95, 27, 31
+	bounds: 426, 95, 27, 31
 mouse_idle#5
-	bounds: 420, 95, 27, 31
+	bounds: 455, 95, 27, 31
 playerAttack#1
-	bounds: 161, 62, 19, 36
+	bounds: 118, 3, 19, 36
 playerAttack#2
-	bounds: 188, 26, 18, 36
+	bounds: 186, 3, 18, 36
 playerAttack#3
 	bounds: 2, 31, 34, 36
 playerAttack#4
 	bounds: 38, 31, 27, 36
 playerAttack#5
-	bounds: 182, 64, 19, 36
+	bounds: 139, 4, 19, 36
 playerAttack2#1
 	bounds: 100, 41, 30, 29
 playerAttack2#2
-	bounds: 237, 97, 30, 29
+	bounds: 165, 41, 30, 29
 playerAttack2#3
-	bounds: 269, 97, 30, 29
+	bounds: 275, 97, 30, 29
 playerAttack2#4
 	bounds: 2, 69, 44, 29
 playerAttack2#5
 	bounds: 67, 41, 31, 29
 playerAttack2#6
-	bounds: 301, 97, 30, 29
+	bounds: 307, 97, 30, 29
 playerAttack3#1
 	bounds: 48, 72, 39, 26
 playerAttack3#2
@@ -79,212 +79,224 @@ playerAttack3#2
 playerAttack3#3
 	bounds: 2, 100, 50, 26
 playerAttack3#4
-	bounds: 96, 100, 34, 26
-playerAttack3#5
 	bounds: 89, 72, 34, 26
+playerAttack3#5
+	bounds: 134, 100, 34, 26
 playerAttack3#6
-	bounds: 132, 100, 34, 26
-playerCast#1
-	bounds: 381, 6, 21, 26
-playerCast#2
-	bounds: 649, 45, 18, 26
-playerCast#3
-	bounds: 713, 49, 18, 26
-playerCast#4
-	bounds: 783, 100, 27, 26
-playerCast#5
-	bounds: 812, 100, 27, 26
-playerCastLong#1
-	bounds: 274, 40, 23, 26
-playerCastLong#2
-	bounds: 533, 28, 20, 26
-playerCastLong#3
-	bounds: 627, 45, 20, 26
-playerCastLong#4
-	bounds: 515, 100, 29, 26
-playerCastLong#5
-	bounds: 546, 100, 29, 26
-playerCastLong#7
-	bounds: 546, 100, 29, 26
-playerCastLong#6
-	bounds: 577, 100, 29, 26
-playerCastLong#8
-	bounds: 577, 100, 29, 26
-playerCrouch#1
-	bounds: 118, 2, 20, 22
-playerCrouch#2
-	bounds: 140, 2, 20, 22
-playerCrouch#3
-	bounds: 733, 47, 20, 22
-playerCrouch#4
-	bounds: 795, 76, 20, 22
-playerCrouch#5
-	bounds: 795, 76, 20, 22
-playerCrouch#6
-	bounds: 795, 76, 20, 22
-playerDeath#1
-	bounds: 318, 9, 18, 29
-playerDeath#2
-	bounds: 338, 13, 18, 29
-playerDeath#3
-	bounds: 312, 66, 19, 29
-playerDeath#4
-	bounds: 252, 6, 20, 29
-playerDeath#5
-	bounds: 274, 9, 20, 29
-playerDeath#6
-	bounds: 296, 9, 20, 29
-playerHurt#1
-	bounds: 600, 3, 18, 24
-playerHurt#2
-	bounds: 755, 47, 18, 24
-playerHurt#3
-	bounds: 775, 73, 18, 24
-playerIdle#1
-	bounds: 208, 34, 20, 30
-playerIdle#2
-	bounds: 208, 34, 20, 30
-playerIdle#3
-	bounds: 208, 34, 20, 30
-playerIdle#4
-	bounds: 208, 2, 20, 30
-playerIdle#5
-	bounds: 230, 37, 20, 30
-playerIdle#6
-	bounds: 252, 37, 20, 30
-playerIdle#7
-	bounds: 230, 5, 20, 30
-playerIdleFight#1
-	bounds: 425, 39, 20, 28
-playerIdleFight#2
-	bounds: 425, 39, 20, 28
-playerIdleFight#3
-	bounds: 427, 9, 20, 28
-playerIdleFight#4
-	bounds: 358, 15, 21, 28
-playerIdleFight#5
-	bounds: 402, 39, 21, 28
-playerIdleFight#6
-	bounds: 447, 53, 20, 28
-playerItem#1
-	bounds: 669, 49, 20, 26
-playerItem#2
-	bounds: 1000, 100, 22, 26
-playerItem#3
-	bounds: 555, 28, 19, 26
-playerItem#4
-	bounds: 555, 28, 19, 26
-playerKick#1
-	bounds: 598, 29, 19, 24
-playerKick#2
-	bounds: 556, 2, 20, 24
-playerKick#3
-	bounds: 841, 102, 29, 24
-playerKick#4
-	bounds: 903, 102, 28, 24
-playerKick2#1
-	bounds: 733, 71, 19, 26
-playerKick2#2
 	bounds: 125, 72, 34, 26
+playerBow#1
+	bounds: 257, 14, 26, 25
+playerBow#2
+	bounds: 697, 102, 30, 24
+playerBow#3
+	bounds: 228, 14, 27, 25
+playerBow#4
+	bounds: 879, 100, 27, 26
+playerBow#5
+	bounds: 96, 100, 36, 26
+playerBow#6
+	bounds: 161, 72, 33, 26
+playerCast#1
+	bounds: 432, 49, 21, 26
+playerCast#2
+	bounds: 567, 70, 18, 26
+playerCast#3
+	bounds: 635, 42, 18, 26
+playerCast#4
+	bounds: 908, 100, 27, 26
+playerCast#5
+	bounds: 937, 100, 27, 26
+playerCastLong#1
+	bounds: 407, 49, 23, 26
+playerCastLong#2
+	bounds: 455, 20, 20, 26
+playerCastLong#3
+	bounds: 477, 20, 20, 26
+playerCastLong#4
+	bounds: 571, 100, 29, 26
+playerCastLong#5
+	bounds: 602, 100, 29, 26
+playerCastLong#7
+	bounds: 602, 100, 29, 26
+playerCastLong#6
+	bounds: 633, 100, 29, 26
+playerCastLong#8
+	bounds: 633, 100, 29, 26
+playerCrouch#1
+	bounds: 802, 75, 20, 22
+playerCrouch#2
+	bounds: 824, 75, 20, 22
+playerCrouch#3
+	bounds: 846, 75, 20, 22
+playerCrouch#4
+	bounds: 804, 51, 20, 22
+playerCrouch#5
+	bounds: 804, 51, 20, 22
+playerCrouch#6
+	bounds: 804, 51, 20, 22
+playerDeath#1
+	bounds: 219, 41, 18, 29
+playerDeath#2
+	bounds: 239, 41, 18, 29
+playerDeath#3
+	bounds: 455, 48, 19, 29
+playerDeath#4
+	bounds: 197, 41, 20, 29
+playerDeath#5
+	bounds: 285, 13, 20, 29
+playerDeath#6
+	bounds: 499, 46, 20, 29
+playerHurt#1
+	bounds: 361, 49, 18, 24
+playerHurt#2
+	bounds: 764, 45, 18, 24
+playerHurt#3
+	bounds: 784, 48, 18, 24
+playerIdle#1
+	bounds: 206, 9, 20, 30
+playerIdle#2
+	bounds: 206, 9, 20, 30
+playerIdle#3
+	bounds: 206, 9, 20, 30
+playerIdle#4
+	bounds: 259, 41, 20, 30
+playerIdle#5
+	bounds: 307, 16, 20, 30
+playerIdle#6
+	bounds: 329, 16, 20, 30
+playerIdle#7
+	bounds: 351, 17, 20, 30
+playerIdleFight#1
+	bounds: 610, 70, 20, 28
+playerIdleFight#2
+	bounds: 610, 70, 20, 28
+playerIdleFight#3
+	bounds: 632, 70, 20, 28
+playerIdleFight#4
+	bounds: 476, 48, 21, 28
+playerIdleFight#5
+	bounds: 542, 15, 21, 28
+playerIdleFight#6
+	bounds: 565, 14, 20, 28
+playerItem#1
+	bounds: 613, 42, 20, 26
+playerItem#2
+	bounds: 251, 73, 22, 26
+playerItem#3
+	bounds: 521, 18, 19, 26
+playerItem#4
+	bounds: 521, 18, 19, 26
+playerKick#1
+	bounds: 743, 45, 19, 24
+playerKick#2
+	bounds: 499, 20, 20, 24
+playerKick#3
+	bounds: 729, 102, 29, 24
+playerKick#4
+	bounds: 994, 102, 28, 24
+playerKick2#1
+	bounds: 655, 42, 19, 26
+playerKick2#2
+	bounds: 170, 100, 34, 26
 playerKick2#3
-	bounds: 162, 10, 24, 26
+	bounds: 381, 49, 24, 26
 playerKick2#4
-	bounds: 691, 49, 20, 26
+	bounds: 653, 14, 20, 26
 playerPunch#1
-	bounds: 576, 28, 20, 25
+	bounds: 676, 44, 20, 25
 playerPunch#2
-	bounds: 578, 55, 21, 25
+	bounds: 590, 43, 21, 25
 playerPunch#3
-	bounds: 449, 101, 31, 25
+	bounds: 242, 101, 31, 25
 playerPunch#4
-	bounds: 613, 73, 23, 25
+	bounds: 542, 71, 23, 25
 playerPunch2#1
-	bounds: 1000, 74, 22, 24
+	bounds: 542, 45, 22, 24
 playerPunch2#2
-	bounds: 299, 40, 22, 24
+	bounds: 566, 44, 22, 24
 playerPunch2#3
-	bounds: 168, 102, 34, 24
+	bounds: 206, 102, 34, 24
 playerPunch2#4
-	bounds: 482, 102, 31, 24
+	bounds: 664, 102, 31, 24
 playerPunch2#5
-	bounds: 413, 69, 26, 24
+	bounds: 373, 23, 26, 24
 playerPunch3#1
-	bounds: 754, 73, 19, 24
+	bounds: 781, 74, 19, 24
 playerPunch3#2
-	bounds: 872, 102, 29, 24
+	bounds: 760, 102, 29, 24
 playerPunch3#3
-	bounds: 533, 2, 21, 24
+	bounds: 698, 45, 21, 24
 playerPunch3#4
-	bounds: 578, 2, 20, 24
+	bounds: 721, 45, 20, 24
 playerRun#1
-	bounds: 404, 9, 21, 28
+	bounds: 587, 70, 21, 28
 playerRun#2
-	bounds: 469, 53, 20, 28
+	bounds: 587, 13, 20, 28
 playerRun#3
-	bounds: 491, 56, 20, 28
+	bounds: 609, 12, 20, 28
 playerRun#4
-	bounds: 333, 65, 24, 28
+	bounds: 281, 44, 24, 28
 playerRun#5
-	bounds: 513, 56, 20, 28
+	bounds: 631, 12, 20, 28
 playerRun#6
-	bounds: 535, 56, 20, 28
+	bounds: 654, 70, 20, 28
 playerWalk#1
-	bounds: 381, 34, 19, 29
+	bounds: 521, 46, 19, 29
 playerWalk#2
-	bounds: 557, 57, 19, 29
+	bounds: 676, 71, 19, 29
 playerWalk#3
-	bounds: 449, 22, 19, 29
+	bounds: 697, 71, 19, 29
 playerWalk#4
-	bounds: 470, 22, 19, 29
+	bounds: 718, 71, 19, 29
 playerWalk#5
-	bounds: 491, 25, 19, 29
+	bounds: 739, 71, 19, 29
 playerWalk#6
-	bounds: 512, 25, 19, 29
+	bounds: 760, 71, 19, 29
 slimeAttack#1
-	bounds: 601, 55, 24, 16
+	bounds: 491, 2, 24, 16
 slimeAttack#2
-	bounds: 933, 105, 30, 21
+	bounds: 275, 74, 30, 21
 slimeAttack#3
-	bounds: 965, 108, 33, 18
+	bounds: 339, 75, 33, 18
 slimeAttack#4
-	bounds: 965, 90, 33, 16
+	bounds: 374, 77, 33, 16
 slimeAttack#5
-	bounds: 449, 83, 31, 16
+	bounds: 409, 77, 31, 16
 slimeAttack#6
-	bounds: 449, 4, 27, 16
+	bounds: 462, 2, 27, 16
 slimeDeath#1
-	bounds: 933, 86, 30, 17
+	bounds: 307, 78, 30, 17
 slimeDeath#2
-	bounds: 515, 86, 31, 12
+	bounds: 307, 2, 31, 12
 slimeDeath#3
-	bounds: 548, 88, 32, 10
+	bounds: 228, 2, 32, 10
 slimeDeath#4
 	bounds: 67, 31, 32, 8
 slimeIdle#1
-	bounds: 665, 77, 27, 19
+	bounds: 373, 2, 27, 19
 slimeIdle#2
-	bounds: 665, 77, 27, 19
+	bounds: 373, 2, 27, 19
 slimeIdle#3
-	bounds: 665, 77, 27, 19
+	bounds: 373, 2, 27, 19
 slimeIdle#4
-	bounds: 694, 77, 27, 19
+	bounds: 402, 3, 27, 19
 slimeIdle#5
-	bounds: 352, 45, 27, 18
+	bounds: 484, 78, 27, 18
 slimeIdle#6
-	bounds: 323, 44, 27, 19
+	bounds: 513, 77, 27, 19
 slimeWalk#1
-	bounds: 482, 86, 31, 14
+	bounds: 442, 79, 31, 14
 slimeWalk#2
-	bounds: 582, 82, 29, 16
+	bounds: 431, 2, 29, 16
 slimeWalk#8
-	bounds: 582, 82, 29, 16
+	bounds: 431, 2, 29, 16
 slimeWalk#3
-	bounds: 638, 73, 25, 23
+	bounds: 401, 24, 25, 23
 slimeWalk#7
-	bounds: 638, 73, 25, 23
+	bounds: 401, 24, 25, 23
 slimeWalk#4
-	bounds: 359, 65, 24, 28
+	bounds: 307, 48, 24, 28
 slimeWalk#6
-	bounds: 359, 65, 24, 28
+	bounds: 307, 48, 24, 28
 slimeWalk#5
-	bounds: 203, 66, 24, 30
+	bounds: 160, 9, 24, 30

@@ -7,10 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.*
-import com.neutrino.game.graphics.drawing.layers.Drawable
-import com.neutrino.game.graphics.drawing.layers.DrawableTexture
-import com.neutrino.game.graphics.drawing.layers.LayeredDrawableList
-import com.neutrino.game.graphics.drawing.layers.DrawableTextureUnsorted
+import com.neutrino.game.graphics.drawing.drawables.Drawable
+import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
+import com.neutrino.game.graphics.drawing.drawables.LayeredDrawableList
+import com.neutrino.game.graphics.drawing.drawables.DrawableTextureUnsorted
 import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.Light

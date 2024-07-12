@@ -13,6 +13,7 @@ import com.neutrino.game.entities.shared.attributes.RandomizationSimple
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.Projectile
 import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Cooldown
 import com.neutrino.game.entities.systems.events.TimedEvent
@@ -91,8 +92,10 @@ Items.add("Basic fire wand") {
         ))
         .addAttribute(OffensiveStats(
             fireDamageMin = 2f,
-            fireDamageMax = 4f
+            fireDamageMax = 4f,
+            range = 7
         ))
+        .addAttribute(Projectile(Projectile.ProjectileType.FIREPROJECTILE))
         .addAttribute(Requirements.Stats(intelligence = 3f))
 }
 Items.add("Ripped pants") {

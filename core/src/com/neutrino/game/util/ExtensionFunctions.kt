@@ -9,8 +9,8 @@ import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entities
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Drawables
+import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -118,7 +118,9 @@ fun Table.remove(actor: Actor) {
     removeActor(actor)
 }
 
-
+var Entity.position: Position
+    get() = get(Position::class)!!
+    set(value) { addAttribute(value) }
 var Entity.x: Int
     get() = get(Position::class)!!.x
     set(value) { get(Position::class)!!.x = value }
@@ -132,5 +134,5 @@ val Entity.height: Float
         return if (this has Drawables::class)
             this.get(Drawables::class)!!.getHeight()
         else
-            this.get(Texture::class)!!.getHeightScaled().toFloat()
+            this.get(Texture::class)?.getHeightScaled()?.toFloat() ?: 64f
     }

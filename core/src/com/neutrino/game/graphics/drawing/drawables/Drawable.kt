@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.drawing.layers
+package com.neutrino.game.graphics.drawing.drawables
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -118,7 +118,7 @@ abstract class Drawable(
         onEntityAttached()
         attach()
 
-        val entityWidth = entity.get(Texture::class)!!.getWidthScaled()
+        val entityWidth = entity.get(Texture::class)?.getWidthScaled() ?: 0
         val centeredWidth =
             if (width <= entityWidth)
                 (entityWidth - width) / 2f

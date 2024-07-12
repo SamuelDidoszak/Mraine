@@ -1,7 +1,7 @@
 package com.neutrino.game.graphics.drawing
 
 import com.neutrino.game.entities.Entity
-import com.neutrino.game.graphics.drawing.layers.Drawable
+import com.neutrino.game.graphics.drawing.drawables.Drawable
 import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
 

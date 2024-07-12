@@ -1,6 +1,5 @@
 package com.neutrino.game.entities.systems.attack.attributes
 
-import com.neutrino.game.domain.model.characters.Player.animation
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
@@ -71,9 +70,11 @@ class OffensiveStats(
     }
 
     private fun basicAttack(target: Position) {
-        getTopAttackable(target)?.get(DefensiveStats::class)?.getDamage(this)
+        val attackable = getTopAttackable(target)
+        attackable?.get(DefensiveStats::class)?.getDamage(this)
         val projectile = entity get Projectile::class
-        projectile?.shoot(target)
+        if (attackable != null)
+            projectile?.shoot(attackable)
     }
 
     private fun areaAttack(target: Position, hasRange: HasRange) {

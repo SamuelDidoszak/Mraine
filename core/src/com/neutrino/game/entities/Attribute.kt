@@ -34,6 +34,8 @@ abstract class Attribute {
         if ((this as AttributeOperations<T>) isEqual other) {
             entity.removeAttribute(T::class)
             val attribute = prevAttr?.remove(T::class)
+            println("It's equal, ${T::class}, $attribute")
+            println("PreviousAttributes: ${entity.get(PreviousAttributes::class)?.attributeList?.size ?: "null"}")
             if (attribute != null)
                 entity.addAttribute(attribute)
         } else {

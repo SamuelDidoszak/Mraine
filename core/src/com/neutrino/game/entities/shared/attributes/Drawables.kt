@@ -1,8 +1,8 @@
 package com.neutrino.game.entities.shared.attributes
 
 import com.neutrino.game.entities.Attribute
-import com.neutrino.game.graphics.drawing.layers.Drawable
-import com.neutrino.game.graphics.drawing.layers.DrawableTexture
+import com.neutrino.game.graphics.drawing.drawables.Drawable
+import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
 
 class Drawables: Attribute() {
     private val drawableArray = ArrayList<Drawable>()
@@ -16,9 +16,9 @@ class Drawables: Attribute() {
     }
 
     fun removeDrawable(predicate: (Drawable) -> Boolean): Drawable? {
-        val layeredDraw = drawableArray.find { predicate.invoke(it) }
-        drawableArray.remove(layeredDraw)
-        return layeredDraw
+        val drawable = drawableArray.find { predicate.invoke(it) }
+        drawableArray.remove(drawable)
+        return drawable
     }
 
     fun getDrawables(): List<Drawable> {
@@ -27,9 +27,9 @@ class Drawables: Attribute() {
 
     fun getBaseTextures(): List<DrawableTexture> {
         val textureNames = entity.get(Texture::class)!!.textures.map { it.texture.name }
-        return drawableArray.filter { layeredDraw ->
-            layeredDraw is DrawableTexture &&
-            textureNames.any { it == layeredDraw.texture.texture.name }
+        return drawableArray.filter { drawable ->
+            drawable is DrawableTexture &&
+            textureNames.any { it == drawable.texture.texture.name }
         } as List<DrawableTexture>
     }
 

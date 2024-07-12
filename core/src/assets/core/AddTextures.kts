@@ -223,6 +223,7 @@ Textures add AnimatedTextureSprite(getArray("characters", "playerPunch3#1", "pla
 Textures add AnimatedTextureSprite(getArray("characters", "playerKick#1", "playerKick#2", "playerKick#3", "playerKick#4"), false, 0.2f, 7f)
 Textures add AnimatedTextureSprite(getArray("characters", "playerKick2#1", "playerKick2#2", "playerKick2#3", "playerKick2#4"), false, 0.2f, 1f)
 Textures add AnimatedTextureSprite(getArray("characters", "playerRun#1", "playerRun#2", "playerRun#3", "playerRun#4", "playerRun#5", "playerRun#6"), true, 0.2f, 4f)
+Textures add AnimatedTextureSprite(getArray("characters", "playerBow#1", "playerBow#2", "playerBow#3", "playerBow#4", "playerBow#5", "playerBow#6"), false, 0.2f)
 Textures add AnimatedTextureSprite(getArray("characters", "mouseIdle#1", "mouseIdle#2", "mouseIdle#3", "mouseIdle#4", "mouseIdle#5", "mouseIdle#6", "mouseIdle#7", "mouseIdle#8"), true, 0.25f)
 Textures add AnimatedTextureSprite(getArray("characters", "mouseWalk#1", "mouseWalk#2", "mouseWalk#3", "mouseWalk#4"), true, 0.25f)
 Textures add AnimatedTextureSprite(getArray("characters", "mouseAttack#1", "mouseAttack#2", "mouseAttack#3", "mouseAttack#4"), false, 0.25f)
@@ -304,3 +305,12 @@ Textures add TextureSprite(get("iconsSkills", "itemBetter"), 4f, 4f)
 Textures add TextureSprite(get("iconsSkills", "itemWorse"), 4f, 4f)
 Textures add AnimatedTextureSprite(getArray("iconsSkills", "threeDots#1", "threeDots#2", "threeDots#3", "threeDots#4"), true, 0.5f)
 Textures add AnimatedTextureSprite(getArray("iconsSkills", "exclamationMark#1", "exclamationMark#2", "exclamationMark#3", "exclamationMark#4", "exclamationMark#5", "exclamationMark#6"), false, 0.16666667f)
+Textures add TextureSprite(get("projectiles", "fireProjectile"), LightSources(arrayListOf(
+	Light(3f, 2f, Color.valueOf("f36422ff"), 5f, 64f),
+	Light(7f, 1f, Color.valueOf("f35107ff"), 5f, 64f),
+),), z = 2)
+Textures add TextureSprite(get("projectiles", "poisonProjectile"), LightSources(arrayListOf(
+	Light(2f, 2f, Color.valueOf("378021ff"), 5f, 64f),
+	Light(7f, 2f, Color.valueOf("61961bff"), 5f, 64f),
+),), z = 2)
+Textures add TextureSprite(get("projectiles", "woodenArrow"), z = 2)

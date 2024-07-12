@@ -1,6 +1,6 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.graphics.drawing.layers.DrawableText
+import com.neutrino.game.graphics.drawing.drawables.DrawableText
 
 class Name: DrawableText(width = 64) {
 

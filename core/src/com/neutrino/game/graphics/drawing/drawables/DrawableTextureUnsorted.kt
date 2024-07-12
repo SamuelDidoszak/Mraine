@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.drawing.layers
+package com.neutrino.game.graphics.drawing.drawables
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.graphics.textures.TextureSprite

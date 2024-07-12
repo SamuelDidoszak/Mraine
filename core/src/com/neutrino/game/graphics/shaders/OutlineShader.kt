@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Vector2
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.entities.util.Equality
-import com.neutrino.game.graphics.drawing.layers.DrawableTexture
+import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
 import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import ktx.math.div
 import ktx.math.times

@@ -4,7 +4,7 @@ import com.neutrino.game.entities.shared.attributes.util.EqualityCheckLock
 import com.neutrino.game.entities.util.Equality
 import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.graphics.drawing.actions.Actions
-import com.neutrino.game.graphics.drawing.layers.Drawable
+import com.neutrino.game.graphics.drawing.drawables.Drawable
 import kotlin.reflect.KClass
 import kotlin.reflect.full.allSuperclasses
 import kotlin.reflect.full.superclasses

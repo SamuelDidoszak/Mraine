@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.drawing.layers
+package com.neutrino.game.graphics.drawing.drawables
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.neutrino.game.entities.Entity
@@ -14,7 +14,7 @@ open class DrawableTexture(
     entity: Entity,
     val texture: TextureSprite
 ): Drawable() {
-    private var sizeScale: Float = if (entity == Player) 2.5f else if (entity is Character) 2f else SCALE_INT.toFloat()
+    protected var sizeScale: Float = if (entity == Player) 2.5f else if (entity is Character) 2f else SCALE_INT.toFloat()
     var scale: Float = 1f
         set(value) {
             sizeScale /= field
@@ -28,8 +28,6 @@ open class DrawableTexture(
 
     override fun draw(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
         batch.setAlpha(parentAlpha * alpha)
-        width = (texture.texture.regionWidth * sizeScale).roundToInt()
-        height = (texture.texture.regionHeight * sizeScale).roundToInt()
         batch.draw(texture.texture,
             if (!texture.mirrorX) x + getX() else x + getX() +
                     if (texture !is AnimatedTextureSprite) width else (texture.mirrorPivot * sizeScale).roundToInt(),
@@ -56,13 +54,13 @@ open class DrawableTexture(
      * Set width only by using scale
      */
     override var width: Int
-        get() = ((texture.width() + texture.x) * sizeScale).toInt()
+        get() = (texture.width() * sizeScale).toInt()
         set(value) {}
 
     /**
      * Set height only by using scale
      */
     override var height: Int
-        get() = ((texture.height() + texture.y) * sizeScale).toInt()
+        get() = (texture.height() * sizeScale).toInt()
         set(value) {}
 }

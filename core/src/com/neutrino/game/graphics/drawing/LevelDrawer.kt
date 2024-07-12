@@ -16,10 +16,10 @@ import com.neutrino.game.entities.shared.attributes.Shaders
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.util.Cloneable
-import com.neutrino.game.graphics.drawing.layers.Drawable
-import com.neutrino.game.graphics.drawing.layers.DrawableTexture
-import com.neutrino.game.graphics.drawing.layers.LayeredDrawableList
-import com.neutrino.game.graphics.drawing.layers.DrawableTextureUnsorted
+import com.neutrino.game.graphics.drawing.drawables.Drawable
+import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
+import com.neutrino.game.graphics.drawing.drawables.LayeredDrawableList
+import com.neutrino.game.graphics.drawing.drawables.DrawableTextureUnsorted
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.graphics.textures.Light
@@ -101,9 +101,9 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
     }
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
-        val layeredDraw = entity.get(Drawables::class)?.removeDrawable {
+        val drawable = entity.get(Drawables::class)?.removeDrawable {
             it.entity == entity && it is DrawableTexture && it.texture == texture }
-        drawableLayers[texture.z]!!.remove(layeredDraw)
+        drawableLayers[texture.z]!!.remove(drawable)
     }
 
     init {

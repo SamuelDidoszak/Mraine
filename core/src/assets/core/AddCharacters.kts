@@ -11,7 +11,7 @@ import com.neutrino.game.entities.characters.attributes.util.LootElement
 import com.neutrino.game.entities.shared.attributes.RandomizationSimple
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.Stats
-import com.neutrino.game.graphics.drawing.layers.CharacterInfoGroup
+import com.neutrino.game.graphics.drawing.drawables.CharacterInfoGroup
 import com.neutrino.game.graphics.textures.Textures
 import kotlin.random.Random
 

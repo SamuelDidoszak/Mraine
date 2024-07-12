@@ -2,7 +2,8 @@ package com.neutrino.game.graphics.drawing.actions
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Drawables
-import com.neutrino.game.graphics.drawing.layers.Drawable
+import com.neutrino.game.graphics.drawing.drawables.Drawable
+import com.neutrino.game.graphics.drawing.drawables.RotatingDrawableTexture
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.util.equalsDelta
 
@@ -36,6 +37,14 @@ sealed class Action(
             if (actions.first().isActionFinished())
                 actions.removeFirst()
             return actions.isEmpty()
+        }
+    }
+
+    class Wait(time: Float): Action(time) {
+
+        override fun update(delta: Float): Boolean {
+            totalTime += delta
+            return isActionFinished()
         }
     }
 
@@ -109,6 +118,19 @@ sealed class Action(
                     it.alpha -= initialAlpha * getActionFrame(delta)
                 }
             }
+            totalTime += delta
+            return isActionFinished()
+        }
+    }
+
+    class RotateBy(val rotation: Float, length: Float): Action(length), UsesDrawable {
+        override var drawable: Drawable? = null
+
+        override fun update(delta: Float): Boolean {
+            if (drawable !is RotatingDrawableTexture)
+                return true
+            (drawable!! as RotatingDrawableTexture).rotation += rotation * getActionFrame(delta)
+
             totalTime += delta
             return isActionFinished()
         }

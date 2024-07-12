@@ -12,7 +12,7 @@ import com.neutrino.game.entities.systems.attack.callables.GotAttackedAfterCalla
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.entities.util.Equality
-import com.neutrino.game.graphics.drawing.layers.HpBar
+import com.neutrino.game.graphics.drawing.drawables.HpBar
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.map.chunk.ChunkManager
 

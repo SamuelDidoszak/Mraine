@@ -6,8 +6,8 @@ import com.neutrino.game.domain.model.characters.utility.IntentionIcon
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.drawing.actions.Action
-import com.neutrino.game.graphics.drawing.layers.DrawableText
-import com.neutrino.game.graphics.drawing.layers.DrawableTexture
+import com.neutrino.game.graphics.drawing.drawables.DrawableText
+import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.height
 
@@ -72,7 +72,7 @@ object Visuals {
     }
 
     fun showText(entity: Entity, text: String) {
-        val textDraw = DrawableText(text, true, entity.get(Texture::class)!!.getWidthScaled() * 6)
+        val textDraw = DrawableText(text, true, (entity.get(Texture::class)?.getWidthScaled() ?: 64) * 6)
         textDraw.centerOnEntity = true
         textDraw.z = 3
         textDraw.yOffset = entity.height + 32f

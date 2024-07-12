@@ -2,7 +2,7 @@ package com.neutrino.game.entities.shared.attributes
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.util.Cloneable
-import com.neutrino.game.graphics.drawing.layers.DrawableTexture
+import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
 import com.neutrino.game.graphics.shaders.ShaderParametered
 
 class Shaders(

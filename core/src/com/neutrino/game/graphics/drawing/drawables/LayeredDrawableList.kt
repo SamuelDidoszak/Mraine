@@ -1,4 +1,4 @@
-package com.neutrino.game.graphics.drawing.layers
+package com.neutrino.game.graphics.drawing.drawables
 
 internal class LayeredDrawableList: ArrayList<Drawable>() {
 

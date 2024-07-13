@@ -16,12 +16,12 @@ import com.neutrino.game.entities.shared.attributes.Shaders
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.util.Cloneable
-import com.neutrino.game.graphics.drawing.drawables.Drawable
-import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
-import com.neutrino.game.graphics.drawing.drawables.LayeredDrawableList
+import com.neutrino.game.graphics.drawing.drawables.*
 import com.neutrino.game.graphics.drawing.drawables.DrawableTextureUnsorted
+import com.neutrino.game.graphics.drawing.drawables.LayeredDrawableList
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.shaders.ShaderPrograms
+import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
@@ -39,7 +39,7 @@ import kotlin.random.Random
 open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
 
     override val animations: Animations = Animations(this)
-    override val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
+    override val lights: ArrayList<Pair<DrawableTexture, Light>> = ArrayList()
     private val drawableLayers: SortedMap<Int, LayeredDrawableList> = sortedMapOf()
 
     var chunk: Chunk = chunk
@@ -65,6 +65,9 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
         if (drawableLayers[drawable.z] == null)
             drawableLayers[drawable.z] = LayeredDrawableList()
 
+        if (drawable is DrawableTexture)
+            addDrawableDetails(drawable)
+
         drawable.entity.get(Shaders::class)?.shaders?.forEach { drawable.addShader(it) }
         drawableLayers[drawable.z]!!.add(drawable)
         if (drawable.entity hasNot Drawables::class)
@@ -75,6 +78,8 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
     override fun removeDrawable(drawable: Drawable) {
         drawable.entity.get(Drawables::class)?.removeDrawable(drawable)
         drawableLayers[drawable.z]!!.remove(drawable)
+        if (drawable is DrawableTexture)
+            removeDrawableDetails(drawable)
     }
 
     override fun addTexture(entity: Entity, texture: TextureSprite) {
@@ -86,6 +91,8 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
                 DrawableTextureUnsorted(entity, texture)
             else
                 DrawableTexture(entity, texture)
+
+        addDrawableDetails(drawableTexture)
 
         entity.get(Shaders::class)?.shaders?.forEach {
             if (entity.get(Drawables::class)?.getBaseTextures()?.isNotEmpty() == true && it is Cloneable<*>)
@@ -104,6 +111,37 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
         val drawable = entity.get(Drawables::class)?.removeDrawable {
             it.entity == entity && it is DrawableTexture && it.texture == texture }
         drawableLayers[texture.z]!!.remove(drawable)
+        removeDrawableDetails(drawable as DrawableTexture)
+    }
+    
+    private fun addDrawableDetails(drawable: DrawableTexture) {
+        if (drawable.texture is AnimatedTextureSprite)
+            animations.add(drawable)
+        if (drawable.texture.lights == null)
+            return
+
+        val texture = drawable.texture
+        if (texture.lights!!.isSingleLight)
+            lights.add(Pair(drawable, texture.lights!!.getLight()))
+        else {
+            for (light in texture.lights!!.getLights()!!) {
+                lights.add(Pair(drawable, light))
+            }
+        }
+    }
+
+    private fun removeDrawableDetails(drawable: DrawableTexture) {
+        if (drawable.texture is AnimatedTextureSprite)
+            animations.remove(drawable)
+        if (drawable.texture.lights == null)
+            return
+
+        val texture = drawable.texture
+        if (texture.lights!!.isSingleLight) {
+            val index = lights.indexOfFirst { it.first == drawable }
+            lights.removeAt(index)
+        } else
+            lights.removeIf { it.first == drawable }
     }
 
     init {
@@ -212,14 +250,20 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
         batch?.shader = ShaderPrograms.lightShader
         batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE)
         for (light in lights) {
-            val drawPositionAttribute = light.first.get(DrawPosition::class)!!
+            val drawPositionAttribute = light.first.entity.get(DrawPosition::class)!!
             val radius = light.second.radius
             batch?.color = light.second.color
-            // TODO add texture position
+
+            var x = x + drawPositionAttribute.x + light.first.xOffset - radius + SCALE / 2
+            if (light.first.texture.mirrorX)
+                x += (light.first.texture.x + light.first.texture.width() - light.second.x) * SCALE_INT
+            else
+                x += (light.first.texture.x + light.second.x) * SCALE_INT
+
             batch?.draw(
                 Constants.WhitePixel,
-                x + drawPositionAttribute.x + light.second.x * SCALE_INT - radius + SCALE / 2,
-                y + drawPositionAttribute.y + light.second.y * SCALE_INT - radius + SCALE / 2,
+                x,
+                y + drawPositionAttribute.y + light.first.yOffset + (light.second.y + light.first.texture.y) * SCALE_INT - radius + SCALE / 2,
                 2 * radius, 2 * radius
             )
         }

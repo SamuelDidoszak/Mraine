@@ -9,8 +9,8 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.*
 import com.neutrino.game.graphics.drawing.drawables.Drawable
 import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
-import com.neutrino.game.graphics.drawing.drawables.LayeredDrawableList
 import com.neutrino.game.graphics.drawing.drawables.DrawableTextureUnsorted
+import com.neutrino.game.graphics.drawing.drawables.LayeredDrawableList
 import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.Light
@@ -29,7 +29,7 @@ class SingleEntityDrawer(entity: Entity,
                          private val fillSpace: Boolean = true): Actor(), EntityDrawer {
 
     override val animations: Animations = Animations(this)
-    override val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
+    override val lights: ArrayList<Pair<DrawableTexture, Light>> = ArrayList()
     // Optimize
     private val textureLayers: SortedMap<Int, LayeredDrawableList> = sortedMapOf()
 
@@ -95,6 +95,9 @@ class SingleEntityDrawer(entity: Entity,
             else
                 DrawableTexture(entity, texture)
 
+        if (drawableTexture.texture is AnimatedTextureSprite)
+            animations.add(drawableTexture)
+
         textureLayers[texture.z]!!.add(drawableTexture)
         if (entity hasNot Drawables::class)
             entity.addAttribute(Drawables())
@@ -104,7 +107,11 @@ class SingleEntityDrawer(entity: Entity,
     }
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
-        textureLayers[texture.z]?.removeIf { it.entity == entity && it is DrawableTexture && it.texture == texture }
+        val drawable = textureLayers[texture.z]?.find { it.entity == entity && it is DrawableTexture && it.texture == texture }
+            ?: return
+        if ((drawable as DrawableTexture).texture is AnimatedTextureSprite)
+            animations.add(drawable)
+        textureLayers[texture.z]?.remove(drawable)
     }
 
     override fun addDrawable(drawable: Drawable) {

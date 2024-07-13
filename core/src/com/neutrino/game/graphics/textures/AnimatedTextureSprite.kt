@@ -15,6 +15,10 @@ class AnimatedTextureSprite(
 
     var mirrorPivot = getMinWidth(textureList)
 
+    var nextAnimation: AnimatedTextureSprite? = null
+    /** Gets shadowed by nextAnimation **/
+    var deleteAfterEnd: Boolean = false
+
     constructor(
         textureList: Array<TextureAtlas.AtlasRegion>,
         looping: Boolean = true,
@@ -72,4 +76,7 @@ class AnimatedTextureSprite(
     fun getCurrentLights(): ArrayList<Light>? {
         return lights?.getLights(animation.getKeyFrameIndex(stateTime))
     }
+
+    val animationDuration: Float
+        get() = animation.animationDuration
 }

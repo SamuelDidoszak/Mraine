@@ -5,8 +5,6 @@ import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.util.Cloneable
-import com.neutrino.game.graphics.drawing.AnimationData
-import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
@@ -25,13 +23,6 @@ class Texture(
             position ?: (entity get Position::class),
             randomGenerator,
             textures)
-    }
-
-    /**
-     * Sets the animation for textures[0]
-     */
-    fun setAnimation(animation: AnimatedTextureSprite, nextAnimation: AnimatedTextureSprite?, index: Int = 0) {
-        textures.set(index, animation, AnimationData(animation, entity, nextAnimation))
     }
 
     fun finalize() {
@@ -83,13 +74,6 @@ class Texture(
             return oldElement
         }
 
-        fun set(index: Int, element: AnimatedTextureSprite, animationData: AnimationData): TextureSprite {
-            val oldElement = super.set(index, element)
-            removeFromLevel(oldElement)
-            addToLevel(element, animationData)
-            return oldElement
-        }
-
         override fun add(element: TextureSprite): Boolean {
             addToLevel(element)
             return super.add(element)
@@ -132,54 +116,16 @@ class Texture(
             return mirroredCount > notMirroredCount
         }
 
-        private fun addToLevel(element: TextureSprite, animationData: AnimationData? = null) {
+        private fun addToLevel(element: TextureSprite) {
             val drawer = entity.get(DrawerAttribute::class)?.drawer ?: ChunkManager.getDrawer(entity.get(Position::class)!!.chunk)
             if (element.z != 0)
                 drawer.addTexture(entity, element)
-            if (element is AnimatedTextureSprite)
-                drawer.animations.add(animationData ?: AnimationData(element, entity))
-            if (element.lights != null) {
-                if (element.lights!!.isSingleLight)
-                    drawer.lights.add(Pair(entity, element.lights!!.getLight().xyDiff(element.x, element.y)))
-                else {
-                    if (element is AnimatedTextureSprite) {
-                        for (i in 0 until element.lights!!.getLightArraySize()) {
-                            for (light in element.lights!!.getLights(i)!!) {
-                                if (element.mirrorX)
-                                    light.x += element.width() + element.x * -1
-                                else
-                                    light.x += element.x
-                                light.y += element.y
-                            }
-                        }
-                    } else {
-                        for (light in element.lights!!.getLights()!!) {
-                            if (element.mirrorX)
-                                light.x += element.width() + element.x * -1
-                            else
-                                light.x += element.x
-                            light.y += element.y
-                            drawer.lights.add(Pair(entity, light))
-                        }
-                    }
-                }
-            }
         }
 
         private fun removeFromLevel(element: TextureSprite) {
             val drawer = entity.get(DrawerAttribute::class)?.drawer ?: ChunkManager.getDrawer(entity.get(Position::class)!!.chunk)
             if (element.z != 0)
                 drawer.removeTexture(entity, element)
-            if (element is AnimatedTextureSprite)
-                drawer.animations.remove(AnimationData(element, entity))
-            if (element.lights != null) {
-                if (element.lights!!.isSingleLight)
-                    drawer.lights.remove(Pair(entity, element.lights!!.getLight()))
-                else
-                    for (light in element.lights!!.getLights()!!) {
-                        drawer.lights.remove(Pair(entity, light))
-                    }
-            }
         }
     }
 

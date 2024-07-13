@@ -25,6 +25,10 @@ class Drawables: Attribute() {
         return drawableArray
     }
 
+    fun getDrawable(predicate: (Drawable) -> Boolean): Drawable? {
+        return drawableArray.find { predicate.invoke(it) }
+    }
+
     fun getBaseTextures(): List<DrawableTexture> {
         val textureNames = entity.get(Texture::class)!!.textures.map { it.texture.name }
         return drawableArray.filter { drawable ->

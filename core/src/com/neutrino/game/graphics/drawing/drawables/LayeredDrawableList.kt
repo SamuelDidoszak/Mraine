@@ -1,6 +1,6 @@
 package com.neutrino.game.graphics.drawing.drawables
 
-internal class LayeredDrawableList: ArrayList<Drawable>() {
+class LayeredDrawableList: ArrayList<Drawable>() {
 
     fun sort() {
         for (j in 1 until size){

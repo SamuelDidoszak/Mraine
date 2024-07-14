@@ -36,11 +36,7 @@ import com.neutrino.game.util.Constants.TILE_SIZE_INT
 import java.util.*
 import kotlin.random.Random
 
-open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
-
-    override val animations: Animations = Animations(this)
-    override val lights: ArrayList<Pair<DrawableTexture, Light>> = ArrayList()
-    private val drawableLayers: SortedMap<Int, LayeredDrawableList> = sortedMapOf()
+open class LevelDrawer(chunk: Chunk): EntityDrawer() {
 
     var chunk: Chunk = chunk
         set(value) {
@@ -61,89 +57,6 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
         drawableLayers.clear()
     }
 
-    override fun addDrawable(drawable: Drawable) {
-        if (drawableLayers[drawable.z] == null)
-            drawableLayers[drawable.z] = LayeredDrawableList()
-
-        if (drawable is DrawableTexture)
-            addDrawableDetails(drawable)
-
-        drawable.entity.get(Shaders::class)?.shaders?.forEach { drawable.addShader(it) }
-        drawableLayers[drawable.z]!!.add(drawable)
-        if (drawable.entity hasNot Drawables::class)
-            drawable.entity.addAttribute(Drawables())
-        drawable.entity.get(Drawables::class)!!.addDrawable(drawable)
-    }
-
-    override fun removeDrawable(drawable: Drawable) {
-        drawable.entity.get(Drawables::class)?.removeDrawable(drawable)
-        drawableLayers[drawable.z]!!.remove(drawable)
-        if (drawable is DrawableTexture)
-            removeDrawableDetails(drawable)
-    }
-
-    override fun addTexture(entity: Entity, texture: TextureSprite) {
-        if (drawableLayers[texture.z] == null)
-            drawableLayers[texture.z] = LayeredDrawableList()
-
-        val drawableTexture =
-            if (entity has StitchedSprite::class)
-                DrawableTextureUnsorted(entity, texture)
-            else
-                DrawableTexture(entity, texture)
-
-        addDrawableDetails(drawableTexture)
-
-        entity.get(Shaders::class)?.shaders?.forEach {
-            if (entity.get(Drawables::class)?.getBaseTextures()?.isNotEmpty() == true && it is Cloneable<*>)
-                drawableTexture.addShader(it.clone() as ShaderParametered)
-            else
-                drawableTexture.addShader(it)
-        }
-
-        drawableLayers[texture.z]!!.add(drawableTexture)
-        if (entity hasNot Drawables::class)
-            entity.addAttribute(Drawables())
-        entity.get(Drawables::class)!!.addDrawable(drawableTexture)
-    }
-
-    override fun removeTexture(entity: Entity, texture: TextureSprite) {
-        val drawable = entity.get(Drawables::class)?.removeDrawable {
-            it.entity == entity && it is DrawableTexture && it.texture == texture }
-        drawableLayers[texture.z]!!.remove(drawable)
-        removeDrawableDetails(drawable as DrawableTexture)
-    }
-    
-    private fun addDrawableDetails(drawable: DrawableTexture) {
-        if (drawable.texture is AnimatedTextureSprite)
-            animations.add(drawable)
-        if (drawable.texture.lights == null)
-            return
-
-        val texture = drawable.texture
-        if (texture.lights!!.isSingleLight)
-            lights.add(Pair(drawable, texture.lights!!.getLight()))
-        else {
-            for (light in texture.lights!!.getLights()!!) {
-                lights.add(Pair(drawable, light))
-            }
-        }
-    }
-
-    private fun removeDrawableDetails(drawable: DrawableTexture) {
-        if (drawable.texture is AnimatedTextureSprite)
-            animations.remove(drawable)
-        if (drawable.texture.lights == null)
-            return
-
-        val texture = drawable.texture
-        if (texture.lights!!.isSingleLight) {
-            val index = lights.indexOfFirst { it.first == drawable }
-            lights.removeAt(index)
-        } else
-            lights.removeIf { it.first == drawable }
-    }
-
     init {
         width = map[0].size * TILE_SIZE
         height = map.size * TILE_SIZE
@@ -156,8 +69,6 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
             }
         })
     }
-
-    val drawTimeMillis = ArrayList<Long>()
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val gameCamera = parent.stage.camera as OrthographicCamera
@@ -215,7 +126,6 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
         var textureX = 0f
         var textureY = 0f
         var textureWidth = 0
-        var texture: TextureSprite
         drawableLayers.forEach { key, layer ->
             layer.sort()
             for (layeredTexture in layer) {
@@ -271,11 +181,6 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer, Group() {
         batch?.shader = null
         batch?.color = Color(1f, 1f, 1f, 1f)
         batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-    }
-
-    override fun act(delta: Float) {
-        super.act(delta)
-        animations.play(delta)
     }
 
     fun initializeTextures(rng: Random = Random(Random.nextInt())) {

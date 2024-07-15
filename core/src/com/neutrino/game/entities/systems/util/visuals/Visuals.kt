@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Pools
 import com.neutrino.game.domain.model.characters.utility.IntentionIcon
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.shared.attributes.Drawables
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.drawing.actions.Action
+import com.neutrino.game.graphics.drawing.drawables.DrawableGroup
 import com.neutrino.game.graphics.drawing.drawables.DrawableText
 import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
 import com.neutrino.game.graphics.utility.ColorUtils
@@ -60,7 +62,7 @@ object Visuals {
         intentionTexture.centerOnEntity = true
         intentionTexture.z = 2
         intentionTexture.scale = 1.5f
-        intentionTexture.yOffset = entity.height + 32f
+        intentionTexture.yOffset = entity.get(Texture::class)!!.getHeightScaled() + 32f
         intentionTexture.initialize(entity)
 
         intentionTexture.addAction(
@@ -74,14 +76,24 @@ object Visuals {
     fun showText(entity: Entity, text: String) {
         val textDraw = DrawableText(text, true, (entity.get(Texture::class)?.getWidthScaled() ?: 64) * 6)
         textDraw.centerOnEntity = true
-        textDraw.z = 3
-        textDraw.yOffset = entity.height + 32f
-        textDraw.initialize(entity)
+
+        var textGroup = entity.get(Drawables::class)?.getDrawable { it is DrawableGroup && it.groupName == "textGroup" } as? DrawableGroup?
+        if (textGroup == null) {
+            textGroup = DrawableGroup()
+            textGroup.centerOnEntity = true
+            textGroup.groupName = "textGroup"
+            textGroup.z = 3
+            textGroup.yOffset = entity.height
+            textGroup.initialize(entity)
+        }
+        textGroup.add(textDraw, 32f)
 
         textDraw.addAction(Action.Sequence(
             Action.Delay(1f + text.length / 20f),
             Action.FadeOut(1.25f),
-            Action.Delete()
+            Action.Delete(),
+            Action.Custom { if (!textGroup.hasChildren()) textGroup.detach() },
+            Action.Custom { println("Has textGroup? ${entity.get(Drawables::class)?.getDrawable { it is DrawableGroup && it.groupName == "textGroup" } != null}")}
         ))
     }
 }

@@ -4,6 +4,7 @@ import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.ChangesImpassable
 import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.map_entities.callables.InteractedCallable
 import com.neutrino.game.entities.map_entities.util.Interactable
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
@@ -32,6 +33,8 @@ class Door: Attribute(), Interactable {
         else
             ChunkManager.characterMethods.addImpassable(
                 entity.get(Position::class)!!)
+
+        entity.call(InteractedCallable::class, this)
     }
 
     override fun onEntityAttached() {

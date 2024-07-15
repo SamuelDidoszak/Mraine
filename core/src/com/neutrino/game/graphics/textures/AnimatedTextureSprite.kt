@@ -14,6 +14,8 @@ class AnimatedTextureSprite(
 ): TextureSprite(textureList[0], x, y, z) {
 
     var mirrorPivot = getMinWidth(textureList)
+    val animationWidth = getMaxWidth(textureList)
+    val animationHeight = getMaxHeight(textureList)
 
     var nextAnimation: AnimatedTextureSprite? = null
     /** Gets shadowed by nextAnimation **/
@@ -79,4 +81,22 @@ class AnimatedTextureSprite(
 
     val animationDuration: Float
         get() = animation.animationDuration
+
+    private fun getMaxWidth(textureArray: Array<TextureAtlas.AtlasRegion>): Int {
+        var maxWidth = 0
+        for (frame in textureArray) {
+            if (frame.regionWidth > maxWidth)
+                maxWidth = frame.regionWidth
+        }
+        return maxWidth
+    }
+
+    private fun getMaxHeight(textureArray: Array<TextureAtlas.AtlasRegion>): Int {
+        var maxHeight = 0
+        for (frame in textureArray) {
+            if (frame.regionHeight > maxHeight)
+                maxHeight = frame.regionHeight
+        }
+        return maxHeight
+    }
 }

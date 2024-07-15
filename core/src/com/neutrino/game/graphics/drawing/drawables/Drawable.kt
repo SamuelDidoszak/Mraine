@@ -13,6 +13,7 @@ import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.graphics.drawing.actions.Actions
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
+import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
@@ -30,6 +31,7 @@ abstract class Drawable(
     var alpha: Float = 1f
     var debug = false
     private var isAttached = false
+    private var group: DrawableGroup? = null
 
     protected var shaders: ArrayList<ShaderParametered>? = null
 
@@ -48,7 +50,11 @@ abstract class Drawable(
             field = value
             if (!isAttached)
                 return
-            val entityWidth = entity.get(Texture::class)!!.getWidthScaled()
+            val texture = entity.get(Texture::class)
+            val entityWidth = if (texture?.textures?.get(0) is AnimatedTextureSprite)
+                (texture.textures[0] as AnimatedTextureSprite).animationWidth
+            else
+                entity.get(Texture::class)?.getWidthScaled() ?: 0
             val centeredWidth =
                 if (width <= entityWidth)
                     (entityWidth - width) / 2f
@@ -106,11 +112,14 @@ abstract class Drawable(
         val drawer = entity.get(DrawerAttribute::class)?.drawer ?: entity.get(Position::class)?.chunk?.let { ChunkManager.getDrawer(it) }
         drawer?.removeDrawable(this)
         isAttached = false
+        group?.removeDrawable(this)
     }
 
-    fun addToGroup() {
+    fun addToGroup(group: DrawableGroup) {
+        this.group = null
         detach()
         isAttached = true
+        this.group = group
     }
 
     fun initialize(newEntity: Entity) {
@@ -118,7 +127,11 @@ abstract class Drawable(
         onEntityAttached()
         attach()
 
-        val entityWidth = entity.get(Texture::class)?.getWidthScaled() ?: 0
+        val texture = entity.get(Texture::class)
+        val entityWidth = if (texture?.textures?.get(0) is AnimatedTextureSprite)
+                (texture.textures[0] as AnimatedTextureSprite).animationWidth
+            else
+                entity.get(Texture::class)?.getWidthScaled() ?: 0
         val centeredWidth =
             if (width <= entityWidth)
                 (entityWidth - width) / 2f
@@ -191,7 +204,10 @@ abstract class Drawable(
     fun drawShaders(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
         shaders?.forEach {
             it.applyToBatch(batch)
-            draw(batch, x, y, parentAlpha)
+            if (this is CustomShaderDraw)
+                drawShader(batch, x, y, parentAlpha)
+            else
+                draw(batch, x, y, parentAlpha)
             it.cleanUp(batch)
         }
     }

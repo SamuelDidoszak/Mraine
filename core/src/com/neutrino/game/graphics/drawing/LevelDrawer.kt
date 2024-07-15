@@ -5,25 +5,14 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.attributes.Drawables
 import com.neutrino.game.entities.shared.attributes.Shaders
-import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
-import com.neutrino.game.entities.util.Cloneable
-import com.neutrino.game.graphics.drawing.drawables.*
-import com.neutrino.game.graphics.drawing.drawables.DrawableTextureUnsorted
-import com.neutrino.game.graphics.drawing.drawables.LayeredDrawableList
-import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.shaders.ShaderPrograms
-import com.neutrino.game.graphics.textures.AnimatedTextureSprite
-import com.neutrino.game.graphics.textures.Light
-import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
@@ -33,7 +22,6 @@ import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.util.Constants.TILE_SIZE
 import com.neutrino.game.util.Constants.TILE_SIZE_INT
-import java.util.*
 import kotlin.random.Random
 
 open class LevelDrawer(chunk: Chunk): EntityDrawer() {

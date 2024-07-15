@@ -3,6 +3,7 @@ package com.neutrino.game.entities.map_entities.attributes
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.map_entities.callables.InteractedCallable
 import com.neutrino.game.entities.map_entities.util.Interactable
 import com.neutrino.game.map.chunk.ChunkManager
 
@@ -19,5 +20,6 @@ class Chest: Attribute(), Interactable {
                 entity.get(Position::class)!!,
                 entity.get(Inventory::class)!!.getAll { true }!!)
         }
+        entity.call(InteractedCallable::class, this)
     }
 }

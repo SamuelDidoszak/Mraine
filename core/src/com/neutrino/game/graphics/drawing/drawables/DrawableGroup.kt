@@ -12,11 +12,12 @@ open class DrawableGroup(
 ): Drawable(xOffset, yOffset, z) {
 
     private val children: ArrayList<Drawable> = ArrayList()
+    var groupName: String = ""
 
     fun add(drawable: Drawable, yMargin: Float = 0f): DrawableGroup {
         drawable.entity = entity
         drawable.onEntityAttached()
-        drawable.addToGroup()
+        drawable.addToGroup(this)
         if (stackable) {
             drawable.yOffset = yMargin
             children.add(drawable)
@@ -28,6 +29,8 @@ open class DrawableGroup(
             yOffset *= -1
         drawable.yOffset = yOffset
         children.add(drawable)
+        if (centerOnEntity)
+            drawable.centerOnEntity = true
         return this
     }
 
@@ -82,7 +85,24 @@ open class DrawableGroup(
 
     override fun attach() {
         super.attach()
-        children.forEach { it.addToGroup() }
+        children.forEach { it.addToGroup(this) }
     }
+
+    fun removeDrawable(drawable: Drawable) {
+        if (stackable) {
+            children.remove(drawable)
+            return
+        }
+        val difference = (drawable.height + drawable.yOffset) * if (addAbove) 1 else -1
+        val index = children.indexOf(drawable)
+        if (index == -1)
+            return
+        for (i in index until children.size) {
+            children[i].yOffset -= difference
+        }
+        children.remove(drawable)
+    }
+
+    fun hasChildren(): Boolean = children.isNotEmpty()
 
 }

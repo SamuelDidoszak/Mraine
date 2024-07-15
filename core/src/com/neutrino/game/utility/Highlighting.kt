@@ -7,12 +7,15 @@ import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.map_entities.attributes.Door
+import com.neutrino.game.entities.map_entities.callables.InteractedCallable
 import com.neutrino.game.entities.map_entities.util.Interactable
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Shaders
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
+import com.neutrino.game.entities.systems.attack.callables.EntityDiedCallable
 import com.neutrino.game.graphics.shaders.ColorOverlayShader
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
@@ -164,6 +167,23 @@ class Highlighting {
         val color = if (interaction != null) OutlineShader.OUTLINE_GREEN else OutlineShader.OUTLINE_RED
         shaderOnHover = OutlineShader(color, 2f)
         addShader(outlinedOnHover!!, shaderOnHover!!)
+        if (interaction != null && outlinedOnHover?.has(Door::class) == true) {
+            outlinedOnHover!!.attach(object : InteractedCallable() {
+                override fun call(entity: Entity, vararg data: Any?) {
+                    if (data[0] !is Door)
+                        return
+                    if (entity.get(Door::class)!!.open) {
+                        removeShader(outlinedOnHover, shaderOnHover)
+                        entity.detach(this)
+                    }
+            } })
+        } else {
+            outlinedOnHover!!.attach(object : EntityDiedCallable() {
+                override fun call(entity: Entity, vararg data: Any?) {
+                    removeShader(outlinedOnHover, shaderOnHover)
+                    entity.detach(this)
+            } })
+        }
         return outlinedOnHover != null
     }
 
@@ -189,6 +209,12 @@ class Highlighting {
             2f
         )
         addShader(outlinedOnHover!!, shaderOnHover!!)
+        outlinedOnHover!!.attach(object : EntityDiedCallable() {
+            override fun call(entity: Entity, vararg data: Any?) {
+                removeShader(outlinedOnHover, shaderOnHover)
+                entity.detach(this)
+            }
+        })
         return outlinedOnHover != null
     }
 

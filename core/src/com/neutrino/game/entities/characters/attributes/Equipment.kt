@@ -12,6 +12,7 @@ import com.neutrino.game.entities.items.attributes.EquipmentItem
 import com.neutrino.game.entities.items.attributes.HandheldEquipment
 import com.neutrino.game.entities.items.attributes.HandheldEquipmentType
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.map.chunk.ChunkManager
@@ -41,8 +42,6 @@ class Equipment: Attribute() {
         }
 
         addItemAttributes(item as Item)
-        entity.call(OnItemEquipped::class)
-        item.call(OnItemEquipped::class, entity)
     }
 
     fun unequipItem(item: Entity, addToInventory: Boolean = true) {
@@ -53,23 +52,28 @@ class Equipment: Attribute() {
             equipmentMap[item.get(EquipmentItem::class)!!.getEquipmentType()] = null
 
         unsetItem(item, addToInventory)
-        entity.call(OnItemUnequipped::class)
-        item.call(OnItemUnequipped::class, entity)
     }
 
     private fun addItemAttributes(item: Item) {
         for (attribute in item.getItemAttributes()) {
+            println("Adding attribute ${attribute::class}")
             if (entity.has(attribute::class))
                 (entity.get(attribute::class)!! as AttributeOperations<Attribute>).plusEquals(attribute)
-            else
+            else {
+                println("Cloning")
                 entity.addAttribute((attribute as Cloneable<Attribute>).clone())
+            }
         }
+        entity.call(OnItemEquipped::class, item)
+        item.call(OnItemEquipped::class, entity)
     }
 
     private fun removeItemAttributes(item: Item) {
         for (attribute in item.getItemAttributes()) {
             (entity.get(attribute::class) as? AttributeOperations<Attribute>)?.minusEquals(attribute)
         }
+        entity.call(OnItemUnequipped::class, item)
+        item.call(OnItemUnequipped::class, entity)
     }
 
     private fun unsetItem(item: Entity, addToInventory: Boolean = true) {
@@ -84,11 +88,11 @@ class Equipment: Attribute() {
     }
 
     private fun checkRequirements(item: Entity): Boolean {
+        if (item.get(Requirements.Stats::class)?.check(Player) == false)
+            return false
+        if (item.get(Requirements.Custom::class)?.check(Player) == false)
+            return false
         return true
-//        if (item.requirements.has("character"))
-//            item.requirements.set("character", character)
-//
-//        return item.requirements.checkAll()
     }
 
     fun getWeapon(): Entity? {

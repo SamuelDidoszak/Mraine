@@ -19,6 +19,7 @@ import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.compareDelta
 import com.neutrino.game.util.equalsDelta
 import com.neutrino.game.util.roundOneDecimal
+import com.neutrino.game.util.roundTwoDecimals
 import kotlin.random.Random
 
 class DefensiveStats(
@@ -195,29 +196,29 @@ class DefensiveStats(
         val printableInfo = ArrayList<Pair<String, Any>>()
 
         if (hpMax != 0f)
-            printableInfo.add("Hp max" to "${PrintableInfo.getColor(hpMax.compareDelta(other?.hpMax ?: 0f))}$hpMax")
+            printableInfo.add("Hp max" to "${PrintableInfo.getColor(hpMax.compareDelta(other?.hpMax ?: 0f))}${hpMax.roundOneDecimal()}")
         if (hp != 0f)
-            printableInfo.add("Hp" to "${PrintableInfo.getColor(hp.compareDelta(other?.hp ?: 0f))}$hp")
+            printableInfo.add("Hp" to "${PrintableInfo.getColor(hp.compareDelta(other?.hp ?: 0f))}${hp.roundOneDecimal()}")
         if (mpMax != 0f)
-            printableInfo.add("Mp max" to "${PrintableInfo.getColor(mpMax.compareDelta(other?.mpMax ?: 0f))}$mpMax")
+            printableInfo.add("Mp max" to "${PrintableInfo.getColor(mpMax.compareDelta(other?.mpMax ?: 0f))}${mpMax.roundOneDecimal()}")
         if (mp != 0f)
-            printableInfo.add("Mp" to "${PrintableInfo.getColor(mp.compareDelta(other?.mpMax ?: 0f))}$mpMax")
+            printableInfo.add("Mp" to "${PrintableInfo.getColor(mp.compareDelta(other?.mpMax ?: 0f))}${mpMax.roundOneDecimal()}")
         if (defence != 0f)
-            printableInfo.add("Defence" to "${PrintableInfo.getColor(defence.compareDelta(other?.defence ?: 0f))}$defence")
+            printableInfo.add("Defence" to "${PrintableInfo.getColor(defence.compareDelta(other?.defence ?: 0f))}${defence.roundOneDecimal()}")
         if (evasion != 0f)
-            printableInfo.add("Evasion" to "${PrintableInfo.getColor(stealth.compareDelta(other?.evasion ?: 0f))}$evasion")
+            printableInfo.add("Evasion" to "${PrintableInfo.getColor(evasion.compareDelta(other?.evasion ?: 0f))}${evasion.roundTwoDecimals()}")
         if (movementSpeed != 0.0)
-            printableInfo.add("Movement speed" to "${PrintableInfo.getColor(movementSpeed.compareDelta(other?.movementSpeed ?: 0.0))}$movementSpeed")
+            printableInfo.add("Movement speed" to "${PrintableInfo.getColor(movementSpeed.compareDelta(other?.movementSpeed ?: 0.0))}${movementSpeed.roundOneDecimal()}")
         if (stealth != 0f)
-            printableInfo.add("Stealth" to "${PrintableInfo.getColor(stealth.compareDelta(other?.stealth ?: 0f))}$stealth")
+            printableInfo.add("Stealth" to "${PrintableInfo.getColor(stealth.compareDelta(other?.stealth ?: 0f))}${stealth.roundTwoDecimals()}")
         if (fireDefence != 0f)
-            printableInfo.add("Fire defence" to "${PrintableInfo.getColor(fireDefence.compareDelta(other?.fireDefence ?: 0f))}$fireDefence")
+            printableInfo.add("Fire defence" to "${PrintableInfo.getColor(fireDefence.compareDelta(other?.fireDefence ?: 0f))}${fireDefence.roundTwoDecimals()}")
         if (waterDefence != 0f)
-            printableInfo.add("Water defence" to "${PrintableInfo.getColor(waterDefence.compareDelta(other?.waterDefence ?: 0f))}$waterDefence")
+            printableInfo.add("Water defence" to "${PrintableInfo.getColor(waterDefence.compareDelta(other?.waterDefence ?: 0f))}${waterDefence.roundTwoDecimals()}")
         if (airDefence != 0f)
-            printableInfo.add("Air defence" to "${PrintableInfo.getColor(airDefence.compareDelta(other?.airDefence ?: 0f))}$airDefence")
+            printableInfo.add("Air defence" to "${PrintableInfo.getColor(airDefence.compareDelta(other?.airDefence ?: 0f))}${airDefence.roundTwoDecimals()}")
         if (poisonDefence != 0f)
-            printableInfo.add("Poison defence" to "${PrintableInfo.getColor(poisonDefence.compareDelta(other?.poisonDefence ?: 0f))}$poisonDefence")
+            printableInfo.add("Poison defence" to "${PrintableInfo.getColor(poisonDefence.compareDelta(other?.poisonDefence ?: 0f))}${poisonDefence.roundTwoDecimals()}")
 
         return printableInfo
     }

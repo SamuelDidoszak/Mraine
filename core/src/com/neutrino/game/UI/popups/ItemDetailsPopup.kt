@@ -33,7 +33,8 @@ class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = tr
             regularItemPopup()
 
         val goldImage = Image(Textures.get("gold1").texture)
-        val goldValue = TextraLabel( "[%75]" + Color.BLACK.toTextraColor() + item.get(GoldValue::class)!!.value, Fonts.EQUIPMENT)
+        val goldValue = TextraLabel( "[%75]" + Color.BLACK.toTextraColor() +
+                item.get(GoldValue::class)!!.value * item.get(Amount::class)!!.amount, Fonts.EQUIPMENT)
         goldValue.alignment = Align.bottom
         val goldGroup = Table()
         goldGroup.add(goldImage).size(24f)

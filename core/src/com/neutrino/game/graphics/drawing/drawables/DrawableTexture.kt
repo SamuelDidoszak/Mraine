@@ -13,7 +13,7 @@ import kotlin.math.roundToInt
 open class DrawableTexture(
     entity: Entity,
     val texture: TextureSprite
-): Drawable() {
+): Drawable(), CustomShaderDraw {
     protected var sizeScale: Float = if (entity == Player) 2.5f else if (entity is Character) 2f else SCALE_INT.toFloat()
     var scale: Float = 1f
         set(value) {
@@ -34,6 +34,21 @@ open class DrawableTexture(
             y + getY(),
             width * if (!texture.mirrorX) 1f else -1f,
             height * 1f)
+    }
+
+    override fun drawShader(batch: Batch, x: Float, y: Float, parentAlpha: Float) {
+        batch.setAlpha(parentAlpha * alpha)
+        batch.draw(texture.texture.texture,
+            if (!texture.mirrorX) x + getX() - sizeScale else x + getX() + sizeScale +
+                    if (texture !is AnimatedTextureSprite) width else (texture.mirrorPivot * sizeScale).roundToInt(),
+            y + getY() - sizeScale,
+            if (!texture.mirrorX) width * 1f + 2 * sizeScale else width * -1f - 2 * sizeScale,
+            height * 1f + 2 * sizeScale,
+            texture.texture.regionX - 1,
+            texture.texture.regionY - 1,
+            texture.texture.regionWidth + 2,
+            texture.texture.regionHeight + 2,
+            false, false)
     }
 
     /** Returns scaled x position including map placement */

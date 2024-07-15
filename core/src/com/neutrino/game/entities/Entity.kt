@@ -93,10 +93,12 @@ open class Entity() {
     infix fun call(callableClass: KClass<out Callable>) {
         if (callables == null)
             return
-        for (callable in callables!!) {
-            if (callableClass.java.isAssignableFrom(callable::class.java))
-                callable.call(this)
-        }
+        try {
+            for (callable in callables!!) {
+                if (callableClass.java.isAssignableFrom(callable::class.java))
+                    callable.call(this)
+            }
+        } catch(e: ConcurrentModificationException) { System.err.println("Callable added a new callable. It will be ignored in this iteration")}
     }
 
     fun call(callableClass: KClass<out Callable>, vararg data: Any?) {

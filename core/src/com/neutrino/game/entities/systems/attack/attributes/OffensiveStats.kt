@@ -13,9 +13,7 @@ import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.entities.util.AttributeOperations
-import com.neutrino.game.util.add
-import com.neutrino.game.util.compareDelta
-import com.neutrino.game.util.x
+import com.neutrino.game.util.*
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -169,7 +167,6 @@ class OffensiveStats(
 
     /**
      * New range is max range
-     * New entity is leftSide entity
      */
     override fun plusEquals(other: OffensiveStats) {
         strength += other.strength
@@ -178,10 +175,12 @@ class OffensiveStats(
         luck += other.luck
         damageMin += other.damageMin
         damageMax += other.damageMax
-        accuracy = min(accuracy, other.accuracy) + abs(accuracy - other.accuracy) / 2f
+//        accuracy = min(accuracy, other.accuracy) + abs(accuracy - other.accuracy) / 2f
+        accuracy += other.accuracy
         criticalChance += other.criticalChance
         criticalDamage += other.criticalDamage
-        attackSpeed = min(attackSpeed, other.attackSpeed) + abs(attackSpeed - other.attackSpeed) / 2f
+//        attackSpeed = min(attackSpeed, other.attackSpeed) + abs(attackSpeed - other.attackSpeed) / 2f
+        attackSpeed += other.attackSpeed
         val isOtherRangeBigger = other.range > range
         range = max(range, other.range)
         rangeType = if (isOtherRangeBigger) other.rangeType else rangeType
@@ -201,10 +200,12 @@ class OffensiveStats(
         luck -= other.luck
         damageMin -= other.damageMin
         damageMax -= other.damageMax
-        accuracy = min(accuracy, other.accuracy) - abs(accuracy - other.accuracy) / 2f
+//        accuracy = min(accuracy, other.accuracy) - abs(accuracy - other.accuracy) / 2f
+        accuracy -= other.accuracy
         criticalChance -= other.criticalChance
         criticalDamage -= other.criticalDamage
-        attackSpeed = min(attackSpeed, other.attackSpeed) - abs(attackSpeed - other.attackSpeed) / 2f
+//        attackSpeed = min(attackSpeed, other.attackSpeed) - abs(attackSpeed - other.attackSpeed) / 2f
+        attackSpeed -= other.attackSpeed
         val isOtherRangeBigger = other.range > range
         range = min(range, other.range)
         rangeType = if (isOtherRangeBigger) rangeType else other.rangeType
@@ -260,12 +261,16 @@ class OffensiveStats(
 
         val printableInfo = ArrayList<Pair<String, Any>>()
         val stats = clone()
+        if (stats.accuracy != 0f)
+            stats.accuracy += 1f
+        if (stats.attackSpeed != 0.0)
+            stats.attackSpeed += 1.0
         this::class.java.declaredFields.forEach {
             val value = it.get(stats)
             if (value is Float && value != 0f)
-                printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.getColor(value.compareDelta((getOtherField(it.name) as Float?) ?: 0f))}$value")
+                printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.getColor(value.compareDelta((getOtherField(it.name) as Float?) ?: 0f))}${value.roundOneDecimal()}")
             if (value is Double && value != 0.0)
-                printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.getColor(value.compareDelta((getOtherField(it.name) as Double?) ?: 0.0))}$value")
+                printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.getColor(value.compareDelta((getOtherField(it.name) as Double?) ?: 0.0))}${value.roundOneDecimal()}")
             if (value is Int && value != 0)
                 printableInfo.add(it.name.replaceFirstChar { it.uppercase() } to "${PrintableInfo.getColor(value.compareTo((getOtherField(it.name) as Int?) ?: 1))}$value")
             if (value is RangeType && (value != RangeType.SQUARE || (other != null && other.rangeType != RangeType.SQUARE)))
@@ -273,6 +278,12 @@ class OffensiveStats(
         }
         if (range == 1 && (other == null || other.range == 1))
             printableInfo.removeIf { it.first == "Range" }
+        if (stats.accuracy != 0f) {
+            val printableAccuracy = printableInfo.find { it.first == "Accuracy" }!!
+            val index = printableInfo.indexOf(printableAccuracy)
+            printableInfo[index] = "Accuracy" to printableAccuracy.second.toString().replaceAfter(']', stats.accuracy.roundTwoDecimals().toString())
+        }
+
         return printableInfo
     }
 }

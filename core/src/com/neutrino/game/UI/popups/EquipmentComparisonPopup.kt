@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.entities.Attribute
+import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.items.Item
@@ -14,6 +15,7 @@ import com.neutrino.game.entities.items.attributes.GoldValue
 import com.neutrino.game.entities.items.attributes.usable.EquipEvents
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
 import com.neutrino.game.entities.shared.attributes.Description
+import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.graphics.textures.Textures
@@ -58,7 +60,9 @@ class EquipmentComparisonPopup(val item: Item): Table() {
             if (attribute !is PrintableInfo<*> || attribute is UseOnEntity || attribute is EquipEvents)
                 continue
 
-            val printableList = (attribute as PrintableInfo<Attribute>).getPrintableInfo(itemToCompare?.get(attribute::class))
+            val alternateAttributes = Entity().addAttribute(OffensiveStats(accuracy = 1f, attackSpeed = 1.0))
+
+            val printableList = (attribute as PrintableInfo<Attribute>).getPrintableInfo(itemToCompare?.get(attribute::class) ?: alternateAttributes.get(attribute::class))
             val skippedMinMax: ArrayList<String> = ArrayList()
             for (printable in printableList) {
                 if (skippedMinMax.find { it == printable.first } != null)

@@ -25,10 +25,14 @@ fun Float.lessThanDelta(other: Float) = (this - other) < -0.0000001
 fun Float.round() = this.roundToInt().toFloat()
 /** Rounds the number to one decimal place */
 fun Float.roundOneDecimal() = (this * 10).roundToInt() / 10f
+/** Rounds the number to two decimal places */
+fun Float.roundTwoDecimals() = (this * 100).roundToInt() / 100f
 /** Cuts off the decimal value of a floating point number. Mostly used to fix the floating point precision issue with rendering */
 fun Double.round() = this.roundToInt().toFloat()
 /** Rounds the number to one decimal place */
 fun Double.roundOneDecimal() = (this * 10).roundToInt() / 10.0
+/** Rounds the number to two decimal places */
+fun Double.roundTwoDecimals() = (this * 100).roundToInt() / 100.0
 
 /** Returns 0 if the values are the same. Returns -1 if the value is smaller than other and 1 if it's bigger */
 fun Float.compareDelta(other: Float) = if (this.equalsDelta(other)) 0
@@ -134,5 +138,5 @@ val Entity.height: Float
         return if (this has Drawables::class)
             this.get(Drawables::class)!!.getHeight()
         else
-            this.get(Texture::class)?.getHeightScaled()?.toFloat() ?: 64f
+            return this.get(Texture::class)?.getHeightScaled()?.toFloat() ?: 64f
     }

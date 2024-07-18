@@ -195,10 +195,18 @@ class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = tr
                 continue
             }
 
-            val valueLabel = TextraLabel("[%75]" + (minMaxPrintable ?: printable.second.toString()), Fonts.MATCHUP, Color.BLACK)
+            val valueLabel = TextraLabel("[%75]" + (minMaxPrintable ?: printable.second.toString()), Fonts.MATCHUP, extractSkillColor(printable.first))
             valueLabel.alignment = Align.center
             add(valueLabel).center().spaceBottom(8f)
             row()
         }
+    }
+
+    private fun extractSkillColor(first: String): Color {
+        val colorString = first.substringAfter('[').substringBefore(']')
+        if (colorString.first() != '#')
+            return Color.BLACK
+        else
+            return Color.valueOf(colorString)
     }
 }

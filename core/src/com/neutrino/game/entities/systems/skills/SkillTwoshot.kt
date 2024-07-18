@@ -7,6 +7,7 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.requirements.Requirements
+import com.neutrino.game.graphics.utility.ColorUtils
 
 class SkillTwoshot(caster: Entity): Skill.ActiveSkillEntity(
     "Twoshot",
@@ -30,9 +31,9 @@ class SkillTwoshot(caster: Entity): Skill.ActiveSkillEntity(
         get() = caster.get(OffensiveStats::class)!!.rangeType
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        "DamageMin" to caster.get(OffensiveStats::class)!!.damageMin * 2f,
-        "DamageMax" to caster.get(OffensiveStats::class)!!.damageMax * 2f,
-        "Cooldown" to cooldown
+        ColorUtils.getStatColorTextra("Damage") + "DamageMin" to caster.get(OffensiveStats::class)!!.damageMin * 2f,
+        ColorUtils.getStatColorTextra("Damage") + "DamageMax" to caster.get(OffensiveStats::class)!!.damageMax * 2f,
+        ColorUtils.getStatColorTextra("Cooldown") + "Cooldown" to cooldown
     )
 
     override fun use(target: Entity) {

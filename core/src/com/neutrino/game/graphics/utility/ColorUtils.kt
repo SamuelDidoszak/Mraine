@@ -1,17 +1,47 @@
 package com.neutrino.game.graphics.utility
 
 import com.badlogic.gdx.graphics.Color
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.entities.systems.skills.SkillType
 import kotlin.math.max
 import kotlin.math.min
 
 object ColorUtils {
 
+    // Stats
+    val hp: Color = Color.valueOf("3db01e")
+    val mp: Color = Color.valueOf("2725c9")
+    val strength: Color = Color.valueOf("a81c1c")
+    val dexterity: Color = Color.valueOf("1b6627")
+    val intelligence: Color = Color.valueOf("2725c9")
+    val luck: Color = Color.valueOf("dfa017")
+    val damage: Color = strength
+    val defence: Color = Color.valueOf("1a8a99")
+    val evasion: Color = dexterity
+    val stealth: Color = dexterity
+    val accuracy: Color = dexterity
+    val criticalChance: Color = luck
+    val criticalDamage: Color = luck
+    val movementSpeed: Color = intelligence
+    val attackSpeed: Color = strength
+    val fireDamage: Color = Color.valueOf("e86a1d")
+    val fireDefence: Color = fireDamage
+    val waterDamage: Color = Color.valueOf("2554da")
+    val waterDefence: Color = waterDamage
+    val airDamage: Color = Color.valueOf("3cbec0")
+    val airDefence: Color = airDamage
+    val poisonDamage: Color = Color.valueOf("70951b")
+    val poisonDefence: Color = poisonDamage
+    val range: Color = dexterity
+    val rangeType: Color = dexterity
+
+    val cooldown: Color = mp
+
     // Skills
-    val STRENGTH: Color = Color.FIREBRICK
-    val DEXTERITY: Color = Color.GOLDENROD
-    val INTELLIGENCE: Color = Color.ROYAL
-    val SUMMONING: Color = Color.MAROON
+    val SKILL_STRENGTH: Color = Color.FIREBRICK
+    val SKILL_DEXTERITY: Color = Color.GOLDENROD
+    val SKILL_INTELLIGENCE: Color = Color.ROYAL
+    val SKILL_SUMMONING: Color = Color.MAROON
 
     // Requirements
     val BLACK: Color = Color(0f, 0f, 0f, 1f)
@@ -70,10 +100,56 @@ object ColorUtils {
 
     fun getSkillTypeColor(skillType: SkillType): Color {
         return when (skillType) {
-            SkillType.STRENGTH -> STRENGTH
-            SkillType.DEXTERITY -> DEXTERITY
-            SkillType.INTELLIGENCE -> INTELLIGENCE
-            SkillType.SUMMONING -> SUMMONING
+            SkillType.STRENGTH -> SKILL_STRENGTH
+            SkillType.DEXTERITY -> SKILL_DEXTERITY
+            SkillType.INTELLIGENCE -> SKILL_INTELLIGENCE
+            SkillType.SUMMONING -> SKILL_SUMMONING
+        }
+    }
+
+    fun getStatColorTextra(statEnum: StatsEnum): String = getStatColorTextra(statEnum.toString())
+    fun getStatColorTextra(statName: String): String = getStatColor(statName).toTextraColor()
+
+    fun getStatColor(statEnum: StatsEnum): Color = getStatColor(statEnum.toString())
+    fun getStatColor(statName: String): Color {
+        return when (statName.lowercase()) {
+            "Hp".lowercase() -> hp
+            "Mp".lowercase() -> mp
+            "Strength".lowercase() -> strength
+            "Dexterity".lowercase() -> dexterity
+            "Intelligence".lowercase() -> intelligence
+            "Luck".lowercase() -> luck
+            "Defence".lowercase() -> defence
+            "Damage".lowercase() -> damage
+            "DamageMin".lowercase() -> damage
+            "DamageMax".lowercase() -> damage
+            "Accuracy".lowercase() -> accuracy
+            "CriticalChance".lowercase() -> criticalChance
+            "CriticalDamage".lowercase() -> criticalDamage
+            "Evasion".lowercase() -> evasion
+            "Stealth".lowercase() -> stealth
+            "MovementSpeed".lowercase() -> movementSpeed
+            "AttackSpeed".lowercase() -> attackSpeed
+            "Range".lowercase() -> range
+            "RangeType".lowercase() -> rangeType
+            "FireDamage".lowercase() -> fireDamage
+            "FireDamageMin".lowercase() -> fireDamage
+            "FireDamageMax".lowercase() -> fireDamage
+            "FireDefence".lowercase() -> fireDefence
+            "WaterDamage".lowercase() -> waterDamage
+            "WaterDamageMin".lowercase() -> waterDamage
+            "WaterDamageMax".lowercase() -> waterDamage
+            "WaterDefence".lowercase() -> waterDefence
+            "AirDamage".lowercase() -> airDamage
+            "AirDamageMin".lowercase() -> airDamage
+            "AirDamageMax".lowercase() -> airDamage
+            "AirDefence".lowercase() -> airDefence
+            "PoisonDamage".lowercase() -> poisonDamage
+            "PoisonDamageMin".lowercase() -> poisonDamage
+            "PoisonDamageMax".lowercase() -> poisonDamage
+            "PoisonDefence".lowercase() -> poisonDefence
+            "Cooldown".lowercase() -> cooldown
+            else -> BLACK
         }
     }
 }

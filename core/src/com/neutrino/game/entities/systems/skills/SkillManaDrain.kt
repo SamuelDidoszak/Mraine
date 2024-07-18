@@ -7,6 +7,7 @@ import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.systems.requirements.Requirements
+import com.neutrino.game.graphics.utility.ColorUtils
 
 class SkillManaDrain(caster: Entity): Skill.ActiveSkillCharacter(
     "Mana drain",
@@ -24,8 +25,8 @@ class SkillManaDrain(caster: Entity): Skill.ActiveSkillCharacter(
     var manaDrain = 15f
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> =  listOf(
-        "Mana drain" to manaDrain,
-        "Range" to range
+        ColorUtils.getStatColorTextra("Mp") + "Mana drain" to manaDrain,
+        ColorUtils.getStatColorTextra("Range") + "Range" to range
     )
 
     override fun use(target: Character) {

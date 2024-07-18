@@ -5,11 +5,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
-import com.neutrino.GlobalData
-import com.neutrino.GlobalDataType
-import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.entities.systems.attack.util.StatsEnum
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Level
+import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
+import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
+import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.Fonts
+import com.neutrino.game.util.compareDelta
 import com.neutrino.game.util.roundOneDecimal
 import com.neutrino.game.util.setTextSameWidth
 import ktx.scene2d.scene2d
@@ -18,10 +20,48 @@ import kotlin.math.roundToInt
 
 class Stats: Table() {
 
+    private val defensiveStats = Player.get(DefensiveStats::class)!!
+    private val offensiveStats = Player.get(OffensiveStats::class)!!
+    private enum class DamageEnums {
+        Damage,
+        Fire,
+        Water,
+        Air,
+        Poison
+    }
+
+    private var border: Image? = null
+
     fun initialize(border: Image) {
+        this.border = border
+        clear()
         addStatsTable(border)
         refreshDamageLabelText()
         name = "stats"
+    }
+
+    fun refreshStats() {
+        if (border == null) return
+        initialize(border!!)
+    }
+
+    private fun formatDamageValues(min: Float, max: Float, addSpaces: Boolean = false): String {
+        if (min.toInt() >= 10 || max.toInt() >= 10)
+            return "${min.toInt()}" + (if (addSpaces) " - " else "-") + "${max.toInt()}"
+        else if (((min - min.toInt()) * 10).toInt() > 0 || ((max - max.toInt()) * 10).toInt() > 0)
+            return "${min.roundOneDecimal()}" + (if (addSpaces) " - " else "-") + "${max.roundOneDecimal()}"
+        else
+            return "${min.toInt()}" + (if (addSpaces) " - " else "-") + "${max.toInt()}"
+    }
+
+    private fun formatDamageText(type: DamageEnums): String {
+        return when (type) {
+            DamageEnums.Damage -> formatDamageValues(offensiveStats.damageMin, offensiveStats.damageMax)
+            DamageEnums.Fire -> formatDamageValues(offensiveStats.fireDamageMin, offensiveStats.fireDamageMax)
+            DamageEnums.Water -> formatDamageValues(offensiveStats.waterDamageMin, offensiveStats.waterDamageMax)
+            DamageEnums.Air -> formatDamageValues(offensiveStats.airDamageMin, offensiveStats.airDamageMax)
+            DamageEnums.Poison -> formatDamageValues(offensiveStats.poisonDamageMin, offensiveStats.poisonDamageMax)
+        }
     }
 
     private fun addStatsTable(border: Image) {
@@ -31,18 +71,18 @@ class Stats: Table() {
             name.align = Align.left
             add(name).padLeft(24f)
 
-            val lvl = TextraLabel("lvl ${Player.level}", Fonts.EQUIPMENT, Color.BLACK)
+            val lvl = TextraLabel("lvl ${Player.get(Level::class)!!.level}", Fonts.EQUIPMENT, Color.BLACK)
             lvl.name = "level"
             lvl.align = Align.center
             add(lvl).fillX().expandX().center()
 
             val expValues = scene2d.table {
-                val expValue = TextraLabel("${Player.experience}", Fonts.MATCHUP, Color.BLACK)
+                val expValue = TextraLabel("${Player.get(Level::class)!!.experience}", Fonts.MATCHUP, Color.BLACK)
                 expValue.name = "exp"
                 expValue.align = Align.center
                 add(expValue).fillX().expandX().uniform()
                 add(TextraLabel("/", Fonts.MATCHUP, Color.BLACK))
-                val expMax = TextraLabel("2137", Fonts.MATCHUP, Color.BLACK)
+                val expMax = TextraLabel("${Player.get(Level::class)!!.expRequiredForNextLevel()}", Fonts.MATCHUP, Color.BLACK)
                 expMax.name = "expMax"
                 expMax.align = Align.center
                 add(expMax).fillX().expandX().uniform()
@@ -54,16 +94,16 @@ class Stats: Table() {
         row()
 
         val stats1 = scene2d.table {
-            val hpLabel = TextraLabel("Hp", Fonts.EQUIPMENT, Color.BLACK)
+            val hpLabel = TextraLabel("Hp", Fonts.EQUIPMENT, ColorUtils.getStatColor("Hp"))
             add(hpLabel).width(width / 3).fillX().colspan(2).uniform()
             hpLabel.align = Align.left
             val hpValues = scene2d.table {
-                val hpValue = TextraLabel("${Player.hp.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+                val hpValue = TextraLabel("${defensiveStats.hp.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Hp"))
                 hpValue.name = "hp"
                 hpValue.align = Align.center
                 add(hpValue).fillX().expandX().uniform()
-                add(TextraLabel("/", Fonts.EQUIPMENT, Color.BLACK))
-                val hpMax = TextraLabel("${Player.hpMax.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+                add(TextraLabel("/", Fonts.EQUIPMENT, ColorUtils.getStatColor("Hp")))
+                val hpMax = TextraLabel("${defensiveStats.hpMax.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Hp"))
                 hpMax.name = "hpMax"
                 hpMax.align = Align.center
                 add(hpMax).fillX().expandX().uniform()
@@ -71,16 +111,16 @@ class Stats: Table() {
             add(hpValues).width(width / 3).colspan(2).uniform().fillX()
             row()
 
-            val mpLabel = TextraLabel("Mp", Fonts.EQUIPMENT, Color.BLACK)
+            val mpLabel = TextraLabel("Mp", Fonts.EQUIPMENT, ColorUtils.getStatColor("Mp"))
             mpLabel.align = Align.left
             add(mpLabel).fillX().width(width / 3).colspan(2).uniform()
             val mpValues = scene2d.table {
-                val mpValue = TextraLabel("${Player.mp.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+                val mpValue = TextraLabel("${defensiveStats.mp.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Mp"))
                 mpValue.name = "mp"
                 mpValue.align = Align.center
                 add(mpValue).fillX().expandX().uniform()
-                add(TextraLabel("/", Fonts.EQUIPMENT, Color.BLACK))
-                val mpMax = TextraLabel("${Player.mpMax.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+                add(TextraLabel("/", Fonts.EQUIPMENT, ColorUtils.getStatColor("Mp")))
+                val mpMax = TextraLabel("${defensiveStats.mpMax.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Mp"))
                 mpMax.name = "mpMax"
                 mpMax.align = Align.center
                 add(mpMax).fillX().expandX().uniform()
@@ -88,54 +128,56 @@ class Stats: Table() {
             add(mpValues).colspan(2).uniform().fillX()
             row()
 
-            val strengthLabel = TextraLabel("Strength", Fonts.EQUIPMENT, Color.BLACK)
+            val strengthLabel = TextraLabel("Strength", Fonts.EQUIPMENT, ColorUtils.getStatColor("Strength"))
             strengthLabel.alignment = Align.left
             add(strengthLabel).fillX().width(width / 3).colspan(2).uniform()
             strengthLabel.align = Align.left
-            val strength = TextraLabel("${Player.strength.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            val strength = TextraLabel("${offensiveStats.strength.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Strength"))
             strength.name = "strength"
             strength.align = Align.center
             add(strength).fillX().colspan(2).uniform()
             row()
 
-            val dexterityLabel = TextraLabel("Dexterity", Fonts.EQUIPMENT, Color.BLACK)
+            val dexterityLabel = TextraLabel("Dexterity", Fonts.EQUIPMENT, ColorUtils.getStatColor("Dexterity"))
             dexterityLabel.align = Align.left
             add(dexterityLabel).fillX().width(width / 3).colspan(2).uniform()
-            val dexterity = TextraLabel("${Player.dexterity.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            val dexterity = TextraLabel("${offensiveStats.dexterity.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Dexterity"))
             dexterity.name = "dexterity"
             dexterity.align = Align.center
             add(dexterity).fillX().colspan(2).uniform()
             row()
 
-            val intelligenceLabel = TextraLabel("Intelligence", Fonts.EQUIPMENT, Color.BLACK)
+            val intelligenceLabel = TextraLabel("Intelligence", Fonts.EQUIPMENT, ColorUtils.getStatColor("Intelligence"))
             intelligenceLabel.align = Align.left
             add(intelligenceLabel).fillX().width(width / 3).colspan(2).uniform()
-            val intelligence = TextraLabel("${Player.intelligence.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            val intelligence = TextraLabel("${offensiveStats.intelligence.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Intelligence"))
             intelligence.name = "intelligence"
             intelligence.align = Align.center
             add(intelligence).fillX().colspan(2).uniform()
             row()
 
-            val luckLabel = TextraLabel("Luck", Fonts.EQUIPMENT, Color.BLACK)
+            val luckLabel = TextraLabel("Luck", Fonts.EQUIPMENT, ColorUtils.getStatColor("Luck"))
             luckLabel.align = Align.left
             add(luckLabel).fillX().width(width / 3).colspan(2).uniform()
-            val luck = TextraLabel("${Player.luck.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            val luck = TextraLabel("${offensiveStats.luck.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Luck"))
             luck.name = "luck"
             luck.align = Align.center
             add(luck).fillX().colspan(2).uniform()
             row()
 
-            val damageLabel = TextraLabel("Damage", Fonts.EQUIPMENT, Color.BLACK)
+            val damageLabel = TextraLabel("Damage", Fonts.EQUIPMENT, ColorUtils.getStatColor("Damage"))
             damageLabel.align = Align.left
             damageLabel.name = "damageLabel"
             add(damageLabel).fillX().width(width / 3).colspan(2).uniform()
             val damageValues = scene2d.table {
-                val damageValue = TextraLabel("${(Player.damage - Player.damageVariation).roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+                val damageValue = TextraLabel("${offensiveStats.damageMin.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Damage"))
                 damageValue.name = "damage"
                 damageValue.align = Align.center
                 add(damageValue).fillX().expandX().uniform()
-                add(TextraLabel("-", Fonts.EQUIPMENT, Color.BLACK))
-                val damageMax = TextraLabel("${(Player.damage + Player.damageVariation).roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+                val damageSlash = TextraLabel("-", Fonts.EQUIPMENT, ColorUtils.getStatColor("Damage"))
+                damageSlash.name = "damageSlash"
+                add(damageSlash)
+                val damageMax = TextraLabel("${offensiveStats.damageMax.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Damage"))
                 damageMax.name = "damageMax"
                 damageMax.align = Align.center
                 add(damageMax).fillX().expandX().uniform()
@@ -143,10 +185,10 @@ class Stats: Table() {
             add(damageValues).colspan(2).uniform().fillX()
             row()
 
-            val defenceLabel = TextraLabel("Defence", Fonts.EQUIPMENT, Color.BLACK)
+            val defenceLabel = TextraLabel("Defence", Fonts.EQUIPMENT, ColorUtils.getStatColor("Defence"))
             defenceLabel.align = Align.left
             add(defenceLabel).fillX().width(width / 3).colspan(2).uniform()
-            val defence = TextraLabel("${Player.defence.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            val defence = TextraLabel("${defensiveStats.defence.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Defence"))
             defence.name = "defence"
             defence.align = Align.center
             add(defence).fillX().colspan(2).uniform()
@@ -158,144 +200,126 @@ class Stats: Table() {
         val stats2 = scene2d.table {
             val evasionLabel = TextraLabel("Evasion", Fonts.EQUIPMENT, Color.BLACK)
             evasionLabel.align = Align.left
-            add(evasionLabel).fillX().width(width / 3).colspan(2).uniform()
-            val evasion = TextraLabel("${(Player.evasion * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            add(evasionLabel).fillX().width((width / 60) * 18).colspan(18).uniform()
+            val evasion = TextraLabel("${(defensiveStats.evasion * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
             evasion.name = "evasion"
             evasion.align = Align.center
-            add(evasion).width(width / 6).colspan(1).uniform()
+            add(evasion).width((width / 60) * 12).colspan(12).uniform()
 
             val accuracyLabel = TextraLabel("Accuracy", Fonts.EQUIPMENT, Color.BLACK)
             accuracyLabel.align = Align.left
-            add(accuracyLabel).fillX().width(width / 3).colspan(2).uniform()
-            val accuracy = TextraLabel("${(Player.accuracy * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            add(accuracyLabel).fillX().width(width / 3).colspan(20).uniform()
+            val accuracy = TextraLabel("${(offensiveStats.accuracy * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
             accuracy.name = "accuracy"
             accuracy.align = Align.center
-            add(accuracy).width(width / 6).colspan(1).uniform()
+            add(accuracy).width(width / 6).colspan(10).uniform()
             row()
 
             val critChanceLabel = TextraLabel("Crit chance", Fonts.EQUIPMENT, Color.BLACK)
             critChanceLabel.align = Align.left
-            add(critChanceLabel).fillX().colspan(2).uniform()
-            val critChance = TextraLabel("${(Player.criticalChance * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            add(critChanceLabel).align(Align.left).colspan(18).uniform()
+            val critChance = TextraLabel("${(offensiveStats.criticalChance * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
             critChance.name = "critChance"
             critChance.align = Align.center
-            add(critChance).fillX().colspan(1).uniform()
+            add(critChance).fillX().colspan(12).uniform()
 
             val critDamageLabel = TextraLabel("Crit damage", Fonts.EQUIPMENT, Color.BLACK)
             critDamageLabel.align = Align.left
-            add(critDamageLabel).fillX().colspan(2).uniform()
-            val critDamage = TextraLabel("${(Player.criticalDamage * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            add(critDamageLabel).fillX().colspan(20).uniform()
+            val critDamage = TextraLabel("${(offensiveStats.criticalDamage * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
             critDamage.name = "critDamage"
             critDamage.align = Align.center
-            add(critDamage).fillX().colspan(1).uniform()
+            add(critDamage).fillX().colspan(10).uniform()
             row()
 
             val movementSpeedLabel = TextraLabel("Movement", Fonts.EQUIPMENT, Color.BLACK)
             movementSpeedLabel.align = Align.left
-            add(movementSpeedLabel).fillX().colspan(2).uniform()
+            add(movementSpeedLabel).fillX().colspan(18).uniform()
             movementSpeedLabel.setBounds(0f, 0f, border.width / 3f, 100f)
-            val movementSpeed = TextraLabel("${Player.movementSpeed.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            val movementSpeed = TextraLabel("${defensiveStats.movementSpeed.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
             movementSpeed.name = "movementSpeed"
             movementSpeed.align = Align.center
-            add(movementSpeed).fillX().colspan(1).uniform()
+            add(movementSpeed).fillX().colspan(12).uniform()
 
             val attackSpeedLabel = TextraLabel("Attack spd", Fonts.EQUIPMENT, Color.BLACK)
             attackSpeedLabel.align = Align.left
-            add(attackSpeedLabel).fillX().colspan(2).uniform()
-            val attackSpeed = TextraLabel("${Player.attackSpeed.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            add(attackSpeedLabel).fillX().colspan(20).uniform()
+            val attackSpeed = TextraLabel("${offensiveStats.attackSpeed.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
             attackSpeed.name = "attackSpeed"
             attackSpeed.align = Align.center
-            add(attackSpeed).fillX().colspan(1).uniform()
+            add(attackSpeed).fillX().colspan(10).uniform()
             row().padTop(12f)
 
-            val fireDamageLabel = TextraLabel("Fire dmg", Fonts.EQUIPMENT, Color.BLACK)
+            val fireDamageLabel = TextraLabel("Fire dmg", Fonts.EQUIPMENT, ColorUtils.getStatColor("FireDamage"))
             fireDamageLabel.align = Align.left
             fireDamageLabel.name = "fireDamageLabel"
-            add(fireDamageLabel).fillX().colspan(2)
-            val fireDamage = TextraLabel("${Player.fireDamage.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            add(fireDamageLabel).fillX().colspan(18)
+            val fireDamage = TextraLabel(formatDamageText(DamageEnums.Fire), Fonts.EQUIPMENT, ColorUtils.getStatColor("FireDamage"))
             fireDamage.name = "fireDamage"
             fireDamage.align = Align.center
-            add(fireDamage).fillX().colspan(1)
+            add(fireDamage).fillX().colspan(12)
 
-            val fireDefenceLabel = TextraLabel("Fire def", Fonts.EQUIPMENT, Color.BLACK)
+            val fireDefenceLabel = TextraLabel("Fire def", Fonts.EQUIPMENT, ColorUtils.getStatColor("FireDefence"))
             fireDefenceLabel.align = Align.left
-            add(fireDefenceLabel).fillX().colspan(2)
-            val fireDefence = TextraLabel("${(Player.fireDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            add(fireDefenceLabel).fillX().colspan(20)
+            val fireDefence = TextraLabel("${(defensiveStats.fireDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, ColorUtils.getStatColor("FireDefence"))
             fireDefence.name = "fireDefence"
             fireDefence.align = Align.center
-            add(fireDefence).fillX().colspan(1)
+            add(fireDefence).fillX().colspan(10)
             row()
 
-            val waterDamageLabel = TextraLabel("Water dmg", Fonts.EQUIPMENT, Color.BLACK)
+            val waterDamageLabel = TextraLabel("Water dmg", Fonts.EQUIPMENT, ColorUtils.getStatColor("WaterDamage"))
             waterDamageLabel.align = Align.left
             waterDamageLabel.name = "waterDamageLabel"
-            add(waterDamageLabel).fillX().colspan(2)
-            val waterDamage = TextraLabel("${Player.waterDamage.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            add(waterDamageLabel).fillX().colspan(18)
+            val waterDamage = TextraLabel(formatDamageText(DamageEnums.Water), Fonts.EQUIPMENT, ColorUtils.getStatColor("WaterDamage"))
             waterDamage.name = "waterDamage"
             waterDamage.align = Align.center
-            add(waterDamage).fillX().colspan(1)
+            add(waterDamage).fillX().colspan(12)
 
-            val waterDefenceLabel = TextraLabel("Water def", Fonts.EQUIPMENT, Color.BLACK)
+            val waterDefenceLabel = TextraLabel("Water def", Fonts.EQUIPMENT, ColorUtils.getStatColor("WaterDefence"))
             waterDefenceLabel.align = Align.left
-            add(waterDefenceLabel).fillX().colspan(2)
-            val waterDefence = TextraLabel("${(Player.waterDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            add(waterDefenceLabel).fillX().colspan(20)
+            val waterDefence = TextraLabel("${(defensiveStats.waterDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, ColorUtils.getStatColor("WaterDefence"))
             waterDefence.name = "waterDefence"
             waterDefence.align = Align.center
-            add(waterDefence).fillX().colspan(1)
+            add(waterDefence).fillX().colspan(10)
             row()
 
-            val earthDamageLabel = TextraLabel("Earth dmg", Fonts.EQUIPMENT, Color.BLACK)
-            earthDamageLabel.align = Align.left
-            earthDamageLabel.name = "earthDamageLabel"
-            add(earthDamageLabel).fillX().colspan(2)
-            val earthDamage = TextraLabel("${Player.earthDamage.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
-            earthDamage.name = "earthDamage"
-            earthDamage.align = Align.center
-            add(earthDamage).fillX().colspan(1)
-
-            val earthDefenceLabel = TextraLabel("Earth def", Fonts.EQUIPMENT, Color.BLACK)
-            earthDefenceLabel.align = Align.left
-            add(earthDefenceLabel).fillX().colspan(2)
-            val earthDefence = TextraLabel("${(Player.earthDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
-            earthDefence.name = "earthDefence"
-            earthDefence.align = Align.center
-            add(earthDefence).fillX().colspan(1)
-            row()
-
-            val airDamageLabel = TextraLabel("Air dmg", Fonts.EQUIPMENT, Color.BLACK)
+            val airDamageLabel = TextraLabel("Air dmg", Fonts.EQUIPMENT, ColorUtils.getStatColor("AirDamage"))
             airDamageLabel.align = Align.left
             airDamageLabel.name = "airDamageLabel"
-            add(airDamageLabel).fillX().colspan(2)
-            val airDamage = TextraLabel("${Player.airDamage.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            add(airDamageLabel).fillX().colspan(18)
+            val airDamage = TextraLabel(formatDamageText(DamageEnums.Air), Fonts.EQUIPMENT, ColorUtils.getStatColor("AirDamage"))
             airDamage.name = "airDamage"
             airDamage.align = Align.center
-            add(airDamage).fillX().colspan(1)
+            add(airDamage).fillX().colspan(12)
 
-            val airDefenceLabel = TextraLabel("Air def", Fonts.EQUIPMENT, Color.BLACK)
+            val airDefenceLabel = TextraLabel("Air def", Fonts.EQUIPMENT, ColorUtils.getStatColor("AirDefence"))
             airDefenceLabel.align = Align.left
-            add(airDefenceLabel).fillX().colspan(2)
-            val airDefence = TextraLabel("${(Player.airDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            add(airDefenceLabel).fillX().colspan(20)
+            val airDefence = TextraLabel("${(defensiveStats.airDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, ColorUtils.getStatColor("AirDefence"))
             airDefence.name = "airDefence"
             airDefence.align = Align.center
-            add(airDefence).fillX().colspan(1)
+            add(airDefence).fillX().colspan(10)
             row()
 
-            val poisonDamageLabel = TextraLabel("Poison dmg", Fonts.EQUIPMENT, Color.BLACK)
+            val poisonDamageLabel = TextraLabel("Poison dmg", Fonts.EQUIPMENT, ColorUtils.getStatColor("PoisonDamage"))
             poisonDamageLabel.align = Align.left
             poisonDamageLabel.name = "poisonDamageLabel"
-            add(poisonDamageLabel).fillX().colspan(2)
-            val poisonDamage = TextraLabel("${Player.poisonDamage.roundOneDecimal()}", Fonts.EQUIPMENT, Color.BLACK)
+            add(poisonDamageLabel).fillX().colspan(18)
+            val poisonDamage = TextraLabel(formatDamageText(DamageEnums.Poison), Fonts.EQUIPMENT, ColorUtils.getStatColor("PoisonDamage"))
             poisonDamage.name = "poisonDamage"
             poisonDamage.align = Align.center
-            add(poisonDamage).fillX().colspan(1)
+            add(poisonDamage).fillX().colspan(12)
 
-            val poisonDefenceLabel = TextraLabel("Poison def", Fonts.EQUIPMENT, Color.BLACK)
+            val poisonDefenceLabel = TextraLabel("Poison def", Fonts.EQUIPMENT, ColorUtils.getStatColor("PoisonDefence"))
             poisonDefenceLabel.align = Align.left
-            add(poisonDefenceLabel).fillX().colspan(2)
-            val poisonDefence = TextraLabel("${(Player.poisonDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, Color.BLACK)
+            add(poisonDefenceLabel).fillX().colspan(20)
+            val poisonDefence = TextraLabel("${(defensiveStats.poisonDefence * 100).roundToInt()}%", Fonts.EQUIPMENT, ColorUtils.getStatColor("PoisonDefence"))
             poisonDefence.name = "poisonDefence"
             poisonDefence.align = Align.center
-            add(poisonDefence).fillX().colspan(1)
+            add(poisonDefence).fillX().colspan(10)
             row()
         }
 
@@ -304,184 +328,62 @@ class Stats: Table() {
         pack()
     }
 
-    fun refreshStats() {
-        val uniqueStats: MutableSet<StatsEnum> = mutableSetOf()
-        val otherData: MutableSet<String> = mutableSetOf()
+    private fun getBiggestDamageType(): DamageEnums {
+        val damageList = listOf(
+            DamageEnums.Damage to (offensiveStats.damageMin + offensiveStats.damageMax) / 2f,
+            DamageEnums.Fire to (offensiveStats.fireDamageMin + offensiveStats.fireDamageMax) / 2f,
+            DamageEnums.Water to (offensiveStats.waterDamageMin + offensiveStats.waterDamageMax) / 2f,
+            DamageEnums.Air to (offensiveStats.airDamageMin + offensiveStats.airDamageMax) / 2f,
+            DamageEnums.Poison to (offensiveStats.poisonDamageMin + offensiveStats.poisonDamageMax) / 2f,
+        )
 
-        StatsEnum.values().forEach { uniqueStats.add(it) }
-
-//        for (data in GlobalData.getData(GlobalDataType.PLAYERSTAT)) {
-//            when (data) {
-//                is StatsEnum -> uniqueStats.add(data)
-//                is String -> otherData.add(data)
-//            }
-//        }
-
-        for (stat in uniqueStats)
-            setStatLabelText(stat)
-
-        for (other in otherData) {
-            when (other) {
-                "level" -> {
-                    findActor<TextraLabel>("level").setText("lvl ${Player.level}")
-                    findActor<TextraLabel>("expMax").setText("1237")
-                }
-            }
-        }
-
-        val expData = GlobalData.getData(GlobalDataType.PLAYEREXP)
-        if (expData.isNotEmpty()) {
-            findActor<TextraLabel>("exp").setText("${Player.experience.roundOneDecimal()}")
-            expData.clear()
-        }
-        val hpData = GlobalData.getData(GlobalDataType.PLAYERHP)
-        if (hpData.isNotEmpty()) {
-            findActor<TextraLabel>("hp").setTextSameWidth("${Player.hp.roundOneDecimal()}")
-            hpData.clear()
-        }
-        val mpData = GlobalData.getData(GlobalDataType.PLAYERMANA)
-        if (mpData.isNotEmpty()) {
-            findActor<TextraLabel>("mp").setTextSameWidth("${Player.mp.roundOneDecimal()}")
-            mpData.clear()
-        }
-
-        GlobalData.getData(GlobalDataType.PLAYERSTAT).clear()
+        return damageList.maxWith { o1, o2 -> o1.second.compareDelta(o2.second) }.first
     }
 
     private fun refreshDamageLabelText() {
-        val biggestDamageType = maxOf(Player.damage, Player.fireDamage, Player.waterDamage, Player.earthDamage, Player.airDamage, Player.poisonDamage)
-        val damageLabel = findActor<TextraLabel>("damageLabel")
-        when (biggestDamageType.roundToInt()) {
-            Player.damage.roundToInt() -> {
-                if (damageLabel.storedText != "Damage") {
-                    val previousDamageType = damageLabel.storedText.substringBefore(' ')
-                    val previousDamageLabel = previousDamageType.lowercase() + if (previousDamageType != "Damage") "Damage" else ""
-                    val previousValue = findActor<TextraLabel>("damageMax").storedText.toFloat() - Player.damageVariation
-                    findActor<TextraLabel>(previousDamageLabel + "Label").setTextSameWidth(previousDamageType + if (previousDamageType != "Damage") " dmg" else "")
-                    findActor<TextraLabel>(previousDamageLabel)
-                        .setTextSameWidth(previousValue.toString())
-
-                    damageLabel.setTextSameWidth("Damage")
-                }
-                findActor<TextraLabel>("damage").setTextSameWidth("${(Player.damage - Player.damageVariation).roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setTextSameWidth("${(Player.damage + Player.damageVariation).roundOneDecimal()}")
-            }
-            Player.fireDamage.roundToInt() -> {
-                if (damageLabel.storedText != "Fire dmg") {
-                    val previousDamageType = damageLabel.storedText.substringBefore(' ')
-                    val previousDamageLabel = previousDamageType.lowercase() + if (previousDamageType != "Damage") "Damage" else ""
-                    val previousValue = findActor<TextraLabel>("damageMax").storedText.toFloat() - Player.damageVariation
-                    findActor<TextraLabel>(previousDamageLabel + "Label").setTextSameWidth(previousDamageType + if (previousDamageType != "Damage") " dmg" else "")
-                    findActor<TextraLabel>(previousDamageLabel)
-                        .setTextSameWidth(previousValue.toString())
-
-                    damageLabel.setTextSameWidth("Fire dmg")
-                    findActor<TextraLabel>("fireDamageLabel").setTextSameWidth("Damage")
-                    findActor<TextraLabel>("fireDamage").setTextSameWidth("${Player.damage}")
-                }
-                findActor<TextraLabel>("damage").setTextSameWidth("${(Player.fireDamage - Player.damageVariation).roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setTextSameWidth("${(Player.fireDamage + Player.damageVariation).roundOneDecimal()}")
-            }
-            Player.waterDamage.roundToInt() -> {
-                if (damageLabel.storedText != "Water dmg") {
-                    val previousDamageType = damageLabel.storedText.substringBefore(' ')
-                    val previousDamageLabel = previousDamageType.lowercase() + if (previousDamageType != "Damage") "Damage" else ""
-                    val previousValue = findActor<TextraLabel>("damageMax").storedText.toFloat() - Player.damageVariation
-                    findActor<TextraLabel>(previousDamageLabel + "Label").setTextSameWidth(previousDamageType + if (previousDamageType != "Damage") " dmg" else "")
-                    findActor<TextraLabel>(previousDamageLabel)
-                        .setTextSameWidth(previousValue.toString())
-
-                    damageLabel.setTextSameWidth("Water dmg")
-                    findActor<TextraLabel>("poisonDamageLabel").setTextSameWidth("Damage")
-                    findActor<TextraLabel>("poisonDamage").setTextSameWidth("${Player.damage}")
-                }
-                findActor<TextraLabel>("damage").setTextSameWidth("${(Player.waterDamage - Player.damageVariation).roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setTextSameWidth("${(Player.waterDamage + Player.damageVariation).roundOneDecimal()}")
-            }
-            Player.earthDamage.roundToInt() -> {
-                if (damageLabel.storedText != "Earth dmg") {
-                    val previousDamageType = damageLabel.storedText.substringBefore(' ')
-                    val previousDamageLabel = previousDamageType.lowercase() + if (previousDamageType != "Damage") "Damage" else ""
-                    val previousValue = findActor<TextraLabel>("damageMax").storedText.toFloat() - Player.damageVariation
-                    findActor<TextraLabel>(previousDamageLabel + "Label").setTextSameWidth(previousDamageType + if (previousDamageType != "Damage") " dmg" else "")
-                    findActor<TextraLabel>(previousDamageLabel)
-                        .setTextSameWidth(previousValue.toString())
-
-                    damageLabel.setTextSameWidth("Earth dmg")
-                    findActor<TextraLabel>("poisonDamageLabel").setTextSameWidth("Damage")
-                    findActor<TextraLabel>("poisonDamage").setTextSameWidth("${Player.damage}")
-                }
-                findActor<TextraLabel>("damage").setTextSameWidth("${(Player.earthDamage - Player.damageVariation).roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setTextSameWidth("${(Player.earthDamage + Player.damageVariation).roundOneDecimal()}")
-            }
-            Player.airDamage.roundToInt() -> {
-                if (damageLabel.storedText != "Air dmg") {
-                    val previousDamageType = damageLabel.storedText.substringBefore(' ')
-                    val previousDamageLabel = previousDamageType.lowercase() + if (previousDamageType != "Damage") "Damage" else ""
-                    val previousValue = findActor<TextraLabel>("damageMax").storedText.toFloat() - Player.damageVariation
-                    findActor<TextraLabel>(previousDamageLabel + "Label").setTextSameWidth(previousDamageType + if (previousDamageType != "Damage") " dmg" else "")
-                    findActor<TextraLabel>(previousDamageLabel)
-                        .setTextSameWidth(previousValue.toString())
-
-                    damageLabel.setTextSameWidth("Air dmg")
-                    findActor<TextraLabel>("poisonDamageLabel").setTextSameWidth("Damage")
-                    findActor<TextraLabel>("poisonDamage").setTextSameWidth("${Player.damage}")
-                }
-                findActor<TextraLabel>("damage").setTextSameWidth("${(Player.airDamage - Player.damageVariation).roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setTextSameWidth("${(Player.airDamage + Player.damageVariation).roundOneDecimal()}")
-            }
-            Player.poisonDamage.roundToInt() -> {
-                if (damageLabel.storedText != "Poison dmg") {
-                    val previousDamageType = damageLabel.storedText.substringBefore(' ')
-                    val previousDamageLabel = previousDamageType.lowercase() + if (previousDamageType != "Damage") "Damage" else ""
-                    val previousValue = findActor<TextraLabel>("damageMax").storedText.toFloat() - Player.damageVariation
-                    findActor<TextraLabel>(previousDamageLabel + "Label").setTextSameWidth(previousDamageType + if (previousDamageType != "Damage") " dmg" else "")
-                    findActor<TextraLabel>(previousDamageLabel)
-                        .setTextSameWidth(previousValue.toString())
-
-                    damageLabel.setTextSameWidth("Poison dmg")
-                    findActor<TextraLabel>("poisonDamageLabel").setTextSameWidth("Damage")
-                    findActor<TextraLabel>("poisonDamage").setTextSameWidth("${Player.damage}")
-                }
-                findActor<TextraLabel>("damage").setTextSameWidth("${(Player.poisonDamage - Player.damageVariation).roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setTextSameWidth("${(Player.poisonDamage + Player.damageVariation).roundOneDecimal()}")
-            }
+        fun TextraLabel.setStatColor(statName: String): TextraLabel {
+            this.color = ColorUtils.getStatColor(statName)
+            return this
         }
-    }
 
-    private fun setStatLabelText(stat: StatsEnum) {
-        when (stat) {
-            StatsEnum.HP_MAX -> findActor<TextraLabel>("hpMax").setTextSameWidth("${Player.hpMax.roundOneDecimal()}")
-            StatsEnum.MP_MAX -> findActor<TextraLabel>("mpMax").setTextSameWidth("${Player.mpMax.roundOneDecimal()}")
-            StatsEnum.STRENGTH -> findActor<TextraLabel>("strength").setTextSameWidth("${Player.strength.roundOneDecimal()}")
-            StatsEnum.DEXTERITY -> findActor<TextraLabel>("dexterity").setTextSameWidth("${Player.dexterity.roundOneDecimal()}")
-            StatsEnum.INTELLIGENCE -> findActor<TextraLabel>("intelligence").setTextSameWidth("${Player.intelligence.roundOneDecimal()}")
-            StatsEnum.LUCK -> findActor<TextraLabel>("luck").setTextSameWidth("${Player.luck.roundOneDecimal()}")
-            StatsEnum.DEFENCE -> findActor<TextraLabel>("defence").setTextSameWidth("${Player.defence.roundOneDecimal()}")
-            StatsEnum.EVASION -> findActor<TextraLabel>("evasion").setTextSameWidth("${(Player.evasion * 100).roundToInt()}%")
-            StatsEnum.ACCURACY -> findActor<TextraLabel>("accuracy").setTextSameWidth("${(Player.accuracy * 100).roundToInt()}%")
-            StatsEnum.CRITICAL_CHANCE -> findActor<TextraLabel>("critChance").setTextSameWidth("${(Player.criticalChance * 100).roundToInt()}%")
-            StatsEnum.CRITICAL_DAMAGE -> findActor<TextraLabel>("critDamage").setTextSameWidth("${(Player.criticalDamage * 100).roundToInt()}%")
-            StatsEnum.MOVEMENT_SPEED -> findActor<TextraLabel>("movementSpeed").setTextSameWidth("${Player.movementSpeed.roundOneDecimal()}")
-            StatsEnum.ATTACK_SPEED -> findActor<TextraLabel>("attackSpeed").setTextSameWidth("${Player.attackSpeed.roundOneDecimal()}")
+        when (getBiggestDamageType()) {
+            DamageEnums.Damage -> { }
+            DamageEnums.Fire -> {
+                findActor<TextraLabel>("damageLabel").setStatColor("FireDamage").setTextSameWidth("Fire dmg")
+                findActor<TextraLabel>("damage").setStatColor("FireDamage").setTextSameWidth("${offensiveStats.fireDamageMin.roundOneDecimal()}")
+                findActor<TextraLabel>("damageMax").setStatColor("FireDamage").setTextSameWidth("${offensiveStats.fireDamageMax.roundOneDecimal()}")
+                findActor<TextraLabel>("damageSlash").setStatColor("FireDamage")
 
-            StatsEnum.DAMAGE -> refreshDamageLabelText()
-            StatsEnum.FIRE_DAMAGE -> refreshDamageLabelText()
-            StatsEnum.WATER_DAMAGE -> refreshDamageLabelText()
-            StatsEnum.AIR_DAMAGE -> refreshDamageLabelText()
-            StatsEnum.POISON_DAMAGE -> refreshDamageLabelText()
+                findActor<TextraLabel>("fireDamageLabel").setStatColor("Damage").setTextSameWidth("Damage")
+                findActor<TextraLabel>("fireDamage").setStatColor("Damage").setTextSameWidth(formatDamageText(DamageEnums.Damage))
+            }
+            DamageEnums.Water-> {
+                findActor<TextraLabel>("damageLabel").setStatColor("WaterDamage").setTextSameWidth("Water dmg")
+                findActor<TextraLabel>("damage").setStatColor("WaterDamage").setTextSameWidth("${offensiveStats.waterDamageMin.roundOneDecimal()}")
+                findActor<TextraLabel>("damageMax").setStatColor("WaterDamage").setTextSameWidth("${offensiveStats.waterDamageMax.roundOneDecimal()}")
+                findActor<TextraLabel>("damageSlash").setStatColor("WaterDamage")
 
-            StatsEnum.FIRE_DEFENCE -> findActor<TextraLabel>("fireDefence").setTextSameWidth("${(Player.fireDefence * 100).roundToInt()}%")
-            StatsEnum.WATER_DEFENCE -> findActor<TextraLabel>("waterDefence").setTextSameWidth("${(Player.waterDefence * 100).roundToInt()}%")
-            StatsEnum.AIR_DEFENCE -> findActor<TextraLabel>("airDefence").setTextSameWidth("${(Player.airDefence * 100).roundToInt()}%")
-            StatsEnum.POISON_DEFENCE -> findActor<TextraLabel>("poisonDefence").setTextSameWidth("${(Player.poisonDefence * 100).roundToInt()}%")
+                findActor<TextraLabel>("waterDamageLabel").setStatColor("Damage").setTextSameWidth("Damage")
+                findActor<TextraLabel>("waterDamage").setStatColor("Damage").setTextSameWidth(formatDamageText(DamageEnums.Damage))
+            }
+            DamageEnums.Air -> {
+                findActor<TextraLabel>("damageLabel").setStatColor("AirDamage").setTextSameWidth("Air dmg")
+                findActor<TextraLabel>("damage").setStatColor("AirDamage").setTextSameWidth("${offensiveStats.airDamageMin.roundOneDecimal()}")
+                findActor<TextraLabel>("damageMax").setStatColor("AirDamage").setTextSameWidth("${offensiveStats.airDamageMax.roundOneDecimal()}")
+                findActor<TextraLabel>("damageSlash").setStatColor("AirDamage")
 
-            StatsEnum.RANGE -> {}
-            StatsEnum.RANGE_TYPE -> {}
-            StatsEnum.STEALTH -> {}
+                findActor<TextraLabel>("airDamageLabel").setStatColor("Damage").setTextSameWidth("Damage")
+                findActor<TextraLabel>("airDamage").setStatColor("Damage").setTextSameWidth(formatDamageText(DamageEnums.Damage))
+            }
+            DamageEnums.Poison -> {
+                findActor<TextraLabel>("damageLabel").setStatColor("PoisonDamage").setTextSameWidth("Poison dmg")
+                findActor<TextraLabel>("damage").setStatColor("PoisonDamage").setTextSameWidth("${offensiveStats.poisonDamageMin.roundOneDecimal()}")
+                findActor<TextraLabel>("damageMax").setStatColor("PoisonDamage").setTextSameWidth("${offensiveStats.poisonDamageMax.roundOneDecimal()}")
+                findActor<TextraLabel>("damageSlash").setStatColor("PoisonDamage")
 
-            StatsEnum.HP -> {}
-            StatsEnum.MP -> {}
+                findActor<TextraLabel>("poisonDamageLabel").setStatColor("Damage").setTextSameWidth("Damage")
+                findActor<TextraLabel>("poisonDamage").setStatColor("Damage").setTextSameWidth(formatDamageText(DamageEnums.Damage))
+            }
         }
     }
 }

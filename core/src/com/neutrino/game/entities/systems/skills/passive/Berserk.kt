@@ -6,6 +6,7 @@ import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.systems.skills.SkillType
+import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.equalsDelta
 import kotlin.reflect.KClass
 
@@ -27,8 +28,8 @@ class Berserk(caster: Entity): Skill.PassiveSkill(
     override val description: String = "When below ${(hpPercentThreshold * 100).toInt()}% hp increase damage for up to ${(incrementPercent * 100).toInt()}%"
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        "Additional damage %" to (incrementPercent * 100).toInt(),
-        "Required hp %" to (hpPercentThreshold * 100).toInt()
+        ColorUtils.getStatColorTextra("Damage") + "Additional damage %" to (incrementPercent * 100).toInt(),
+        ColorUtils.getStatColorTextra("Hp") + "Required hp %" to (hpPercentThreshold * 100).toInt()
     )
 
     override val skillTreeRequirements: List<KClass<out PassiveSkill>> = listOf(IncreaseMeleeDamage::class)

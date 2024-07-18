@@ -5,6 +5,7 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Events
+import com.neutrino.game.graphics.utility.ColorUtils
 
 class SkillTeleport(caster: Entity): Skill.ActiveSkillPosition(
     "Teleport",
@@ -19,8 +20,8 @@ class SkillTeleport(caster: Entity): Skill.ActiveSkillPosition(
 ) {
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        "Range" to range,
-        "RangeType" to rangeType
+        ColorUtils.getStatColorTextra("Range") + "Range" to range,
+        ColorUtils.getStatColorTextra("RangeType") + "RangeType" to rangeType
     )
 
     override fun use(target: Position) {

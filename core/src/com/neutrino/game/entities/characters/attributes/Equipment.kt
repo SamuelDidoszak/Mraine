@@ -56,13 +56,10 @@ class Equipment: Attribute() {
 
     private fun addItemAttributes(item: Item) {
         for (attribute in item.getItemAttributes()) {
-            println("Adding attribute ${attribute::class}")
             if (entity.has(attribute::class))
                 (entity.get(attribute::class)!! as AttributeOperations<Attribute>).plusEquals(attribute)
-            else {
-                println("Cloning")
+            else
                 entity.addAttribute((attribute as Cloneable<Attribute>).clone())
-            }
         }
         entity.call(OnItemEquipped::class, item)
         item.call(OnItemEquipped::class, entity)

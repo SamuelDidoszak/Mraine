@@ -11,6 +11,7 @@ import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.systems.events.TimedEvent
 import com.neutrino.game.entities.systems.requirements.Requirements
+import com.neutrino.game.graphics.utility.ColorUtils
 
 class SkillBleed(caster: Entity): Skill.ActiveSkillCharacter(
     "Bleed",
@@ -32,9 +33,9 @@ class SkillBleed(caster: Entity): Skill.ActiveSkillCharacter(
     private val bleedingLength = 5
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        "Bleed damage" to bleedDamage,
-        "Bleeding length" to bleedingLength,
-        "Cooldown" to cooldown
+        ColorUtils.getStatColorTextra("Damage") + "Bleed damage" to bleedDamage,
+        ColorUtils.getStatColorTextra("Damage") + "Bleeding length" to bleedingLength,
+        ColorUtils.getStatColorTextra("Cooldown") + "Cooldown" to cooldown
     )
 
     override fun use(target: Character) {

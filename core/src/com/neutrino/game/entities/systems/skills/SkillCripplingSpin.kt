@@ -12,6 +12,7 @@ import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.systems.events.TimedEvent
 import com.neutrino.game.entities.systems.requirements.Requirements
+import com.neutrino.game.graphics.utility.ColorUtils
 
 class SkillCripplingSpin(caster: Entity): Skill.ActiveSkill(
     "Crippling spin",
@@ -40,10 +41,10 @@ class SkillCripplingSpin(caster: Entity): Skill.ActiveSkill(
     }
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        "Damage" to damage,
-        "Slowdown" to slowDownStrength,
-        "Slowdown time" to slowDownTime,
-        "Range" to range
+        ColorUtils.getStatColorTextra("Damage") + "Damage" to damage,
+        ColorUtils.getStatColorTextra("MovementSpeed") + "Slowdown" to slowDownStrength,
+        ColorUtils.getStatColorTextra("MovementSpeed") + "Slowdown time" to slowDownTime,
+        ColorUtils.getStatColorTextra("Range") + "Range" to range
     )
 
     override fun use() {

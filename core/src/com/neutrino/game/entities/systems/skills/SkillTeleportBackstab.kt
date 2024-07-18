@@ -10,6 +10,7 @@ import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.systems.requirements.Requirements
+import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.map.chunk.ChunkManager
 import kotlin.math.roundToInt
 
@@ -30,9 +31,9 @@ class SkillTeleportBackstab(caster: Entity): Skill.ActiveSkillCharacter(
     val criticalChance = 1f
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        "Range" to range,
-        "Damage" to damage,
-        "Crit %" to (criticalChance * 100).roundToInt()
+        ColorUtils.getStatColorTextra("Damage") + "Damage" to damage,
+        ColorUtils.getStatColorTextra("CriticalChance") + "Crit %" to (criticalChance * 100).roundToInt(),
+        ColorUtils.getStatColorTextra("Range") + "Range" to range
     )
 
     override fun use(target: Character) {

@@ -5,6 +5,7 @@ import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.requirements.Requirements
+import com.neutrino.game.graphics.utility.ColorUtils
 
 class SkillShieldBash(caster: Entity): Skill.ActiveSkillEntity(
     "Shield bash",
@@ -23,8 +24,8 @@ class SkillShieldBash(caster: Entity): Skill.ActiveSkillEntity(
         get() = caster.get(DefensiveStats::class)!!.defence * 1.2f + damage
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        "Damage" to defPlusDmg,
-        "Range" to range
+        ColorUtils.getStatColorTextra("Damage") + "Damage" to defPlusDmg,
+        ColorUtils.getStatColorTextra("Range") + "Range" to range
     )
 
     override fun use(target: Entity) {

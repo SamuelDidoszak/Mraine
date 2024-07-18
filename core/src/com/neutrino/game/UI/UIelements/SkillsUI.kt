@@ -244,7 +244,7 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
                     continue
                 }
 
-                val valueLabel = TextraLabel("[%75]" + (minMaxPrintable ?: printable.second.toString()), Fonts.MATCHUP, Color.BLACK)
+                val valueLabel = TextraLabel("[%75]" + (minMaxPrintable ?: printable.second.toString()), Fonts.MATCHUP, extractSkillColor(printable.first))
                 valueLabel.alignment = Align.center
                 add(valueLabel).center().spaceBottom(8f)
                 row()
@@ -283,6 +283,14 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
         skillDetailsTable.layout()
         skillName.invalidateHierarchy()
         detailsPane.scrollTo(0f, 10000f, 0f, 0f)
+    }
+
+    private fun extractSkillColor(first: String): Color {
+        val colorString = first.substringAfter('[').substringBefore(']')
+        if (colorString.first() != '#')
+            return Color.BLACK
+        else
+            return Color.valueOf(colorString)
     }
 
     /**
@@ -465,10 +473,10 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
 
     private fun getTreeColor(currentTree: Int): Color {
         when (currentTree) {
-            0 -> return ColorUtils.STRENGTH
-            1 -> return ColorUtils.DEXTERITY
-            2 -> return ColorUtils.INTELLIGENCE
-            3 -> return ColorUtils.SUMMONING
+            0 -> return ColorUtils.SKILL_STRENGTH
+            1 -> return ColorUtils.SKILL_DEXTERITY
+            2 -> return ColorUtils.SKILL_INTELLIGENCE
+            3 -> return ColorUtils.SKILL_SUMMONING
         }
         return Color.WHITE
     }

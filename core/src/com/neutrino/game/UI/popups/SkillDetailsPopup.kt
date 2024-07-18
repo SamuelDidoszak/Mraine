@@ -80,7 +80,7 @@ class SkillDetailsPopup(val skill: Skill): Table() {
                 continue
             }
 
-            val valueLabel = TextraLabel("[%75]" + (minMaxPrintable ?: printable.second.toString()), Fonts.MATCHUP)
+            val valueLabel = TextraLabel("[%75]" + (minMaxPrintable ?: printable.second.toString()), Fonts.MATCHUP, extractSkillColor(printable.first))
             valueLabel.alignment = Align.center
             add(valueLabel).center().spaceBottom(8f)
             row()
@@ -109,10 +109,18 @@ class SkillDetailsPopup(val skill: Skill): Table() {
 
     private fun getTreeColor(skillType: SkillType): Color {
         return when (skillType) {
-            SkillType.STRENGTH -> ColorUtils.STRENGTH
-            SkillType.DEXTERITY -> ColorUtils.DEXTERITY
-            SkillType.INTELLIGENCE -> ColorUtils.INTELLIGENCE
-            SkillType.SUMMONING -> ColorUtils.SUMMONING
+            SkillType.STRENGTH -> ColorUtils.SKILL_STRENGTH
+            SkillType.DEXTERITY -> ColorUtils.SKILL_DEXTERITY
+            SkillType.INTELLIGENCE -> ColorUtils.SKILL_INTELLIGENCE
+            SkillType.SUMMONING -> ColorUtils.SKILL_SUMMONING
         }
+    }
+
+    private fun extractSkillColor(first: String): Color {
+        val colorString = first.substringAfter('[').substringBefore(']')
+        if (colorString.first() != '#')
+            return Color.BLACK
+        else
+            return Color.valueOf(colorString)
     }
 }

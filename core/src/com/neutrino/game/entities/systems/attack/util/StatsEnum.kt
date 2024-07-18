@@ -9,7 +9,6 @@ enum class StatsEnum(val priorityWeight: Float, val statCost: Float) {
     DEXTERITY(3.5f, 2.25f),
     INTELLIGENCE(3.5f, 2.25f),
     LUCK(3.5f, 2.25f),
-    DEFENCE(5f, 1.25f),
     EVASION(1.5f, 1.5f),
     ACCURACY(1.5f, 1f),
     CRITICAL_CHANCE(5f, 1.25f),
@@ -26,12 +25,15 @@ enum class StatsEnum(val priorityWeight: Float, val statCost: Float) {
     AIR_DAMAGE(3.5f, 1.5f),
     POISON_DAMAGE(3.5f, 1.5f),
 
+    DEFENCE(5f, 1.25f),
     FIRE_DEFENCE(3.5f, 1.25f),
     WATER_DEFENCE(3.5f, 1.25f),
     AIR_DEFENCE(3.5f, 1.25f),
     POISON_DEFENCE(3.5f, 1.25f);
 
     override fun toString(): String {
-        return super.toString().replace('_', ' ').lowercase().replaceFirstChar { it.uppercaseChar() }
+        val secondWord = super.toString().substringAfter('_').lowercase().replaceFirstChar { it.uppercaseChar() }
+        return super.toString().substringBefore('_').lowercase() + secondWord
+//        return super.toString().replace('_', ' ').lowercase().replaceFirstChar { it.uppercaseChar() }
     }
 }

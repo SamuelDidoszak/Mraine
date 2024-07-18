@@ -10,6 +10,7 @@ import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Events
 import com.neutrino.game.entities.systems.events.TimedEvent
 import com.neutrino.game.entities.systems.requirements.Requirements
+import com.neutrino.game.graphics.utility.ColorUtils
 
 class SkillMeteorite(caster: Entity): Skill.ActiveSkillArea(
     "Meteorite",
@@ -33,10 +34,10 @@ class SkillMeteorite(caster: Entity): Skill.ActiveSkillArea(
     }
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        "Fire damage" to fireDamage,
-        "Burn damage" to burnDamage,
-        "Burn length" to burnLength,
-        "Range" to range
+        ColorUtils.getStatColorTextra("FireDamage") + "Fire damage" to fireDamage,
+        ColorUtils.getStatColorTextra("FireDamage") + "Burn damage" to burnDamage,
+        ColorUtils.getStatColorTextra("FireDamage") + "Burn length" to burnLength,
+        ColorUtils.getStatColorTextra("Range") + "Range" to range
     )
 
     override fun use(target: Position) {

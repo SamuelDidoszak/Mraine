@@ -39,39 +39,50 @@ class ItemContextPopup(
             align(Align.center)
             pad(8f)
             if (item has EquipmentItem::class) {
-                val equipButton = TextraButton("[%150][@Cozette]Equip", Scene2DSkin.defaultSkin)
-                equipButton.addListener(object: ClickListener() {
-                    override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                        if (event?.button != Input.Buttons.LEFT)
-                            return
-                        super.clicked(event, x, y)
-
-                        if (item.get(Requirements.Stats::class)?.check(Player) == false ||
-                            item.get(Requirements.Custom::class)?.check(Player) == false) {
-                            val unmetLabel = TextraLabel("[@Cozette][%600][*]Requirements not met", KnownFonts.getStandardFamily())
-                            unmetLabel.name = "UnmetRequirements"
-                            parent.addActor(unmetLabel)
-                            val coords = localToParentCoordinates(Vector2(x, y))
-                            unmetLabel.setPosition(coords.x, coords.y + 8f)
-                            unmetLabel.addAction(Actions.moveBy(0f, 36f, 1f))
-                            unmetLabel.addAction(
-                                Actions.sequence(
-                                    Actions.fadeOut(1.25f),
-                                    Actions.removeActor()))
-                        } else {
-                            Player.get(Equipment::class)!!.equipItem(item)
-                            Player.get(Inventory::class)!!.removeItem(item)
-                            if (item.get(EquipmentItem::class)!!.isTwoHanded()) {
-                                GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, Equipment.EquipmentType.LHAND)
-                                GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, Equipment.EquipmentType.RHAND)
-                            }
-                            else
-                                GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, item.get(EquipmentItem::class)!!.getEquipmentType())
+                val equipButton: TextraButton
+                if (Player.get(Equipment::class)!!.getEquipped(item.get(EquipmentItem::class)!!.getEquipmentType()) == item) {
+                    equipButton = TextraButton("[%150][@Cozette]Unequip", Scene2DSkin.defaultSkin)
+                    equipButton.addListener(object: ClickListener() {
+                        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                            if (event?.button != Input.Buttons.LEFT)
+                                return
+                            super.clicked(event, x, y)
+                            Player.get(Equipment::class)!!.unequipItem(item)
+                            GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, item.get(EquipmentItem::class)!!.getEquipmentType())
                             customUseMethod.invoke()
-                        }
+                    } })
+                } else {
+                    equipButton = TextraButton("[%150][@Cozette]Equip", Scene2DSkin.defaultSkin)
+                    equipButton.addListener(object: ClickListener() {
+                        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                            if (event?.button != Input.Buttons.LEFT)
+                                return
+                            super.clicked(event, x, y)
 
-                    }
-                })
+                            if (item.get(Requirements.Stats::class)?.check(Player) == false ||
+                                item.get(Requirements.Custom::class)?.check(Player) == false) {
+                                val unmetLabel = TextraLabel("[@Cozette][%600][*]Requirements not met", KnownFonts.getStandardFamily())
+                                unmetLabel.name = "UnmetRequirements"
+                                parent.addActor(unmetLabel)
+                                val coords = localToParentCoordinates(Vector2(x, y))
+                                unmetLabel.setPosition(coords.x, coords.y + 8f)
+                                unmetLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                                unmetLabel.addAction(
+                                    Actions.sequence(
+                                        Actions.fadeOut(1.25f),
+                                        Actions.removeActor()))
+                            } else {
+                                Player.get(Equipment::class)!!.equipItem(item)
+                                Player.get(Inventory::class)!!.removeItem(item)
+                                if (item.get(EquipmentItem::class)!!.isTwoHanded()) {
+                                    GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, Equipment.EquipmentType.LHAND)
+                                    GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, Equipment.EquipmentType.RHAND)
+                                }
+                                else
+                                    GlobalData.notifyObservers(GlobalDataType.EQUIPMENT, item.get(EquipmentItem::class)!!.getEquipmentType())
+                                customUseMethod.invoke()
+                    } } })
+                }
 
                 if (item !is ItemType.USABLE || item.useOn != UseOn.OTHERS_ONLY)
                     add(equipButton).prefWidth(90f).prefHeight(40f)

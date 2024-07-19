@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
@@ -15,6 +16,7 @@ import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.items.attributes.Amount
+import com.neutrino.game.entities.shared.attributes.Shaders
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
@@ -24,8 +26,9 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
 
     val stats: Stats = Stats()
 
-    private lateinit var equipmentTable: Table
+    lateinit var equipmentTable: Table
     private var equipmentMap: EnumMap<Equipment.EquipmentType, Container<Actor>> = EnumMap(Equipment.EquipmentType::class.java)
+    val equipmentUi = ScrollPane(Table())
 
     fun initialize(border: Image) {
         addEquipment(border)
@@ -66,14 +69,25 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
         equipmentTable.pack()
         equipmentTable.name = "equipmentTable"
         equipmentTable.layout()
-        addActor(equipmentTable)
+        equipmentUi.actor = equipmentTable
+        addActor(equipmentUi)
+        equipmentUi.width = 336f
+        equipmentUi.height = 448f
+        equipmentUi.setPosition(border.width - equipmentUi.width - 12 - 8, 38f)
+        equipmentUi.name = "equipment"
 
         equipmentTable.width = 336f
         equipmentTable.height = 448f
-        equipmentTable.setPosition(border.width - equipmentTable.width - 12 - 8, 38f)
+
+        equipmentUi.setScrollingDisabled(true, false)
+        equipmentUi.setOverscroll(false, false)
+        equipmentUi.setScrollbarsVisible(false)
+        equipmentUi.layout()
 
         // Initialize Gold actor
         equipmentMap[Equipment.EquipmentType.MONEY]!!.actor = EqActor(Items.new("Gold"))
+        (equipmentMap[Equipment.EquipmentType.MONEY]!!.actor as EqActor).entity.removeAttribute(Shaders::class)
+        (equipmentMap[Equipment.EquipmentType.MONEY]!!.actor as EqActor).setScale(1.25f, 1.25f)
         (equipmentMap[Equipment.EquipmentType.MONEY]!!.actor as EqActor).amount = 0
         (equipmentMap[Equipment.EquipmentType.MONEY]!!.actor as EqActor).refreshAmount()
     }
@@ -91,7 +105,6 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
         val goldActor = equipmentMap[Equipment.EquipmentType.MONEY]!!.actor as EqActor
         val prevAmount = goldActor.amount
         var goldAmount = 0
-        // TODO ECS Items
         val goldList = Player.get(Inventory::class)!!.getAll { item: Entity -> item.id == Items.getId("Gold") }
         goldList?.forEach { goldAmount += it.get(Amount::class)!!.amount }
         goldActor.amount = goldAmount
@@ -102,10 +115,11 @@ class Equipment(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): 
     fun refreshEquipment(type: Equipment.EquipmentType) {
         val item: Entity? = Player.get(Equipment::class)!!.getEquipped(type)
 
-        // TODO ECS ITEMS EQUIPMENT UI
-        if (item != null)
-            equipmentMap[type]!!.actor = EqActor(item)
-
+        if (item != null) {
+            val eqActor = EqActor(item)
+            eqActor.setScale(1.25f, 1.25f)
+            equipmentMap[type]!!.actor = eqActor
+        }
         else if (equipmentMap[type]!!.hasChildren())
             equipmentMap[type]!!.removeActorAt(0, false)
     }

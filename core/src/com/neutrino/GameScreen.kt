@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.neutrino.game.LevelInitialization
 import com.neutrino.game.UI.UiStage
-import com.neutrino.game.gameplay.turn.Turn
+import com.neutrino.game.UI.utility.ManagerType
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
@@ -21,7 +21,10 @@ import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.systems.util.visuals.DamageNumber
 import com.neutrino.game.gameplay.main.Gameplay
+import com.neutrino.game.gameplay.turn.Turn
+import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.drawing.actions.Actions
+import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
@@ -205,7 +208,7 @@ class GameScreen: KtxScreen {
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PICKUP
             override fun update(data: Any?): Boolean {
-                if (gameStage.showEq && uiStage.inventoryManager.clickedItem == null)
+                if (gameStage.showEq && (uiStage.inventoryManager.managerType !is ManagerType.INVENTORY || uiStage.inventoryManager.clickedItem == null))
                     uiStage.inventory.refreshInventory()
                 else
                     uiStage.inventory.forceRefreshInventory = true

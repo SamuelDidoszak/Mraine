@@ -114,7 +114,7 @@ Items.add("Linen shirt") {
         .addAttribute(EquipmentInitializer(
             textureName = "linenShirt",
             goldValue = 50,
-            eqType = EquipmentType.LEGS
+            eqType = EquipmentType.TORSO
         ))
         .addAttribute(DefensiveStats(
             defence = 4f

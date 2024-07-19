@@ -45,6 +45,7 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
                     uiStage.equipment.refreshGoldInEquipment()
                     uiStage.equipment.stats.refreshStats()
                     changeOptions("Sorting")
+                    uiStage.inventoryManager.setElement(uiStage.equipment)
                 }
                 "InventoryClosed" -> {
                     uiStage.inventory.isVisible = true

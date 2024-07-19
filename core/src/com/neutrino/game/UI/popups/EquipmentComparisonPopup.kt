@@ -29,7 +29,7 @@ class EquipmentComparisonPopup(val item: Item): Table() {
 
     init {
         val equippedItem = Player.get(Equipment::class)!!.getEquipped(item.get(EquipmentItem::class)!!.getEquipmentType()) as Item?
-        if (equippedItem != null)
+        if (equippedItem != null && equippedItem != item)
             add(addItemScreen(equippedItem, item)).width(256f).top()
         add(addItemScreen(item, equippedItem)).width(256f).top()
         layout()
@@ -37,7 +37,6 @@ class EquipmentComparisonPopup(val item: Item): Table() {
         children.forEach { maxHeight = max(maxHeight, (it as Table).minHeight) }
         height = maxHeight
     }
-
 
     private fun addItemScreen(item: Item, itemToCompare: Item?): Table {
         val table = Table()
@@ -133,9 +132,12 @@ class EquipmentComparisonPopup(val item: Item): Table() {
             }
         }
 
+        val equippedItem = Player.get(Equipment::class)!!.getEquipped(item.get(EquipmentItem::class)!!.getEquipmentType()) as Item?
         val requirements: ArrayList<Pair<String, String>> = ArrayList()
-        item.get(Requirements.Stats::class)?.print(Player)?.forEach { requirements.add(it) }
-        item.get(Requirements.Custom::class)?.print(Player)?.forEach { requirements.add(it) }
+        if  (equippedItem != this.item) {
+            item.get(Requirements.Stats::class)?.print(Player)?.forEach { requirements.add(it) }
+            item.get(Requirements.Custom::class)?.print(Player)?.forEach { requirements.add(it) }
+        }
         if (requirements.isNotEmpty()) {
             table.add(TextraLabel("Requirements", Fonts.EQUIPMENT, Color.BLACK)).expandX().center().colspan(10).spaceTop(12f).spaceBottom(12f)
             table.row()

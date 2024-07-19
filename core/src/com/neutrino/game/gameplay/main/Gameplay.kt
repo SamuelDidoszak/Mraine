@@ -81,6 +81,7 @@ class Gameplay(
                     Player.getSuper(Ai::class)!!.moveList = ArrayDeque()
                     Player.getSuper(Ai::class)!!.targetCoords = null
                     gameStage.clickedCoordinates = null
+                    Player.get(PlayerAi::class)!!.playerMoving = false
                     return
                 }
 

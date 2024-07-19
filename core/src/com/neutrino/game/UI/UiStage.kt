@@ -20,9 +20,10 @@ import com.neutrino.game.UI.UIelements.SkillsUI
 import com.neutrino.game.UI.UIelements.Tabs
 import com.neutrino.game.UI.utility.ManagedElement
 import com.neutrino.game.UI.utility.ManagerType
-import com.neutrino.game.domain.model.characters.Player
-import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Inventory
+import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.util.*
 
 
@@ -134,9 +135,11 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         scrollFocus = inventory
         currentScreen = inventory
 
-        inventoryManager.elements.add(ManagedElement(inventory, this.root, ManagerType.INVENTORY))
+        inventoryManager.elements.add(ManagedElement(inventory, this.root, ManagerType.INVENTORY(Player.get(Inventory::class)!!)))
         inventoryManager.elements.add(ManagedElement(skills.skillTable, skills, ManagerType.SKILLS))
+        inventoryManager.elements.add(ManagedElement(equipment.equipmentUi, equipment, ManagerType.EQUIPMENT(Player.get(com.neutrino.game.entities.characters.attributes.Equipment::class)!!)))
         inventoryManager.setElement(inventory)
+
 
         GlobalData.registerObserver(object : GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERINVENTORYSIZE
@@ -217,7 +220,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         )
 
         when (currentScreen) {
-            inventory, skills -> {
+            inventory, skills, equipment -> {
                 val callback =
                 inventoryManager.touchDown(coord, pointer, button) {
                     super.touchDown(screenX, screenY, pointer, button)
@@ -237,7 +240,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         )
 
         when (currentScreen) {
-            inventory, skills -> {
+            inventory, skills, equipment -> {
                 val callback =
                 inventoryManager.touchDragged(screenX, screenY, coord, pointer) {
                     super.touchDragged(screenX, screenY, pointer)
@@ -285,6 +288,20 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                     }
                 }
             }
+            equipment -> {
+                val callback =
+                    inventoryManager.touchUp(coord, button) {
+                        super.touchUp(screenX, screenY, pointer, button)
+                    }
+
+                if (callback != -1) {
+                    if (inventory.forceRefreshInventory) {
+                        inventory.refreshInventory()
+                        inventory.forceRefreshInventory = false
+                    }
+                    return callback == 1
+                }
+            }
         }
 
         tabs.touchUp(coord, pointer, button)
@@ -319,6 +336,9 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                     skills.onHover(coord.x, coord.y)
                 } else
                     inventoryManager.mouseMoved(coord)
+            }
+            equipment -> {
+                inventoryManager.mouseMoved(coord)
             }
         }
 

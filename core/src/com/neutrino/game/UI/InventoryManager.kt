@@ -16,12 +16,12 @@ import com.neutrino.game.UI.popups.SkillContextPopup
 import com.neutrino.game.UI.utility.*
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.Items
-import com.neutrino.game.entities.characters.Player
-import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.characters.attributes.util.InventoryElement
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.items.attributes.Amount
 import com.neutrino.game.entities.items.attributes.EquipmentItem
+import com.neutrino.game.entities.systems.requirements.Requirements
+import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.util.isIn
 import kotlin.math.ceil
 
@@ -29,12 +29,17 @@ class InventoryManager(private val uiStage: UiStage) {
 
     val elements: ArrayList<ManagedElement> = ArrayList(2)
     private var currentElement: ManagedElement? = null
+    val managerType: ManagerType?
+        get() = currentElement?.type
 
     fun setElement(group: Group) {
         if (group == uiStage.inventory)
             currentElement = elements[0]
         if (group == uiStage.skills)
             currentElement = elements[1]
+        if (group == uiStage.equipment) {
+            currentElement = elements[2]
+        }
     }
     
     private var originalContainer: Container<*>? = null
@@ -54,6 +59,7 @@ class InventoryManager(private val uiStage: UiStage) {
     private var detailsPopup: Actor? = null
     private var contextPopup: Actor? = null
     private val itemContextPopup = ItemContextPopup(uiStage.usedItemList, { item: Entity -> uiStage.useItemOn = item})  {
+        // TODO AI Fight boolean
         uiStage.showInventory = false
         nullifyAllValues()
         uiStage.nullifyAllValues()
@@ -74,7 +80,7 @@ class InventoryManager(private val uiStage: UiStage) {
         when (currentElement?.pane) {
             null -> return -1
             uiStage.inventory -> {
-                originalInventory = Player.get(com.neutrino.game.entities.characters.attributes.Inventory::class)
+                originalInventory = (currentElement!!.type as ManagerType.INVENTORY).inventory
             }
             uiStage.skills.skillTable -> {
 
@@ -236,7 +242,7 @@ class InventoryManager(private val uiStage: UiStage) {
                     val hoveredActor: Actor? = getInventoryCell(coord.x, coord.y, hoveredInv.pane)?.actor
                     if (hoveredActor != null) {
                         when (hoveredInv.type) {
-                            ManagerType.INVENTORY, ManagerType.EQUIPMENT -> {
+                            is ManagerType.INVENTORY, is ManagerType.EQUIPMENT -> {
                                 contextPopup = itemContextPopup.createContextMenu((hoveredActor as EqActor).entity, coord.x, coord.y)
                             }
                             ManagerType.SKILLS -> {
@@ -273,7 +279,7 @@ class InventoryManager(private val uiStage: UiStage) {
         if (hoveredInv != null && contextPopup == null) {
             hoveredItem = getInventoryCell(coord.x, coord.y, hoveredInv.pane)?.actor
             when (hoveredInv.type) {
-                ManagerType.INVENTORY, ManagerType.EQUIPMENT -> {
+                is ManagerType.INVENTORY, is ManagerType.EQUIPMENT -> {
                     if (hoveredItem != null && (hoveredItem as EqActor).entity != displayedItem) {
                         if (detailsPopup != null)
                             uiStage.actors.removeValue(detailsPopup, true)
@@ -299,7 +305,7 @@ class InventoryManager(private val uiStage: UiStage) {
         }
 
         when (currentElement?.type) {
-            ManagerType.INVENTORY -> {
+            is ManagerType.INVENTORY, is ManagerType.EQUIPMENT -> {
                 // delete or move the popup
                 if ((hoveredInv == null || hoveredItem == null)) {
                     displayedItem = null
@@ -415,7 +421,6 @@ class InventoryManager(private val uiStage: UiStage) {
             if (container == null) {
                 originalContainer!!.actor = clickedItem
                 return true
-
             }
 
             uiStage.actors.removeValue(clickedItem, true)
@@ -427,11 +432,48 @@ class InventoryManager(private val uiStage: UiStage) {
             return true
         }
 
-        val isEqActor = currentElement?.type == ManagerType.INVENTORY || currentElement?.type == ManagerType.EQUIPMENT
+        val isEqActor = currentElement?.type is ManagerType.INVENTORY || currentElement?.type is ManagerType.EQUIPMENT
         if (!isEqActor)
             return false
 
-        if (clickedInv == null) {
+        if (currentElement?.type is ManagerType.EQUIPMENT) {
+            if (clickedInv == null) {
+                (currentElement!!.type as ManagerType.EQUIPMENT).equipment.unequipItem((clickedItem as EqActor).entity)
+                uiStage.actors.removeValue(clickedItem, true)
+                return true
+            }
+            val container = getInventoryCell(x, y, clickedInv.pane)
+            if (container == null) {
+                clickedItem!!.setScale(1.25f, 1.25f)
+                originalContainer!!.actor = clickedItem as EqActor
+                return true
+            }
+            val itemType = (clickedItem as EqActor).entity.get(EquipmentItem::class)
+            val itemTypeName = itemType?.type?.name?.lowercase()
+            if (itemTypeName?.endsWith("ring") == true && container.name.lowercase().endsWith("ring")) {
+                if (container.hasChildren())
+                    originalContainer!!.actor = container.actor as EqActor
+            // TODO add dual wielding here
+            } else if (container.name.lowercase() != itemTypeName?.lowercase())
+                return false
+
+            val equipment = (currentElement!!.type as ManagerType.EQUIPMENT).equipment
+
+            if ((clickedItem!! as EqActor).entity.get(Requirements.Stats::class)?.
+                check(equipment.entity) == false ||
+                (clickedItem!! as EqActor).entity.get(Requirements.Custom::class)?.
+                check(equipment.entity) == false) {
+                Visuals.showText((clickedItem!! as EqActor).entity, "Requirements not met!")
+                return false
+            }
+
+            if (equipment.getEquipped(itemType.getEquipmentType()) != (clickedItem!! as EqActor).entity)
+                equipment.equipItem((clickedItem!! as EqActor).entity)
+
+            clickedItem!!.setScale(1.25f, 1.25f)
+            container.actor = clickedItem
+            return true
+        } else if (clickedInv == null) {
             // Dropping the item
             if (clickedItem != null) {
                 uiStage.itemDropList.add((clickedItem as EqActor).entity)
@@ -454,9 +496,8 @@ class InventoryManager(private val uiStage: UiStage) {
         }
         clickedItem!!.setScale(1f, 1f)
         // if the area between cells was clicked, reset the item position
-        val container = getInventoryCell(x, y, clickedInv.pane)
-        // TODO checking the Player inventorySize here can cause bugs when other inventories will be displayed
-        if (container == null || container.name?.toInt()!! >= Player.get(Inventory::class)!!.maxSize) {
+        val container = getInventoryCell(x, y, clickedInv!!.pane)
+        if (container == null || container.name?.toInt()!! >= (currentElement!!.type as ManagerType.INVENTORY).inventory.maxSize) {
             if (originalStackItem != null) {
                 originalStackItem!!.amount = originalStackItem!!.amount.plus((clickedItem as EqActor).amount)
                 originalStackItem!!.refreshAmount()
@@ -538,6 +579,10 @@ class InventoryManager(private val uiStage: UiStage) {
                 if (pane.isIn(coord.x, coord.y))
                     return inventory
             }
+            if (pane.name == "equipment") {
+                if (pane.isIn(coord.x, coord.y))
+                    return inventory
+            }
 
             if (coord.x in pane.x .. pane.x + pane.width * uiStage.currentScale - 1 &&
                 coord.y in pane.y .. pane.y + pane.height * uiStage.currentScale - 1)
@@ -563,6 +608,8 @@ class InventoryManager(private val uiStage: UiStage) {
         while (clickedChild !is Container<*>) {
             clickedChild = clickedChild.parent
         }
+        if (clickedChild.name.lowercase() == "money")
+            return null
         return clickedChild
     }
 

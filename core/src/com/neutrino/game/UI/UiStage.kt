@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Pools
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
@@ -98,6 +100,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     val map = Group()
 
     val inventoryManager = InventoryManager(this)
+    private var lastMouseOver: Actor? = null
 
     var currentScale: Float = 1f
 
@@ -215,19 +218,27 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         if (button == Input.Buttons.RIGHT)
             return super.touchDown(screenX, screenY, pointer, button)
 
-        val coord: Vector2 = screenToStageCoordinates(
+        val stageCoord: Vector2 = screenToStageCoordinates(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
 
         when (currentScreen) {
-            inventory, skills, equipment -> {
-                val callback =
-                inventoryManager.touchDown(coord, pointer, button) {
+            inventory, skills -> {
+                val callback = inventoryManager.touchDown(stageCoord, pointer, button) {
                     super.touchDown(screenX, screenY, pointer, button)
                 }
 
                 if (callback != -1)
                     return callback == 1
+            }
+            equipment -> {
+                val callback = inventoryManager.touchDown(stageCoord, pointer, button) {
+                    super.touchDown(screenX, screenY, pointer, button)
+                }
+                if (callback != -1)
+                    return callback == 1
+
+                fireEvent(InputEvent.Type.touchDown, stageCoord, pointer, button)
             }
         }
 
@@ -255,14 +266,14 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     }
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        val coord: Vector2 = screenToStageCoordinates(
+        val stageCoord: Vector2 = screenToStageCoordinates(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
 
         when (currentScreen) {
             inventory -> {
                 val callback =
-                inventoryManager.touchUp(coord, button) {
+                inventoryManager.touchUp(stageCoord, button) {
                     super.touchUp(screenX, screenY, pointer, button)
                 }
 
@@ -281,19 +292,17 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             }
             skills -> {
                 if (skills.currentTab.name != "skillTable") {
-                    skills.parseClick(coord.x, coord.y)
+                    skills.parseClick(stageCoord.x, stageCoord.y)
                 } else {
-                    inventoryManager.touchUp(coord, button) {
+                    inventoryManager.touchUp(stageCoord, button) {
                         super.touchUp(screenX, screenY, pointer, button)
                     }
                 }
             }
             equipment -> {
-                val callback =
-                    inventoryManager.touchUp(coord, button) {
-                        super.touchUp(screenX, screenY, pointer, button)
-                    }
-
+                val callback = inventoryManager.touchUp(stageCoord, button) {
+                    super.touchUp(screenX, screenY, pointer, button)
+                }
                 if (callback != -1) {
                     if (inventory.forceRefreshInventory) {
                         inventory.refreshInventory()
@@ -301,21 +310,22 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                     }
                     return callback == 1
                 }
+                fireEvent(InputEvent.Type.touchUp, stageCoord, pointer, button)
             }
         }
 
-        tabs.touchUp(coord, pointer, button)
+        tabs.touchUp(stageCoord, pointer, button)
 
         return super.touchUp(screenX, screenY, pointer, button)
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        val coord: Vector2 = screenToStageCoordinates(
+        val stageCoord: Vector2 = screenToStageCoordinates(
             Vector2(screenX.toFloat(), screenY.toFloat())
         )
 
         // move tabs
-        var tab = tabs.getTabByPosition(coord)
+        var tab = tabs.getTabByPosition(stageCoord)
         if (border.isIn(screenX.toFloat(), screenY.toFloat()))
             tab = null
 
@@ -328,17 +338,19 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
         when (currentScreen) {
             inventory -> {
-                inventoryManager.mouseMoved(coord)
+                inventoryManager.mouseMoved(stageCoord)
             }
             skills -> {
-                skills.scrollFocus(coord.x, coord.y)
+                skills.scrollFocus(stageCoord.x, stageCoord.y)
                 if (skills.currentTab.name != "skillTable") {
-                    skills.onHover(coord.x, coord.y)
+                    skills.onHover(stageCoord.x, stageCoord.y)
                 } else
-                    inventoryManager.mouseMoved(coord)
+                    inventoryManager.mouseMoved(stageCoord)
             }
             equipment -> {
-                inventoryManager.mouseMoved(coord)
+                inventoryManager.mouseMoved(stageCoord)
+                fireEvent(InputEvent.Type.mouseMoved, stageCoord)
+                lastMouseOver = fireEnterAndExit(lastMouseOver, stageCoord)
             }
         }
 
@@ -355,6 +367,74 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             }
         }
         return true
+    }
+
+    private fun getActorInCoords(stageCoord: Vector2): Actor? {
+        for (parentActor in actors) {
+            if (parentActor !is Group)
+                continue
+            for (actor in parentActor.children) {
+                val localCoords = actor.stageToLocalCoordinates(stageCoord.cpy())
+                return actor.hit(localCoords.x, localCoords.y, true) ?: continue
+            }
+        }
+        return null
+    }
+
+    fun fireEvent(eventType: InputEvent.Type, stageCoord: Vector2, pointer: Int? = null, button: Int? = null) {
+        val actor = getActorInCoords(stageCoord) ?: return
+        val event = getEvent(eventType, stageCoord, pointer, button)
+        actor.fire(event)
+        Pools.free(event)
+    }
+
+    private fun getEvent(eventType: InputEvent.Type, stageCoord: Vector2, pointer: Int? = null, button: Int? = null): InputEvent {
+        val event = Pools.obtain(InputEvent::class.java) as InputEvent
+        event.type = eventType
+        event.stage = this
+        event.stageX = stageCoord.x
+        event.stageY = stageCoord.y
+        if (eventType == InputEvent.Type.mouseMoved)
+            return event
+        event.pointer = pointer!!
+        if (eventType != InputEvent.Type.touchDragged)
+            event.button = button!!
+        InputEvent.Type.enter
+        return event
+    }
+
+    private fun fireEnterAndExit(overLast: Actor?, stageCoord: Vector2): Actor? {
+        val over = getActorInCoords(stageCoord)
+        if (over === overLast) {
+            return overLast
+        } else {
+            var event: InputEvent
+            if (overLast != null) {
+                event = Pools.obtain(InputEvent::class.java) as InputEvent
+                event.type = InputEvent.Type.exit
+                event.stage = this
+                event.stageX = stageCoord.x
+                event.stageY = stageCoord.y
+                event.pointer = -1
+                event.relatedActor = over
+                overLast.fire(event)
+                Pools.free(event)
+            }
+
+            if (over != null) {
+                event = Pools.obtain(InputEvent::class.java) as InputEvent
+                event.type = InputEvent.Type.enter
+                event.stage = this
+                event.stageX = stageCoord.x
+                event.stageY = stageCoord.y
+                event.pointer = -1
+                event.relatedActor = overLast
+                over.fire(event)
+                Pools.free(event)
+            }
+
+            return over
+        }
     }
 
     /** Moves an actor by 14 pixels */

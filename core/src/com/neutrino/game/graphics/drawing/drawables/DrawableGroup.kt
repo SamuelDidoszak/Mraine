@@ -28,9 +28,12 @@ open class DrawableGroup(
         if (!addAbove)
             yOffset *= -1
         drawable.yOffset = yOffset
+        val center = centerOnEntity
+        if (center)
+            centerOnEntity = false
         children.add(drawable)
-        if (centerOnEntity)
-            drawable.centerOnEntity = true
+        if (center)
+            centerOnEntity = true
         return this
     }
 

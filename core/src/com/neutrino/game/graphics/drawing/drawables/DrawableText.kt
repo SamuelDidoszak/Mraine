@@ -4,14 +4,19 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.KnownFonts
 import com.github.tommyettinger.textra.TextraLabel
+import com.github.tommyettinger.textra.TypingLabel
 
 open class DrawableText(
     text: String = "",
     centered: Boolean = true,
+    typingLabel: Boolean = false,
     width: Int = 0
-): Drawable() {
+): Drawable(), ActingDrawable {
 
-    var text = TextraLabel(text, KnownFonts.getStandardFamily())
+    var text = if (typingLabel)
+        TypingLabel(text, KnownFonts.getStandardFamily())
+    else
+        TextraLabel(text, KnownFonts.getStandardFamily())
     var centered: Boolean = centered
         set(value) {
             field = value
@@ -45,5 +50,9 @@ open class DrawableText(
             text.align = Align.center
         else
             text.align = Align.left
+    }
+
+    override fun act(delta: Float) {
+        text.act(delta)
     }
 }

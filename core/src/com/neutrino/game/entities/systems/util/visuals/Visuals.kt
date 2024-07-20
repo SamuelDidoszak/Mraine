@@ -73,8 +73,8 @@ object Visuals {
         )
     }
 
-    fun showText(entity: Entity, text: String) {
-        val textDraw = DrawableText(text, true, (entity.get(Texture::class)?.getWidthScaled() ?: 64) * 6)
+    fun showText(entity: Entity, text: String, typingLabel: Boolean = true) {
+        val textDraw = DrawableText(text, true, typingLabel,(entity.get(Texture::class)?.getWidthScaled() ?: 64) * 6)
         textDraw.centerOnEntity = true
 
         var textGroup = entity.get(Drawables::class)?.getDrawable { it is DrawableGroup && it.groupName == "textGroup" } as? DrawableGroup?
@@ -85,6 +85,7 @@ object Visuals {
             textGroup.z = 3
             textGroup.yOffset = entity.height
             textGroup.initialize(entity)
+            textGroup.debug = true
         }
         textGroup.add(textDraw, 32f)
 
@@ -92,8 +93,7 @@ object Visuals {
             Action.Delay(1f + text.length / 20f),
             Action.FadeOut(1.25f),
             Action.Delete(),
-            Action.Custom { if (!textGroup.hasChildren()) textGroup.detach() },
-            Action.Custom { println("Has textGroup? ${entity.get(Drawables::class)?.getDrawable { it is DrawableGroup && it.groupName == "textGroup" } != null}")}
+            Action.Custom { if (!textGroup.hasChildren()) textGroup.detach() }
         ))
     }
 }

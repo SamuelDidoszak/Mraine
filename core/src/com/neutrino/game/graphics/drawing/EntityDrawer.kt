@@ -6,22 +6,19 @@ import com.neutrino.game.entities.shared.attributes.Drawables
 import com.neutrino.game.entities.shared.attributes.Shaders
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.util.Cloneable
-import com.neutrino.game.graphics.drawing.drawables.Drawable
-import com.neutrino.game.graphics.drawing.drawables.DrawableTexture
-import com.neutrino.game.graphics.drawing.drawables.DrawableTextureUnsorted
-import com.neutrino.game.graphics.drawing.drawables.LayeredDrawableList
+import com.neutrino.game.graphics.drawing.drawables.*
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.graphics.textures.AnimatedTextureSprite
 import com.neutrino.game.graphics.textures.Light
 import com.neutrino.game.graphics.textures.TextureSprite
 import java.util.*
-import kotlin.collections.ArrayList
 
 abstract class EntityDrawer: Group() {
 
     protected val animations: Animations = Animations(this)
     val lights: ArrayList<Pair<DrawableTexture, Light>> = ArrayList()
     protected val drawableLayers: SortedMap<Int, LayeredDrawableList> = sortedMapOf()
+    val actingDrawables: ArrayList<ActingDrawable> = ArrayList()
 
     abstract val map: List<List<MutableList<Entity>>>
 
@@ -54,8 +51,7 @@ abstract class EntityDrawer: Group() {
         if (drawableLayers[drawable.z] == null)
             drawableLayers[drawable.z] = LayeredDrawableList()
 
-        if (drawable is DrawableTexture)
-            addDrawableDetails(drawable)
+        addDrawableDetails(drawable)
 
         drawable.entity.get(Shaders::class)?.shaders?.forEach { drawable.addShader(it) }
         drawableLayers[drawable.z]!!.add(drawable)
@@ -67,18 +63,33 @@ abstract class EntityDrawer: Group() {
     fun removeDrawable(drawable: Drawable) {
         drawable.entity.get(Drawables::class)?.removeDrawable(drawable)
         drawableLayers[drawable.z]?.remove(drawable)
-        if (drawable is DrawableTexture)
-            removeDrawableDetails(drawable)
+        removeDrawableDetails(drawable)
     }
 
     fun removeTexture(entity: Entity, texture: TextureSprite) {
         val drawable = entity.get(Drawables::class)?.removeDrawable {
             it.entity == entity && it is DrawableTexture && it.texture == texture }
         drawableLayers[texture.z]?.remove(drawable)
-        removeDrawableDetails(drawable as DrawableTexture)
+        removeDrawableDetails(drawable!!)
     }
 
-    private fun addDrawableDetails(drawable: DrawableTexture) {
+    fun addDrawableDetails(drawable: Drawable) {
+        if (drawable is DrawableTexture)
+            addDrawableTextureDetails(drawable)
+        if (drawable is ActingDrawable) {
+            println(drawable)
+            actingDrawables.add(drawable)
+        }
+    }
+
+    fun removeDrawableDetails(drawable: Drawable) {
+        if (drawable is DrawableTexture)
+            removeDrawableTextureDetails(drawable)
+        if (drawable is ActingDrawable)
+            actingDrawables.remove(drawable)
+    }
+
+    private fun addDrawableTextureDetails(drawable: DrawableTexture) {
         if (drawable.texture is AnimatedTextureSprite)
             animations.add(drawable)
         if (drawable.texture.lights == null)
@@ -94,7 +105,7 @@ abstract class EntityDrawer: Group() {
         }
     }
 
-    private fun removeDrawableDetails(drawable: DrawableTexture) {
+    private fun removeDrawableTextureDetails(drawable: DrawableTexture) {
         if (drawable.texture is AnimatedTextureSprite)
             animations.remove(drawable)
         if (drawable.texture.lights == null)
@@ -111,5 +122,6 @@ abstract class EntityDrawer: Group() {
     override fun act(delta: Float) {
         super.act(delta)
         animations.play(delta)
+        actingDrawables.forEach { it.act(delta) }
     }
 }

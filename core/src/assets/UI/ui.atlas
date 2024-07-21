@@ -82,19 +82,27 @@ cellUnavailable
 equipmentDefault
 	bounds: 864, 1950, 96, 96
 left
-	bounds: 763, 406, 14, 14
+	bounds: 520, 374, 14, 14
 leftPressed
-	bounds: 196, 330, 14, 14
+	bounds: 763, 384, 14, 14
 minus
-	bounds: 722, 914, 14, 14
+	bounds: 196, 330, 14, 14
+minus20
+	bounds: 520, 390, 20, 20
 minusPressed
-	bounds: 962, 2016, 14, 14
+	bounds: 785, 406, 14, 14
+minusPressed20
+	bounds: 962, 2004, 20, 20
 plus
-	bounds: 520, 396, 14, 14
+	bounds: 984, 2032, 14, 14
+plus20
+	bounds: 763, 400, 20, 20
 plusPressed
 	bounds: 528, 476, 14, 14
+plusPressed20
+	bounds: 962, 2026, 20, 20
 right
-	bounds: 962, 2032, 14, 14
+	bounds: 722, 914, 14, 14
 rightPressed
 	bounds: 528, 492, 14, 14
 skillBackground

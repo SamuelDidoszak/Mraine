@@ -85,12 +85,11 @@ object Visuals {
             textGroup.z = 3
             textGroup.yOffset = entity.height
             textGroup.initialize(entity)
-            textGroup.debug = true
         }
         textGroup.add(textDraw, 32f)
 
         textDraw.addAction(Action.Sequence(
-            Action.Delay(1f + text.length / 20f),
+            Action.Delay(1.5f + text.length / 20f),
             Action.FadeOut(1.25f),
             Action.Delete(),
             Action.Custom { if (!textGroup.hasChildren()) textGroup.detach() }

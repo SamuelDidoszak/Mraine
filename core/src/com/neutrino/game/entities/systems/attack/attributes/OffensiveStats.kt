@@ -1,5 +1,6 @@
 package com.neutrino.game.entities.systems.attack.attributes
 
+import com.neutrino.game.domain.model.characters.Player.hpMax
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
@@ -20,10 +21,10 @@ import kotlin.math.min
 import kotlin.random.Random
 
 class OffensiveStats(
-    var strength: Float = 0f,
-    var dexterity: Float = 0f,
-    var intelligence: Float = 0f,
-    var luck: Float = 0f,
+    strength: Float = 0f,
+    dexterity: Float = 0f,
+    intelligence: Float = 0f,
+    luck: Float = 0f,
     var damageMin: Float = 0f,
     var damageMax: Float = damageMin,
     /** Range is 0 - 2 which tells the probability of hitting the enemy */
@@ -44,6 +45,44 @@ class OffensiveStats(
     var poisonDamageMin: Float = 0f,
     var poisonDamageMax: Float = poisonDamageMin
 ): Attribute(), HasRange, AttributeOperations<OffensiveStats>, PrintableInfo<OffensiveStats> {
+
+    var strength: Float = strength
+        set(value) {
+            val difference = value - field
+            field = value
+            if (entity !is Character)
+                return
+            val stats = entity.get(DefensiveStats::class)!!
+            stats.hpMax += difference * 5f
+            stats.hp += difference * 5f
+            damageMin += difference * 0.5f
+            damageMax += difference * 0.5f}
+    var dexterity: Float = dexterity
+        set(value) {
+            val difference = value - field
+            field = value
+            if (entity !is Character)
+                return
+            val stats = entity.get(DefensiveStats::class)!!
+            stats.evasion += difference * 0.015f
+            accuracy += difference * 0.02f
+            stats.stealth += difference * 0.015f}
+    var intelligence: Float = intelligence
+        set(value) {
+            val difference = value - field
+            field = value
+            if (entity !is Character)
+                return
+            val stats = entity.get(DefensiveStats::class)!!
+            stats.mpMax += difference * 5f
+            stats.mp += difference * 5f}
+    var luck: Float = luck
+        set(value) {
+            val difference = value - field
+            field = value
+            if (entity !is Character)
+                return
+            criticalChance += difference * 0.015f}
 
     override fun onEntityAttached() {
         if (entity !is Character)

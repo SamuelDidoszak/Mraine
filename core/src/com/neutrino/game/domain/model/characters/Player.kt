@@ -156,8 +156,6 @@ object Player : Character(0, 0, 0.0), HasInventory, HasEquipment, HasSkills, Has
         sendStatChangeData(StatsEnum.POISON_DEFENCE)}
 
     override var experience: Float = 0f
-        set(value) {field = value
-        GlobalData.registerData(GlobalDataType.PLAYEREXP, true)}
     var level: Int = 1
         set(value) {field = value
         GlobalData.registerData(GlobalDataType.PLAYERSTAT, "level")}

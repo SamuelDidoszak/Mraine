@@ -2,10 +2,7 @@
 import com.neutrino.game.entities.Characters
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
-import com.neutrino.game.entities.characters.attributes.CharacterTags
-import com.neutrino.game.entities.characters.attributes.EnemyAi
-import com.neutrino.game.entities.characters.attributes.Faction
-import com.neutrino.game.entities.characters.attributes.Loot
+import com.neutrino.game.entities.characters.attributes.*
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
 import com.neutrino.game.entities.characters.attributes.util.LootElement
 import com.neutrino.game.entities.shared.attributes.RandomizationSimple
@@ -32,6 +29,7 @@ Characters.add("Mouse") {
         )
         .addAttribute(EnemyAi(viewDistance = 8))
         .addAttribute(Faction(FactionEnum.ENEMY))
+        .addAttribute(Experience(60))
         .addAttribute(Texture { position, random, textures ->
             textures.add(Textures.get("mouseIdle").xy(0f, 5f))
         })

@@ -34,6 +34,7 @@ import com.neutrino.game.domain.model.items.UseOn
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Inventory
+import com.neutrino.game.entities.characters.attributes.Level
 import com.neutrino.game.entities.characters.attributes.Skills
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.items.attributes.EquipmentItem
@@ -839,7 +840,7 @@ class HudMpBar(private val initialWidth: Float, private val initialHeight: Float
     private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
     private var drawer: ShapeDrawer? = null
     init {
-        name = "hpBar"
+        name = "mpBar"
         height = initialHeight
     }
 
@@ -863,7 +864,7 @@ class HudMpBarBackground(private val initialWidth: Float, private val initialHei
     private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
     private var drawer: ShapeDrawer? = null
     init {
-        name = "hpBar"
+        name = "mpBarBg"
         height = initialHeight
     }
 
@@ -886,8 +887,9 @@ class HudMpBarBackground(private val initialWidth: Float, private val initialHei
 class HudExpBar(private val initialWidth: Float, private val initialHeight: Float = 4f): Actor() {
     private val textureRegion: TextureRegion = TextureRegion(Texture("whitePixel.png"), 0, 0, 1, 1)
     private var drawer: ShapeDrawer? = null
+    private val level = Player.get(Level::class)!!
     init {
-        name = "hpBar"
+        name = "expBar"
         height = initialHeight
     }
 
@@ -897,8 +899,7 @@ class HudExpBar(private val initialWidth: Float, private val initialHeight: Floa
             drawer!!.setColor(Color(80 / 255f, 208 / 255f, 121 / 255f, 1f))
         }
 
-        drawer!!.filledRectangle(this.x, this.y, initialWidth * this.scaleX, initialHeight * this.scaleY)
-//                (Player.experience / Player.mpMax), initialHeight)
+        drawer!!.filledRectangle(this.x, this.y, level.nextLevelPercent() * initialWidth, initialHeight)
     }
 
     override fun remove(): Boolean {

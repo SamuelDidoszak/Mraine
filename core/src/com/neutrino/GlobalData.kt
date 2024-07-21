@@ -5,7 +5,7 @@ object GlobalData {
     private val dataList: HashMap<GlobalDataType, ArrayList<Any?>> = hashMapOf(
         Pair(GlobalDataType.PLAYERHP, ArrayList()),
         Pair(GlobalDataType.PLAYERMANA, ArrayList()),
-        Pair(GlobalDataType.PLAYEREXP, ArrayList()),
+        Pair(GlobalDataType.LEVELUP, ArrayList()),
         Pair(GlobalDataType.PICKUP, ArrayList()),
         Pair(GlobalDataType.CHANGELEVEL, ArrayList()),
         Pair(GlobalDataType.PLAYERSTAT, ArrayList())
@@ -64,7 +64,6 @@ enum class GlobalDataType {
     // Character related
     PLAYERHP,
     PLAYERMANA,
-    PLAYEREXP,
     PLAYERMOVED,
     PICKUP,
     EQUIPMENT,
@@ -74,6 +73,7 @@ enum class GlobalDataType {
     PLAYERNEWSKILL,
 
     CHARACTERDIED,
+    LEVELUP,
 
     // Game
     LEVELCHANGED,

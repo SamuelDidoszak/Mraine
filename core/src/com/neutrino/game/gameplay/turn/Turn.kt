@@ -7,10 +7,7 @@ import com.neutrino.GlobalDataType
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.Player
-import com.neutrino.game.entities.characters.attributes.Ai
-import com.neutrino.game.entities.characters.attributes.CharacterTags
-import com.neutrino.game.entities.characters.attributes.EnemyAi
-import com.neutrino.game.entities.characters.attributes.Inventory
+import com.neutrino.game.entities.characters.attributes.*
 import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.entities.characters.callables.VisionChangedCallable
 import com.neutrino.game.entities.items.attributes.usable.Use
@@ -292,8 +289,9 @@ object Turn {
         if (character == Player)
             return playerDied()
 
-        // TODO ECS Attack levelling
-//        Player.experience += character.experience
+        val experience = character.get(Experience::class)?.experience
+        if (experience != null)
+            Player.get(Level::class)!!.addExp(experience)
 
         val chunk = character.get(Position::class)!!.chunk
         chunk.characterMap[character.y][character.x] = null

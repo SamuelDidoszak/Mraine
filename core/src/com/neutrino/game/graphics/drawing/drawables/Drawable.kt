@@ -118,6 +118,8 @@ abstract class Drawable(
     fun addToGroup(group: DrawableGroup) {
         this.group = null
         detach()
+        val drawer = entity.get(DrawerAttribute::class)?.drawer ?: entity.get(Position::class)?.chunk?.let { ChunkManager.getDrawer(it) }
+        drawer?.addDrawable(this)
         isAttached = true
         this.group = group
     }

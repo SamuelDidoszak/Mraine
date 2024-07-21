@@ -1,8 +1,10 @@
 package com.neutrino.game.UI.UIelements
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.game.entities.characters.Player
@@ -10,15 +12,17 @@ import com.neutrino.game.entities.characters.attributes.Level
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.graphics.utility.ColorUtils
-import com.neutrino.game.util.Fonts
-import com.neutrino.game.util.compareDelta
-import com.neutrino.game.util.roundOneDecimal
-import com.neutrino.game.util.setTextSameWidth
+import com.neutrino.game.util.*
+import ktx.actors.onClick
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
 import kotlin.math.roundToInt
 
 class Stats: Table() {
+
+    private val pointsLabel = TextraLabel("Points", Fonts.EQUIPMENT, Color.valueOf("663931"))
+    private val pointsValueLabel = TextraLabel("3", Fonts.EQUIPMENT, Color.valueOf("663931"))
+    private val buttons: MutableMap<String, Button> = mutableMapOf()
 
     private val defensiveStats = Player.get(DefensiveStats::class)!!
     private val offensiveStats = Player.get(OffensiveStats::class)!!
@@ -29,6 +33,8 @@ class Stats: Table() {
         Air,
         Poison
     }
+    private val level = Player.get(Level::class)!!
+    private val changedStats = ArrayList<String>()
 
     private var border: Image? = null
 
@@ -38,11 +44,82 @@ class Stats: Table() {
         addStatsTable(border)
         refreshDamageLabelText()
         name = "stats"
+        pointsLabel.isVisible = true
+        pointsValueLabel.isVisible = true
+        setButtonsVisible(false, true, true)
+        if (level.statsPoints == 0) {
+            pointsLabel.isVisible = false
+            pointsValueLabel.isVisible = false
+        } else {
+            setButtonsVisible(true, true, false)
+            pointsValueLabel.setTextSameWidth(level.statsPoints.toString())
+        }
+        changedStats.forEach { buttons["minus$it"]?.isVisible = true }
     }
 
     fun refreshStats() {
         if (border == null) return
         initialize(border!!)
+    }
+
+    fun finalizeAddedStats() = changedStats.clear()
+
+    private fun getButton(plus: Boolean, name: String): Button {
+        if (buttons[name] != null)
+            return buttons[name]!!
+        val button = Button(
+            TextureRegionDrawable(Constants.DefaultUITexture.findRegion(if (plus) "plus20" else "minus20")),
+            TextureRegionDrawable(Constants.DefaultUITexture.findRegion(if (plus) "plusPressed20" else "minusPressed20")),
+        )
+        button.name = name
+        val statName = name.replace("plus", "").replace("minus", "")
+        button.onClick {
+            if (plus) {
+                changedStats.add(statName)
+                buttons["minus$statName"]!!.isVisible = true
+                level.statsPoints -= 1
+                if (level.statsPoints == 0)
+                    setButtonsVisible(false, true, false)
+                pointsValueLabel.setTextSameWidth(level.statsPoints.toString())
+            } else {
+                changedStats.remove(statName)
+                if (changedStats.find { it == statName } == null)
+                    buttons["minus$statName"]!!.isVisible = false
+                level.statsPoints += 1
+                if (level.statsPoints != 0)
+                    setButtonsVisible(true, true, false)
+                pointsValueLabel.setTextSameWidth(level.statsPoints.toString())
+            }
+            addStat(statName, plus)
+        }
+
+        buttons[name] = button
+        return button
+    }
+
+    private fun addStat(name: String, plus: Boolean) {
+        when (name) {
+            "Strength" -> offensiveStats.strength += if (plus) 1f else -1f
+            "Dexterity" -> offensiveStats.dexterity += if (plus) 1f else -1f
+            "Intelligence" -> offensiveStats.intelligence += if (plus) 1f else -1f
+            "Luck" -> offensiveStats.luck += if (plus) 1f else -1f
+        }
+        refreshStats()
+    }
+
+    private fun setButtonsVisible(visible: Boolean, plus: Boolean, minus: Boolean) {
+        if (plus) {
+            buttons["plusStrength"]!!.isVisible = visible
+            buttons["plusDexterity"]!!.isVisible = visible
+            buttons["plusIntelligence"]!!.isVisible = visible
+            buttons["plusLuck"]!!.isVisible = visible
+        }
+        if (minus) {
+            buttons["minusStrength"]!!.isVisible = visible
+            buttons["minusDexterity"]!!.isVisible = visible
+            buttons["minusIntelligence"]!!.isVisible = visible
+            buttons["minusLuck"]!!.isVisible = visible
+        }
     }
 
     private fun formatDamageValues(min: Float, max: Float, addSpaces: Boolean = false): String {
@@ -94,6 +171,9 @@ class Stats: Table() {
         row()
 
         val stats1 = scene2d.table {
+            pointsLabel.name = "points"
+            pointsLabel.align = Align.center
+            add(pointsLabel).width(width / 6).fillX().colspan(1)
             val hpLabel = TextraLabel("Hp", Fonts.EQUIPMENT, ColorUtils.getStatColor("Hp"))
             add(hpLabel).width(width / 3).fillX().colspan(2).uniform()
             hpLabel.align = Align.left
@@ -111,6 +191,9 @@ class Stats: Table() {
             add(hpValues).width(width / 3).colspan(2).uniform().fillX()
             row()
 
+            pointsValueLabel.name = "pointsValue"
+            pointsValueLabel.align = Align.center
+            add(pointsValueLabel).width(width / 6).fillX().colspan(1)
             val mpLabel = TextraLabel("Mp", Fonts.EQUIPMENT, ColorUtils.getStatColor("Mp"))
             mpLabel.align = Align.left
             add(mpLabel).fillX().width(width / 3).colspan(2).uniform()
@@ -128,8 +211,12 @@ class Stats: Table() {
             add(mpValues).colspan(2).uniform().fillX()
             row()
 
+            add(scene2d.table {
+                add(getButton(false, "minusStrength")).padLeft(24f).expand().left()
+                add(getButton(true, "plusStrength")).expand().left()
+            }).width(width / 6).colspan(1).fillX().left()
             val strengthLabel = TextraLabel("Strength", Fonts.EQUIPMENT, ColorUtils.getStatColor("Strength"))
-            strengthLabel.alignment = Align.left
+            strengthLabel.align = Align.left
             add(strengthLabel).fillX().width(width / 3).colspan(2).uniform()
             strengthLabel.align = Align.left
             val strength = TextraLabel("${offensiveStats.strength.roundOneDecimal()}", Fonts.EQUIPMENT, ColorUtils.getStatColor("Strength"))
@@ -138,6 +225,10 @@ class Stats: Table() {
             add(strength).fillX().colspan(2).uniform()
             row()
 
+            add(scene2d.table {
+                add(getButton(false, "minusDexterity")).padLeft(24f).expand().left()
+                add(getButton(true, "plusDexterity")).expand().left()
+            }).width(width / 6).colspan(1).fillX().left()
             val dexterityLabel = TextraLabel("Dexterity", Fonts.EQUIPMENT, ColorUtils.getStatColor("Dexterity"))
             dexterityLabel.align = Align.left
             add(dexterityLabel).fillX().width(width / 3).colspan(2).uniform()
@@ -147,6 +238,10 @@ class Stats: Table() {
             add(dexterity).fillX().colspan(2).uniform()
             row()
 
+            add(scene2d.table {
+                add(getButton(false, "minusIntelligence")).padLeft(24f).expand().left()
+                add(getButton(true, "plusIntelligence")).expand().left()
+            }).width(width / 6).colspan(1).fillX().left()
             val intelligenceLabel = TextraLabel("Intelligence", Fonts.EQUIPMENT, ColorUtils.getStatColor("Intelligence"))
             intelligenceLabel.align = Align.left
             add(intelligenceLabel).fillX().width(width / 3).colspan(2).uniform()
@@ -156,6 +251,10 @@ class Stats: Table() {
             add(intelligence).fillX().colspan(2).uniform()
             row()
 
+            add(scene2d.table {
+                add(getButton(false, "minusLuck")).padLeft(24f).expand().left()
+                add(getButton(true, "plusLuck")).expand().left()
+            }).width(width / 6).colspan(1).fillX().left()
             val luckLabel = TextraLabel("Luck", Fonts.EQUIPMENT, ColorUtils.getStatColor("Luck"))
             luckLabel.align = Align.left
             add(luckLabel).fillX().width(width / 3).colspan(2).uniform()
@@ -165,6 +264,7 @@ class Stats: Table() {
             add(luck).fillX().colspan(2).uniform()
             row()
 
+            add(Table()).width(width / 6).colspan(1).fillX()
             val damageLabel = TextraLabel("Damage", Fonts.EQUIPMENT, ColorUtils.getStatColor("Damage"))
             damageLabel.align = Align.left
             damageLabel.name = "damageLabel"
@@ -185,6 +285,7 @@ class Stats: Table() {
             add(damageValues).colspan(2).uniform().fillX()
             row()
 
+            add(Table()).width(width / 6).colspan(1).fillX()
             val defenceLabel = TextraLabel("Defence", Fonts.EQUIPMENT, ColorUtils.getStatColor("Defence"))
             defenceLabel.align = Align.left
             add(defenceLabel).fillX().width(width / 3).colspan(2).uniform()
@@ -194,7 +295,7 @@ class Stats: Table() {
             add(defence).fillX().colspan(2).uniform()
             row()
         }
-        add(stats1).padBottom(12f)
+        add(stats1).left().padBottom(12f)
         row()
 
         val stats2 = scene2d.table {

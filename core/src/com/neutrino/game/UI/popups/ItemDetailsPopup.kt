@@ -41,7 +41,7 @@ class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = tr
         goldGroup.add(goldValue).spaceLeft(8f).bottom().pad(0f)
         add(goldGroup).expandX().colspan(10).right()
 
-        background = Scene2DSkin.defaultSkin.getDrawable("stretchableCell")
+        background = Scene2DSkin.defaultSkin.getDrawable("squareBackground")
         name = "itemDetails"
         width = 256f
         layout()

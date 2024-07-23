@@ -69,17 +69,97 @@
     }
   },
   com.ray3k.tenpatch.TenPatchDrawable: {
-    stretchableCell: {
-      region: stretchableCell
-      horizontalStretchAreas: [ 24, 231 ]
-      verticalStretchAreas: [ 24, 231 ]
+    buttonFrame: {
+      region: button
+      horizontalStretchAreas: [ 16, 103 ]
+      verticalStretchAreas: [ 16, 35 ]
       tiling: false
-      minWidth: 48
-      minHeight: 48
+      minWidth: 120
+      minHeight: 52
+      rightWidth: 16
+      leftWidth: 16
+      bottomHeight: 16
+      topHeight: 16
+      offsetX: 0
+      offsetY: 0
+      offsetXspeed: 0
+      offsetYspeed: 0
+      frameDuration: 0.03
+      regions: []
+      playMode: 2
+      crushMode: 0
+    }
+    buttonOverFrame: {
+      region: buttonOver
+      horizontalStretchAreas: [ 16, 103 ]
+      verticalStretchAreas: [ 16, 35 ]
+      tiling: false
+      minWidth: 120
+      minHeight: 52
+      rightWidth: 16
+      leftWidth: 16
+      bottomHeight: 16
+      topHeight: 16
+      offsetX: 0
+      offsetY: 0
+      offsetXspeed: 0
+      offsetYspeed: 0
+      frameDuration: 0.03
+      regions: []
+      playMode: 2
+      crushMode: 0
+    }
+    buttonPressedFrame: {
+      region: buttonPressed
+      horizontalStretchAreas: [ 16, 103 ]
+      verticalStretchAreas: [ 16, 35 ]
+      tiling: false
+      minWidth: 120
+      minHeight: 52
+      rightWidth: 16
+      leftWidth: 16
+      bottomHeight: 16
+      topHeight: 16
+      offsetX: 0
+      offsetY: 0
+      offsetXspeed: 0
+      offsetYspeed: 0
+      frameDuration: 0.03
+      regions: []
+      playMode: 2
+      crushMode: 0
+    }
+    squareBackground: {
+      region: stretchableCell
+      horizontalStretchAreas: [ 24, 87 ]
+      verticalStretchAreas: [ 24, 87 ]
+      tiling: false
+      minWidth: 112
+      minHeight: 112
       rightWidth: 20
       leftWidth: 20
       bottomHeight: 20
       topHeight: 20
+      offsetX: 0
+      offsetY: 0
+      offsetXspeed: 0
+      offsetYspeed: 0
+      frameDuration: 0.03
+      regions: []
+      playMode: 2
+      crushMode: 0
+    }
+    buttonDisabledFrame: {
+      region: buttonDisabled
+      horizontalStretchAreas: [ 16, 103 ]
+      verticalStretchAreas: [ 16, 35 ]
+      tiling: false
+      minWidth: 120
+      minHeight: 52
+      rightWidth: 16
+      leftWidth: 16
+      bottomHeight: 16
+      topHeight: 16
       offsetX: 0
       offsetY: 0
       offsetXspeed: 0

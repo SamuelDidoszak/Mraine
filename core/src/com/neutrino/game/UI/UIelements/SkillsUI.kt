@@ -15,10 +15,12 @@ import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataObserver
 import com.neutrino.GlobalDataType
+import com.neutrino.game.UI.utility.FrameButton
 import com.neutrino.game.UI.utility.SkillActor
 import com.neutrino.game.UI.utility.SkillTreeActor
 import com.neutrino.game.domain.model.characters.utility.SkillTree
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Level
 import com.neutrino.game.entities.characters.attributes.Skills
 import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.graphics.textures.Textures
@@ -27,12 +29,13 @@ import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Fonts
 import com.neutrino.game.util.isIn
 import com.neutrino.game.util.roundPosition
+import ktx.actors.onClick
 import ktx.actors.setScrollFocus
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
-import ktx.scene2d.textButton
 import space.earlygrey.shapedrawer.ShapeDrawer
+import kotlin.plus
 
 class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): Group() {
 
@@ -42,15 +45,24 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
 
     private val detailsPane: ScrollPane = ScrollPane(Group())
 
-    private val strengthTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.STRENGTH, 0))
-    private val dexterityTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.DEXTERITY, 1))
-    private val intelligenceTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.INTELLIGENCE, 2))
-    private val summoningTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.INTELLIGENCE, 3))
+    private var strengthTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.STRENGTH, 0))
+    private var dexterityTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.DEXTERITY, 1))
+    private var intelligenceTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.INTELLIGENCE, 2))
+    private var summoningTree: ScrollPane = ScrollPane(getSkillTree(SkillTree.INTELLIGENCE, 3))
     private var treeList = listOf(strengthTree, dexterityTree, intelligenceTree, summoningTree)
     private var treeNameList = listOf("[${ColorUtils.toHexadecimal(getTreeColor(0))}]STRENGTH",
         "[${ColorUtils.toHexadecimal(getTreeColor(1))}]DEXTERITY",
         "[${ColorUtils.toHexadecimal(getTreeColor(2))}]INTELLIGENCE",
         "[${ColorUtils.toHexadecimal(getTreeColor(3))}]SUMMONING")
+
+    fun refreshTree(tree: ScrollPane) {
+        when (tree) {
+            strengthTree -> strengthTree.actor = getSkillTree(SkillTree.STRENGTH, 0)
+            dexterityTree -> dexterityTree.actor = getSkillTree(SkillTree.DEXTERITY, 1)
+            intelligenceTree -> intelligenceTree.actor = getSkillTree(SkillTree.INTELLIGENCE, 2)
+            summoningTree -> summoningTree.actor = getSkillTree(SkillTree.SUMMONING, 3)
+        }
+    }
 
     var currentTab: Actor = skillTrees
         private set
@@ -136,17 +148,6 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
         if (!skillTrees.isIn(coord.x, coord.y))
             return
 
-        val menuCoord = localToActorCoordinates(skillTrees.findActor("treeMoveGroup"), coord)
-
-        if (skillTrees.findActor<TextButton>("leftButton").isIn(menuCoord.x, menuCoord.y)) {
-            changeTree(-1)
-            return
-        }
-        if (skillTrees.findActor<TextButton>("rightButton").isIn(menuCoord.x, menuCoord.y)) {
-            changeTree(1)
-            return
-        }
-
         val skillAt = getSkillAt(xClick, yClick, treeList[currentTree])
         if (skillAt != null && skillAt is SkillTreeActor) {
             showSkillDetails(skillAt.skill)
@@ -162,6 +163,8 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
             currentlyViewedSkill?.setHighlight(false)
             currentlyViewedSkill = null
             detailsPane.actor = null
+            if (currentTab == skillTrees)
+                showSkillPoints()
         }
     }
 
@@ -171,8 +174,11 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
         val skillAt = getSkillAt(x, y, treeList[currentTree])
         if (skillAt != null && skillAt is SkillTreeActor)
             showSkillDetails(skillAt.skill)
-        else
+        else {
             detailsPane.actor = null
+            if (currentTab == skillTrees)
+                showSkillPoints()
+        }
     }
 
     fun showSkillDetails(skill: Skill?) {
@@ -273,6 +279,21 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
                 add(valueLabel).right().spaceBottom(8f)
                 row()
             }
+
+            if (skill is Skill.PassiveSkill && !Player.get(Skills::class)!!.has(skill::class)) {
+                var requirementsMet = true
+                skill.requirements?.forEach { if (!it.check(Player)) requirementsMet = false }
+
+                val unlockButton = FrameButton("Unlock", !requirementsMet, 150f, 52f) {
+                    Player.get(Skills::class)!!.addSkill(skill)
+                    currentlyViewedSkill?.setHighlight(true)
+                    Player.get(Level::class)!!.skillPoints -= 1
+                    refreshTree(treeList[currentTree])
+                    detailsPane.actor = null
+                    showSkillDetails(skill)
+                }
+                add(unlockButton).expandX().center()
+            }
         }
         skillDetailsTable.top()
         skillDetailsTable.pack()
@@ -282,6 +303,25 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
         skillDetailsTable.pack()
         skillDetailsTable.layout()
         skillName.invalidateHierarchy()
+        detailsPane.scrollTo(0f, 10000f, 0f, 0f)
+    }
+
+    private fun showSkillPoints() {
+        val skillPoints = Player.get(Level::class)!!.skillPoints
+        if (skillPoints == 0)
+            return
+        val table = scene2d.table {
+            add(TextraLabel("[#663931]Skill points", Fonts.EQUIPMENT)).center().fillX().padBottom(8f).padTop(16f)
+            row()
+            add(TextraLabel("[#663931]$skillPoints", Fonts.EQUIPMENT).also { it.alignment = Align.center }).center().fillX()
+        }
+        table.top()
+        table.pack()
+        table.layout()
+
+        detailsPane.actor = table
+        table.pack()
+        table.layout()
         detailsPane.scrollTo(0f, 10000f, 0f, 0f)
     }
 
@@ -400,19 +440,27 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
         skillTrees.height = border.height - 2 * 12
         skillTrees.setPosition(x + 12, y + 12)
 
-        val leftButton = scene2d.textButton("<-")
-        val rightButton = scene2d.textButton("->")
+        val leftButton = Button(
+            TextureRegionDrawable(Constants.DefaultUITexture.findRegion("left28")),
+            TextureRegionDrawable(Constants.DefaultUITexture.findRegion("leftPressed28"))
+        )
+        val rightButton = Button(
+            TextureRegionDrawable(Constants.DefaultUITexture.findRegion("right28")),
+            TextureRegionDrawable(Constants.DefaultUITexture.findRegion("rightPressed28"))
+        )
         leftButton.name = "leftButton"
         rightButton.name = "rightButton"
+        leftButton.onClick { changeTree(-1) }
+        rightButton.onClick { changeTree(1) }
         val treeNameText = TextraLabel(treeNameList[currentTree], Fonts.EQUIPMENT, Color.BLACK)
         treeNameText.alignment = Align.center
         treeNameText.name = "treeNameText"
 
         val treeMoveGroup: Table = scene2d.table {
             pad(0f)
-            add(leftButton).left()
+            add(leftButton).padLeft(20f).padRight(10f)
             add(treeNameText).growX().center()
-            add(rightButton).padLeft(10f).padRight(10f)
+            add(rightButton).padLeft(10f).padRight(20f)
         }
         treeMoveGroup.pack()
         treeMoveGroup.layout()

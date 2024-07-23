@@ -8,10 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.github.tommyettinger.textra.KnownFonts
-import com.github.tommyettinger.textra.TextraButton
 import com.github.tommyettinger.textra.TextraLabel
 import com.neutrino.GlobalData
 import com.neutrino.GlobalDataType
+import com.neutrino.game.UI.utility.FrameButton
 import com.neutrino.game.domain.model.items.ItemType
 import com.neutrino.game.domain.model.items.UseOn
 import com.neutrino.game.entities.Entity
@@ -24,8 +24,6 @@ import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
 import com.neutrino.game.entities.systems.events.attributes.EventList
 import com.neutrino.game.entities.systems.events.callables.AddCooldown
 import com.neutrino.game.entities.systems.requirements.Requirements
-import com.neutrino.game.graphics.utility.BackgroundColor
-import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
 
@@ -34,14 +32,14 @@ class ItemContextPopup(
     val useOnSetter: (item: Entity) -> Unit,
     val customUseMethod: () -> Unit? = {}
 ) {
-    fun createContextMenu(item: Entity, x: Float, y: Float): Table? {
+    fun createContextMenu(item: Entity, x: Float, y: Float): Table {
         val table = scene2d.table {
             align(Align.center)
             pad(8f)
             if (item has EquipmentItem::class) {
-                val equipButton: TextraButton
+                val equipButton: FrameButton
                 if (Player.get(Equipment::class)!!.getEquipped(item.get(EquipmentItem::class)!!.getEquipmentType()) == item) {
-                    equipButton = TextraButton("[%150][@Cozette]Unequip", Scene2DSkin.defaultSkin)
+                    equipButton = FrameButton("[@Cozette]Unequip") {}
                     equipButton.addListener(object: ClickListener() {
                         override fun clicked(event: InputEvent?, x: Float, y: Float) {
                             if (event?.button != Input.Buttons.LEFT)
@@ -52,7 +50,7 @@ class ItemContextPopup(
                             customUseMethod.invoke()
                     } })
                 } else {
-                    equipButton = TextraButton("[%150][@Cozette]Equip", Scene2DSkin.defaultSkin)
+                    equipButton = FrameButton("[@Cozette]Equip") {}
                     equipButton.addListener(object: ClickListener() {
                         override fun clicked(event: InputEvent?, x: Float, y: Float) {
                             if (event?.button != Input.Buttons.LEFT)
@@ -84,11 +82,13 @@ class ItemContextPopup(
                     } } })
                 }
 
-                if (item !is ItemType.USABLE || item.useOn != UseOn.OTHERS_ONLY)
-                    add(equipButton).prefWidth(90f).prefHeight(40f)
+                if (item !is ItemType.USABLE || item.useOn != UseOn.OTHERS_ONLY) {
+                    add(equipButton).fillX()
+                    row()
+                }
             }
             if (item has Use::class || item has UseOnEntity::class) {
-                val useButton = TextraButton("[%150][@Cozette]Use", Scene2DSkin.defaultSkin)
+                val useButton = FrameButton("[@Cozette]Use") {}
                 useButton.addListener(object: ClickListener() {
                     override fun clicked(event: InputEvent?, x: Float, y: Float) {
                         if (event?.button != Input.Buttons.LEFT)
@@ -116,16 +116,13 @@ class ItemContextPopup(
                     }
                 })
 
-                add(useButton).prefWidth(90f).prefHeight(40f)
+                add(useButton).fillX()
 //                addUseOn(item, this)
             }
 
             pack()
         }
 
-        val bgColor = BackgroundColor("UI/whiteColorTexture.png", x, y, table.width, table.height)
-        bgColor.setColor(0, 0, 0, 160)
-        table.background = bgColor
         table.name = "itemContextPopup"
 
         return table

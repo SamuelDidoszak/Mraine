@@ -10,7 +10,7 @@ import ktx.scene2d.Scene2DSkin
 
 class EntityLookupPopup(entityList: MutableList<Entity>, character: Character?): Table() {
     init {
-        background = Scene2DSkin.defaultSkin.getDrawable("stretchableCell")
+        background = Scene2DSkin.defaultSkin.getDrawable("squareBackground")
         pad(8f)
         if (character != null) {
             this.row()

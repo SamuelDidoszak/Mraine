@@ -29,7 +29,7 @@ class SkillDetailsPopup(val skill: Skill): Table() {
 
         printSKillData(skill)
 
-        background = Scene2DSkin.defaultSkin.getDrawable("stretchableCell")
+        background = Scene2DSkin.defaultSkin.getDrawable("squareBackground")
 
         width = 256f
         layout()

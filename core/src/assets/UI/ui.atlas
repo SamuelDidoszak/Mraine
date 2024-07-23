@@ -2,122 +2,144 @@ ui.png
 	size: 1024, 2048
 	repeat: none
 EquipmentClosed
-	bounds: 216, 300, 104, 52
+	bounds: 435, 300, 104, 52
 EquipmentOpen
-	bounds: 2, 2, 116, 56
+	bounds: 742, 934, 116, 56
 EquipmentScreen
-	bounds: 2, 1522, 860, 524
+	bounds: 2, 1518, 860, 524
 Background
-	bounds: 2, 1522, 860, 524
+	bounds: 2, 1518, 860, 524
 InventoryBorder
-	bounds: 2, 996, 860, 524
+	bounds: 2, 992, 860, 524
 InventoryClosed
-	bounds: 528, 594, 192, 52
+	bounds: 528, 582, 192, 52
 InventoryOpen
-	bounds: 2, 404, 212, 64
+	bounds: 2, 400, 212, 64
 MapClosed
-	bounds: 528, 822, 192, 52
+	bounds: 2, 234, 192, 52
 MapOpen
-	bounds: 528, 930, 212, 64
+	bounds: 528, 926, 212, 64
 OptionsSkillsClosed
-	bounds: 657, 368, 104, 52
+	bounds: 329, 300, 104, 52
 OptionsSkillsOpen
-	bounds: 120, 2, 116, 56
+	bounds: 2, 2, 116, 56
 OptionsSortingClosed
-	bounds: 322, 300, 104, 52
+	bounds: 196, 246, 104, 52
 OptionsSortingOpen
-	bounds: 742, 938, 116, 56
+	bounds: 544, 416, 116, 56
 QuestsClosed
-	bounds: 2, 292, 192, 52
+	bounds: 216, 354, 192, 52
 QuestsOpen
-	bounds: 216, 412, 212, 56
+	bounds: 216, 408, 212, 56
 ShopBorder
-	bounds: 2, 470, 524, 524
+	bounds: 2, 466, 524, 524
 SkillsClosed
-	bounds: 528, 876, 192, 52
+	bounds: 2, 288, 192, 52
 SkillsOpen
-	bounds: 2, 346, 212, 56
+	bounds: 2, 342, 212, 56
 SortingAsc
-	bounds: 430, 412, 112, 56
+	bounds: 430, 408, 112, 56
 SortingClosedOld
-	bounds: 544, 368, 111, 52
+	bounds: 216, 300, 111, 52
 SortingCustom
-	bounds: 2, 176, 188, 56
+	bounds: 528, 694, 188, 56
 SortingCustomOpen
-	bounds: 2, 118, 188, 56
+	bounds: 528, 636, 188, 56
 SortingDate
-	bounds: 528, 764, 188, 56
+	bounds: 2, 176, 188, 56
 SortingDateOpen
-	bounds: 216, 354, 188, 56
+	bounds: 528, 810, 188, 56
 SortingDesc
-	bounds: 406, 354, 112, 56
+	bounds: 120, 2, 112, 56
 SortingType
-	bounds: 528, 706, 188, 56
+	bounds: 2, 118, 188, 56
 SortingTypeOpen
-	bounds: 528, 648, 188, 56
-SortingValue
 	bounds: 2, 60, 188, 56
+SortingValue
+	bounds: 528, 868, 188, 56
 SortingValueOpen
-	bounds: 2, 234, 188, 56
+	bounds: 528, 752, 188, 56
+button
+	bounds: 410, 354, 120, 52
+buttonOver
+	bounds: 528, 528, 120, 52
+buttonPressed
+	bounds: 528, 474, 120, 52
 cellBottom
-	bounds: 864, 1520, 84, 84
+	bounds: 864, 1344, 84, 84
 cellBottomLeft
-	bounds: 864, 1348, 84, 84
+	bounds: 864, 1172, 84, 84
 cellBottomRight
-	bounds: 864, 1692, 84, 84
+	bounds: 864, 1516, 84, 84
 cellLeft
-	bounds: 864, 1004, 84, 84
+	bounds: 662, 410, 84, 84
 cellMiddle
-	bounds: 864, 1176, 84, 84
+	bounds: 864, 1000, 84, 84
 cellRight
-	bounds: 716, 422, 84, 84
+	bounds: 718, 840, 84, 84
 cellTop
-	bounds: 614, 508, 84, 84
+	bounds: 864, 1688, 84, 84
 cellTopLeft
-	bounds: 864, 1606, 84, 84
+	bounds: 864, 1430, 84, 84
 cellTopRight
-	bounds: 864, 1864, 84, 84
+	bounds: 864, 1774, 84, 84
 cellUnavailable
-	bounds: 864, 1434, 84, 84
+	bounds: 864, 1258, 84, 84
 equipmentDefault
-	bounds: 864, 1950, 96, 96
+	bounds: 864, 1946, 96, 96
 left
-	bounds: 520, 374, 14, 14
+	bounds: 718, 666, 14, 14
+left18
+	bounds: 992, 2002, 18, 18
+left28
+	bounds: 748, 724, 28, 28
 leftPressed
-	bounds: 763, 384, 14, 14
+	bounds: 756, 708, 14, 14
+leftPressed18
+	bounds: 718, 682, 18, 18
+leftPressed28
+	bounds: 962, 1984, 28, 28
 minus
-	bounds: 196, 330, 14, 14
+	bounds: 992, 1986, 14, 14
 minus20
-	bounds: 520, 390, 20, 20
+	bounds: 718, 702, 20, 20
 minusPressed
-	bounds: 785, 406, 14, 14
+	bounds: 950, 1914, 14, 14
 minusPressed20
-	bounds: 962, 2004, 20, 20
+	bounds: 962, 1962, 20, 20
 plus
-	bounds: 984, 2032, 14, 14
+	bounds: 1008, 1986, 14, 14
 plus20
-	bounds: 763, 400, 20, 20
+	bounds: 778, 732, 20, 20
 plusPressed
-	bounds: 528, 476, 14, 14
+	bounds: 962, 1946, 14, 14
 plusPressed20
-	bounds: 962, 2026, 20, 20
+	bounds: 992, 2022, 20, 20
 right
-	bounds: 722, 914, 14, 14
+	bounds: 950, 1930, 14, 14
+right18
+	bounds: 196, 302, 18, 18
+right28
+	bounds: 718, 724, 28, 28
 rightPressed
-	bounds: 528, 492, 14, 14
+	bounds: 740, 708, 14, 14
+rightPressed18
+	bounds: 196, 322, 18, 18
+rightPressed28
+	bounds: 962, 2014, 28, 28
 skillBackground
-	bounds: 544, 422, 84, 84
+	bounds: 302, 214, 84, 84
 skillBackgroundCooldown
-	bounds: 700, 508, 84, 84
+	bounds: 474, 214, 84, 84
 skillDarken
-	bounds: 864, 1262, 84, 84
+	bounds: 864, 1086, 84, 84
 skillDefence
-	bounds: 864, 1090, 84, 84
+	bounds: 650, 496, 84, 84
 skillHighlight
-	bounds: 630, 422, 84, 84
+	bounds: 388, 214, 84, 84
 skillRanged
-	bounds: 428, 268, 84, 84
+	bounds: 718, 754, 84, 84
 skillRogue
-	bounds: 864, 1778, 84, 84
+	bounds: 864, 1602, 84, 84
 skillStrength
-	bounds: 528, 508, 84, 84
+	bounds: 864, 1860, 84, 84

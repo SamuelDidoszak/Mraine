@@ -162,7 +162,7 @@ class EquipmentComparisonPopup(val item: Item): Table() {
         goldGroup.add(goldValue).spaceLeft(8f).bottom()
         table.add(goldGroup).expandX().colspan(10).right().spaceTop(12f)
 
-        table.background = Scene2DSkin.defaultSkin.getDrawable("stretchableCell")
+        table.background = Scene2DSkin.defaultSkin.getDrawable("squareBackground")
         table.name = "itemDetails"
         table.width = 256f
         table.layout()

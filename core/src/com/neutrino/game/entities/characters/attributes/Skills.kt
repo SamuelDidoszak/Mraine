@@ -33,6 +33,7 @@ class Skills: Attribute() {
             return
         }
     }
+    fun has(skill: KClass<out Skill>): Boolean = skillList.find { it::class == skill } != null
     fun getSkills(): List<Skill> = skillList
 
     var maxConsecutiveSkills: Int = 3

@@ -76,10 +76,8 @@ abstract class EntityDrawer: Group() {
     fun addDrawableDetails(drawable: Drawable) {
         if (drawable is DrawableTexture)
             addDrawableTextureDetails(drawable)
-        if (drawable is ActingDrawable) {
-            println(drawable)
+        if (drawable is ActingDrawable)
             actingDrawables.add(drawable)
-        }
     }
 
     fun removeDrawableDetails(drawable: Drawable) {

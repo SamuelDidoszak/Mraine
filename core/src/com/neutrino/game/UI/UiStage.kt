@@ -51,6 +51,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     private val uiElements: Map<String, TextureAtlas.AtlasRegion> = mapOf(
         "BottomBar" to uiAtlas.findRegion("BottomBar"),
         "InventoryBorder" to uiAtlas.findRegion("InventoryBorder"),
+        "ShopBorder" to uiAtlas.findRegion("ShopBorder"),
         "EquipmentScreen" to uiAtlas.findRegion("EquipmentScreen"),
         "Background" to uiAtlas.findRegion("Background"),
         "EquipmentClosed" to uiAtlas.findRegion("EquipmentClosed"),
@@ -104,34 +105,41 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
     var currentScale: Float = 1f
 
-    /** ======================================================================================================================================================
-                                                                    Initializations
-     */
+    /** ============================================================     Initializations     =============================================================================*/
+
+    private val mainGroup: Group = Group()
+    var currentScreen: Group = Group()
+
+    private val shop: Shop = Shop(uiElements)
 
     fun initialize() {
         inventory.initialize()
-        addActor(inventory)
+        mainGroup.addActor(inventory)
         inventory.width = border.width - 2 * (inventory.borderSize - 2)
         inventory.height = border.height - 2 * inventory.borderSize + 4
         inventory.setPosition(inventory.x + 2, inventory.y + 2)
 
         equipment.initialize(border)
-        addActor(equipment)
+        mainGroup.addActor(equipment)
         equipment.isVisible = false
 
         skills = SkillsUI(uiElements)
         skills.initialize(border)
-        addActor(skills)
+        mainGroup.addActor(skills)
         skills.isVisible = false
 
         addScreensTemp()
-        addActor(border)
+        mainGroup.addActor(border)
         border.name = "border"
 
         tabs.initialize()
-        addActor(tabs.mainTabsGroup)
-        addActor(tabs.openTabsGroup)
-        addActor(tabs.sortingTabsGroup)
+        mainGroup.addActor(tabs.mainTabsGroup)
+        mainGroup.addActor(tabs.openTabsGroup)
+        mainGroup.addActor(tabs.sortingTabsGroup)
+
+        addActor(mainGroup)
+//        shop.initialize(Player.inventory)
+//        shop.setInventory(Player.inventory)
 
         tabs.mainTabsGroup.zIndex = 0
         tabs.sortingTabsGroup.zIndex = 1
@@ -164,9 +172,9 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         map.name = "map"
         map.addActor(Image(uiElements["Background"]))
 
-        addActor(quests)
+        mainGroup.addActor(quests)
         quests.isVisible = false
-        addActor(map)
+        mainGroup.addActor(map)
         map.isVisible = false
     }
 
@@ -180,10 +188,12 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             } else break
         }
 
-        actors.forEach { it.setScale(currentScale) }
+        mainGroup.children.forEach { it.setScale(currentScale) }
         border.setPosition((width - border.widthScaled()) / 2f, (height - border.heightScaled()) / 2f)
         inventory.setPosition((this.width - inventory.widthScaled()) / 2f, (this.height - inventory.heightScaled()) / 2f)
         inventory.setPosition(inventory.x + 2 * currentScale, inventory.y + 2 * currentScale)
+        shop.setPosition((this.width - inventory.widthScaled()) - shop.widthScaled(), (this.height - shop.heightScaled()) / 2f)
+        shop.setPosition(shop.x + 2 * currentScale, shop.y + 2 * currentScale)
         equipment.setPosition(border.x, border.y)
         skills.setPosition(border.x, border.y)
         quests.setPosition(border.x, border.y)
@@ -194,6 +204,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
 
         border.roundPosition()
         inventory.roundPosition()
+        shop.roundPosition()
         equipment.roundPosition()
         skills.roundPosition()
         quests.roundPosition()
@@ -203,15 +214,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         tabs.sortingTabsGroup.roundPosition()
     }
 
-    /** ======================================================================================================================================================
-                                                                    Item related variables
-     */
-
-    var currentScreen: Group = Group()
-
-    /** ======================================================================================================================================================
-                                                                    Input processor
-     */
+    /** ============================================================     Input processor     =============================================================================*/
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0) return false
@@ -223,7 +226,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         )
 
         when (currentScreen) {
-            inventory, skills -> {
+            inventory -> {
                 val callback = inventoryManager.touchDown(stageCoord, pointer, button) {
                     super.touchDown(screenX, screenY, pointer, button)
                 }
@@ -231,14 +234,15 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 if (callback != -1)
                     return callback == 1
             }
-            equipment -> {
+            equipment, skills -> {
                 val callback = inventoryManager.touchDown(stageCoord, pointer, button) {
                     super.touchDown(screenX, screenY, pointer, button)
                 }
                 if (callback != -1)
                     return callback == 1
 
-                fireEvent(InputEvent.Type.touchDown, stageCoord, pointer, button)
+                if (currentScreen == equipment || (currentScreen == skills && skills.currentTab.name != "skillTable"))
+                    fireEvent(InputEvent.Type.touchDown, stageCoord, pointer, button)
             }
         }
 
@@ -293,6 +297,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
             skills -> {
                 if (skills.currentTab.name != "skillTable") {
                     skills.parseClick(stageCoord.x, stageCoord.y)
+                    fireEvent(InputEvent.Type.touchUp, stageCoord, pointer, button)
                 } else {
                     inventoryManager.touchUp(stageCoord, button) {
                         super.touchUp(screenX, screenY, pointer, button)
@@ -344,6 +349,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 skills.scrollFocus(stageCoord.x, stageCoord.y)
                 if (skills.currentTab.name != "skillTable") {
                     skills.onHover(stageCoord.x, stageCoord.y)
+                    lastMouseOver = fireEnterAndExit(lastMouseOver, stageCoord)
                 } else
                     inventoryManager.mouseMoved(stageCoord)
             }
@@ -364,6 +370,20 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
                 inventoryManager.nullifyAllValues()
                 nullifyAllValues()
                 hudStage.nullifyAllValues()
+            }
+            Input.Keys.RIGHT -> {
+                mainGroup.moveBy(32f, 0f)
+                println(mainGroup.x)
+            }
+            Input.Keys.LEFT -> {
+                mainGroup.moveBy(-32f, 0f)
+                println(mainGroup.x)
+            }
+            Input.Keys.UP -> {
+                showShop()
+            }
+            Input.Keys.DOWN -> {
+                removeShop()
             }
         }
         return true
@@ -437,6 +457,8 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         }
     }
 
+    /** ============================================================     Actor related     =============================================================================*/
+
     /** Moves an actor by 14 pixels */
     private fun Actor.moveTab(up: Boolean) { if (up) this.addAction(Actions.moveBy(0f, 14f * currentScale, 0.15f))
         else this.addAction(Actions.moveBy(0f, -14f * currentScale, 0.15f)) }
@@ -455,9 +477,22 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
         return null
     }
 
-    /** ======================================================================================================================================================
-                                                                    Cleanup
-    */
+    /** ============================================================     Different screen modes     =============================================================================*/
+
+    fun showShop() {
+        actors.add(shop)
+        shop.setScale(currentScale)
+        mainGroup.moveBy(inventory.widthScaled() / 2, 0f)
+    }
+
+    fun removeShop() {
+        actors.removeValue(shop, true)
+        mainGroup.moveBy(-1 * inventory.widthScaled() / 2, 0f)
+    }
+
+
+
+    /** ============================================================     Cleanup     =============================================================================*/
 
     fun refreshHotBar() {
         hudStage.refreshHotBar()
@@ -466,7 +501,7 @@ class UiStage(viewport: Viewport, private val hudStage: HudStage): Stage(viewpor
     /** Sets all values to null */
     fun nullifyAllValues() {
         if (tabs.hoveredTab != null) {
-            tabs.hoveredTab!!.moveBy(0f, -14f)
+            tabs.hoveredTab!!.moveBy(0f, -14f * currentScale)
             tabs.hoveredTab = null
         }
     }

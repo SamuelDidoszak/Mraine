@@ -199,15 +199,43 @@ white
   offset: 0, 0
   index: -1
 
-stretchableCell.png
-size: 512, 512
+10patch.png
+size: 256, 256
 format: RGBA8888
-filter: Nearest, Nearest
+filter: Linear, Linear
 repeat: none
+button
+  rotate: false
+  xy: 1, 189
+  size: 120, 52
+  orig: 120, 52
+  offset: 0, 0
+  index: -1
+buttonDisabled
+  rotate: false
+  xy: 1, 81
+  size: 120, 52
+  orig: 120, 52
+  offset: 0, 0
+  index: -1
+buttonOver
+  rotate: false
+  xy: 1, 135
+  size: 120, 52
+  orig: 120, 52
+  offset: 0, 0
+  index: -1
+buttonPressed
+  rotate: false
+  xy: 123, 189
+  size: 120, 52
+  orig: 120, 52
+  offset: 0, 0
+  index: -1
 stretchableCell
   rotate: false
-  xy: 1, 1
-  size: 256, 256
-  orig: 256, 256
+  xy: 123, 75
+  size: 112, 112
+  orig: 112, 112
   offset: 0, 0
   index: -1

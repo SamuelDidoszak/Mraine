@@ -23,20 +23,20 @@ class IncreaseMeleeDamage(caster: Entity, val increment: Float = 1.1f): Skill.Pa
     )
 
     override fun useStart() {
-        val previousIncrement = caster.get(CharacterTags::class)?.getTag(CharacterTag.IncreaseOnehandedDamage::class)?.incrementPercent
-        caster.get(CharacterTags::class)?.removeTag(CharacterTag.IncreaseOnehandedDamage::class)
+        val previousIncrement = caster.get(CharacterTags::class)?.getTag(CharacterTag.IncreaseMeleeDamage::class)?.incrementPercent
+        caster.get(CharacterTags::class)?.removeTag(CharacterTag.IncreaseMeleeDamage::class)
 
         if (caster hasNot CharacterTags::class)
             caster.addAttribute(CharacterTags())
 
-        caster.get(CharacterTags::class)!!.addTag(CharacterTag.IncreaseOnehandedDamage(increment + (previousIncrement ?: 0f)))
+        caster.get(CharacterTags::class)!!.addTag(CharacterTag.IncreaseMeleeDamage(increment + (previousIncrement ?: 0f)))
     }
 
     override fun useStop() {
-        val previousIncrement = caster.get(CharacterTags::class)!!.getTag(CharacterTag.IncreaseOnehandedDamage::class)!!.incrementPercent
-        caster.get(CharacterTags::class)?.removeTag(CharacterTag.IncreaseOnehandedDamage::class)
+        val previousIncrement = caster.get(CharacterTags::class)!!.getTag(CharacterTag.IncreaseMeleeDamage::class)!!.incrementPercent
+        caster.get(CharacterTags::class)?.removeTag(CharacterTag.IncreaseMeleeDamage::class)
 
         if (!(previousIncrement - increment).equalsDelta(0f))
-            caster.get(CharacterTags::class)!!.addTag(CharacterTag.IncreaseOnehandedDamage(previousIncrement - increment))
+            caster.get(CharacterTags::class)!!.addTag(CharacterTag.IncreaseMeleeDamage(previousIncrement - increment))
     }
 }

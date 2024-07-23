@@ -2,6 +2,7 @@ package com.neutrino.game.entities.systems.skills.passive
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.CharacterTags
+import com.neutrino.game.entities.characters.attributes.Skills
 import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.entities.systems.skills.Skill
@@ -18,7 +19,7 @@ class Berserk(caster: Entity): Skill.PassiveSkill(
     caster,
     Requirements.Stats(strength = 5f),
     Requirements.Custom({entity: Entity ->
-        entity.get(CharacterTags::class)?.getTag(CharacterTag.IncreaseMeleeDamage::class) != null
+        entity.get(Skills::class)?.has(IncreaseMeleeDamage::class) == true
     }, "Learned IncreaseMeleeDamage", "")
 ) {
 

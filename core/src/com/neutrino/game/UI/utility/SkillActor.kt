@@ -1,8 +1,10 @@
 package com.neutrino.game.UI.utility
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.game.entities.systems.skills.Skill
+import com.neutrino.game.entities.systems.skills.SkillType
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.util.Constants
 
@@ -13,7 +15,7 @@ class SkillActor(val skill: Skill): Group(), PickupActor {
     private var actorWidth: Float = ogWidth
     private var actorHeight: Float = ogHeight
 
-    val backgroundTexture = Constants.DefaultUITexture.findRegion("skillBackground")
+    private val backgroundTexture = getBackgroundDrawable()
     private val texture = Textures.get(skill.textureName).texture
 
     init {
@@ -44,4 +46,13 @@ class SkillActor(val skill: Skill): Group(), PickupActor {
         TODO()
     }
 
+    private fun getBackgroundDrawable(): AtlasRegion {
+        return Constants.DefaultUITexture.findRegion(when (skill.skillType) {
+            SkillType.STRENGTH -> "skillStrength"
+            SkillType.DEFENCE -> "skillDefence"
+            SkillType.ROGUE -> "skillRogue"
+            SkillType.RANGED -> "skillRanged"
+            else -> "skillBackground"
+        })
+    }
 }

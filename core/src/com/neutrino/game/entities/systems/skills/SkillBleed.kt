@@ -16,8 +16,8 @@ import com.neutrino.game.graphics.utility.ColorUtils
 class SkillBleed(caster: Entity): Skill.ActiveSkillCharacter(
     "Bleed",
     "Physical attack that induces bleeding.",
-    SkillType.DEXTERITY,
-    "book",
+    SkillType.ROGUE,
+    "skillBleed",
     null,
     20.0,
     caster,

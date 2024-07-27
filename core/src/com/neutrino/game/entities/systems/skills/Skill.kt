@@ -33,6 +33,10 @@ sealed class Skill: PrintableInfo<Skill> {
             ).asTimedEvent())
     }
 
+    protected fun playAnimation(name: String) {
+        (caster as Character).setAnimation(name, "idle")
+    }
+
     abstract class ActiveSkillCharacter(
         override val name: String,
         override val description: String,

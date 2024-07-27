@@ -10,8 +10,8 @@ import com.neutrino.game.graphics.utility.ColorUtils
 class SkillShieldBash(caster: Entity): Skill.ActiveSkillEntity(
     "Shield bash",
     "Bash your shield into the enemy. Damage is based on defence",
-    SkillType.STRENGTH,
-    "book",
+    SkillType.DEFENCE,
+    "skillShieldBash",
     null,
     20.0,
     caster,

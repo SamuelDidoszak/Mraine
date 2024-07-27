@@ -141,10 +141,6 @@ object Turn {
                                     Visuals.showPickedUpItem(Player, action.entity)
                                     val coords = Player.getSuper(Ai::class)!!.targetCoords
                                     currentChunk.map[coords!!.second][coords.first].removeLast()
-                                    if (action.entity has Requirements.Stats::class) {
-                                        println(action.entity.get(Requirements.Stats::class)!!.check(Player))
-                                        action.entity.get(Requirements.Stats::class)!!.print(Player).forEach { println(it) }
-                                    }
                                 } else Visuals.showText(Player, "Inventory is full")
                             }
                             is Chest -> {

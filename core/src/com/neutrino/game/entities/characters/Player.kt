@@ -78,4 +78,5 @@ private fun addSkills(entity: Entity) {
     skillList.addSkill(SkillManaDrain(entity))
     skillList.addSkill(SkillShieldBash(entity))
     skillList.addSkill(SkillTwoshot(entity))
+    skillList.addSkill(SkillGutAttack(entity))
 }

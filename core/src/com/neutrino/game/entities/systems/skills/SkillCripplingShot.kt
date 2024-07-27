@@ -2,7 +2,6 @@ package com.neutrino.game.entities.systems.skills
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.systems.attack.attributes.AroundAttack
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
@@ -14,57 +13,51 @@ import com.neutrino.game.entities.systems.events.TimedEvent
 import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.graphics.utility.ColorUtils
 
-class SkillCripplingSpin(caster: Entity): Skill.ActiveSkill(
-    "Crippling spin",
-    "Spinning attack which slows down nearby enemies",
-    SkillType.STRENGTH,
-    "skillCripplingSpin",
+class SkillCripplingShot(caster: Entity): Skill.ActiveSkillEntity(
+    "Crippling shot",
+    "A nordic technique for precisely aiming shots at enemy kneecaps",
+    SkillType.RANGED,
+    "skillCripplingShot",
     null,
-    20.0,
+    30.0,
     caster,
-    Requirements.Stats(strength = 2f)
-), HasRange {
+    6,
+    RangeType.CIRCLE,
+    Requirements.Stats(dexterity = 5f),
+    Requirements.WeaponType("Ranged")
+) {
 
-    override var range: Int = 2
-    override var rangeType: RangeType = RangeType.SQUARE
+    private val damage = 2f
+    private val crippleTime = 2.0
 
-    private val slowDownStrength = 0.5
-    private val slowDownTime = 10.0
-
-    val damage: Float = 5f
-
-    private val slowDownCallable = object : AttackedAfterCallable() {
+    private val crippleCallable = object : AttackedAfterCallable() {
         override fun call(entity: Entity, vararg data: Any?) {
             if ((data[0] as Entity).get(DefensiveStats::class)?.isAlive() == true)
-                Events.addEvent(data[0] as Entity, TimedEvent(CharacterEvents.SlowDown(slowDownStrength), slowDownTime, 1))
+                // power is temporary
+                Events.addEvent(data[0] as Entity, TimedEvent(CharacterEvents.SlowDown(3.0), crippleTime, 1))
         }
     }
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        ColorUtils.getStatColorTextra("Damage") + "Damage" to damage,
-        ColorUtils.getStatColorTextra("MovementSpeed") + "Slowdown" to slowDownStrength,
-        ColorUtils.getStatColorTextra("MovementSpeed") + "Slowdown time" to slowDownTime,
-        ColorUtils.getStatColorTextra("Range") + "Range" to range
+        ColorUtils.getStatColorTextra("damage") + "Damage" to damage,
+        ColorUtils.getStatColorTextra("movementSpeed") + "Cripple time" to crippleTime,
+        ColorUtils.getStatColorTextra("range") + "Range" to range,
+        ColorUtils.getStatColorTextra("cooldown") + "Cooldown" to cooldown
     )
 
-    override fun use() {
-        if (caster has AroundAttack::class)
-            caster.get(AroundAttack::class)?.plusEquals(AroundAttack())
-        else
-            caster.addAttribute(AroundAttack())
-        caster.attach(slowDownCallable)
+    override fun use(target: Entity) {
+        caster.attach(crippleCallable)
 
-        playAnimation("attack3")
         caster.get(OffensiveStats::class)!!.clone().also {
             it.damageMin += damage
             it.damageMax += damage
             it.range = range
             it.rangeType = rangeType
             it.entity = caster
-        }.attack(caster.get(Position::class)!!)
+        }.attack(target.get(Position::class)!!)
 
         caster.get(AroundAttack::class)?.minusEquals(AroundAttack())
-        caster.detach(slowDownCallable)
+        caster.detach(crippleCallable)
         causeCooldown()
     }
 }

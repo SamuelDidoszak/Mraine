@@ -137,6 +137,7 @@ class EquipmentComparisonPopup(val item: Item): Table() {
         if  (equippedItem != this.item) {
             item.get(Requirements.Stats::class)?.print(Player)?.forEach { requirements.add(it) }
             item.get(Requirements.Custom::class)?.print(Player)?.forEach { requirements.add(it) }
+            item.get(Requirements.WeaponType::class)?.print(Player)?.forEach { requirements.add(it) }
         }
         if (requirements.isNotEmpty()) {
             table.add(TextraLabel("Requirements", Fonts.EQUIPMENT, Color.BLACK)).expandX().center().colspan(10).spaceTop(12f).spaceBottom(12f)

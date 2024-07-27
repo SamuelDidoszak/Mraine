@@ -92,6 +92,7 @@ class ItemDetailsPopup(val item: Item, private val showDescription: Boolean = tr
         val requirements: ArrayList<Pair<String, String>> = ArrayList()
         item.get(Requirements.Stats::class)?.print(Player)?.forEach { requirements.add(it) }
         item.get(Requirements.Custom::class)?.print(Player)?.forEach { requirements.add(it) }
+        item.get(Requirements.WeaponType::class)?.print(Player)?.forEach { requirements.add(it) }
         if (requirements.isNotEmpty()) {
             add(TextraLabel("Requirements", Fonts.EQUIPMENT, Color.BLACK)).expandX().center().colspan(10).spaceTop(12f).spaceBottom(12f)
             row()

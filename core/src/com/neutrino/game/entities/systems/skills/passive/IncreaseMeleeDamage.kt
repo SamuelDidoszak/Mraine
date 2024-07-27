@@ -9,17 +9,17 @@ import com.neutrino.game.entities.systems.skills.SkillType
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.equalsDelta
 
-class IncreaseMeleeDamage(caster: Entity, val increment: Float = 1.1f): Skill.PassiveSkill(
+class IncreaseMeleeDamage(caster: Entity, val increment: Float = 0.1f): Skill.PassiveSkill(
     "Increase melee damage",
     "Increase melee damage",
     SkillType.STRENGTH,
-    "book",
+    "skillIncreaseMeleeDamage",
     caster,
     Requirements.Stats(strength = 2f)
 ) {
 
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
-        ColorUtils.getStatColorTextra("Damage") + "Additional damage %" to (increment * 100) - 100
+        ColorUtils.getStatColorTextra("Damage") + "Additional damage %" to (increment * 100).toInt()
     )
 
     override fun useStart() {

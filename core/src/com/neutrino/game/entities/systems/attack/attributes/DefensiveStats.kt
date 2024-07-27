@@ -76,8 +76,7 @@ class DefensiveStats(
 //            return
         attacker.entity.call(AttackedBeforeCallable::class, entity)
 
-        val evaded = Random.nextFloat() * (1 - attacker.accuracy + evasion)
-        if (evaded != 0f && evaded in 0f .. evasion) {
+        if (Random.nextFloat() in 0f .. 1 - attacker.accuracy + evasion) {
             println("Evaded the attack")
             entity.call(GotAttackedAfterCallable::class, attacker.entity, null)
             attacker.entity.call(AttackedAfterCallable::class, entity, null)
@@ -127,8 +126,7 @@ class DefensiveStats(
             (entity as Character).setAnimation("hurt", "idle")
         Visuals.showDamage(entity, damageColor, damage)
 
-        hp -= damage
-        hp = hp.roundOneDecimal()
+        hp = (hp - damage).roundOneDecimal()
         if (hp <= 0) {
             hp = 0f
             entity.call(EntityDiedCallable::class, entity)

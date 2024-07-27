@@ -2,20 +2,17 @@ package com.neutrino.game.entities.systems.requirements
 
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.attributes.Equipment
+import com.neutrino.game.entities.items.attributes.EquipmentItem
+import com.neutrino.game.entities.items.attributes.HandheldEquipment
+import com.neutrino.game.entities.items.attributes.HandheldEquipmentType
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
-import com.neutrino.game.graphics.utility.ColorUtils
-import com.neutrino.game.graphics.utility.ColorUtils.toHexaDecimal
 
 sealed class Requirements: Attribute() {
     
     abstract fun check(entity: Entity): Boolean
     abstract fun print(entity: Entity): List<Pair<String, String>>
-
-    private companion object {
-        val trueColor = "[${ColorUtils.REQ_MET.toHexaDecimal()}]"
-        val falseColor = "[${ColorUtils.REQ_UNMET.toHexaDecimal()}]"
-    }
 
     class Custom(
         private val check: (entity: Entity) -> Boolean,
@@ -27,6 +24,39 @@ sealed class Requirements: Attribute() {
             (if (check(entity))PrintableInfo.betterColor else PrintableInfo.worseColor) + print
                 to
             (if (check(entity))PrintableInfo.betterColor else PrintableInfo.worseColor) + printValue)
+    }
+
+    /** @param type Available Types: melee, ranged, magic, twoHanded, hands */
+    class WeaponType(private val type: HandheldEquipmentType): Requirements() {
+        private var superType: String? = null
+        constructor(superType: String): this(HandheldEquipmentType.SWORD) {
+            this.superType = superType
+        }
+
+        override fun check(entity: Entity): Boolean {
+            val weapon = entity.get(Equipment::class)?.getWeapon()?.get(EquipmentItem::class)
+            if (superType == null)
+                return weapon?.entity?.get(HandheldEquipment::class)?.handheldType == type
+            return when (superType!!.lowercase()) {
+                "melee" -> weapon?.isMelee()
+                "ranged" -> weapon?.isRanged()
+                "magic" -> weapon?.isMagicWeapon()
+                "twohanded" -> weapon?.isTwoHanded()
+                "hands" -> weapon == null
+                else -> false
+            } == true
+        }
+
+        override fun print(entity: Entity): List<Pair<String, String>> = listOf(
+            (if (check(entity))PrintableInfo.betterColor else PrintableInfo.worseColor) + "Equipped weapon type"
+                to
+            (if (check(entity))PrintableInfo.betterColor else PrintableInfo.worseColor) + getPrintValue())
+
+        private fun getPrintValue(): String {
+            if (superType == null)
+                return type.toString().lowercase().replaceFirstChar { it.uppercase() }
+            return superType!!.lowercase().replaceFirstChar { it.uppercase() }
+        }
     }
     
     class Stats(

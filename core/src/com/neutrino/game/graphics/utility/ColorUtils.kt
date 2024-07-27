@@ -38,10 +38,13 @@ object ColorUtils {
     val cooldown: Color = mp
 
     // Skills
-    val SKILL_STRENGTH: Color = Color.FIREBRICK
+    val SKILL_STRENGTH: Color = Color.valueOf("c05d49")
     val SKILL_DEXTERITY: Color = Color.GOLDENROD
     val SKILL_INTELLIGENCE: Color = Color.ROYAL
     val SKILL_SUMMONING: Color = Color.MAROON
+    val SKILL_DEFENCE: Color = Color.valueOf("8db4be")
+    val SKILL_ROGUE: Color = Color.valueOf("7d4845")
+    val SKILL_RANGED: Color = Color.valueOf("5f893b")
 
     // Requirements
     val BLACK: Color = Color(0f, 0f, 0f, 1f)
@@ -104,6 +107,9 @@ object ColorUtils {
             SkillType.DEXTERITY -> SKILL_DEXTERITY
             SkillType.INTELLIGENCE -> SKILL_INTELLIGENCE
             SkillType.SUMMONING -> SKILL_SUMMONING
+            SkillType.DEFENCE -> SKILL_DEFENCE
+            SkillType.ROGUE -> SKILL_ROGUE
+            SkillType.RANGED -> SKILL_RANGED
         }
     }
 

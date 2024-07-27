@@ -112,7 +112,7 @@ class Inventory(
             }
             items.add(i, inventoryElement)
         }
-        item.addAttribute(Position(Int.MIN_VALUE, Int.MIN_VALUE, item.get(Position::class)!!.chunk))
+        item.addAttribute(Position(Int.MIN_VALUE, Int.MIN_VALUE, entity.get(Position::class)!!.chunk))
         return true
     }
 

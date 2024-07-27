@@ -107,6 +107,7 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
             currentTab = skillTrees
             treeList[currentTree].setScrollFocus(true)
             currentlyFocused = treeList[currentTree]
+            showSkillPoints()
         }
         else if (currentTab == skillTrees) {
             currentTab = skillTable
@@ -283,6 +284,8 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
             if (skill is Skill.PassiveSkill && !Player.get(Skills::class)!!.has(skill::class)) {
                 var requirementsMet = true
                 skill.requirements?.forEach { if (!it.check(Player)) requirementsMet = false }
+                if (Player.get(Level::class)!!.skillPoints == 0)
+                    requirementsMet = false
 
                 val unlockButton = FrameButton("Unlock", !requirementsMet, 150f, 52f) {
                     Player.get(Skills::class)!!.addSkill(skill)

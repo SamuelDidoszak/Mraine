@@ -13,7 +13,7 @@ import ktx.scene2d.Scene2DSkin
 
 class SkillDetailsPopup(val skill: Skill): Table() {
     init {
-        val skillName = TextraLabel(skill.name, Fonts.EQUIPMENT, getTreeColor(skill.skillType))
+        val skillName = TextraLabel(skill.name, Fonts.EQUIPMENT, ColorUtils.getSkillTypeColor(skill.skillType))
         skillName.wrap = true
         skillName.alignment = Align.center
         val description = TextraLabel("[%75]" + skill.description, Fonts.MATCHUP, Color.BLACK)
@@ -104,15 +104,6 @@ class SkillDetailsPopup(val skill: Skill): Table() {
             add(dataLabel).growX().spaceBottom(8f)
             add(valueLabel).right().spaceBottom(8f)
             row()
-        }
-    }
-
-    private fun getTreeColor(skillType: SkillType): Color {
-        return when (skillType) {
-            SkillType.STRENGTH -> ColorUtils.SKILL_STRENGTH
-            SkillType.DEXTERITY -> ColorUtils.SKILL_DEXTERITY
-            SkillType.INTELLIGENCE -> ColorUtils.SKILL_INTELLIGENCE
-            SkillType.SUMMONING -> ColorUtils.SKILL_SUMMONING
         }
     }
 

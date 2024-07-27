@@ -89,6 +89,8 @@ class Equipment: Attribute() {
             return false
         if (item.get(Requirements.Custom::class)?.check(Player) == false)
             return false
+        if (item.get(Requirements.WeaponType::class)?.check(Player) == false)
+            return false
         return true
     }
 

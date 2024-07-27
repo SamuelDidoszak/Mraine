@@ -12,8 +12,8 @@ import com.neutrino.game.graphics.utility.ColorUtils
 class SkillTwoshot(caster: Entity): Skill.ActiveSkillEntity(
     "Twoshot",
     "Shoot twice",
-    SkillType.DEXTERITY,
-    "book",
+    SkillType.RANGED,
+    "skillTwoshot",
     null,
     20.0,
     caster,

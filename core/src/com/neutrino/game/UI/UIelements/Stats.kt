@@ -127,6 +127,8 @@ class Stats: Table() {
             return "${min.toInt()}" + (if (addSpaces) " - " else "-") + "${max.toInt()}"
         else if (((min - min.toInt()) * 10).toInt() > 0 || ((max - max.toInt()) * 10).toInt() > 0)
             return "${min.roundOneDecimal()}" + (if (addSpaces) " - " else "-") + "${max.roundOneDecimal()}"
+        else if (min.equalsDelta(max))
+            return min.toInt().toString()
         else
             return "${min.toInt()}" + (if (addSpaces) " - " else "-") + "${max.toInt()}"
     }
@@ -442,48 +444,48 @@ class Stats: Table() {
     }
 
     private fun refreshDamageLabelText() {
-        fun TextraLabel.setStatColor(statName: String): TextraLabel {
-            this.color = ColorUtils.getStatColor(statName)
+        fun TextraLabel.setStatValue(statName: String, text: String): TextraLabel {
+            this.setTextSameWidth(ColorUtils.getStatColorTextra(statName) + text)
             return this
         }
 
         when (getBiggestDamageType()) {
             DamageEnums.Damage -> { }
             DamageEnums.Fire -> {
-                findActor<TextraLabel>("damageLabel").setStatColor("FireDamage").setTextSameWidth("Fire dmg")
-                findActor<TextraLabel>("damage").setStatColor("FireDamage").setTextSameWidth("${offensiveStats.fireDamageMin.roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setStatColor("FireDamage").setTextSameWidth("${offensiveStats.fireDamageMax.roundOneDecimal()}")
-                findActor<TextraLabel>("damageSlash").setStatColor("FireDamage")
+                findActor<TextraLabel>("damageLabel").setStatValue("FireDamage", "Fire dmg")
+                findActor<TextraLabel>("damage").setStatValue("FireDamage", "${offensiveStats.fireDamageMin.roundOneDecimal()}")
+                findActor<TextraLabel>("damageMax").setStatValue("FireDamage", "${offensiveStats.fireDamageMax.roundOneDecimal()}")
+                findActor<TextraLabel>("damageSlash").setStatValue("FireDamage", "-")
 
-                findActor<TextraLabel>("fireDamageLabel").setStatColor("Damage").setTextSameWidth("Damage")
-                findActor<TextraLabel>("fireDamage").setStatColor("Damage").setTextSameWidth(formatDamageText(DamageEnums.Damage))
+                findActor<TextraLabel>("fireDamageLabel").setStatValue("Damage", "Damage")
+                findActor<TextraLabel>("fireDamage").setStatValue("Damage", formatDamageText(DamageEnums.Damage))
             }
             DamageEnums.Water-> {
-                findActor<TextraLabel>("damageLabel").setStatColor("WaterDamage").setTextSameWidth("Water dmg")
-                findActor<TextraLabel>("damage").setStatColor("WaterDamage").setTextSameWidth("${offensiveStats.waterDamageMin.roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setStatColor("WaterDamage").setTextSameWidth("${offensiveStats.waterDamageMax.roundOneDecimal()}")
-                findActor<TextraLabel>("damageSlash").setStatColor("WaterDamage")
+                findActor<TextraLabel>("damageLabel").setStatValue("WaterDamage", "Water dmg")
+                findActor<TextraLabel>("damage").setStatValue("WaterDamage", "${offensiveStats.waterDamageMin.roundOneDecimal()}")
+                findActor<TextraLabel>("damageMax").setStatValue("WaterDamage", "${offensiveStats.waterDamageMax.roundOneDecimal()}")
+                findActor<TextraLabel>("damageSlash").setStatValue("WaterDamage", "-")
 
-                findActor<TextraLabel>("waterDamageLabel").setStatColor("Damage").setTextSameWidth("Damage")
-                findActor<TextraLabel>("waterDamage").setStatColor("Damage").setTextSameWidth(formatDamageText(DamageEnums.Damage))
+                    findActor<TextraLabel>("waterDamageLabel").setStatValue("Damage", "Damage")
+                findActor<TextraLabel>("waterDamage").setStatValue("Damage", formatDamageText(DamageEnums.Damage))
             }
             DamageEnums.Air -> {
-                findActor<TextraLabel>("damageLabel").setStatColor("AirDamage").setTextSameWidth("Air dmg")
-                findActor<TextraLabel>("damage").setStatColor("AirDamage").setTextSameWidth("${offensiveStats.airDamageMin.roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setStatColor("AirDamage").setTextSameWidth("${offensiveStats.airDamageMax.roundOneDecimal()}")
-                findActor<TextraLabel>("damageSlash").setStatColor("AirDamage")
+                findActor<TextraLabel>("damageLabel").setStatValue("AirDamage", "Air dmg")
+                findActor<TextraLabel>("damage").setStatValue("AirDamage", "${offensiveStats.airDamageMin.roundOneDecimal()}")
+                findActor<TextraLabel>("damageMax").setStatValue("AirDamage", "${offensiveStats.airDamageMax.roundOneDecimal()}")
+                findActor<TextraLabel>("damageSlash").setStatValue("AirDamage", "-")
 
-                findActor<TextraLabel>("airDamageLabel").setStatColor("Damage").setTextSameWidth("Damage")
-                findActor<TextraLabel>("airDamage").setStatColor("Damage").setTextSameWidth(formatDamageText(DamageEnums.Damage))
+                findActor<TextraLabel>("airDamageLabel").setStatValue("Damage", "Damage")
+                findActor<TextraLabel>("airDamage").setStatValue("Damage", formatDamageText(DamageEnums.Damage))
             }
             DamageEnums.Poison -> {
-                findActor<TextraLabel>("damageLabel").setStatColor("PoisonDamage").setTextSameWidth("Poison dmg")
-                findActor<TextraLabel>("damage").setStatColor("PoisonDamage").setTextSameWidth("${offensiveStats.poisonDamageMin.roundOneDecimal()}")
-                findActor<TextraLabel>("damageMax").setStatColor("PoisonDamage").setTextSameWidth("${offensiveStats.poisonDamageMax.roundOneDecimal()}")
-                findActor<TextraLabel>("damageSlash").setStatColor("PoisonDamage")
+                findActor<TextraLabel>("damageLabel").setStatValue("PoisonDamage", "Poison dmg")
+                findActor<TextraLabel>("damage").setStatValue("PoisonDamage", "${offensiveStats.poisonDamageMin.roundOneDecimal()}")
+                findActor<TextraLabel>("damageMax").setStatValue("PoisonDamage", "${offensiveStats.poisonDamageMax.roundOneDecimal()}")
+                findActor<TextraLabel>("damageSlash").setStatValue("PoisonDamage", "-")
 
-                findActor<TextraLabel>("poisonDamageLabel").setStatColor("Damage").setTextSameWidth("Damage")
-                findActor<TextraLabel>("poisonDamage").setStatColor("Damage").setTextSameWidth(formatDamageText(DamageEnums.Damage))
+                findActor<TextraLabel>("poisonDamageLabel").setStatValue("Damage", "Damage")
+                findActor<TextraLabel>("poisonDamage").setStatValue("Damage", formatDamageText(DamageEnums.Damage))
             }
         }
     }

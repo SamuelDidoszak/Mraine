@@ -15,9 +15,12 @@ import com.neutrino.game.LevelInitialization
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.UI.utility.ManagerType
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.Items
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
+import com.neutrino.game.entities.characters.attributes.CharacterTags
 import com.neutrino.game.entities.characters.attributes.Equipment
+import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.systems.util.visuals.DamageNumber
 import com.neutrino.game.gameplay.main.Gameplay
@@ -153,6 +156,7 @@ class GameScreen: KtxScreen {
                 gameStage.showEq = false
                 uiStage.showInventory = true
                 hudStage.uiMode = false
+                uiStage.equipment.stats.finalizeAddedStats()
             }
         }
 
@@ -226,6 +230,7 @@ class GameScreen: KtxScreen {
             override fun update(data: Any?): Boolean {
                 if (data is Equipment.EquipmentType || data == null) {
                     uiStage.equipment.refreshEquipment(data as Equipment.EquipmentType)
+                    uiStage.equipment.stats.refreshStats()
                     uiStage.inventory.refreshInventory()
                     hudStage.refreshHotBar()
                 }

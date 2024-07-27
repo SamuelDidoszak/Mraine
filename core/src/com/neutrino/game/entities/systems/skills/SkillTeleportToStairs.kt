@@ -14,7 +14,7 @@ class SkillTeleportToStairs(caster: Entity): Skill.ActiveSkill(
     "Teleport to stairs",
     "Teleports you to stairs going upwards",
     SkillType.INTELLIGENCE,
-    "book",
+    "skillTeleport",
     null,
     2.0,
     caster

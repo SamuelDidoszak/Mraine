@@ -58,7 +58,8 @@ class ItemContextPopup(
                             super.clicked(event, x, y)
 
                             if (item.get(Requirements.Stats::class)?.check(Player) == false ||
-                                item.get(Requirements.Custom::class)?.check(Player) == false) {
+                                item.get(Requirements.Custom::class)?.check(Player) == false ||
+                                item.get(Requirements.WeaponType::class)?.check(Player) == false) {
                                 val unmetLabel = TextraLabel("[@Cozette][%600][*]Requirements not met", KnownFonts.getStandardFamily())
                                 unmetLabel.name = "UnmetRequirements"
                                 parent.addActor(unmetLabel)

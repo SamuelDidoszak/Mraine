@@ -15,7 +15,7 @@ class Berserk(caster: Entity): Skill.PassiveSkill(
     "Berserk",
     "Increase damage on lower hp",
     SkillType.STRENGTH,
-    "book",
+    "skillBerserk",
     caster,
     Requirements.Stats(strength = 5f),
     Requirements.Custom({entity: Entity ->

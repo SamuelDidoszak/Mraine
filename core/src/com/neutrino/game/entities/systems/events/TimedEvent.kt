@@ -6,6 +6,7 @@ import com.neutrino.game.util.compareDelta
 import com.neutrino.game.util.roundOneDecimal
 import kotlin.math.absoluteValue
 
+/** To make the event act once and last for several turns use refreshTime with executions = 1 */
 class TimedEvent(
     val event: Event,
     var refreshTime: Double,

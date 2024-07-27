@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.TimeUtils
+import com.neutrino.GlobalData
+import com.neutrino.GlobalDataType
 import com.neutrino.game.UI.popups.EquipmentComparisonPopup
 import com.neutrino.game.UI.popups.ItemContextPopup
 import com.neutrino.game.UI.popups.ItemDetailsPopup
@@ -440,6 +442,9 @@ class InventoryManager(private val uiStage: UiStage) {
             if (clickedInv == null) {
                 (currentElement!!.type as ManagerType.EQUIPMENT).equipment.unequipItem((clickedItem as EqActor).entity)
                 uiStage.actors.removeValue(clickedItem, true)
+                GlobalData.notifyObservers(
+                    GlobalDataType.EQUIPMENT,
+                    (clickedItem as EqActor).entity.get(EquipmentItem::class)!!.getEquipmentType())
                 return true
             }
             val container = getInventoryCell(x, y, clickedInv.pane)
@@ -462,6 +467,8 @@ class InventoryManager(private val uiStage: UiStage) {
             if ((clickedItem!! as EqActor).entity.get(Requirements.Stats::class)?.
                 check(equipment.entity) == false ||
                 (clickedItem!! as EqActor).entity.get(Requirements.Custom::class)?.
+                check(equipment.entity) == false ||
+                (clickedItem!! as EqActor).entity.get(Requirements.WeaponType::class)?.
                 check(equipment.entity) == false) {
                 Visuals.showText((clickedItem!! as EqActor).entity, "Requirements not met!")
                 return false

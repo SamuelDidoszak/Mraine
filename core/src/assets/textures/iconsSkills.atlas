@@ -18,7 +18,7 @@ itemBetter
 	bounds: 70, 4, 8, 8
 itemWorse
 	bounds: 80, 4, 8, 8
-skilBlock
+skillBlock
 	bounds: 2, 2, 14, 10
 skillActiveShield
 	bounds: 434, 15, 15, 15

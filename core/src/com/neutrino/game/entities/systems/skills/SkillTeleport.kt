@@ -11,7 +11,7 @@ class SkillTeleport(caster: Entity): Skill.ActiveSkillPosition(
     "Teleport",
     "Teleports you to a desired place",
     SkillType.INTELLIGENCE,
-    "book",
+    "skillTeleport",
     null,
     2.0,
     caster,

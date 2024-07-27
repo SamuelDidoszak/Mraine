@@ -1,6 +1,5 @@
 package com.neutrino.game.entities.systems.attack.attributes
 
-import com.neutrino.game.domain.model.characters.Player.hpMax
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Character
@@ -12,10 +11,11 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
+import com.neutrino.game.entities.systems.attack.callables.StatsChangedCallable
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.entities.systems.requirements.PrintableInfo
 import com.neutrino.game.entities.util.AttributeOperations
 import com.neutrino.game.util.*
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
@@ -25,8 +25,8 @@ class OffensiveStats(
     dexterity: Float = 0f,
     intelligence: Float = 0f,
     luck: Float = 0f,
-    var damageMin: Float = 0f,
-    var damageMax: Float = damageMin,
+    damageMin: Float = 0f,
+    damageMax: Float = damageMin,
     /** Range is 0 - 2 which tells the probability of hitting the enemy */
     var accuracy: Float = 0f,
     var criticalChance: Float = 0f,
@@ -45,6 +45,19 @@ class OffensiveStats(
     var poisonDamageMin: Float = 0f,
     var poisonDamageMax: Float = poisonDamageMin
 ): Attribute(), HasRange, AttributeOperations<OffensiveStats>, PrintableInfo<OffensiveStats> {
+
+    var damageMin: Float = damageMin
+        set(value) {
+            val difference = value - field
+            field = value
+            entity.call(StatsChangedCallable::class, StatsEnum.DAMAGE, difference, "min")
+        }
+    var damageMax: Float = damageMax
+        set(value) {
+            val difference = value - field
+            field = value
+            entity.call(StatsChangedCallable::class, StatsEnum.DAMAGE, difference, "max")
+        }
 
     var strength: Float = strength
         set(value) {
@@ -87,6 +100,22 @@ class OffensiveStats(
     override fun onEntityAttached() {
         if (entity !is Character)
             return
+
+        // Change initial values
+        if (entity == Player) {
+            val prevStrength = strength
+            val prevDexterity = dexterity
+            val prevIntelligence = intelligence
+            val prevLuck = luck
+            this::class.java.getDeclaredField("strength").set(this, 0f)
+            this::class.java.getDeclaredField("dexterity").set(this, 0f)
+            this::class.java.getDeclaredField("intelligence").set(this, 0f)
+            this::class.java.getDeclaredField("luck").set(this, 0f)
+            strength = prevStrength
+            dexterity = prevDexterity
+            intelligence = prevIntelligence
+            luck = prevLuck
+        }
 
         if (accuracy == 0f)
             accuracy = 1f

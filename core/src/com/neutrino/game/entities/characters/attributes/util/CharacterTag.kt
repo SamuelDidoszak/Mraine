@@ -1,6 +1,7 @@
 package com.neutrino.game.entities.characters.attributes.util
 
 import com.neutrino.game.entities.Entity
+import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.characters.callables.OnItemEquipped
 import com.neutrino.game.entities.characters.callables.OnItemUnequipped
 import com.neutrino.game.entities.items.attributes.EquipmentItem
@@ -22,93 +23,123 @@ sealed interface CharacterTag {
     class IncreaseMeleeDamage(
         var incrementPercent: Float
     ): CharacterTag {
+        private fun setStats(entity: Entity, item: Entity, add: Boolean) {
+            if (item.get(EquipmentItem::class)?.isMelee() == true) {
+                val modifier = if (add) 1f else -1f
+                entity.get(OffensiveStats::class)!!.damageMin += item.get(OffensiveStats::class)!!.damageMin * incrementPercent * modifier
+                entity.get(OffensiveStats::class)!!.damageMax += item.get(OffensiveStats::class)!!.damageMax * incrementPercent * modifier
+            }
+        }
+
         private val itemEquippedCallable = object : OnItemEquipped() {
             override fun call(entity: Entity, vararg data: Any?) {
                 val item = data[0] as Entity
-                if (item.get(EquipmentItem::class)?.isMelee() == true) {
-                    entity.get(OffensiveStats::class)!!.damageMin += item.get(OffensiveStats::class)!!.damageMin * incrementPercent
-                    entity.get(OffensiveStats::class)!!.damageMax += item.get(OffensiveStats::class)!!.damageMax * incrementPercent
-            } }
+                setStats(entity, item, true)
+            }
         }
         private val itemUnequippedCallable = object : OnItemUnequipped() {
             override fun call(entity: Entity, vararg data: Any?) {
                 val item = data[0] as Entity
-                if (item.get(EquipmentItem::class)?.isMelee() == true) {
-                    entity.get(OffensiveStats::class)!!.damageMin -= item.get(OffensiveStats::class)!!.damageMin * incrementPercent
-                    entity.get(OffensiveStats::class)!!.damageMax -= item.get(OffensiveStats::class)!!.damageMax * incrementPercent
-            } }
+                setStats(entity, item, false)
+            }
         }
 
         override fun onEntityAttached(entity: Entity) {
             entity.attach(itemEquippedCallable)
             entity.attach(itemUnequippedCallable)
+            val weapon = entity.get(Equipment::class)?.getWeapon()
+            if (weapon != null)
+                setStats(entity, weapon, true)
         }
 
         override fun onEntityDetached(entity: Entity) {
             entity.detach(itemEquippedCallable)
             entity.detach(itemUnequippedCallable)
+            val weapon = entity.get(Equipment::class)?.getWeapon()
+            if (weapon != null)
+                setStats(entity, weapon, false)
         }
     }
 
     class IncreaseOnehandedDamage(
         var incrementPercent: Float
     ): CharacterTag {
+        private fun setStats(entity: Entity, item: Entity, add: Boolean) {
+            if (item.get(EquipmentItem::class)?.isMelee() == true && item.get(EquipmentItem::class)?.type != EquipmentType.TWOHAND) {
+                val modifier = if (add) 1f else -1f
+                entity.get(OffensiveStats::class)!!.damageMin += item.get(OffensiveStats::class)!!.damageMin * incrementPercent * modifier
+                entity.get(OffensiveStats::class)!!.damageMax += item.get(OffensiveStats::class)!!.damageMax * incrementPercent * modifier
+            }
+        }
+
         private val itemEquippedCallable = object : OnItemEquipped() {
             override fun call(entity: Entity, vararg data: Any?) {
                 val item = data[0] as Entity
-                if (item.get(EquipmentItem::class)?.isMelee() == true && item.get(EquipmentItem::class)?.type != EquipmentType.TWOHAND) {
-                    entity.get(OffensiveStats::class)!!.damageMin += item.get(OffensiveStats::class)!!.damageMin * incrementPercent
-                    entity.get(OffensiveStats::class)!!.damageMax += item.get(OffensiveStats::class)!!.damageMax * incrementPercent
-            } }
+                setStats(entity, item, true)
+            }
         }
         private val itemUnequippedCallable = object : OnItemUnequipped() {
             override fun call(entity: Entity, vararg data: Any?) {
                 val item = data[0] as Entity
-                if (item.get(EquipmentItem::class)?.isMelee() == true && item.get(EquipmentItem::class)?.type != EquipmentType.TWOHAND) {
-                    entity.get(OffensiveStats::class)!!.damageMin -= item.get(OffensiveStats::class)!!.damageMin * incrementPercent
-                    entity.get(OffensiveStats::class)!!.damageMax -= item.get(OffensiveStats::class)!!.damageMax * incrementPercent
-            } }
+                setStats(entity, item, false)
+            }
         }
 
         override fun onEntityAttached(entity: Entity) {
             entity.attach(itemEquippedCallable)
             entity.attach(itemUnequippedCallable)
+            val weapon = entity.get(Equipment::class)?.getWeapon()
+            if (weapon != null)
+                setStats(entity, weapon, true)
         }
 
         override fun onEntityDetached(entity: Entity) {
             entity.detach(itemEquippedCallable)
             entity.detach(itemUnequippedCallable)
+            val weapon = entity.get(Equipment::class)?.getWeapon()
+            if (weapon != null)
+                setStats(entity, weapon, false)
         }
     }
 
     class IncreaseTwohandedDamage(
         var incrementPercent: Float
     ): CharacterTag {
+        private fun setStats(entity: Entity, item: Entity, add: Boolean) {
+            if (item.get(EquipmentItem::class)?.isMelee() == true && item.get(EquipmentItem::class)?.type == EquipmentType.TWOHAND) {
+                val modifier = if (add) 1 else -1
+                entity.get(OffensiveStats::class)!!.damageMin += item.get(OffensiveStats::class)!!.damageMin * incrementPercent * modifier
+                entity.get(OffensiveStats::class)!!.damageMax += item.get(OffensiveStats::class)!!.damageMax * incrementPercent * modifier
+            }
+        }
+
         private val itemEquippedCallable = object : OnItemEquipped() {
             override fun call(entity: Entity, vararg data: Any?) {
                 val item = data[0] as Entity
-                if (item.get(EquipmentItem::class)?.isMelee() == true && item.get(EquipmentItem::class)?.type == EquipmentType.TWOHAND) {
-                    entity.get(OffensiveStats::class)!!.damageMin += item.get(OffensiveStats::class)!!.damageMin * incrementPercent
-                    entity.get(OffensiveStats::class)!!.damageMax += item.get(OffensiveStats::class)!!.damageMax * incrementPercent
-            } }
+                setStats(entity, item, true)
+            }
         }
         private val itemUnequippedCallable = object : OnItemUnequipped() {
             override fun call(entity: Entity, vararg data: Any?) {
                 val item = data[0] as Entity
-                if (item.get(EquipmentItem::class)?.isMelee() == true && item.get(EquipmentItem::class)?.type == EquipmentType.TWOHAND) {
-                    entity.get(OffensiveStats::class)!!.damageMin -= item.get(OffensiveStats::class)!!.damageMin * incrementPercent
-                    entity.get(OffensiveStats::class)!!.damageMax -= item.get(OffensiveStats::class)!!.damageMax * incrementPercent
-            } }
+                setStats(entity, item, false)
+            }
         }
 
         override fun onEntityAttached(entity: Entity) {
             entity.attach(itemEquippedCallable)
             entity.attach(itemUnequippedCallable)
+            val weapon = entity.get(Equipment::class)?.getWeapon()
+            if (weapon != null)
+                setStats(entity, weapon, true)
         }
 
         override fun onEntityDetached(entity: Entity) {
             entity.detach(itemEquippedCallable)
             entity.detach(itemUnequippedCallable)
+            val weapon = entity.get(Equipment::class)?.getWeapon()
+            if (weapon != null)
+                setStats(entity, weapon, false)
         }
     }
 
@@ -119,45 +150,70 @@ sealed interface CharacterTag {
 
         private var baseDamageMin = 0f
         private var baseDamageMax = 0f
+        private var lastDamageMin = 0f
+        private var lastDamageMax = 0f
+        private lateinit var offensiveStats: OffensiveStats
+        private lateinit var defensiveStats: DefensiveStats
 
-        private fun Float.increase(entity: Entity): Float {
-            val defensiveStats = entity.get(DefensiveStats::class)!!
+        private fun Float.increase(): Float {
             return this * (1f + (incrementPercent - 1) * (1 - (defensiveStats.hp / (defensiveStats.hpMax * hpThresholdPercent))))
         }
 
-        private fun setBaseDamage(entity: Entity) {
-            val damageMin = entity.get(OffensiveStats::class)!!.damageMin
-            val damageMax = entity.get(OffensiveStats::class)!!.damageMax
+        private fun setBaseDamage(min: Boolean) {
+            val damageMin = offensiveStats.damageMin
+            val damageMax = offensiveStats.damageMax
 
-            if (!baseDamageMin.increase(entity).equalsDelta(damageMin))
-                baseDamageMin = damageMin
-            if (!baseDamageMax.increase(entity).equalsDelta(damageMax))
-                baseDamageMax = damageMax
+            if (min && !damageMin.equalsDelta(lastDamageMin)) {
+                val newDamage = if (defensiveStats.hp / defensiveStats.hpMax <= hpThresholdPercent)
+                    baseDamageMin + damageMin - lastDamageMin
+                else
+                    damageMin
+                baseDamageMin = newDamage
+                lastDamageMin = damageMin
+            }
+            if (!min && !damageMax.equalsDelta(lastDamageMax)) {
+                val newDamage = if (defensiveStats.hp / defensiveStats.hpMax <= hpThresholdPercent)
+                    damageMax - (lastDamageMax - baseDamageMax)
+                else
+                    damageMax
+                baseDamageMax = newDamage
+                lastDamageMax = damageMax
+            }
         }
 
         private val berserkCallable = object : StatsChangedCallable() {
             override fun call(entity: Entity, vararg data: Any?) {
                 if (data[0] == StatsEnum.DAMAGE)
-                    setBaseDamage(entity)
+                    setBaseDamage(data[2] == "min")
                 if (data[0] != StatsEnum.HP)
                     return
-                val defensiveStats = entity.get(DefensiveStats::class)!!
-                val offensiveStats = entity.get(OffensiveStats::class)!!
-                if (defensiveStats.hp / defensiveStats.hpMax > hpThresholdPercent)
-                    return
-
-                offensiveStats.damageMin = offensiveStats.damageMin.increase(entity)
-                offensiveStats.damageMax = offensiveStats.damageMax.increase(entity)
+                if (defensiveStats.hp / defensiveStats.hpMax <= hpThresholdPercent) {
+                    lastDamageMin = baseDamageMin.increase()
+                    lastDamageMax = baseDamageMax.increase()
+                    offensiveStats.damageMin = lastDamageMin
+                    offensiveStats.damageMax = lastDamageMax
+                }
+                else {
+                    lastDamageMin = baseDamageMin
+                    lastDamageMax = baseDamageMax
+                    offensiveStats.damageMin = baseDamageMin
+                    offensiveStats.damageMax = baseDamageMax
+                }
             }
         }
 
         override fun onEntityAttached(entity: Entity) {
             entity.attach(berserkCallable)
+            offensiveStats = entity.get(OffensiveStats::class)!!
+            defensiveStats = entity.get(DefensiveStats::class)!!
+            baseDamageMin = offensiveStats.damageMin
+            baseDamageMax = offensiveStats.damageMax
+            lastDamageMin = baseDamageMin
+            lastDamageMax = baseDamageMax
         }
 
         override fun onEntityDetached(entity: Entity) {
             entity.detach(berserkCallable)
-            val offensiveStats = entity.get(OffensiveStats::class)!!
             offensiveStats.damageMin = baseDamageMin
             offensiveStats.damageMax = baseDamageMax
         }

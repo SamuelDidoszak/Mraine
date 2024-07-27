@@ -44,8 +44,7 @@ abstract class CharacterEvents: Event {
         override val color = "#e4265c"
         override val name: String = "Heal"
         override fun printable(other: Event?): String {
-            return "[$color]Heals " +
-                    PrintableInfo.getColoredNumber(power, (other as? Heal)?.power ?: power) + "[$color]hp"
+            return "[$color]Heals " + power + "[$color]hp"
         }
     }
 
@@ -115,7 +114,7 @@ abstract class CharacterEvents: Event {
         private var belowZero = 0.0
         override fun apply() {
             val stats = entity.get(DefensiveStats::class)!!
-            stats.movementSpeed -= power
+            stats.movementSpeed += power
             if (stats.movementSpeed < 0.0) {
                 belowZero = stats.movementSpeed
                 stats.movementSpeed = 0.0
@@ -123,7 +122,7 @@ abstract class CharacterEvents: Event {
         }
 
         override fun stop() {
-            entity.get(DefensiveStats::class)!!.movementSpeed += power + belowZero
+            entity.get(DefensiveStats::class)!!.movementSpeed -= power - belowZero
         }
 
         override fun printable(other: Event?): String = "Slows down by " +
@@ -154,6 +153,24 @@ abstract class CharacterEvents: Event {
         }
 
         override fun printable(other: Event?): String = "Spawns $entity"
+    }
+
+    class AddStats(val offensiveStats: OffensiveStats?, val defensiveStats: DefensiveStats?, val eventName: String): CharacterEvents(), Status {
+        override fun apply() {
+            if (offensiveStats != null)
+                entity.get(OffensiveStats::class)?.plusEquals(offensiveStats)
+            if (defensiveStats != null)
+                entity.get(DefensiveStats::class)?.plusEquals(defensiveStats)
+        }
+
+        override fun stop() {
+            if (offensiveStats != null)
+                entity.get(OffensiveStats::class)?.minusEquals(offensiveStats)
+            if (defensiveStats != null)
+                entity.get(DefensiveStats::class)?.minusEquals(defensiveStats)
+        }
+
+        override val name: String = eventName
     }
 }
 

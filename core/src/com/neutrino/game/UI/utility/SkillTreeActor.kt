@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.neutrino.game.domain.model.characters.Player
 import com.neutrino.game.entities.systems.skills.Skill
+import com.neutrino.game.entities.systems.skills.SkillType
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.util.Constants
 
@@ -13,7 +14,7 @@ import com.neutrino.game.util.Constants
 class SkillTreeActor(val skill: Skill.PassiveSkill): Group() {
     val texture: TextureAtlas.AtlasRegion = Textures.get(skill.textureName).texture
 
-    private val backgroundTexture = Constants.DefaultUITexture.findRegion("skillBackground")
+    private val backgroundTexture = getBackgroundDrawable()
     private val highlightOverlay = Image(Constants.DefaultUITexture.findRegion("skillHighlight"))
     private val darkenOverlay = Image(Constants.DefaultUITexture.findRegion("skillDarken"))
 
@@ -64,5 +65,15 @@ class SkillTreeActor(val skill: Skill.PassiveSkill): Group() {
 
     fun fromY(): Float {
         return y
+    }
+
+    private fun getBackgroundDrawable(): TextureAtlas.AtlasRegion {
+        return Constants.DefaultUITexture.findRegion(when (skill.skillType) {
+            SkillType.STRENGTH -> "skillStrength"
+            SkillType.DEFENCE -> "skillDefence"
+            SkillType.ROGUE -> "skillRogue"
+            SkillType.RANGED -> "skillRanged"
+            else -> "skillBackground"
+        })
     }
 }

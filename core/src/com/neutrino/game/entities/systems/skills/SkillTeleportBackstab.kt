@@ -17,8 +17,8 @@ import kotlin.math.roundToInt
 class SkillTeleportBackstab(caster: Entity): Skill.ActiveSkillCharacter(
     "Teleportation backstab",
     "Teleports you behind an enemy and backstabs it instantly",
-    SkillType.DEXTERITY,
-    "book",
+    SkillType.ROGUE,
+    "skillTeleportBackstab",
     null,
     2.0,
     caster,

@@ -4,5 +4,8 @@ enum class SkillType {
     STRENGTH,
     DEXTERITY,
     INTELLIGENCE,
-    SUMMONING
+    SUMMONING,
+    ROGUE,
+    RANGED,
+    DEFENCE
 }

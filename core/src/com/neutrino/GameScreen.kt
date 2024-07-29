@@ -170,6 +170,15 @@ class GameScreen: KtxScreen {
         /** Here, dispose of every static state and every thread, because they can survive restarting the application */
         gameStage.batch.dispose()
 
+        Constants.DefaultItemTexture.dispose()
+        Constants.DefaultEntityTexture.dispose()
+        Constants.DefaultUITexture.dispose()
+        Constants.WhitePixel.dispose()
+        Constants.TransparentPixel.dispose()
+
+        Textures.atlases.values.forEach { it.dispose() }
+        gameStage.actors.forEach { if (it is LevelDrawer) it.fogOfWar.dispose() }
+
         Gdx.files.local("saves/").emptyDirectory()
     }
 

@@ -36,24 +36,6 @@ class SkillLuckyClover(caster: Entity): Skill.ActiveSkill(
                 OffensiveStats(criticalChance = criticalChance, criticalDamage = criticalDamage), null, "Lucky"),
             sustainTime, 1)
         )
+        causeCooldown()
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

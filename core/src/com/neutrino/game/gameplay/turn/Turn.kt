@@ -23,7 +23,6 @@ import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.events.Events
-import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.map.chunk.CharacterArray
@@ -272,10 +271,10 @@ object Turn {
                 updateBatch.removeFirst()
             }
 
-//            Events.execute()
+            Events.execute()
         }
-        Events.execute()
         tick()
+        Events.execute()
     }
 
     /**

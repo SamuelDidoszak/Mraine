@@ -84,6 +84,7 @@ class HudStage(viewport: Viewport): Stage(viewport) {
         hotBar = scene2d.horizontalGroup {
             for (i in 0 until 10) {
                 addActor(container {
+                    clip(true)
                     name = (i).toString()
                     background = TextureRegionDrawable(hudElements["cellHotBar"])
                     align(Align.bottomLeft)

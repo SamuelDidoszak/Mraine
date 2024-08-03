@@ -85,10 +85,10 @@ class DefensiveStats(
 
         var damage = 0f
         val attackerDmg = attacker.getDamage()
-        val physicalDamage = attackerDmg * attackerDmg / (attackerDmg + defence)
-        val fireDamage = attacker.getFireDamage() * (1 - fireDefence)
-        val waterDamage = attacker.getWaterDamage() * (1 - waterDefence)
-        val airDamage = attacker.getAirDamage() * (1 - airDefence)
+        var physicalDamage = attackerDmg * attackerDmg / (attackerDmg + defence)
+        var fireDamage = attacker.getFireDamage() * (1 - fireDefence)
+        var waterDamage = attacker.getWaterDamage() * (1 - waterDefence)
+        var airDamage = attacker.getAirDamage() * (1 - airDefence)
         var poisonDamage = attacker.getPoisonDamage() * (1 - poisonDefence)
         poisonDamage = if (hp - poisonDamage <= 1) hp - 1f else poisonDamage
 
@@ -99,32 +99,39 @@ class DefensiveStats(
         damage += airDamage
         damage += poisonDamage
 
+        var damageModifier = 1f
         if (attacker.entity is Character && entity.get(EnemyAi::class)?.sensedEnemyArray?.contains(attacker.entity) == false) {
-            println("Stealth hit!")
+            Visuals.showText(entity, "{GRADIENT=2c3a38ff;cb331eff;0.3;0.0}{JOLT}Stealth hit!")
             val multiplier = attacker.entity.get(CharacterTags::class)?.getTag(IncreaseStealthDamage::class)?.incrementPercent ?: 1f
             if (!(attacker.criticalDamage * multiplier).equalsDelta(0f))
-                damage *= attacker.criticalDamage * multiplier
+                damageModifier *= attacker.criticalDamage * multiplier
         }
         else if (Random.nextFloat() < attacker.criticalChance) {
-            println("Critical hit!")
-            println("critical damage: $criticalDamage")
+            Visuals.showText(entity, "{HANG=1.0;0.2}{SQUASH}{GRADIENT=ffffffff;d5b431ff;0.27;0.0}Critical hit!")
             if (!criticalDamage.equalsDelta(0f))
-                damage *= attacker.criticalDamage
+                damageModifier *= attacker.criticalDamage
         }
 
-        // get damage color from interpolation
-        var damageColor: Color = Color(0f, 0f, 0f, 1f)
-        damageColor = ColorUtils.colorInterpolation(damageColor, Color(255f, 0f, 0f, 1f), (physicalDamage / damage).toInt())
-        damageColor = ColorUtils.colorInterpolation(damageColor, Color(255f, 128f, 0f, 1f), (fireDamage / damage).toInt())
-        damageColor = ColorUtils.colorInterpolation(damageColor, Color(0f, 0f, 255f, 1f), (waterDamage / damage).toInt())
-        damageColor = ColorUtils.colorInterpolation(damageColor, Color(0f, 255f, 255f, 1f), (airDamage / damage).toInt())
-        damageColor = ColorUtils.colorInterpolation(damageColor, Color(128f, 255f, 0f, 1f), (poisonDamage / damage).toInt())
-
-        damageColor = ColorUtils.applySaturation(damageColor, 0.8f)
+        damage *= damageModifier
+        physicalDamage *= damageModifier
+        fireDamage *= damageModifier
+        waterDamage *= damageModifier
+        airDamage *= damageModifier
+        poisonDamage *= damageModifier
 
         if (entity is Character && entity.get(Texture::class)!!.textures[0].name.contains("Idle"))
             (entity as Character).setAnimation("hurt", "idle")
-        Visuals.showDamage(entity, damageColor, damage)
+
+        if (physicalDamage > 0f)
+            Visuals.showDamage(entity, Color(255f, 0f, 0f, 1f), physicalDamage)
+        if (fireDamage > 0f)
+            Visuals.showDamage(entity, ColorUtils.fireDamage, fireDamage)
+        if (waterDamage > 0f)
+            Visuals.showDamage(entity, ColorUtils.waterDamage, waterDamage)
+        if (airDamage > 0f)
+            Visuals.showDamage(entity, ColorUtils.airDamage, airDamage)
+        if (poisonDamage > 0f)
+            Visuals.showDamage(entity, ColorUtils.poisonDamage, poisonDamage)
 
         hp = (hp - damage).roundOneDecimal()
         if (hp <= 0) {

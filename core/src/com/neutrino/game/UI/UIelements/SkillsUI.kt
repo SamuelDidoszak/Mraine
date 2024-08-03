@@ -396,10 +396,10 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
 
         val table = scene2d.table {
             this.setFillParent(false)
-            clip(true)
             for (n in 0 until rows) {
                 for (i in 0 until 6) {
                     add(container {
+                        clip(true)
                         val cellNumber = n * 6 + i
                         name = (cellNumber).toString()
                         background = getSkillsCellDrawable(cellNumber, cellNumber)

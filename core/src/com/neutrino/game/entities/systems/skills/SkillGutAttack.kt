@@ -29,9 +29,9 @@ class SkillGutAttack(caster: Entity): Skill.ActiveSkillEntity(
 
     override fun use(target: Entity) {
         val offensiveStats = caster.get(OffensiveStats::class)!!.clone()
+        offensiveStats.entity = caster
         offensiveStats.damageMin += damage
         offensiveStats.damageMax += damage
-        offensiveStats.entity = caster
 
         playAnimation("attack3")
         target.get(DefensiveStats::class)!!.getDamage(offensiveStats)

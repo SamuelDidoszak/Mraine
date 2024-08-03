@@ -349,6 +349,7 @@ class InventoryManager(private val uiStage: UiStage) {
         originalStackItem = clickedItem as EqActor
         item.get(Amount::class)!!.amount = 0
         clickedItem = EqActor(item)
+        (clickedItem as? SkillActor)?.pickedUp = true
         uiStage.addActor(clickedItem)
         clickedItem!!.setPosition(itemPosition.x, itemPosition.y)
         clickedItem!!.setScale(uiStage.currentScale * 1.25f, uiStage.currentScale * 1.25f)
@@ -399,6 +400,7 @@ class InventoryManager(private val uiStage: UiStage) {
 
         originalContainer = clickedItem!!.parent as Container<*>
         originalContainer!!.removeActor(clickedItem)
+        (clickedItem as? SkillActor)?.pickedUp = true
         uiStage.addActor(clickedItem)
         clickedItem!!.setScale(uiStage.currentScale * 1.25f, uiStage.currentScale * 1.25f)
     }
@@ -425,6 +427,7 @@ class InventoryManager(private val uiStage: UiStage) {
                 return true
             }
 
+            (clickedItem as? SkillActor)?.pickedUp = false
             uiStage.actors.removeValue(clickedItem, true)
 
             if (container.hasChildren())
@@ -441,6 +444,7 @@ class InventoryManager(private val uiStage: UiStage) {
         if (currentElement?.type is ManagerType.EQUIPMENT) {
             if (clickedInv == null) {
                 (currentElement!!.type as ManagerType.EQUIPMENT).equipment.unequipItem((clickedItem as EqActor).entity)
+                (clickedItem as? SkillActor)?.pickedUp = false
                 uiStage.actors.removeValue(clickedItem, true)
                 GlobalData.notifyObservers(
                     GlobalDataType.EQUIPMENT,
@@ -508,6 +512,7 @@ class InventoryManager(private val uiStage: UiStage) {
             if (originalStackItem != null) {
                 originalStackItem!!.amount = originalStackItem!!.amount.plus((clickedItem as EqActor).amount)
                 originalStackItem!!.refreshAmount()
+                (clickedItem as? SkillActor)?.pickedUp = false
                 uiStage.actors.removeValue(clickedItem, true)
                 return true
             }
@@ -515,6 +520,7 @@ class InventoryManager(private val uiStage: UiStage) {
             return true
         }
 
+        (clickedItem as? SkillActor)?.pickedUp = false
         uiStage.actors.removeValue(clickedItem, true)
         // check if the cell is ocupied and act accordingly
         if (container.hasChildren()) {
@@ -547,6 +553,7 @@ class InventoryManager(private val uiStage: UiStage) {
                     originalContainer?.actor = originalStackItem
                 originalStackItem!!.amount = originalStackItem!!.amount + (clickedItem as EqActor).amount
                 originalStackItem!!.refreshAmount()
+                (clickedItem as? SkillActor)?.pickedUp = false
                 uiStage.actors.removeValue(clickedItem, true)
                 uiStage.refreshHotBar()
                 return true
@@ -628,6 +635,7 @@ class InventoryManager(private val uiStage: UiStage) {
     fun nullifyAllValues() {
         if (originalStackItem != null && clickedItem != null) {
             changeStackAmount((clickedItem as EqActor).amount * -1)
+            (clickedItem as? SkillActor)?.pickedUp = false
             uiStage.actors.removeValue(clickedItem, true)
             clickedItem = originalStackItem
             originalStackItem = null
@@ -659,10 +667,12 @@ class InventoryManager(private val uiStage: UiStage) {
     fun itemPassedToHud() {
         if (originalStackItem != null) {
             changeStackAmount((clickedItem as EqActor).amount * -1)
+            (clickedItem as? SkillActor)?.pickedUp = false
             uiStage.actors.removeValue(clickedItem, true)
             clickedItem = originalStackItem
             originalStackItem = null
         }
+        (clickedItem as? SkillActor)?.pickedUp = false
         uiStage.actors.removeValue(clickedItem, true)
         originalContainer?.actor = clickedItem
         clickedItem = null
@@ -678,6 +688,7 @@ class InventoryManager(private val uiStage: UiStage) {
         clickedItem = actor
         itemFromHud = true
         dragItem = false
+        (clickedItem as? SkillActor)?.pickedUp = true
         uiStage.addActor(clickedItem)
         clickedItem!!.setScale(1.25f)
     }

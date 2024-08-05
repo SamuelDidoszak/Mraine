@@ -6,12 +6,16 @@ import com.neutrino.game.entities.characters.callables.OnItemEquipped
 import com.neutrino.game.entities.characters.callables.OnItemUnequipped
 import com.neutrino.game.entities.items.attributes.EquipmentItem
 import com.neutrino.game.entities.items.attributes.EquipmentType
+import com.neutrino.game.entities.items.attributes.HandheldEquipment
+import com.neutrino.game.entities.items.attributes.HandheldEquipmentType
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
+import com.neutrino.game.entities.systems.attack.callables.GotAttackedAfterCallable
 import com.neutrino.game.entities.systems.attack.callables.LifestealCallable
 import com.neutrino.game.entities.systems.attack.callables.StatsChangedCallable
 import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.util.equalsDelta
+import com.neutrino.game.util.roundOneDecimal
 
 sealed interface CharacterTag {
     fun onEntityAttached(entity: Entity) {}
@@ -230,6 +234,180 @@ sealed interface CharacterTag {
 
         override fun onEntityDetached(entity: Entity) {
             entity.detach(lifestealCallable)
+        }
+    }
+
+    /** ======================================================================================================================================================
+                                                                        Defence
+     */
+
+    class IncreaseShieldDefence(
+        var incrementPercent: Float
+    ): CharacterTag {
+        private fun setStats(entity: Entity, item: Entity, add: Boolean) {
+            if (item.get(HandheldEquipment::class)?.handheldType == HandheldEquipmentType.SHIELD) {
+                val modifier = if (add) 1f else -1f
+                entity.get(DefensiveStats::class)!!.defence += item.get(DefensiveStats::class)!!.defence * incrementPercent * modifier
+            }
+        }
+
+        private val itemEquippedCallable = object : OnItemEquipped() {
+            override fun call(entity: Entity, vararg data: Any?) {
+                val item = data[0] as Entity
+                setStats(entity, item, true)
+            }
+        }
+        private val itemUnequippedCallable = object : OnItemUnequipped() {
+            override fun call(entity: Entity, vararg data: Any?) {
+                val item = data[0] as Entity
+                setStats(entity, item, false)
+            }
+        }
+
+        override fun onEntityAttached(entity: Entity) {
+            entity.attach(itemEquippedCallable)
+            entity.attach(itemUnequippedCallable)
+            val shield = entity.get(Equipment::class)?.getEquipped(Equipment.EquipmentType.LHAND)
+            if (shield != null)
+                setStats(entity, shield, true)
+        }
+
+        override fun onEntityDetached(entity: Entity) {
+            entity.detach(itemEquippedCallable)
+            entity.detach(itemUnequippedCallable)
+            val weapon = entity.get(Equipment::class)?.getWeapon()
+            if (weapon != null)
+                setStats(entity, weapon, false)
+        }
+    }
+
+    class Thorns(
+        var damagePercent: Float
+    ): CharacterTag {
+
+        val thornsCallable = object : GotAttackedAfterCallable() {
+            override fun call(entity: Entity, vararg data: Any?) {
+                if (data[1] == null)
+                    return
+                val damage = ((data[1] as Float) * damagePercent).roundOneDecimal()
+                val attack = OffensiveStats(damageMin = damage, damageMax = damage, accuracy = 2f).also { it.entity = entity }
+                println("Attacker entity: $${attack.entity}")
+                (data[0] as Entity).get(DefensiveStats::class)?.getDamage(attack)
+            }
+        }
+
+        override fun onEntityAttached(entity: Entity) {
+            entity.attach(thornsCallable)
+        }
+
+        override fun onEntityDetached(entity: Entity) {
+            entity.detach(thornsCallable)
+        }
+    }
+
+    class Block(
+        var chance: Float
+    ): CharacterTag
+
+    class LastManStanding(
+        val hpThresholdPercent: Float,
+        val incrementPercent: Float
+    ): CharacterTag {
+
+        private var baseDefence = 0f
+        private var lastDefence = 0f
+        private lateinit var defensiveStats: DefensiveStats
+
+        private fun Float.increase(): Float {
+            return this * (1f + (incrementPercent - 1) * (1 - (defensiveStats.hp / (defensiveStats.hpMax * hpThresholdPercent))))
+        }
+
+        private fun setBaseDamage() {
+            val defence = defensiveStats.defence
+
+            if (!defence.equalsDelta(lastDefence)) {
+                val newDefence = if (defensiveStats.hp / defensiveStats.hpMax <= hpThresholdPercent)
+                    baseDefence + defence - lastDefence
+                else
+                    defence
+                baseDefence = newDefence
+                lastDefence = defence
+            }
+        }
+
+        private val lastManStandingCallable = object : StatsChangedCallable() {
+            override fun call(entity: Entity, vararg data: Any?) {
+                if (data[0] == StatsEnum.DEFENCE)
+                    setBaseDamage()
+                if (data[0] != StatsEnum.HP)
+                    return
+                if (defensiveStats.hp / defensiveStats.hpMax <= hpThresholdPercent) {
+                    lastDefence = baseDefence.increase()
+                    defensiveStats.defence = lastDefence
+                }
+                else {
+                    lastDefence = baseDefence
+                    defensiveStats.defence = baseDefence
+                }
+            }
+        }
+
+        override fun onEntityAttached(entity: Entity) {
+            entity.attach(lastManStandingCallable)
+            defensiveStats = entity.get(DefensiveStats::class)!!
+            baseDefence = defensiveStats.defence
+            lastDefence = baseDefence
+        }
+
+        override fun onEntityDetached(entity: Entity) {
+            entity.detach(lastManStandingCallable)
+            defensiveStats.defence = baseDefence
+        }
+    }
+
+    /** ======================================================================================================================================================
+                                                                        Ranged
+     */
+
+    class IncreaseArrowDamage(
+        var incrementPercent: Float
+    ): CharacterTag {
+
+        private fun setStats(entity: Entity, item: Entity, add: Boolean) {
+            if (item.get(EquipmentItem::class)?.isRanged() == true) {
+                val modifier = if (add) 1f else -1f
+                entity.get(OffensiveStats::class)!!.damageMin += item.get(OffensiveStats::class)!!.damageMin * incrementPercent * modifier
+                entity.get(OffensiveStats::class)!!.damageMax += item.get(OffensiveStats::class)!!.damageMax * incrementPercent * modifier
+            }
+        }
+
+        private val itemEquippedCallable = object : OnItemEquipped() {
+            override fun call(entity: Entity, vararg data: Any?) {
+                val item = data[0] as Entity
+                setStats(entity, item, true)
+            }
+        }
+        private val itemUnequippedCallable = object : OnItemUnequipped() {
+            override fun call(entity: Entity, vararg data: Any?) {
+                val item = data[0] as Entity
+                setStats(entity, item, false)
+            }
+        }
+
+        override fun onEntityAttached(entity: Entity) {
+            entity.attach(itemEquippedCallable)
+            entity.attach(itemUnequippedCallable)
+            val weapon = entity.get(Equipment::class)?.getWeapon()
+            if (weapon != null)
+                setStats(entity, weapon, true)
+        }
+
+        override fun onEntityDetached(entity: Entity) {
+            entity.detach(itemEquippedCallable)
+            entity.detach(itemUnequippedCallable)
+            val weapon = entity.get(Equipment::class)?.getWeapon()
+            if (weapon != null)
+                setStats(entity, weapon, false)
         }
     }
 

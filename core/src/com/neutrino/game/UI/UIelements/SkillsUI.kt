@@ -64,6 +64,13 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
         }
     }
 
+    fun refreshSkillOverlays() {
+        (strengthTree.actor as Group).children.forEach { (it as? SkillTreeActor)?.refreshOverlay() }
+        (dexterityTree.actor as Group).children.forEach { (it as? SkillTreeActor)?.refreshOverlay() }
+        (intelligenceTree.actor as Group).children.forEach { (it as? SkillTreeActor)?.refreshOverlay() }
+        (summoningTree.actor as Group).children.forEach { (it as? SkillTreeActor)?.refreshOverlay() }
+    }
+
     var currentTab: Actor = skillTrees
         private set
 
@@ -286,6 +293,9 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
                 skill.requirements?.forEach { if (!it.check(Player)) requirementsMet = false }
                 if (Player.get(Level::class)!!.skillPoints == 0)
                     requirementsMet = false
+                var treePassed = skill.skillTreeRequirements.isEmpty()
+                skill.skillTreeRequirements.forEach { if (Player.get(Skills::class)!!.has(it)) treePassed = true }
+                if (!treePassed) requirementsMet = false
 
                 val unlockButton = FrameButton("Unlock", !requirementsMet, 150f, 52f) {
                     Player.get(Skills::class)!!.addSkill(skill)
@@ -294,6 +304,7 @@ class SkillsUI(private val uiElements: Map<String, TextureAtlas.AtlasRegion>): G
                     refreshTree(treeList[currentTree])
                     detailsPane.actor = null
                     showSkillDetails(skill)
+                    currentlyViewedSkill = null
                 }
                 add(unlockButton).expandX().center()
             }

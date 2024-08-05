@@ -8,6 +8,7 @@ import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.systems.skills.SkillType
 import com.neutrino.game.graphics.utility.ColorUtils
 import com.neutrino.game.util.equalsDelta
+import kotlin.reflect.KClass
 
 class IncreaseTwohandedDamage(caster: Entity, val increment: Float = 0.1f): Skill.PassiveSkill(
     "Increase twohanded damage",
@@ -21,6 +22,8 @@ class IncreaseTwohandedDamage(caster: Entity, val increment: Float = 0.1f): Skil
     override fun getPrintableInfo(other: Skill?): List<Pair<String, Any?>> = listOf(
         ColorUtils.getStatColorTextra("Damage") + "Additional damage %" to (increment * 100).toInt()
     )
+
+    override val skillTreeRequirements: List<KClass<out PassiveSkill>> = listOf(IncreaseMeleeDamage::class)
 
     override fun useStart() {
         val previousIncrement = caster.get(CharacterTags::class)?.getTag(CharacterTag.IncreaseTwohandedDamage::class)?.incrementPercent

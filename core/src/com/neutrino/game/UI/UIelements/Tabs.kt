@@ -127,6 +127,7 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
 
         if (activeTab.name == "SkillsOpen" && hoveredTab!!.name == "OptionsSkillsClosed") {
             uiStage.skills.changeTab()
+            uiStage.skills.refreshSkillOverlays()
             activeTab = currentOptionsOpen
             activeTab.isVisible = true
             return
@@ -134,6 +135,7 @@ class Tabs(private val uiStage: UiStage, private val uiElements: Map<String, Tex
 
         if (activeTab.name == "OptionsSkillsOpen") {
             uiStage.skills.changeTab()
+            uiStage.skills.refreshSkillOverlays()
             if (hoveredTab!!.name == "OptionsSkillsClosed") {
                 activeTab.isVisible = false
                 activeTab = openTabsGroup.children.find { it.name == "SkillsOpen" }!!

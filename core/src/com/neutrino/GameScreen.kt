@@ -38,8 +38,8 @@ import kotlin.math.absoluteValue
 class GameScreen: KtxScreen {
 
     /** Viewport for the game */
-    private val extendViewport: ExtendViewport = ExtendViewport(1280f, 768f)
-    private val gameStage = GameStage(extendViewport, levelDrawer)
+    private val extendViewport: ExtendViewport = ExtendViewport(1920f, 1080f)
+    private val gameStage = GameStage(extendViewport)
 
     /** Viewport for the HUD */
     private val hudViewport = ScreenViewport()
@@ -90,6 +90,10 @@ class GameScreen: KtxScreen {
         registerPlayerObservers()
         // General observers
         registerObservers()
+
+        Player.get(Equipment::class)!!.equipItem(Items.new("Broken sword"))
+        uiStage.equipment.refreshEquipment(Equipment.EquipmentType.RHAND)
+        uiStage.equipment.refreshEquipment(Equipment.EquipmentType.LHAND)
 
 //        val textureSizeLocation = shaderProgram.getUniformLocation("u_textureSize")
 //        val outlineColorLocation = shaderProgram.getUniformLocation("u_outlineColor")

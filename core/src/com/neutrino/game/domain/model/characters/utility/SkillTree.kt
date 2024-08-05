@@ -4,19 +4,15 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.systems.skills.SkillType
-import com.neutrino.game.entities.systems.skills.passive.Berserk
-import com.neutrino.game.entities.systems.skills.passive.IncreaseMeleeDamage
-import com.neutrino.game.entities.systems.skills.passive.IncreaseOnehandedDamage
-import com.neutrino.game.entities.systems.skills.passive.IncreaseTwohandedDamage
+import com.neutrino.game.entities.systems.skills.passive.*
 import com.neutrino.game.util.round
 
 enum class SkillTree(val skills: List<List<Skill.PassiveSkill>>) {
     STRENGTH(listOf(
-        listOf(Pad(2.5f), IncreaseMeleeDamage(Player), Pad(2.5f)),
-        listOf(Pad(1f), IncreaseOnehandedDamage(Player), Pad(2f), Berserk(Player), Pad(0.33f)),
-        listOf(Pad(0.33f), IncreaseTwohandedDamage(Player), Pad(0.33f), IncreaseTwohandedDamage(Player), Pad(0.66f), IncreaseTwohandedDamage(Player), Pad(0.33f), IncreaseTwohandedDamage(Player), Pad(0.33f)),
-        listOf(Pad(0.33f), IncreaseTwohandedDamage(Player), Pad(0.33f), IncreaseTwohandedDamage(Player), Pad(0.66f), IncreaseTwohandedDamage(Player), Pad(0.33f), IncreaseTwohandedDamage(Player), Pad(0.33f)),
-        listOf(IncreaseTwohandedDamage(Player), IncreaseTwohandedDamage(Player), IncreaseTwohandedDamage(Player), Pad(1f), IncreaseTwohandedDamage(Player))
+        listOf(Pad(1f), IncreaseMeleeDamage(Player), Pad(2f), ActiveShield(Player), Pad(1f)),
+        listOf(Pad(0.33f), IncreaseOnehandedDamage(Player), Pad(0.33f), IncreaseTwohandedDamage(Player), Pad(0.33f), Pad(1f), IncreaseShieldDefence(Player), Pad(1f)),
+        listOf(Pad(1f), Berserk(Player), Pad(2f), LastManStanding(Player), Pad(1f)),
+        listOf(Pad(3f), Pad(0.33f), Thorns(Player), Pad(0.33f), Block(Player), Pad(0.33f))
     )),
 
     DEXTERITY(listOf(

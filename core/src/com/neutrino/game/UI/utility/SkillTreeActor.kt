@@ -4,11 +4,13 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.neutrino.game.domain.model.characters.Player
+import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.characters.attributes.Skills
 import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.systems.skills.SkillType
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.util.Constants
+import ktx.actors.alpha
 
 
 class SkillTreeActor(val skill: Skill.PassiveSkill): Group() {
@@ -22,8 +24,29 @@ class SkillTreeActor(val skill: Skill.PassiveSkill): Group() {
         name = skill.name
         width = 84f
         height = 84f
-        if (Player.getPassive(skill::class) == null)
+        refreshOverlay()
+    }
+
+    fun refreshOverlay() {
+        removeActor(darkenOverlay)
+        darkenOverlay.alpha = 1f
+        if (Player.get(Skills::class)!!.has(skill::class))
+            return
+
+        if (checkRequirements()) {
+            darkenOverlay.alpha = 0.5f
             addActor(darkenOverlay)
+        }
+        else
+            addActor(darkenOverlay)
+    }
+
+    private fun checkRequirements(): Boolean {
+        var passed = true
+        skill.requirements?.forEach { if (!it.check(Player)) passed = false }
+        var treePassed = skill.skillTreeRequirements.isEmpty()
+        skill.skillTreeRequirements.forEach { if (Player.get(Skills::class)!!.has(it)) treePassed = true }
+        return passed && treePassed
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {

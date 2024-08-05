@@ -131,4 +131,13 @@ sealed class Skill: PrintableInfo<Skill> {
         abstract fun useStart()
         abstract fun useStop()
     }
+
+    abstract class ActivatedPassiveSkill(
+        override val name: String,
+        override val description: String,
+        override val skillType: SkillType,
+        override val textureName: String,
+        override val caster: Entity,
+        vararg requirements: Requirements
+    ): PassiveSkill(name, description, skillType, textureName, caster, *requirements)
 }

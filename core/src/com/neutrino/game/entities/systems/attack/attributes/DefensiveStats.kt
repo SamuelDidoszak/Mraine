@@ -8,6 +8,7 @@ import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.CharacterTags
 import com.neutrino.game.entities.characters.attributes.EnemyAi
+import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.entities.characters.attributes.util.CharacterTag.IncreaseStealthDamage
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.callables.*
@@ -75,9 +76,15 @@ class DefensiveStats(
 //        if (!this.isAlive())
 //            return
         attacker.entity.call(AttackedBeforeCallable::class, entity)
+        if (Random.nextFloat() < (entity.get(CharacterTags::class)?.getTag(CharacterTag.Block::class)?.chance ?: 0f)) {
+            Visuals.showText(entity, "[BOLD][#1a8a99]{JOLT}Block")
+            entity.call(GotAttackedAfterCallable::class, attacker.entity, null)
+            attacker.entity.call(AttackedAfterCallable::class, entity, null)
+            return
+        }
 
-        if (Random.nextFloat() in 0f .. 1 - attacker.accuracy + evasion) {
-            println("Evaded the attack")
+        if (Random.nextFloat() < 1 - attacker.accuracy + evasion) {
+            Visuals.showText(entity, "[BOLD]{GRADIENT=2c3a38ff;cb331eff;0.3;0.0}{JOLT}Evaded")
             entity.call(GotAttackedAfterCallable::class, attacker.entity, null)
             attacker.entity.call(AttackedAfterCallable::class, entity, null)
             return
@@ -101,13 +108,16 @@ class DefensiveStats(
 
         var damageModifier = 1f
         if (attacker.entity is Character && entity.get(EnemyAi::class)?.sensedEnemyArray?.contains(attacker.entity) == false) {
+            println("unSensei ${attacker.entity}")
+            println("Senseid")
+            entity.get(EnemyAi::class)?.sensedEnemyArray?.forEach { print("\t$it\n")}
             Visuals.showText(entity, "{GRADIENT=2c3a38ff;cb331eff;0.3;0.0}{JOLT}Stealth hit!")
             val multiplier = attacker.entity.get(CharacterTags::class)?.getTag(IncreaseStealthDamage::class)?.incrementPercent ?: 1f
             if (!(attacker.criticalDamage * multiplier).equalsDelta(0f))
                 damageModifier *= attacker.criticalDamage * multiplier
         }
         else if (Random.nextFloat() < attacker.criticalChance) {
-            Visuals.showText(entity, "{HANG=1.0;0.2}{SQUASH}{GRADIENT=ffffffff;d5b431ff;0.27;0.0}Critical hit!")
+            Visuals.showText(entity, "[BOLD]{HANG=1.0;0.2}{SQUASH}{GRADIENT=ffffffff;d5b431ff;0.27;0.0}Critical hit!")
             if (!criticalDamage.equalsDelta(0f))
                 damageModifier *= attacker.criticalDamage
         }

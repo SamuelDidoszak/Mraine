@@ -2,7 +2,6 @@ package com.neutrino.game.entities.systems.skills.passive
 
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.CharacterTags
-import com.neutrino.game.entities.characters.attributes.Skills
 import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.entities.systems.requirements.Requirements
 import com.neutrino.game.entities.systems.skills.Skill
@@ -17,10 +16,7 @@ class Berserk(caster: Entity): Skill.PassiveSkill(
     SkillType.STRENGTH,
     "skillBerserk",
     caster,
-    Requirements.Stats(strength = 5f),
-    Requirements.Custom({entity: Entity ->
-        entity.get(Skills::class)?.has(IncreaseMeleeDamage::class) == true
-    }, "Learned IncreaseMeleeDamage", "")
+    Requirements.Stats(strength = 5f)
 ) {
 
     private var hpPercentThreshold: Float = 0.5f
@@ -33,7 +29,7 @@ class Berserk(caster: Entity): Skill.PassiveSkill(
         ColorUtils.getStatColorTextra("Hp") + "Required hp %" to (hpPercentThreshold * 100).toInt()
     )
 
-    override val skillTreeRequirements: List<KClass<out PassiveSkill>> = listOf(IncreaseMeleeDamage::class)
+    override val skillTreeRequirements: List<KClass<out PassiveSkill>> = listOf(IncreaseOnehandedDamage::class, IncreaseTwohandedDamage::class)
 
     override fun useStart() {
         val previousIncrement = caster.get(CharacterTags::class)!!.getTag(CharacterTag.Berserk::class)?.incrementPercent

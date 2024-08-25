@@ -7,6 +7,7 @@ import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.ActionBlock
 import com.neutrino.game.entities.characters.attributes.Ai
 import com.neutrino.game.entities.characters.attributes.PlayerAi
+import com.neutrino.game.entities.characters.attributes.Skills
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map_entities.util.Interactable
@@ -168,7 +169,8 @@ class Gameplay(
                 Player.getSuper(Ai::class)!!.action = Action.NOTHING
             else {
                 // TODO add defend action
-                Player.getSuper(Ai::class)!!.action = Action.WAIT
+                val waitSkill = Player.get(Skills::class)!!.waitSkill
+                Player.getSuper(Ai::class)!!.action = Action.WAITSKILL(waitSkill)
             }
         }
         // Attack the enemy

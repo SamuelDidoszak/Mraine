@@ -13,5 +13,6 @@ sealed class Action {
     data class SKILL(val skill: Skill, val data: Any?): Action()
     object EVENT: Action()
     object WAIT: Action()
+    data class WAITSKILL(val skill: Skill.ActivatedPassiveSkill? = null): Action()
     object NOTHING: Action()
 }

@@ -22,7 +22,9 @@ import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
+import com.neutrino.game.entities.systems.events.Event
 import com.neutrino.game.entities.systems.events.Events
+import com.neutrino.game.entities.systems.events.TimedEvent
 import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.map.chunk.CharacterArray
@@ -202,6 +204,21 @@ object Turn {
                     is Action.WAIT -> {
                         println("passing turn")
                     }
+
+                    is Action.WAITSKILL -> {
+                        if (action.skill != null) {
+                            val useStopEvent = object : Event {
+                                override fun apply() {
+                                    action.skill.useStart()
+                                }
+
+                                override fun stop() {
+                                    action.skill.useStop()
+                                }
+                            }
+                            Events.addEvent(TimedEvent(useStopEvent, 1.0, 1))
+                        }
+                    }
                     is Action.EVENT -> {
                         println("caused an event")
                     }
@@ -253,6 +270,9 @@ object Turn {
                     }
                     is Action.WAIT -> {
 //                        println(character.name + " is passing turn")
+                    }
+                    is Action.WAITSKILL -> {
+
                     }
                     is Action.NOTHING -> {
                         println(character.name + " did nothing")

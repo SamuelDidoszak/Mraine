@@ -11,8 +11,7 @@ class ItemInitializer(
     val textureName: String,
     val description: String = "",
     val goldValue: Int,
-    val maxStack: Int,
-    val tier: Int
+    val maxStack: Int
 ): Attribute() {
 
     override fun onEntityAttached() {
@@ -23,7 +22,6 @@ class ItemInitializer(
             entity.addAttribute(Description(description))
         entity.addAttribute(GoldValue(goldValue))
         entity.addAttribute(Amount(maxStack = maxStack))
-        entity.addAttribute(ItemTier(tier))
         entity.addAttribute(PickUp())
         entity.removeAttribute(ItemInitializer::class)
     }

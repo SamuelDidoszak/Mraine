@@ -14,6 +14,7 @@ import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.Texture
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.random.Random
 import kotlin.reflect.KClass
 
 fun Double.equalsDelta(other: Double) = abs(this - other) <= 0.005
@@ -65,6 +66,9 @@ infix fun <T> ArrayList<T>.add(elements: List<T>?): T? {
     addAll(elements)
     return elements.first()
 }
+
+
+fun Random.nextHundred(): Int = (nextFloat() * 100).toInt()
 
 
 fun getChangeListener(method: (event: ChangeListener.ChangeEvent?, actor: Actor?) -> Unit): ChangeListener {

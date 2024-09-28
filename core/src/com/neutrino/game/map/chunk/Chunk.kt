@@ -93,6 +93,8 @@ class Chunk(
             entity.addAttribute(DrawPosition())
             entity.get(Position::class)!!.setPosition(entity.x, entity.y)
             entity.get(Texture::class)?.setTextures(entity.get(Position::class)!!, Random)
+            if (entity has ChangesImpassable::class)
+                ChunkManager.characterMethods.addImpassable(entity.get(Position::class)!!)
         }
     }
 

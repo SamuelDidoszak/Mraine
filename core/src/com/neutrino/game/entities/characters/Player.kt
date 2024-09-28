@@ -12,7 +12,9 @@ import com.neutrino.game.entities.systems.attack.attributes.Stats
 import com.neutrino.game.entities.systems.attack.callables.LifestealCallable
 import com.neutrino.game.entities.systems.attack.callables.StatsChangedCallable
 import com.neutrino.game.entities.systems.attack.util.StatsEnum
-import com.neutrino.game.entities.systems.skills.*
+import com.neutrino.game.entities.systems.skills.SkillTeleport
+import com.neutrino.game.entities.systems.skills.SkillTeleportToStairs
+import com.neutrino.game.entities.systems.skills.SkillTeleportToStairsDown
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.util.compareDelta
 
@@ -68,15 +70,7 @@ private fun attachCallables(entity: Entity) {
 private fun addSkills(entity: Entity) {
     val skillList = entity.get(Skills::class)!!
 
-    skillList.addSkill(SkillBleed(entity))
-    skillList.addSkill(SkillCripplingSpin(entity))
     skillList.addSkill(SkillTeleport(entity))
     skillList.addSkill(SkillTeleportToStairs(entity))
     skillList.addSkill(SkillTeleportToStairsDown(entity))
-    skillList.addSkill(SkillMeteorite(entity))
-    skillList.addSkill(SkillTeleportBackstab(entity))
-    skillList.addSkill(SkillManaDrain(entity))
-    skillList.addSkill(SkillShieldBash(entity))
-    skillList.addSkill(SkillTwoshot(entity))
-    skillList.addSkill(SkillGutAttack(entity))
 }

@@ -1,16 +1,19 @@
 package com.neutrino.game.entities
 
 import com.neutrino.game.entities.items.Item
+import com.neutrino.game.entities.items.attributes.ItemTier
 
 object Items {
     private val itemIds: HashMap<String, Int> = HashMap()
     private val itemNames: ArrayList<String> = ArrayList()
     private val itemFactory: MutableList<() -> Entity> = mutableListOf()
+    private val itemTiers: ArrayList<ItemTier> = ArrayList()
 
-    fun add(name: String, item: () -> Entity) {
+    fun add(name: String, tier: Int, difficulty: Int, item: () -> Entity) {
         itemIds[name] = itemFactory.size
         itemNames.add(name)
         itemFactory.add(item)
+        itemTiers.add(ItemTier(tier, difficulty))
     }
 
     fun new(name: String): Item {
@@ -47,6 +50,15 @@ object Items {
             return itemNames[id]
         } catch (_: Exception) {
             println("Item with id: $id ${if (id < itemNames.size) "name: ${itemNames[id]} " else ""}does not exist!")
+        }
+        throw Exception()
+    }
+
+    fun getTier(name: String): ItemTier {
+        try {
+            return itemTiers[itemIds[name]!!]
+        } catch (_: Exception) {
+            Exception("Item with name: $name does not exist!").toString()
         }
         throw Exception()
     }

@@ -3,7 +3,6 @@ package com.neutrino.game.map.generation
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.map.generation.util.GenerationParams
-import com.neutrino.game.utility.Probability
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -38,7 +37,9 @@ class GenerateLevel() {
     private fun getParams(chunk: Chunk): GenerationParams {
         return GenerationParams(
             MapTagInterpretation(
-                tagGenerators.map { it.invoke() }.plus(chunk.tagList)
+//                tagGenerators.map { it.invoke() }.plus(chunk.tagList),
+                listOf(getDefaultMapTag()),
+                chunk.randomGenerator
             ),
             chunk.randomGenerator,
             chunk,
@@ -51,13 +52,11 @@ class GenerateLevel() {
             listOf(Tilesets.get("Dungeon")),
             listOf(Generators.get("Dungeon")),
             listOf("Mouse", "Slime"),
-            listOf(40f to "Gold", 50f to "Dagger", 3f to "Small healing potion", 50f to "Broken sword", 50f to "Ripped pants", 50f to "Linen shirt", 50f to "Basic fire wand").toProbabilityList(),
-            TagParams(100f),
+            ItemLists.get("allItems"),
+            TagParams(1f),
             true
         )
     }
-
-    private fun List<Pair<Float, String>>.toProbabilityList() = map { Probability(it) }
 
     private fun getDifficultyFromDistance(xIndex: Int, yIndex: Int): Int {
         val distance = max(abs(xIndex), abs(yIndex))

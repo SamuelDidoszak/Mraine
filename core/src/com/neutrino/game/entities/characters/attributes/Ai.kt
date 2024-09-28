@@ -1,11 +1,11 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map.attributes.Turn
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
+import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.x
@@ -51,6 +51,7 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
                     else
                         1.0
                 }
+                is Action.WAITSKILL -> 1.0
                 is Action.NOTHING -> 0.0
                 is Action.ITEM -> 1.0
                 is Action.EVENT -> 0.0

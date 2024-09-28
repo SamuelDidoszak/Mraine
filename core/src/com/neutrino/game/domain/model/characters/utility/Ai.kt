@@ -35,6 +35,7 @@ open class Ai (private val character: Character) {
                 is Action.SKILL -> 1.0
                 is Action.INTERACTION -> thisAction.interaction.turnCost
                 is Action.WAIT -> character.movementSpeed
+                is Action.WAITSKILL -> 1.0
                 is Action.NOTHING -> 0.0
                 is Action.ITEM -> 1.0
                 is Action.EVENT -> 0.0

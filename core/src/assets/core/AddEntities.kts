@@ -12,8 +12,10 @@ import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.shared.attributes.StitchedSprite
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.graphics.textures.Textures
+import com.neutrino.game.map.generation.util.ItemAdder
 import com.neutrino.game.map.generation.util.NameOrIdentity
 import com.neutrino.game.util.add
+import com.neutrino.game.util.nextHundred
 
 Entities.add("DungeonFloorClean") {
 	Entity()
@@ -129,7 +131,12 @@ Entities.add("CandleWhiteMultiple") {
 Entities.add("ClayPot") {
 	Entity()
 		.addAttribute(Container(
-			Destructable(1f)
+			Destructable(1f),
+			ItemAdder { items, itemPool, rng, params ->
+				if (rng.nextHundred() < 40)
+					items.add(Items.new("Gold"))
+				return@ItemAdder true
+			}
 		))
 		.addAttribute(MapParams(false, false))
 		.addAttribute(Texture { position, random, textures -> run {
@@ -142,7 +149,12 @@ Entities.add("ClayPot") {
 Entities.add("ClayPotMultiple") {
 	Entity()
 		.addAttribute(Container(
-			Destructable(5f)
+			Destructable(5f),
+			ItemAdder { items, itemPool, rng, params ->
+				if (rng.nextHundred() < 60)
+					items.add(Items.new("Gold"))
+				return@ItemAdder true
+			}
 		))
 		.addAttribute(MapParams(false, false))
 		.addAttribute(Texture { position, random, textures -> run {
@@ -178,36 +190,63 @@ Entities.add("WoodenTorch") {
 Entities.add("Barrel") {
 	Entity()
 		.addAttribute(Container(
-			Destructable(10f)
+			Destructable(10f),
+			ItemAdder { items, itemPool, rng, params ->
+				when (rng.nextHundred()) {
+					in 0 until 40 -> items.add(Items.new("Gold"))
+					in 40 until 60 -> items.add(itemPool.getRandomItem(1, rng, params))
+				}
+				return@ItemAdder true
+			}
 		))
 		.addAttribute(MapParams(false, false))
 		.addAttribute(Texture { position, random, textures -> run {
 			textures.add(Textures.get("barrel"))
 		}})
 }
-Entities.add("WoodenCrateBigger") {
-	Entity()
-		.addAttribute(Container(
-			Destructable(15f)
-		))
-		.addAttribute(MapParams(false, false))
-		.addAttribute(Texture { position, random, textures -> run {
-			textures.add(Textures.get("crateBiggerDark"))
-		}})
-}
 Entities.add("WoodenCrateSmall") {
 	Entity()
 		.addAttribute(Container(
-			Destructable(7f)
+			Destructable(7f),
+			ItemAdder { items, itemPool, rng, params ->
+				when (rng.nextHundred()) {
+					in 0 until 60 -> items.add(Items.new("Gold"))
+					in 60 until 80 -> items.add(itemPool.getRandomItem(1, rng, params))
+				}
+				return@ItemAdder true
+			}
 		))
 		.addAttribute(MapParams(false, false))
 		.addAttribute(Texture { position, random, textures -> run {
 			textures.add(Textures.get("crateSmall"))
 		}})
 }
+Entities.add("WoodenCrateBigger") {
+	Entity()
+		.addAttribute(Container(
+			Destructable(15f),
+			ItemAdder(passes = 2) { items, itemPool, rng, params ->
+				when (rng.nextHundred()) {
+					in 0 until 60 -> items.add(Items.new("Gold"))
+					in 60 until 80 -> items.add(itemPool.getRandomItem(1, rng, params))
+				}
+				return@ItemAdder true
+			}
+		))
+		.addAttribute(MapParams(false, false))
+		.addAttribute(Texture { position, random, textures -> run {
+			textures.add(Textures.get("crateBiggerDark"))
+		}})
+}
 Entities.add("WoodenChestMid") {
 	Entity()
-		.addAttribute(Container(null, initItems = listOf(Items.new("Gold").setAmount(10))))
+		.addAttribute(Container(null, ItemAdder(value = 50f) { items, itemPool, rng, params ->
+			when (rng.nextHundred()) {
+				in 0 until 50 -> items.add(itemPool.getRandomItem(2, rng, params))
+				in 50 until 100 -> items.add(itemPool.getRandomItem(3, rng, params))
+			}
+			return@ItemAdder true
+		}))
 		.addAttribute(Chest())
 		.addAttribute(MapParams(false, false))
 		.addAttribute(ChangesImpassable())

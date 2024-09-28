@@ -8,8 +8,6 @@ import com.neutrino.game.entities.util.Equality
 data class EquipmentItem(val type: EquipmentType): Attribute(), Equality<EquipmentItem>, Cloneable<EquipmentItem> {
 
     override fun onEntityAttached() {
-        if (entity.hasNot(ItemTier::class))
-            entity.addAttribute(ItemTier(3))
         if (entity.hasNot(Amount::class))
             entity.addAttribute(Amount(maxStack = 1))
     }

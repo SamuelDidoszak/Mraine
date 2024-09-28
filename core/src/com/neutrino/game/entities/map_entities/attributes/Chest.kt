@@ -18,7 +18,7 @@ class Chest: Attribute(), Interactable {
         if (entity has Inventory::class) {
             ChunkManager.addEntityAt(
                 entity.get(Position::class)!!,
-                entity.get(Inventory::class)!!.getAll { true }!!)
+                entity.get(Inventory::class)!!.getAll { true } ?: listOf())
         }
         entity.call(InteractedCallable::class, this)
     }

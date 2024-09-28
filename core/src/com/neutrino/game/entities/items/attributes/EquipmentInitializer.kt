@@ -12,8 +12,7 @@ class EquipmentInitializer(
     val description: String = "",
     val goldValue: Int,
     val eqType: EquipmentType,
-    val handheldType: HandheldEquipmentType? = null,
-    val tier: Int = 3
+    val handheldType: HandheldEquipmentType? = null
 
 ): Attribute() {
 
@@ -29,7 +28,6 @@ class EquipmentInitializer(
             entity.addAttribute(HandheldEquipment(handheldType, eqType))
         else
             entity.addAttribute(EquipmentItem(eqType))
-        entity.addAttribute(ItemTier(tier))
         entity.addAttribute(PickUp())
         entity.removeAttribute(EquipmentInitializer::class)
     }

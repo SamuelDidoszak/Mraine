@@ -1,12 +1,12 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.util.InventoryElement
 import com.neutrino.game.entities.items.attributes.Amount
 import com.neutrino.game.entities.items.attributes.GoldValue
 import com.neutrino.game.entities.map.attributes.Position
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.util.lessThanDelta
 
 class Inventory(
@@ -74,6 +74,10 @@ class Inventory(
         return items.removeAll { it.item == item }
     }
 
+    fun add(items: List<Entity>) {
+        items.forEach { add(it) }
+    }
+
     fun add(inventoryElement: InventoryElement): Boolean {
         if (items.size == maxSize)
             return false
@@ -112,11 +116,13 @@ class Inventory(
             }
             items.add(i, inventoryElement)
         }
-        item.addAttribute(Position(Int.MIN_VALUE, Int.MIN_VALUE, entity.get(Position::class)!!.chunk))
+        // A hack to change item texture off screen.
+        if (entity has Position::class)
+            item.addAttribute(Position(Int.MAX_VALUE, Int.MAX_VALUE, entity.get(Position::class)!!.chunk))
         return true
     }
 
-    /** @return true if item was consumed. Falsed if item should be added as a separate entity */
+    /** @return true if item was consumed. False if item should be added as a separate entity */
     private fun addToStack(item: Entity): Boolean {
         val amount = item.get(Amount::class) ?: return false
         for (stackableItem in items) {

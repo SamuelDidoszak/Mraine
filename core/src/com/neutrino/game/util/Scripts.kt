@@ -14,6 +14,7 @@ class Scripts {
         scriptEngine.evaluate(Gdx.files.internal("core/AddTilesets.kts"))
         scriptEngine.evaluate(Gdx.files.internal("core/AddGenerators.kts"))
         scriptEngine.evaluate(Gdx.files.internal("core/AddGenerationRequirements.kts"))
+        scriptEngine.evaluate(Gdx.files.internal("core/AddItemLists.kts"))
     }
 
     private fun getImportList(): List<String> {

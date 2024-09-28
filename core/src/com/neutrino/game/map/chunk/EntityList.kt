@@ -23,6 +23,15 @@ class EntityList(
         onEntityChanged.invoke(element, true)
     }
 
+    override fun addAll(elements: Collection<Entity>): Boolean {
+        if (!super.addAll(elements))
+            return false
+        elements.forEach {
+            onEntityChanged.invoke(it, true)
+        }
+        return true
+    }
+
     override fun remove(element: Entity): Boolean {
         val oldElement = super.remove(element)
         onEntityChanged.invoke(element, false)

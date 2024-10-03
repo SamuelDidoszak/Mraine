@@ -25,7 +25,7 @@ class SkillBook(
         entity.addAttribute(PickUp())
     }
 
-    fun learn(entity: Entity) {
+    fun teach(entity: Entity) {
         if (entity hasNot Skills::class)
             entity.addAttribute(Skills())
         entity.get(Skills::class)!!.addSkill(skill)

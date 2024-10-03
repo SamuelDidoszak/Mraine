@@ -488,10 +488,8 @@ class InventoryManager(private val uiStage: UiStage) {
             // Dropping the item
             if (clickedItem != null) {
                 uiStage.itemDropList.add((clickedItem as EqActor).entity)
-                // TODO change the remove implementation to this after adding the sorting and user defined positions
-//                originalEq!!.itemList.removeAt(originalContainer!!.name.toInt())
-                // TODO BUG after destacking and dropping an item, it drops without a texture. After picking it up and dropping, lower line throws an exception
-                originalInventory!!.removeItem(originalInventory!!.getItem((clickedItem as EqActor).entity)!!)
+                if (originalInventory!!.getItem((clickedItem as EqActor).entity) != null)
+                    originalInventory!!.removeItem(originalInventory!!.getItem((clickedItem as EqActor).entity)!!)
 
                 clickedItem!!.addAction(Actions.scaleTo(0f, 0f, 0.35f))
                 clickedItem!!.addAction(Actions.moveBy(32f * uiStage.currentScale, 32f * uiStage.currentScale, 0.35f))

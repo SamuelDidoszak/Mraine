@@ -18,7 +18,9 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.characters.attributes.Inventory
+import com.neutrino.game.entities.characters.attributes.Skills
 import com.neutrino.game.entities.items.attributes.EquipmentItem
+import com.neutrino.game.entities.items.attributes.SkillBook
 import com.neutrino.game.entities.items.attributes.usable.Use
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
 import com.neutrino.game.entities.systems.events.attributes.EventList
@@ -26,6 +28,7 @@ import com.neutrino.game.entities.systems.events.callables.AddCooldown
 import com.neutrino.game.entities.systems.requirements.Requirements
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
+import kotlin.reflect.full.primaryConstructor
 
 class ItemContextPopup(
     val usedItemList:  ArrayDeque<Entity>,
@@ -120,6 +123,55 @@ class ItemContextPopup(
                 add(useButton).fillX()
 //                addUseOn(item, this)
             }
+            if (item has SkillBook::class) {
+                val learnButton = FrameButton("[@Cozette]Learn") {}
+                    learnButton.addListener(object: ClickListener() {
+                        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                            if (event?.button != Input.Buttons.LEFT)
+                                return
+                            super.clicked(event, x, y)
+
+                            if (Player.get(Skills::class)?.has(item.get(SkillBook::class)!!.skill) == true) {
+                                val skillLearntLabel = FrameButton("[@Cozette][*]Skill is already learnt") {}
+                                skillLearntLabel.name = "skillLearnt"
+                                parent.addActor(skillLearntLabel)
+                                val coords = localToParentCoordinates(Vector2(x, y))
+                                skillLearntLabel.setPosition(coords.x, coords.y + 8f)
+                                skillLearntLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                                skillLearntLabel.addAction(
+                                    Actions.sequence(
+                                        Actions.fadeOut(1.25f),
+                                        Actions.removeActor()))
+                                return
+                            }
+
+                            var requirementsMet = true
+                            val skill = (item.get(SkillBook::class))!!.skill.primaryConstructor!!.call(Player)
+                            skill.requirements?.forEach { if (!it.check(Player)) requirementsMet = false }
+                            if (!requirementsMet) {
+                                val requirementLabel = FrameButton("[@Cozette][*]Requirements are not met!") {}
+                                requirementLabel.name = "requirements"
+                                parent.addActor(requirementLabel)
+                                val coords = localToParentCoordinates(Vector2(x, y))
+                                requirementLabel.setPosition(coords.x, coords.y + 8f)
+                                requirementLabel.addAction(Actions.moveBy(0f, 36f, 1f))
+                                requirementLabel.addAction(
+                                    Actions.sequence(
+                                        Actions.fadeOut(1.25f),
+                                        Actions.removeActor()))
+                                return
+                            }
+
+                            item.get(SkillBook::class)!!.teach(Player)
+                            Player.get(Inventory::class)!!.removeItem(item)
+                            GlobalData.notifyObservers(GlobalDataType.SKILL)
+                            customUseMethod.invoke()
+                        }
+                    })
+
+                    add(learnButton).fillX()
+            }
+
 
             pack()
         }

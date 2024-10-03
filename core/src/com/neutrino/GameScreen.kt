@@ -18,9 +18,7 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.Items
 import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.Ai
-import com.neutrino.game.entities.characters.attributes.CharacterTags
 import com.neutrino.game.entities.characters.attributes.Equipment
-import com.neutrino.game.entities.characters.attributes.Inventory
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.systems.util.visuals.DamageNumber
 import com.neutrino.game.gameplay.main.Gameplay
@@ -247,6 +245,16 @@ class GameScreen: KtxScreen {
                     uiStage.inventory.refreshInventory()
                     hudStage.refreshHotBar()
                 }
+                return true
+            }
+        })
+
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.SKILL
+            override fun update(data: Any?): Boolean {
+                uiStage.inventory.refreshInventory()
+                hudStage.refreshHotBar()
+                uiStage.skills.refreshSkillTable()
                 return true
             }
         })

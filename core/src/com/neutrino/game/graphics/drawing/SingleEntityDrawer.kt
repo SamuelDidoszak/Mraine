@@ -115,7 +115,6 @@ class SingleEntityDrawer(entity: Entity,
         }
         for (layer in drawableLayers) {
             for (layeredTexture in layer.value) {
-//                layeredTexture.draw(batch!!, x, y, parentAlpha)
                 val texture = (layeredTexture as DrawableTexture).texture
                 batch!!.draw(texture.texture,
                     if (!texture.mirrorX) x + texture.x * scale + offsetX
@@ -125,14 +124,18 @@ class SingleEntityDrawer(entity: Entity,
                     layeredTexture.texture.height() * scale)
 
                 layeredTexture.getShaders()?.forEach {
-                    it.applyToBatch(batch)
-                    batch.draw(texture.texture,
-                        if (!texture.mirrorX) x + texture.x * scale + offsetX
-                        else x + texture.x * scale + offsetX + layeredTexture.texture.width() * scale,
-                        y + texture.y * scale + offsetY,
-                        layeredTexture.texture.width() * if (!texture.mirrorX) scale else -1 * scale,
-                        layeredTexture.texture.height() * scale)
-                    it.cleanUp(batch)
+                    if (it !is OutlineShader) {
+                        it.applyToBatch(batch)
+                        batch.draw(
+                            texture.texture,
+                            if (!texture.mirrorX) x + texture.x * scale + offsetX
+                            else x + texture.x * scale + offsetX + layeredTexture.texture.width() * scale,
+                            y + texture.y * scale + offsetY,
+                            layeredTexture.texture.width() * if (!texture.mirrorX) scale else -1 * scale,
+                            layeredTexture.texture.height() * scale
+                        )
+                        it.cleanUp(batch)
+                    }
                 }
             }
         }

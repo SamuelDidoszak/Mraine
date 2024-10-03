@@ -67,6 +67,7 @@ enum class GlobalDataType {
     PLAYERMOVED,
     PICKUP,
     EQUIPMENT,
+    SKILL,
     CHANGELEVEL,
     PLAYERSTAT,
     PLAYERINVENTORYSIZE,

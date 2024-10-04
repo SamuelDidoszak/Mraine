@@ -11,9 +11,11 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.attributes.Randomization
 import com.neutrino.game.entities.shared.attributes.RandomizationSimple
 import com.neutrino.game.entities.shared.attributes.Texture
+import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.OffensiveStats
 import com.neutrino.game.entities.systems.attack.attributes.Projectile
+import com.neutrino.game.entities.systems.attack.util.StatsEnum
 import com.neutrino.game.entities.systems.events.CharacterEvents
 import com.neutrino.game.entities.systems.events.Cooldown
 import com.neutrino.game.entities.systems.events.TimedEvent
@@ -86,16 +88,17 @@ Items.add("Basic fire wand", 3, 2) {
     Item()
         .addAttribute(EquipmentInitializer(
             textureName = "basicFireWand",
-            goldValue = 30,
+            goldValue = 45,
             eqType = EquipmentType.RHAND,
             handheldType = HandheldEquipmentType.WAND
         ))
         .addAttribute(OffensiveStats(
             fireDamageMin = 2f,
             fireDamageMax = 4f,
-            range = 7
+            range = 5,
+            rangeType = RangeType.CIRCLE
         ))
-        .addAttribute(Projectile(Projectile.ProjectileType.FIREPROJECTILE))
+        .addAttribute(Wand(StatsEnum.FIRE_DAMAGE, Projectile.ProjectileType.FIREPROJECTILE))
         .addAttribute(Requirements.Stats(intelligence = 3f))
 }
 Items.add("Ripped pants", 3, 2) {

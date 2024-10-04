@@ -18,8 +18,10 @@ class DamageNumber: DrawableText("") {
         text.setText("[$color][%150][*]${damage.toInt()}" +
                 if (damageDecimal != 0) ".$damageDecimal" else ""
         )
-        xOffset = Random.nextFloat() * entity.get(Texture::class)!!.getWidthScaled() * 0.8f
-        yOffset = Random.nextFloat() * entity.get(Texture::class)!!.getHeightScaled() / 3 + entity.get(Texture::class)!!.getHeightScaled() / 4
+        val width = entity.get(Texture::class)!!.getWidthScaled()
+        val height = entity.get(Texture::class)!!.getHeightScaled()
+        xOffset = Random.nextFloat() * width * 0.8f + width * 0.1f
+        yOffset = Random.nextFloat() * height / 2 + height / 4
         addAction(Action.MoveBy(0f, 36f, 1f))
         addAction(Action.Sequence(
             Action.FadeOut(1.25f),

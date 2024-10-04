@@ -8,8 +8,10 @@ import com.neutrino.game.entities.Attribute
 import com.neutrino.game.entities.characters.Character
 import com.neutrino.game.entities.characters.attributes.CharacterTags
 import com.neutrino.game.entities.characters.attributes.EnemyAi
+import com.neutrino.game.entities.characters.attributes.Equipment
 import com.neutrino.game.entities.characters.attributes.util.CharacterTag
 import com.neutrino.game.entities.characters.attributes.util.CharacterTag.IncreaseStealthDamage
+import com.neutrino.game.entities.items.attributes.Wand
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.callables.*
 import com.neutrino.game.entities.systems.attack.util.StatsEnum
@@ -77,14 +79,14 @@ class DefensiveStats(
 //            return
         attacker.entity.call(AttackedBeforeCallable::class, entity)
         if (Random.nextFloat() < (entity.get(CharacterTags::class)?.getTag(CharacterTag.Block::class)?.chance ?: 0f)) {
-            Visuals.showText(entity, "[BOLD][#1a8a99]{JOLT}Block")
+            Visuals.centerText(entity, "[BOLD][#1a8a99]{JOLT}Block")
             entity.call(GotAttackedAfterCallable::class, attacker.entity, null)
             attacker.entity.call(AttackedAfterCallable::class, entity, null)
             return
         }
 
         if (Random.nextFloat() < 1 - attacker.accuracy + evasion) {
-            Visuals.showText(entity, "[BOLD]{GRADIENT=2c3a38ff;cb331eff;0.3;0.0}{JOLT}Evaded")
+            Visuals.centerText(entity, "[BOLD]{GRADIENT=2c3a38ff;cb331eff;0.3;0.0}{JOLT}Evaded")
             entity.call(GotAttackedAfterCallable::class, attacker.entity, null)
             attacker.entity.call(AttackedAfterCallable::class, entity, null)
             return
@@ -99,6 +101,9 @@ class DefensiveStats(
         var poisonDamage = attacker.getPoisonDamage() * (1 - poisonDefence)
         poisonDamage = if (hp - poisonDamage <= 1) hp - 1f else poisonDamage
 
+        if (attacker.entity.get(Equipment::class)?.getWeapon()?.has(Wand::class) == true)
+            physicalDamage = 0f
+
         if (!(attackerDmg + defence).equalsDelta(0f))
             damage += physicalDamage
         damage += fireDamage
@@ -111,13 +116,13 @@ class DefensiveStats(
             println("unSensei ${attacker.entity}")
             println("Senseid")
             entity.get(EnemyAi::class)?.sensedEnemyArray?.forEach { print("\t$it\n")}
-            Visuals.showText(entity, "{GRADIENT=2c3a38ff;cb331eff;0.3;0.0}{JOLT}Stealth hit!")
+            Visuals.centerText(entity, "{GRADIENT=2c3a38ff;cb331eff;0.3;0.0}{JOLT}Stealth hit!")
             val multiplier = attacker.entity.get(CharacterTags::class)?.getTag(IncreaseStealthDamage::class)?.incrementPercent ?: 1f
             if (!(attacker.criticalDamage * multiplier).equalsDelta(0f))
                 damageModifier *= attacker.criticalDamage * multiplier
         }
         else if (Random.nextFloat() < attacker.criticalChance) {
-            Visuals.showText(entity, "[BOLD]{HANG=1.0;0.2}{SQUASH}{GRADIENT=ffffffff;d5b431ff;0.27;0.0}Critical hit!")
+            Visuals.centerText(entity, "[BOLD]{HANG=1.0;0.2}{SQUASH}{GRADIENT=ffffffff;d5b431ff;0.27;0.0}Critical hit!")
             if (!criticalDamage.equalsDelta(0f))
                 damageModifier *= attacker.criticalDamage
         }

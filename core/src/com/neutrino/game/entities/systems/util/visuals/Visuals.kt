@@ -73,6 +73,20 @@ object Visuals {
         )
     }
 
+    fun centerText(entity: Entity, text: String) {
+        val textDraw = DrawableText(text, true, true,(entity.get(Texture::class)?.getWidthScaled() ?: 64) * 6)
+        textDraw.centerOnEntity = true
+        textDraw.z = 3
+        textDraw.yOffset = entity.get(Texture::class)!!.getHeightScaled() / 2f
+        textDraw.initialize(entity)
+
+        textDraw.addAction(Action.Sequence(
+            Action.Delay(1.5f),
+            Action.FadeOut(1.25f),
+            Action.Delete()
+        ))
+    }
+
     fun showText(entity: Entity, text: String, typingLabel: Boolean = true) {
         val textDraw = DrawableText(text, true, typingLabel,(entity.get(Texture::class)?.getWidthScaled() ?: 64) * 6)
         textDraw.centerOnEntity = true

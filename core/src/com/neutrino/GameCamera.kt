@@ -21,7 +21,7 @@ class GameCamera(
 ) {
 
     private val startXPosition = 0f
-    private val startYPosition = Constants.LevelChunkSize * 64f + 64f
+    private val startYPosition = Constants.ChunkSize * 64f + 64f
 
     private val levelDrawer
         get() = stage.actors[0] as LevelDrawer

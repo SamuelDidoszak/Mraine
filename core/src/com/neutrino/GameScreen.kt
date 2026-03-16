@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.Pools
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
-import com.neutrino.game.LevelInitialization
 import com.neutrino.game.UI.UiStage
 import com.neutrino.game.UI.utility.ManagerType
 import com.neutrino.game.entities.Entity
@@ -26,8 +25,9 @@ import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.drawing.actions.Actions
 import com.neutrino.game.graphics.textures.Textures
-import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.map.chunk.ChunkManager
+import com.neutrino.game.map.generation.ChunkInitialization
+import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.Constants
 import ktx.app.KtxScreen
 import ktx.scene2d.Scene2DSkin
@@ -54,7 +54,7 @@ class GameScreen: KtxScreen {
     private val gameInputMultiplexer: InputMultiplexer = InputMultiplexer()
     private val uiInputMultiplexer: InputMultiplexer = InputMultiplexer()
 
-    private val levelInitialization: LevelInitialization = LevelInitialization(gameStage)
+    private val worldChunkManager = ChunkInitialization(gameStage)
 
     init {
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("data/uiskin.json"))
@@ -76,7 +76,8 @@ class GameScreen: KtxScreen {
         uiInputMultiplexer.addProcessor(uiStage)
         Gdx.input.inputProcessor = gameInputMultiplexer
 
-        levelInitialization.initializeLevel(ChunkCoords(0, 0, 0), null)
+        worldChunkManager.initializeChunk(ChunkCoords(0, 0, 0))
+        gameStage.gameCamera.setCameraToEntity(Player)
 
         gameStage.cancelSkill = gameplay::cancelUsage
 
@@ -204,6 +205,7 @@ class GameScreen: KtxScreen {
         hudStage.updateSize(width, height)
     }
 
+
     private fun registerPlayerObservers() {
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERHP
@@ -267,7 +269,8 @@ class GameScreen: KtxScreen {
                 if (data !is ChunkCoords)
                     return false
 
-                levelInitialization.initializeLevel(data, Player.get(Position::class)?.getPosition())
+                // TODO Move between chunks
+                worldChunkManager.initializeChunk(data)
                 hudStage.diagnostics.dungeonTypeLabel.setText("Dungeon depth ${Turn.currentChunk.chunkCoords.z.absoluteValue}")
                 return true
             }

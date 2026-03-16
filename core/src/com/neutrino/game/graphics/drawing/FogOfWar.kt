@@ -21,7 +21,7 @@ class FogOfWar(var chunk: Chunk) {
      */
     var drawFovFow: Int = 0
 
-    private val fboBatch = SpriteBatch(128)
+    private val fboBatch = SpriteBatch(64)
     private val darkenedColor = Color(0.50f, 0.45f, 0.60f, 1.0f)
     private val backgroundColor = Color((21f / 255f) * darkenedColor.r, (21f / 255f) * darkenedColor.g, (23f / 255f) * darkenedColor.b, 1f)
 
@@ -35,7 +35,7 @@ class FogOfWar(var chunk: Chunk) {
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         fogOfWarFBO.end()
-        fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, 100f, 100f)
+        fboBatch.projectionMatrix = Matrix4().setToOrtho2D(0f, 0f, Constants.ChunkSize.toFloat(), Constants.ChunkSize.toFloat())
         fboBatch.disableBlending()
 
         fogOfWarFBO.begin()

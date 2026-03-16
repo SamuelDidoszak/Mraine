@@ -3,6 +3,7 @@ import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.Items
 import com.neutrino.game.entities.items.Item
 import com.neutrino.game.entities.items.attributes.*
+import com.neutrino.game.entities.items.attributes.tags.ItemTag
 import com.neutrino.game.entities.items.attributes.usable.EquipEvents
 import com.neutrino.game.entities.items.attributes.usable.UseEvents
 import com.neutrino.game.entities.items.attributes.usable.UseOnEntity
@@ -25,7 +26,7 @@ import com.neutrino.game.entities.systems.skills.*
 import com.neutrino.game.graphics.textures.Textures
 import kotlin.math.roundToInt
 
-Items.add("Gold", 1, 0) {
+Items.add("Gold", 1, ItemTag.FLOOR) {
     Item()
         .addAttribute(Texture { position, random, textures -> run {
             position?.entity?.call(AmountChangedCallable::class, position.entity.get(Amount::class)!!.amount)
@@ -55,7 +56,7 @@ Items.add("Gold", 1, 0) {
             }
         })
 }
-Items.add("Dagger", 3, 1) {
+Items.add("Dagger", 3, ItemTag.DAGGER) {
     Item()
         .addAttribute(EquipmentInitializer(
             textureName = "dagger",
@@ -70,7 +71,7 @@ Items.add("Dagger", 3, 1) {
         ))
         .addAttribute(EquipEvents(TimedEvent(CharacterEvents.Heal(2f), 2.0, 10)))
 }
-Items.add("Broken sword", 3, 1) {
+Items.add("Broken sword", 3, ItemTag.SWORD) {
     Item()
         .addAttribute(EquipmentInitializer(
             textureName = "brokenSword",
@@ -84,7 +85,7 @@ Items.add("Broken sword", 3, 1) {
         ))
         .addAttribute(Requirements.Stats(strength = 1f, defence = 0f))
 }
-Items.add("Basic fire wand", 3, 2) {
+Items.add("Basic fire wand", 3, ItemTag.WAND) {
     Item()
         .addAttribute(EquipmentInitializer(
             textureName = "basicFireWand",
@@ -101,7 +102,7 @@ Items.add("Basic fire wand", 3, 2) {
         .addAttribute(Wand(StatsEnum.FIRE_DAMAGE, Projectile.ProjectileType.FIREPROJECTILE))
         .addAttribute(Requirements.Stats(intelligence = 3f))
 }
-Items.add("Ripped pants", 3, 2) {
+Items.add("Ripped pants", 3, ItemTag.LEGS) {
     Item()
         .addAttribute(EquipmentInitializer(
             textureName = "rippedPants",
@@ -112,7 +113,7 @@ Items.add("Ripped pants", 3, 2) {
             defence = 2f
         ))
 }
-Items.add("Linen shirt", 3, 2) {
+Items.add("Linen shirt", 3, ItemTag.TORSO) {
     Item()
         .addAttribute(EquipmentInitializer(
             textureName = "linenShirt",
@@ -123,7 +124,7 @@ Items.add("Linen shirt", 3, 2) {
             defence = 4f
         ))
 }
-Items.add("Meat", 1, 0) {
+Items.add("Meat", 1, ItemTag.EDIBLE) {
     Item()
         .addAttribute(ItemInitializer(
             textureName = "meat",
@@ -153,7 +154,7 @@ Items.add("Meat", 1, 0) {
                     } } }
         })
 }
-Items.add("Small healing potion", 2, 1) {
+Items.add("Small healing potion", 2, ItemTag.EDIBLE) {
     Item()
         .addAttribute(ItemInitializer(
             "smallHealingPotion",
@@ -181,7 +182,7 @@ Items.add("Small healing potion", 2, 1) {
                     } } }
         })
 }
-Items.add("StrengthBook1", 3, 1) {
+Items.add("StrengthBook1", 3, ItemTag.SKILLBOOK) {
     Item()
         .addAttribute(SkillBook(
             SkillGutAttack::class,
@@ -189,7 +190,7 @@ Items.add("StrengthBook1", 3, 1) {
             1
         ))
 }
-Items.add("StrengthBook2", 3, 2) {
+Items.add("StrengthBook2", 3, ItemTag.SKILLBOOK) {
     Item()
         .addAttribute(SkillBook(
             SkillCripplingSpin::class,
@@ -197,7 +198,7 @@ Items.add("StrengthBook2", 3, 2) {
             2
         ))
 }
-Items.add("DefenceBook1", 3, 1) {
+Items.add("DefenceBook1", 3, ItemTag.SKILLBOOK) {
     Item()
         .addAttribute(SkillBook(
             SkillShieldBash::class,
@@ -205,7 +206,7 @@ Items.add("DefenceBook1", 3, 1) {
             1
         ))
 }
-Items.add("RogueBook1", 3, 1) {
+Items.add("RogueBook1", 3, ItemTag.SKILLBOOK) {
     Item()
         .addAttribute(SkillBook(
             SkillBleed::class,
@@ -213,7 +214,7 @@ Items.add("RogueBook1", 3, 1) {
             1
         ))
 }
-Items.add("RogueBook2", 3, 2) {
+Items.add("RogueBook2", 3, ItemTag.SKILLBOOK) {
     Item()
         .addAttribute(SkillBook(
             SkillTeleportBackstab::class,
@@ -221,7 +222,7 @@ Items.add("RogueBook2", 3, 2) {
             2
         ))
 }
-Items.add("DexterityBook1", 3, 1) {
+Items.add("DexterityBook1", 3, ItemTag.SKILLBOOK) {
     Item()
         .addAttribute(SkillBook(
             SkillCripplingShot::class,
@@ -229,7 +230,7 @@ Items.add("DexterityBook1", 3, 1) {
             1
         ))
 }
-Items.add("DexterityBook2", 3, 2) {
+Items.add("DexterityBook2", 3, ItemTag.SKILLBOOK) {
     Item()
         .addAttribute(SkillBook(
             SkillTwoshot::class,

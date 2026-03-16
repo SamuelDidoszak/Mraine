@@ -13,8 +13,8 @@ interface ChunkManagerMethods {
 
     fun convertPositionToChunkMapPosition(position: Position): Coord {
         val offset = getChunkOffset(position.chunk)
-        return Coord.get(position.x + (offset.first + 1) * Constants.LevelChunkSize,
-            position.y + (offset.first + 1) * Constants.LevelChunkSize)
+        return Coord.get(position.x + (offset.first + 1) * Constants.ChunkSize,
+            position.y + (offset.first + 1) * Constants.ChunkSize)
     }
 
     fun getChunkOffset(chunk: Chunk): Triple<Int, Int, Int> {

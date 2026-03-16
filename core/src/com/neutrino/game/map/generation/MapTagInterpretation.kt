@@ -107,11 +107,14 @@ class MapTagInterpretation(tagList: List<MapTag>, val rng: Random) {
             (tagParams.difficulty + 2).toInt() to mutableMapOf(1 to 0, 2 to 0, 3 to 0)
         )
 
+        // Tier was a item type. Difficulty was item tier (quality, game progress)
         for (item in allItemList) {
-            val tier = Items.getTier(item.value)
-            if (tier.difficulty.toFloat() !in tagParams.difficulty - 1 .. tagParams.difficulty + 2)
+            val tier = Items.getData(item.value)
+            // tier.difficulty.toFloat()
+            if (tier.tier.toFloat() !in tagParams.difficulty - 1 .. tagParams.difficulty + 2)
                 continue
-            difficultyTiers[tier.difficulty]!![tier.tier] = difficultyTiers[tier.difficulty]!![tier.tier]!! + 1
+            // difficultyTiers[tier.difficulty]!![tier.tier] = difficultyTiers[tier.difficulty]!![tier.tier]!! + 1
+            difficultyTiers[tier.tier]!![tier.tier] = difficultyTiers[tier.tier]!![tier.tier]!! + 1
         }
 
         val difficulties = mutableMapOf(
@@ -130,10 +133,14 @@ class MapTagInterpretation(tagList: List<MapTag>, val rng: Random) {
         val itemList: MutableMap<Int, ArrayList<Probability<EntityName>>> = mutableMapOf()
 
         for (item in allItemList.shuffled(rng)) {
-            val itemTier = Items.getTier(item.value)
-            if (difficultyTiers.containsKey(itemTier.difficulty)) {
-                if (difficultyTiers[itemTier.difficulty]!![itemTier.tier]!! > 0) {
-                    difficultyTiers[itemTier.difficulty]!![itemTier.tier] = difficultyTiers[itemTier.difficulty]!![itemTier.tier]!! - 1
+            val itemTier = Items.getData(item.value)
+//            if (difficultyTiers.containsKey(itemTier.difficulty)) {
+//                if (difficultyTiers[itemTier.difficulty]!![itemTier.tier]!! > 0) {
+//                    difficultyTiers[itemTier.difficulty]!![itemTier.tier] = difficultyTiers[itemTier.difficulty]!![itemTier.tier]!! - 1
+            if (difficultyTiers.containsKey(itemTier.tier)) {
+                if (difficultyTiers[itemTier.tier]!![itemTier.tier]!! > 0) {
+//                    difficultyTiers[itemTier.tier]!![itemTier.tier] = difficultyTiers[itemTier.difficulty]!![itemTier.tier]!! - 1
+                    difficultyTiers[itemTier.tier]!![itemTier.tier] = difficultyTiers[itemTier.tier]!![itemTier.tier]!! - 1
 
                     if (itemList[itemTier.tier] == null)
                         itemList[itemTier.tier] = ArrayList()
@@ -156,8 +163,9 @@ class MapTagInterpretation(tagList: List<MapTag>, val rng: Random) {
         for (key in itemList.keys) {
             println(key)
             itemList[key]?.forEach {
-                val tier = Items.getTier(it.value)
-                println("\t${it.value}\t${tier.tier}\t${tier.difficulty}")
+                val tier = Items.getData(it.value)
+//                println("\t${it.value}\t${tier.tier}\t${tier.difficulty}")
+                println("\t${it.value}\t${tier.tier}\t${tier.tier}")
             }
         }
     }

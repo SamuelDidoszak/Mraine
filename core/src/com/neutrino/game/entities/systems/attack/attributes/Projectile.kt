@@ -37,9 +37,9 @@ class Projectile(
     fun shoot(position: Position, destXOffset: Float = 32f, destYOffset: Float = 32f) {
         // TODO CHUNKS Implement positional differences for different chunks
         var sourceX = entity.position.x * 64f
-        var sourceY = Constants.LevelChunkSize * 64f - entity.position.y * 64f + projectileType.offsetY
+        var sourceY = Constants.ChunkSize * 64f - entity.position.y * 64f + projectileType.offsetY
         var destX = position.x * 64f + destXOffset
-        var destY = Constants.LevelChunkSize * 64f - position.y * 64f + destYOffset
+        var destY = Constants.ChunkSize * 64f - position.y * 64f + destYOffset
 
         sourceX +=
             if (entity.get(Texture::class)?.textures?.isMirrored() == true && projectileType.offsetX != 0f)

@@ -9,7 +9,7 @@ object BArray {
     /**
      * Default boolean array filled with false for faster copying
      */
-    private val falseArray: BooleanArray = BooleanArray(Constants.LevelChunkSize) {false}
+    private val falseArray: BooleanArray = BooleanArray(Constants.ChunkSize) {false}
 
     /**
      * Sets provided array to false. Size has to be LevelChunkSize

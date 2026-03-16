@@ -29,7 +29,7 @@ import com.neutrino.game.entities.systems.skills.Skill
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
-import com.neutrino.game.map.chunk.ChunkCoords
+import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.hasIdentity
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y

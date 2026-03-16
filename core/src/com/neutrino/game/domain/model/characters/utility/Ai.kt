@@ -12,7 +12,7 @@ open class Ai (private val character: Character) {
     /**
      * List of coordinates in view
      */
-    val fov: Array<BooleanArray> = Array(Constants.LevelChunkSize) { BooleanArray(Constants.LevelChunkSize) {false} }
+    val fov: Array<BooleanArray> = Array(Constants.ChunkSize) { BooleanArray(Constants.ChunkSize) {false} }
 
     /**
      * FIFO list with planned moves

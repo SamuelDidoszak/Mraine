@@ -1,19 +1,20 @@
 package com.neutrino.game.entities
 
 import com.neutrino.game.entities.items.Item
-import com.neutrino.game.entities.items.attributes.ItemTier
+import com.neutrino.game.entities.items.attributes.ItemData
+import com.neutrino.game.entities.items.attributes.tags.ItemTag
 
 object Items {
     private val itemIds: HashMap<String, Int> = HashMap()
     private val itemNames: ArrayList<String> = ArrayList()
     private val itemFactory: MutableList<() -> Entity> = mutableListOf()
-    private val itemTiers: ArrayList<ItemTier> = ArrayList()
+    private val itemDataList: ArrayList<ItemData> = ArrayList()
 
-    fun add(name: String, tier: Int, difficulty: Int, item: () -> Entity) {
+    fun add(name: String, tier: Int, vararg tags: ItemTag, item: () -> Entity) {
         itemIds[name] = itemFactory.size
         itemNames.add(name)
         itemFactory.add(item)
-        itemTiers.add(ItemTier(tier, difficulty))
+        itemDataList.add(ItemData(tier, tags.asList()))
     }
 
     fun new(name: String): Item {
@@ -54,12 +55,16 @@ object Items {
         throw Exception()
     }
 
-    fun getTier(name: String): ItemTier {
+    fun getData(name: String): ItemData {
         try {
-            return itemTiers[itemIds[name]!!]
+            return itemDataList[itemIds[name]!!]
         } catch (_: Exception) {
             Exception("Item with name: $name does not exist!").toString()
         }
         throw Exception()
+    }
+
+    fun getAllItemData(): List<Pair<String, ItemData>> {
+        return itemNames.mapIndexed { index, name -> Pair(name, itemDataList[index]) }
     }
 }

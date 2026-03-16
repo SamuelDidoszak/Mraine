@@ -19,7 +19,7 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
     /**
      * List of coordinates in view
      */
-    val fov: Array<BooleanArray> = Array(Constants.LevelChunkSize) { BooleanArray(Constants.LevelChunkSize) {false} }
+    val fov: Array<BooleanArray> = Array(Constants.ChunkSize) { BooleanArray(Constants.ChunkSize) {false} }
 
     /**
      * FIFO list with planned moves

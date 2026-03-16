@@ -42,7 +42,8 @@ object Constants {
     val EntityPixelData = PixelData(DefaultEntityTexture)
 
     // Level constants
-    val LevelChunkSize: Int = 100
+    val ChunkSize: Int = 40
+    val BiomeCellSize: Int = 8
 
     val maxItemTier: Int = 4
 

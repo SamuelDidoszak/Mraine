@@ -9,12 +9,9 @@ import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.map.chunk.Chunk
-import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.map.chunk.ChunkManager
-import com.neutrino.game.map.generation.CharacterGenerator
 import com.neutrino.game.map.generation.GenerateLevel
-import com.neutrino.game.map.generation.MapTagInterpretation
-import com.neutrino.game.map.generation.util.GenerationParams
+import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.utility.serialization.KryoObj
 import squidpony.squidmath.Coord
 import java.io.FileInputStream
@@ -99,14 +96,6 @@ class LevelInitialization (private val gameStage: GameStage) {
         input.close()
 
         return chunk
-    }
-
-    /** TODO Temporary **/
-    private fun addPlayer(chunk: Chunk) {
-        val characterGenerator = CharacterGenerator(GenerationParams(
-            MapTagInterpretation(listOf(), chunk.randomGenerator), chunk.randomGenerator, chunk, chunk.map))
-        characterGenerator.addPlayerAtStairs()
-        chunk.characterArray.addAll(characterGenerator.characterArray)
     }
 
     private fun printData(chunk: Chunk) {

@@ -5,6 +5,7 @@ import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.map.chunk.CharacterArray
 import com.neutrino.game.map.chunk.Chunk
+import com.neutrino.game.util.Constants
 import squidpony.squidmath.Coord
 
 object LevelArrays {
@@ -13,7 +14,7 @@ object LevelArrays {
     }
 
     private fun levelDispatcher(coord: Coord): Chunk {
-        if (coord.x !in 0 until 100 || coord.y !in 0 until 100) {
+        if (coord.x !in 0 until Constants.ChunkSize || coord.y !in 0 until Constants.ChunkSize) {
             // TODO return adjacent level
         }
         return levelDispatcher()
@@ -26,15 +27,15 @@ object LevelArrays {
         val x =
             if (coord.x < 0)
                 0
-            else if (coord.x >= 100)
-                99
+            else if (coord.x >= Constants.ChunkSize)
+                Constants.ChunkSize - 1
             else
                 coord.x
         val y =
             if (coord.y < 0)
                 0
-            else if (coord.y >= 100)
-                99
+            else if (coord.y >= Constants.ChunkSize)
+                Constants.ChunkSize - 1
             else
                 coord.y
         return Coord.get(x, y)

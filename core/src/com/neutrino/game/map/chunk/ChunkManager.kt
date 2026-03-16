@@ -21,6 +21,7 @@ import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.util.ChunkManagerMethods
 import com.neutrino.game.map.chunk.util.Fov
+import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
@@ -108,20 +109,20 @@ object ChunkManager: ChunkManagerMethods {
                 return ceil(position).toInt()
             return position.toInt()
         }
-        val xChunkDiff: Int = getChunkDiff(position.x.toFloat() / Constants.LevelChunkSize)
-        val yChunkDiff: Int = getChunkDiff(position.y.toFloat() / Constants.LevelChunkSize)
+        val xChunkDiff: Int = getChunkDiff(position.x.toFloat() / Constants.ChunkSize)
+        val yChunkDiff: Int = getChunkDiff(position.y.toFloat() / Constants.ChunkSize)
         if (xChunkDiff == 0 && yChunkDiff == 0)
             return position
         // TODO CHUNKS
         return Position(
-            position.x.coerceIn(0 until 100),
-            position.y.coerceIn(0 until 100),
+            position.x.coerceIn(0 until Constants.ChunkSize),
+            position.y.coerceIn(0 until Constants.ChunkSize),
             Turn.currentChunk
         )
         val chunkCoords = position.chunk.chunkCoords
         return Position(
-            position.x - xChunkDiff * Constants.LevelChunkSize,
-            position.y - yChunkDiff * Constants.LevelChunkSize,
+            position.x - xChunkDiff * Constants.ChunkSize,
+            position.y - yChunkDiff * Constants.ChunkSize,
             chunkCoordMap[ChunkCoords(chunkCoords.x + xChunkDiff, chunkCoords.y + yChunkDiff, chunkCoords.z).toHash()]!!)
     }
 
@@ -242,8 +243,8 @@ object ChunkManager: ChunkManagerMethods {
 
 
         private fun generateMap(): List<List<MutableList<Entity>>> {
-            val map = List(3 * Constants.LevelChunkSize) {
-                List(3 * Constants.LevelChunkSize) { EntityList() } }
+            val map = List(3 * Constants.ChunkSize) {
+                List(3 * Constants.ChunkSize) { EntityList() } }
 
             for (y in 0 until 3) {
                 for (x in 0 until 3) {
@@ -252,7 +253,7 @@ object ChunkManager: ChunkManagerMethods {
                     val chunkMap = chunkMap[y][x]!!.map
                     for (cY in chunkMap.indices) {
                         for (cX in chunkMap[0].indices) {
-                            map[y * Constants.LevelChunkSize + cY][x * Constants.LevelChunkSize + cX].addAll(chunkMap[cY][cX])
+                            map[y * Constants.ChunkSize + cY][x * Constants.ChunkSize + cX].addAll(chunkMap[cY][cX])
                         }
                     }
                 }

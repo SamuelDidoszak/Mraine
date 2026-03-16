@@ -15,8 +15,10 @@ import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.events.EventArray
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.generation.MapTag
+import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.Constants
-import com.neutrino.game.util.Constants.LevelChunkSize
+import com.neutrino.game.util.Constants.ChunkSize
+import com.neutrino.game.util.SeedUtil
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
 import com.neutrino.game.utility.serialization.HeaderSerializable
@@ -48,14 +50,14 @@ class Chunk(
     }
 
     val sizeX: Int
-        get() = LevelChunkSize
+        get() = ChunkSize
     val sizeY: Int
-        get() = LevelChunkSize
+        get() = ChunkSize
 
     @Transient
     val id: Int = chunkCoords.toHash()
     @Transient
-    val randomGenerator = Random(Constants.Seed + id)
+    val randomGenerator = Random(SeedUtil.branch(Constants.Seed, chunkCoords.toString()))
     var tagList: List<MapTag> = listOf()
 
     private var isMapSet = false
@@ -65,10 +67,10 @@ class Chunk(
      * A list of current level characters.
      */
     // Make it a ObjectSet or OrderedSet / OrderedMap for fast read / write / delete
-    lateinit var characterArray: CharacterArray
+    val characterArray: CharacterArray = CharacterArray()
     // Map of character locations
     @Transient
-    lateinit var characterMap: List<MutableList<Entity?>>
+    val characterMap: List<MutableList<Entity?>> = createCharacterMap()
 
     /**
      * Map of discovered and undiscovered tiles

@@ -14,7 +14,7 @@ import com.neutrino.game.graphics.textures.TextureSprite
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.Chunk
-import com.neutrino.game.map.chunk.ChunkCoords
+import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.SCALE
 import kotlin.math.min

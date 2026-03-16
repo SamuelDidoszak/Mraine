@@ -10,10 +10,10 @@ import com.neutrino.game.util.Constants
 
 object Blurring {
     private val blurBatch = SpriteBatch(2)
-    private val rescaledTexture1 = FrameBuffer(Pixmap.Format.RGBA8888, Constants.LevelChunkSize * 2, Constants.LevelChunkSize * 2, false)
-    private val rescaledTexture2 = FrameBuffer(Pixmap.Format.RGBA8888, Constants.LevelChunkSize * 4, Constants.LevelChunkSize * 4, false)
-    private val rescaledTexture3 = FrameBuffer(Pixmap.Format.RGBA8888, Constants.LevelChunkSize * 8, Constants.LevelChunkSize * 8, false)
-    private val fullSizeTexture = FrameBuffer(Pixmap.Format.RGBA8888, Constants.LevelChunkSize * 64, Constants.LevelChunkSize * 64, false)
+    private val rescaledTexture1 = FrameBuffer(Pixmap.Format.RGBA8888, Constants.ChunkSize * 2, Constants.ChunkSize * 2, false)
+    private val rescaledTexture2 = FrameBuffer(Pixmap.Format.RGBA8888, Constants.ChunkSize * 4, Constants.ChunkSize * 4, false)
+    private val rescaledTexture3 = FrameBuffer(Pixmap.Format.RGBA8888, Constants.ChunkSize * 8, Constants.ChunkSize * 8, false)
+    private val fullSizeTexture = FrameBuffer(Pixmap.Format.RGBA8888, Constants.ChunkSize * 64, Constants.ChunkSize * 64, false)
     
     init {
         rescaledTexture1.colorBufferTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)

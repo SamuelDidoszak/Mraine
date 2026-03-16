@@ -1,8 +1,8 @@
 package com.neutrino.game.map.generation
 
 import com.neutrino.game.map.chunk.Chunk
-import com.neutrino.game.map.chunk.ChunkCoords
 import com.neutrino.game.map.generation.util.GenerationParams
+import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -18,9 +18,9 @@ class GenerateLevel() {
 
         generateMap(chunk, params)
 
-        val generateCharacters = CharacterGenerator(getParams(chunk))
-        chunk.characterArray = generateCharacters.generate()
-        chunk.characterMap = generateCharacters.characterMap
+//        val generateCharacters = CharacterGenerator(getParams(chunk))
+//        chunk.characterArray = generateCharacters.generate()
+//        chunk.characterMap = generateCharacters.characterMap
 
         ItemGenerator(chunk, params).generate()
         chunk.afterMapGeneration()

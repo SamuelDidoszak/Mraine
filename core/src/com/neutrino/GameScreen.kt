@@ -208,6 +208,22 @@ class GameScreen: KtxScreen {
 
     private fun registerPlayerObservers() {
         GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.PLAYERMOVED
+            override fun update(data: Any?): Boolean {
+                return true
+            }
+        })
+
+        GlobalData.registerObserver(object: GlobalDataObserver {
+            override val dataType: GlobalDataType = GlobalDataType.CHUNKBORDER
+            // Load new chunk
+            override fun update(data: Any?): Boolean {
+//                if (data == )
+                return true
+            }
+        })
+
+        GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERHP
             // stops the player movement and focuses him on the screen
             override fun update(data: Any?): Boolean {

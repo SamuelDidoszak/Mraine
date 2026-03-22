@@ -14,7 +14,6 @@ import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.characters.attributes.PlayerAi
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
-import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.utility.Highlighting
@@ -231,8 +230,7 @@ class GameStage(
     lateinit var cancelSkill: () -> Unit
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        val coord = gameCamera.getTile(screenX, screenY)
-        val position = Position(coord, Turn.currentChunk)
+        val position = gameCamera.getTile(screenX, screenY)
 
         when (highlightMode) {
             Highlighting.Companion.HighlightModes.NORMAL -> {

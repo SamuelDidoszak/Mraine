@@ -33,7 +33,6 @@ import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.hasIdentity
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
-import squidpony.squidmath.Coord
 
 /**
  * Singleton turn class containing turn and tick data
@@ -141,7 +140,7 @@ object Turn {
                                     GlobalData.notifyObservers(GlobalDataType.PICKUP, action.entity)
                                     Visuals.showPickedUpItem(Player, action.entity)
                                     val coords = Player.getSuper(Ai::class)!!.targetCoords
-                                    currentChunk.map[coords!!.second][coords.first].removeLast()
+                                    coords!!.getMap()[coords.x][coords.y].removeLast()
                                 } else Visuals.showText(Player, "Inventory is full")
                             }
                             is Chest -> {
@@ -241,7 +240,7 @@ object Turn {
                 when (action) {
                     is Action.MOVE -> {
                         if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
-                            val prevCoord = character.getSuper(Ai::class)!!.moveList.lastOrNull() ?: Coord.get(action.x, action.y)
+                            val prevCoord = character.getSuper(Ai::class)!!.moveList.lastOrNull() ?: Position(action.x, action.y, currentChunk)
 
                             character.getSuper(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, true)
                             val coord = character.getSuper(Ai::class)!!.getMove()

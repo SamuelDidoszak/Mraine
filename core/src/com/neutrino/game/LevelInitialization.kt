@@ -44,7 +44,6 @@ class LevelInitialization (private val gameStage: GameStage) {
         else {
             levelDrawer = LevelDrawer(chunk)
             ChunkManager.addChunk(chunk, levelDrawer)
-            ChunkManager.setMiddleChunk(chunk)
             gameStage.addActor(levelDrawer)
         }
 

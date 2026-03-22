@@ -78,4 +78,5 @@ enum class GlobalDataType {
 
     // Game
     LEVELCHANGED,
+    CHUNKBORDER
 }

@@ -7,10 +7,11 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.map.attributes.DrawPosition
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
-import squidpony.squidmath.Coord
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sign
@@ -27,25 +28,31 @@ class GameCamera(
         get() = stage.actors[0] as LevelDrawer
 
     fun isPlayerFocused(): Boolean {
-        return (abs(camera.position.x - Player.get(DrawPosition::class)!!.x) < 16 &&
-                abs(camera.position.y - (startYPosition - Player.get(DrawPosition::class)!!.y)) < 16)
+        val playerChunk = ChunkManager.getDrawer(Player.get(Position::class)!!.chunk)
+        return (abs(camera.position.x - playerChunk.x - Player.get(DrawPosition::class)!!.x) < 16 &&
+                abs(camera.position.y - playerChunk.y - Player.get(DrawPosition::class)!!.y) < 16)
     }
 
     fun moveCameraToEntity(entity: Entity) {
+        val alpha = (0.03f * 60f * Gdx.graphics.deltaTime).coerceIn(0f, 1f)
+        val entityChunk = ChunkManager.getDrawer(entity.get(Position::class)!!.chunk)
         camera.position.lerp(Vector3(
-            entity.get(DrawPosition::class)!!.x,
-            entity.get(DrawPosition::class)!!.y,
-            camera.position.z), 0.03f * (100f / Gdx.graphics.framesPerSecond))
+            entityChunk.x + entity.get(DrawPosition::class)!!.x,
+            entityChunk.y + entity.get(DrawPosition::class)!!.y,
+            camera.position.z),
+            alpha)
     }
 
     fun moveCameraPosition(xPos: Int, yPos: Int) {
-        camera.position.lerp(Vector3(xPos * 64f, startYPosition - yPos * 64f, camera.position.z), 0.03f)
+        val alpha = (0.03f * 60f * Gdx.graphics.deltaTime).coerceIn(0f, 1f)
+        camera.position.lerp(Vector3(xPos * 64f, startYPosition - yPos * 64f, camera.position.z), alpha)
     }
 
     fun setCameraToEntity(entity: Entity) {
+        val entityChunk = ChunkManager.getDrawer(entity.get(Position::class)!!.chunk)
         camera.position.set(
-            entity.get(DrawPosition::class)!!.x,
-            entity.get(DrawPosition::class)!!.y,
+            entityChunk.x + entity.get(DrawPosition::class)!!.x,
+            entityChunk.y + entity.get(DrawPosition::class)!!.y,
             camera.position.z)
     }
 
@@ -93,23 +100,17 @@ class GameCamera(
             camera.zoom = 16f
     }
 
-    fun getTile(screenX: Int, screenY: Int): Coord {
-        val touch: Vector3 = Vector3(screenX.toFloat(), screenY.toFloat(),0f)
+    fun getTile(screenX: Int, screenY: Int): Position {
+        val touch = Vector3(screenX.toFloat(), screenY.toFloat(),0f)
         camera.unproject(touch)
 
         return getTileUnprojected(touch)
     }
 
-    fun getTileUnprojected(position: Vector3): Coord {
-        // Change the outOfBounds click behavior
-        val tileX: Int = if(position.x.toInt() / 64 <= 0) 0 else
-            if (position.x.toInt() / 64 >= levelDrawer.chunk.sizeX) levelDrawer.chunk.sizeX - 1 else
-                position.x.toInt() / 64
+    fun getTileUnprojected(position: Vector3): Position {
+        val tileX: Int = position.x.toInt() / 64
+        val tileY: Int = position.y.toInt() / 64
 
-        val tileY: Int = if((startYPosition - position.y) / 64 <= 0) 0 else
-            if ((startYPosition - position.y) / 64 >= levelDrawer.chunk.sizeY) levelDrawer.chunk.sizeY - 1 else
-                (startYPosition - position.y).toInt() / 64
-
-        return Coord.get(tileX, tileY)
+        return ChunkManager.getCorrectPosition(Position(tileX, tileY, ChunkManager.middleChunk))
     }
 }

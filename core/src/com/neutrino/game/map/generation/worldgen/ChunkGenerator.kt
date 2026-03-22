@@ -1,10 +1,7 @@
 package com.neutrino.game.map.generation.worldgen
 
-import com.neutrino.game.entities.characters.Player
-import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.generation.CharacterGenerator
-import com.neutrino.game.map.generation.PlayerMapManager
 import com.neutrino.game.map.generation.worldgen.bands.ElevationBand
 import com.neutrino.game.map.generation.worldgen.bands.HumidityBand
 import com.neutrino.game.map.generation.worldgen.bands.TemperatureBand
@@ -79,9 +76,6 @@ class ChunkGenerator(
     private fun addEnemies(biome: Biome, context: GenerationContext) {
         val characterGenerator = CharacterGenerator()
         characterGenerator.generate(context.chunk)
-
-        if (Player hasNot Position::class)
-            PlayerMapManager().addPlayer(context.chunk)
     }
 
     private fun addItems(biome: Biome, context: GenerationContext) { }

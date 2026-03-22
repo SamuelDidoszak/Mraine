@@ -14,7 +14,6 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map_entities.attributes.Door
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
-import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.gameplay.turn.Turn.characterArray
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.drawing.actions.Action
@@ -28,17 +27,21 @@ import com.neutrino.game.util.y
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord
+import kotlin.math.abs
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.random.Random
 
 object ChunkManager: ChunkManagerMethods {
 
     private val chunkCoordMap: MutableMap<Int, Chunk> = mutableMapOf()
     private val chunkDrawerMap: HashMap<Chunk, LevelDrawer> = HashMap()
-    private var chunkMap: List<MutableList<Chunk?>> = List(3) { MutableList<Chunk?>(3) { null } }
-    val middleChunk: Chunk
-        get() = chunkMap[1][1]!!
+
+    private var middleChunkSet = false
+    var middleChunk: Chunk = Chunk(ChunkCoords(0, 0, 0))
+        private set(value) { if (!middleChunkSet)
+            middleChunkSet = true
+            field = value
+        }
 
     fun getEntitiesAt(position: Position): EntityList {
         return position.chunk.map[position.y][position.x]
@@ -67,28 +70,31 @@ object ChunkManager: ChunkManagerMethods {
     val characterMethods = CharacterMethods()
 
     fun addChunk(chunk: Chunk, levelDrawer: LevelDrawer) {
-        chunkCoordMap[chunk.chunkCoords.toHash()] = chunk
+        chunkCoordMap[chunk.chunkCoords.x * 100000 + chunk.chunkCoords.y] = chunk
         chunkDrawerMap[chunk] = levelDrawer
+        if (!middleChunkSet)
+            middleChunk = chunk
+        if (abs(middleChunk.chunkCoords.x - chunk.chunkCoords.x) <= 1 && abs(middleChunk.chunkCoords.y - chunk.chunkCoords.y) <= 1)
+            characterMethods.resetMap()
     }
 
     fun removeChunk(chunk: Chunk) {
-        chunkCoordMap.remove(chunk.chunkCoords.toHash())
+        chunkCoordMap.remove(chunk.chunkCoords.x * 100000 + chunk.chunkCoords.y)
         chunkDrawerMap.remove(chunk)
+    }
+
+    fun getChunk(chunkCoords: ChunkCoords): Chunk? {
+        return chunkCoordMap[chunkCoords.x * 100000 + chunkCoords.y]
+    }
+
+    fun getChunk(xOffset: Int, yOffset: Int): Chunk? {
+        val x = middleChunk.chunkCoords.x + xOffset
+        val y = middleChunk.chunkCoords.y + yOffset
+        return chunkCoordMap[x * 100000 + y]
     }
 
     fun getDrawer(chunk: Chunk): LevelDrawer {
         return chunkDrawerMap[chunk]!!
-    }
-
-    fun setMiddleChunk(chunk: Chunk) {
-        val chunkCoords = chunk.chunkCoords
-        for (y in -1 .. 1) {
-            for (x in -1 .. 1) {
-                chunkMap[y + 1][x + 1] = chunkCoordMap[
-                    ChunkCoords(chunkCoords.x + x, chunkCoords.y + y, chunkCoords.z).toHash()]
-            }
-        }
-        characterMethods.resetMap()
     }
 
     /**
@@ -102,28 +108,14 @@ object ChunkManager: ChunkManagerMethods {
      * @return Corrected position with correct chunk
      */
     fun getCorrectPosition(position: Position): Position {
-        fun getChunkDiff(position: Float): Int {
-            if (position < 0)
-                return floor(position).toInt()
-            if (position > 1)
-                return ceil(position).toInt()
-            return position.toInt()
-        }
-        val xChunkDiff: Int = getChunkDiff(position.x.toFloat() / Constants.ChunkSize)
-        val yChunkDiff: Int = getChunkDiff(position.y.toFloat() / Constants.ChunkSize)
-        if (xChunkDiff == 0 && yChunkDiff == 0)
-            return position
-        // TODO CHUNKS
+        val xOffset = ceil(position.x.toFloat() / Constants.ChunkSize).toInt() - 1
+        val yOffset = ceil(position.y.toFloat() / Constants.ChunkSize).toInt() - 1
+
         return Position(
-            position.x.coerceIn(0 until Constants.ChunkSize),
-            position.y.coerceIn(0 until Constants.ChunkSize),
-            Turn.currentChunk
+            position.x - xOffset * Constants.ChunkSize,
+            position.y - xOffset * Constants.ChunkSize,
+            getChunk(xOffset, yOffset)!!
         )
-        val chunkCoords = position.chunk.chunkCoords
-        return Position(
-            position.x - xChunkDiff * Constants.ChunkSize,
-            position.y - yChunkDiff * Constants.ChunkSize,
-            chunkCoordMap[ChunkCoords(chunkCoords.x + xChunkDiff, chunkCoords.y + yChunkDiff, chunkCoords.z).toHash()]!!)
     }
 
     class CharacterMethods() {
@@ -205,16 +197,14 @@ object ChunkManager: ChunkManagerMethods {
                 entity.getSuper(Ai::class)!!.viewDistance)
         }
 
-        fun getPath(entity: Entity, position: Position): List<Coord> {
+        fun getPath(entity: Entity, position: Position): List<Position> {
             val entityPosition = entity.get(Position::class)!!
             val moveList = dijkstraMap.findPath(
                 30, 30,  getImpassable(), null,
                 entityPosition.getPosition(), position.getPosition())
             dijkstraMap.reset()
 //        entityPosition.chunk.dijkstraMap.clearGoals()
-            return moveList
-            // TODO MULTIPLE CHUNKS Make this method return List<Position>
-//        return moveList.map { Position(it, entityPosition.chunk) }
+        return moveList.map { Position(it, entityPosition.chunk) }
         }
 
         fun addImpassable(position: Position) {
@@ -248,9 +238,9 @@ object ChunkManager: ChunkManagerMethods {
 
             for (y in 0 until 3) {
                 for (x in 0 until 3) {
-                    if (chunkMap[y][x] == null)
-                        continue
-                    val chunkMap = chunkMap[y][x]!!.map
+                    val chunk = getChunk(x - 1, y - 1) ?: continue
+
+                    val chunkMap = chunk.map
                     for (cY in chunkMap.indices) {
                         for (cX in chunkMap[0].indices) {
                             map[y * Constants.ChunkSize + cY][x * Constants.ChunkSize + cX].addAll(chunkMap[cY][cX])
@@ -258,6 +248,7 @@ object ChunkManager: ChunkManagerMethods {
                     }
                 }
             }
+            println("Map size: ${map.size}")
             return map
         }
     }

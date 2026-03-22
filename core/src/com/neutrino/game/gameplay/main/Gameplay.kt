@@ -101,7 +101,7 @@ class Gameplay(
 
     private fun entityInteraction() {
         val entityCoords = Player.getSuper(Ai::class)!!.targetCoords!!
-        val entity = Turn.currentChunk.getEntityWithAction(entityCoords.first, entityCoords.second)
+        val entity = entityCoords.chunk.getEntityWithAction(entityCoords.x, entityCoords.y)
         // Entity has disappeared in the meantime
         if (entity == null)
             Player.getSuper(Ai::class)!!.targetCoords = null
@@ -109,8 +109,8 @@ class Gameplay(
             val action = Interactable.getPrimaryInteraction(entity)
             if (action != null) {
                 // check the distance and act if close enough
-                if ((entityCoords.first in Player.x - action.requiredDistance .. Player.x + action.requiredDistance) &&
-                    (entityCoords.second in Player.y - action.requiredDistance .. Player.y + action.requiredDistance)) {
+                if ((entityCoords.x in Player.x - action.requiredDistance .. Player.x + action.requiredDistance) &&
+                    (entityCoords.y in Player.y - action.requiredDistance .. Player.y + action.requiredDistance)) {
                     Player.getSuper(Ai::class)!!.action = Action.INTERACTION(entity, action)
                     // Stop moving
                     Player.getSuper(Ai::class)!!.moveList = ArrayDeque()
@@ -181,7 +181,7 @@ class Gameplay(
         if (Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
             // Add the interactable entity as the target
             if (Turn.currentChunk.getEntityWithAction(x, y) != null)
-                Player.getSuper(Ai::class)!!.targetCoords = Pair(x, y)
+                Player.getSuper(Ai::class)!!.targetCoords = Position(x, y, Turn.currentChunk)
             else
                 Player.getSuper(Ai::class)!!.targetCoords = null
 

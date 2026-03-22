@@ -10,11 +10,10 @@ import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
-import squidpony.squidmath.Coord
 
 open class Ai(var viewDistance: Int = 10): Attribute() {
 
-    var targetCoords: Pair<Int, Int>? = null
+    var targetCoords: Position? = null
 
     /**
      * List of coordinates in view
@@ -24,7 +23,7 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
     /**
      * FIFO list with planned moves
      */
-    var moveList: ArrayDeque<Coord> = ArrayDeque()
+    var moveList: ArrayDeque<Position> = ArrayDeque()
 
     var action: Action = Action.NOTHING
 
@@ -71,20 +70,20 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
 
     fun moveTo(xPos: Int, yPos: Int) {
         setMoveList(xPos, yPos)
-        val coord = getMove()
-        if (coord.getX() == entity.x && coord.getY() == entity.y) {
+        val position = getMove()
+        if (position.x == entity.x && position.y == entity.y) {
             action = Action.WAIT
         }
         else
-            action = Action.MOVE(coord.getX(), coord.getY())
+            action = Action.MOVE(position.x, position.y)
     }
 
     /**
      * Returns the first coord from move FIFO list and deletes it
      */
-    fun getMove(): Coord {
+    fun getMove(): Position {
         if(moveList.isEmpty())
-            moveList.add(Coord.get(entity.get(Position::class)!!.x, entity.get(Position::class)!!.y))
+            moveList.add(entity.get(Position::class)!!.clone())
         return moveList.removeFirst()
     }
 

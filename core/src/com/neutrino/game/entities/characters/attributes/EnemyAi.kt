@@ -7,10 +7,10 @@ import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
 import com.neutrino.game.entities.systems.attack.callables.GotAttackedAfterCallable
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.VectorOperations
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
-import squidpony.squidmath.Coord
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -60,7 +60,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
     /**
      * Position to which the character will return after exhausting energy
      */
-    private var designatedPosition = Coord.get(0, 0)
+    private var designatedPosition = Position(0, 0, ChunkManager.middleChunk)
 
     var currentBehavior: AiBehavior = AiBehavior.SENSE_ENEMIES
 
@@ -96,7 +96,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                 energy++
             }
             AiBehavior.TARGET_ENEMY -> {
-                designatedPosition = Coord.get(entity.get(Position::class)!!.x, entity.get(Position::class)!!.y)
+                designatedPosition = entity.get(Position::class)!!.clone()
                 target(
                     targettedEnemy!!.get(Position::class)!!.x, targettedEnemy!!.get(Position::class)!!.y)
 

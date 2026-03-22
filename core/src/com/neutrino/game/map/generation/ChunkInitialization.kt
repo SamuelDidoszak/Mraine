@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.kryo5.io.Output
 import com.esotericsoftware.kryo.kryo5.minlog.Log
 import com.neutrino.GameStage
 import com.neutrino.game.entities.characters.Player
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.map.chunk.Chunk
@@ -27,13 +28,14 @@ class ChunkInitialization(private val gameStage: GameStage) {
         val previousChunk: Chunk?
         if (initializedFirstLevel) {
             previousChunk = Turn.currentChunk
-            saveLevel(previousChunk)
+//            saveLevel(previousChunk)
             Turn.unsetLevel()
         } else
             previousChunk = null
         initializedFirstLevel = true
 
-        val chunk = loadLevel(chunkCoords) ?: chunkGenerator.generate(chunkCoords)
+//        val chunk = loadLevel(chunkCoords) ?: chunkGenerator.generate(chunkCoords)
+        val chunk = chunkGenerator.generate(chunkCoords)
 
         val sameZLevel = previousChunk?.chunkCoords?.x == chunkCoords.x && previousChunk.chunkCoords.y == chunkCoords.y
         val levelDrawer: LevelDrawer
@@ -42,8 +44,16 @@ class ChunkInitialization(private val gameStage: GameStage) {
         else {
             levelDrawer = LevelDrawer(chunk)
             ChunkManager.addChunk(chunk, levelDrawer)
-            ChunkManager.setMiddleChunk(chunk)
+
+            if (Player hasNot Position::class)
+                PlayerMapManager().addPlayer(chunk)
+
             gameStage.addActor(levelDrawer)
+            val drawerXOffset = ChunkManager.getDrawer(ChunkManager.middleChunk).x +
+                    (chunk.chunkCoords.x - ChunkManager.middleChunk.chunkCoords.x) * levelDrawer.width
+            val drawerYOffset = ChunkManager.getDrawer(ChunkManager.middleChunk).y -
+                    (chunk.chunkCoords.y - ChunkManager.middleChunk.chunkCoords.y) * levelDrawer.height
+            levelDrawer.setPosition(drawerXOffset, drawerYOffset)
         }
 
         if (sameZLevel)

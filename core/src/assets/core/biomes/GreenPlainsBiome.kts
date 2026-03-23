@@ -1,3 +1,4 @@
+
 import com.neutrino.game.entities.items.attributes.tags.ItemTag
 import com.neutrino.game.map.generation.worldgen.ItemQuery
 import com.neutrino.game.map.generation.worldgen.LootTable
@@ -5,7 +6,8 @@ import com.neutrino.game.map.generation.worldgen.LootVal
 import com.neutrino.game.map.generation.worldgen.biomes.Biome
 import com.neutrino.game.map.generation.worldgen.biomes.BiomeFlags
 import com.neutrino.game.map.generation.worldgen.biomes.Biomes
-import com.neutrino.game.map.generation.worldgen.generators.FloorGenerator
+import com.neutrino.game.map.generation.worldgen.generators.BasicGenerator
+import com.neutrino.game.map.generation.worldgen.generators.util.GenerationArea
 
 Biomes.add(Biome(
     name = "Green plains",
@@ -17,7 +19,11 @@ Biomes.add(Biome(
         generateOnFloorProbability = 0.65f
     ),
     biomeGenerator = { context ->
-        FloorGenerator()
-            .place(context, "DungeonFloor")
+        val chunkX = context.chunk.chunkCoords.x * 10
+        val chunkY = context.chunk.chunkCoords.y
+        BasicGenerator()
+            .generateFloor(context, "DungeonFloor")
+            .place(context, GenerationArea(chunkX, chunkY, chunkX + 1, chunkY + 1), "WoodenChestMid")
+            .place(context, GenerationArea(chunkX + 5, chunkY, chunkX + 5 + 1, chunkY + 1), "StonePillar")
     }
 ))

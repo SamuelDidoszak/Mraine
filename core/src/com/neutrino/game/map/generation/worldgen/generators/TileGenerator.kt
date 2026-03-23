@@ -15,13 +15,13 @@ interface TileGenerator {
         context: GenerationContext,
         area: GenerationArea,
         method: (x: Int, y: Int) -> Unit
-    )
+    ): TileGenerator
 
     fun generate(
         context: GenerationContext,
         method: (x: Int, y: Int) -> Unit
-    ) {
-        generate(
+    ): TileGenerator {
+        return generate(
             context,
             GenerationArea(0, 0, Constants.ChunkSize, Constants.ChunkSize),
             method
@@ -33,8 +33,8 @@ interface TileGenerator {
         context: GenerationContext,
         area: GenerationArea,
         entity: EntityName
-    ) {
-        generate(context, area) { x, y ->
+    ): TileGenerator {
+        return generate(context, area) { x, y ->
             context.chunk.map[x][y].add(Entities.new(entity))
         }
     }
@@ -42,8 +42,8 @@ interface TileGenerator {
     fun place(
         context: GenerationContext,
         entity: EntityName
-    ) {
-        generate(context) { x, y ->
+    ): TileGenerator {
+        return generate(context) { x, y ->
             context.chunk.map[x][y].add(Entities.new(entity))
         }
     }
@@ -54,10 +54,10 @@ interface TileGenerator {
         area: GenerationArea,
         entities: ProbabilityList<EntityName>,
         seedBranch: String
-    ) {
+    ): TileGenerator {
         val rng = Random(SeedUtil.branch(context.world.worldSeed, seedBranch))
 
-        generate(context, area) { x, y ->
+        return generate(context, area) { x, y ->
             entities.resolve(rng)?.let { context.chunk.map[x][y].add(Entities.new(it)) }
         }
     }
@@ -66,10 +66,10 @@ interface TileGenerator {
         context: GenerationContext,
         entities: ProbabilityList<EntityName>,
         seedBranch: String
-    ) {
+    ): TileGenerator {
         val rng = Random(SeedUtil.branch(context.world.worldSeed, seedBranch))
 
-        generate(context) { x, y ->
+        return generate(context) { x, y ->
             entities.resolve(rng)?.let { context.chunk.map[x][y].add(Entities.new(it)) }
         }
     }
@@ -80,8 +80,8 @@ interface TileGenerator {
         area: GenerationArea,
         generator: TileGenerator,
         generatorMethod: (x: Int, y: Int) -> Unit
-    ) {
-        generate(context, area) { x, y ->
+    ): TileGenerator {
+        return generate(context, area) { x, y ->
             generator.generate(
                 context,
                 GenerationArea(x, y, x + 1, y+ 1),
@@ -94,8 +94,8 @@ interface TileGenerator {
         context: GenerationContext,
         generator: TileGenerator,
         generatorMethod: (x: Int, y: Int) -> Unit
-    ) {
-        generate(context) { x, y ->
+    ): TileGenerator {
+        return generate(context) { x, y ->
             generator.generate(
                 context,
                 GenerationArea(x, y, x + 1, y+ 1),

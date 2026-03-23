@@ -1,5 +1,7 @@
 package com.neutrino.game.map.generation.worldgen.generators.util
 
+import com.neutrino.game.util.Constants
+
 data class GenerationArea(
     val minX: Int,
     val minY: Int,
@@ -16,5 +18,9 @@ data class GenerationArea(
             for (y in minY until maxY)
                 if (mask?.contains(x, y) != false)
                     action.invoke(x, y)
+    }
+
+    companion object {
+        val Default = GenerationArea(0, 0, Constants.ChunkSize, Constants.ChunkSize)
     }
 }

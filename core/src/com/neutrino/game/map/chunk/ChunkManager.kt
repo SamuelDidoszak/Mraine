@@ -24,11 +24,11 @@ import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
+import com.neutrino.game.utility.Change
 import squidpony.squidai.DijkstraMap
 import squidpony.squidgrid.Measurement
 import squidpony.squidmath.Coord
 import kotlin.math.abs
-import kotlin.math.ceil
 import kotlin.random.Random
 
 object ChunkManager: ChunkManagerMethods {
@@ -44,7 +44,7 @@ object ChunkManager: ChunkManagerMethods {
         }
 
     fun getEntitiesAt(position: Position): EntityList {
-        return position.chunk.map[position.y][position.x]
+        return getCorrectPosition(position).chunk.map[position.y][position.x]
     }
 
     fun addEntityAt(position: Position, entity: Entity, mapParams: MapParams = MapParams(true, true)) {
@@ -97,24 +97,28 @@ object ChunkManager: ChunkManagerMethods {
         return chunkDrawerMap[chunk]!!
     }
 
+    fun isChunkLoaded(chunkCoords: ChunkCoords): Boolean = getChunk(chunkCoords) != null
+
     /**
      * @return Corrected position with correct chunk
      */
     fun getCorrectPosition(position: Position, xDiff: Int, yDiff: Int): Position {
-        return getCorrectPosition(Position(position.x + xDiff, position.y + yDiff, position.chunk))
+        return getCorrectPosition(Position(position.x + xDiff, position.y + yDiff, position.chunk.chunkCoords))
     }
 
     /**
      * @return Corrected position with correct chunk
      */
     fun getCorrectPosition(position: Position): Position {
-        val xOffset = ceil(position.x.toFloat() / Constants.ChunkSize).toInt() - 1
-        val yOffset = ceil(position.y.toFloat() / Constants.ChunkSize).toInt() - 1
+        val xOffset = if (position.x >= 0) position.x / Constants.ChunkSize else position.x / Constants.ChunkSize - 1
+        val yOffset = if (position.y >= 0) -1 * position.y / Constants.ChunkSize else -1 * position.y / Constants.ChunkSize + 1
+
+        val y = if (position.y >= 0) position.y % Constants.ChunkSize else yOffset * Constants.ChunkSize + position.y
 
         return Position(
             position.x - xOffset * Constants.ChunkSize,
-            position.y - xOffset * Constants.ChunkSize,
-            getChunk(xOffset, yOffset)!!
+            y,
+            ChunkCoords(middleChunk.chunkCoords.x + xOffset, middleChunk.chunkCoords.y + yOffset, position.chunkCoords.z)
         )
     }
 
@@ -151,7 +155,7 @@ object ChunkManager: ChunkManagerMethods {
 
             entityPosition.x = position.x
             entityPosition.y = position.y
-            entityPosition.chunk = position.chunk
+            entityPosition.chunkCoords = position.chunkCoords
             entity.getSuper(Ai::class)!!.updateFov()
             entity.call(VisionChangedCallable::class)
 
@@ -204,7 +208,8 @@ object ChunkManager: ChunkManagerMethods {
                 entityPosition.getPosition(), position.getPosition())
             dijkstraMap.reset()
 //        entityPosition.chunk.dijkstraMap.clearGoals()
-        return moveList.map { Position(it, entityPosition.chunk) }
+            @Change
+        return moveList.map { Position(it, entityPosition.chunk.chunkCoords) }
         }
 
         fun addImpassable(position: Position) {

@@ -21,7 +21,6 @@ class GameCamera(
     private val stage: GameStage
 ) {
 
-    private val startXPosition = 0f
     private val startYPosition = Constants.ChunkSize * 64f + 64f
 
     private val levelDrawer
@@ -108,9 +107,15 @@ class GameCamera(
     }
 
     fun getTileUnprojected(position: Vector3): Position {
-        val tileX: Int = position.x.toInt() / 64
-        val tileY: Int = position.y.toInt() / 64
+        var tileX: Int = position.x.toInt() / 64
+        var tileY: Int = (startYPosition - position.y).toInt() / 64
 
-        return ChunkManager.getCorrectPosition(Position(tileX, tileY, ChunkManager.middleChunk))
+        if (position.x < 0)
+            tileX -= 1
+        if (startYPosition - position.y < 0)
+            tileY -= 1
+
+        val tile = ChunkManager.getCorrectPosition(Position(tileX, tileY, ChunkManager.middleChunk.chunkCoords))
+        return tile
     }
 }

@@ -40,7 +40,7 @@ class SkillTeleportToStairs(caster: Entity): Skill.ActiveSkill(
         if (stairsUp == null)
             return
 
-        Events.addEvent(caster, CharacterEvents.Teleport(Position(stairsUp, Turn.currentChunk)).asTimedEvent())
+        Events.addEvent(caster, CharacterEvents.Teleport(Position(stairsUp, Turn.currentChunk.chunkCoords)).asTimedEvent())
         causeCooldown()
     }
 }

@@ -56,6 +56,7 @@ class SkillCripplingSpin(caster: Entity): Skill.ActiveSkill(
 
         playAnimation("attack3")
         caster.get(OffensiveStats::class)!!.clone().also {
+            it.entity = Entity()
             it.damageMin += damage
             it.damageMax += damage
             it.range = range

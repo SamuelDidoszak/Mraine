@@ -1,8 +1,11 @@
 package com.neutrino.game.domain.model.characters.utility
 
 import com.neutrino.game.domain.model.characters.Character
+import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.util.Constants
+import com.neutrino.game.utility.Change
 import squidpony.squidai.DijkstraMap
 import squidpony.squidmath.Coord
 
@@ -61,7 +64,8 @@ open class Ai (private val character: Character) {
             action = Action.WAIT
         }
         else
-            action = Action.MOVE(coord.getX(), coord.getY())
+            @Change
+            action = Action.MOVE(Position(coord.getX(), coord.getY(), Turn.currentChunk.chunkCoords))
     }
 
     /**
@@ -87,6 +91,7 @@ open class Ai (private val character: Character) {
     }
 
     fun canAttack(xTarget: Int, yTarget: Int): Boolean {
+        TODO()
 //        return (character as HasRange).isInRange(character.getPosition(), Coord.get(xTarget, yTarget))
         return true
     }

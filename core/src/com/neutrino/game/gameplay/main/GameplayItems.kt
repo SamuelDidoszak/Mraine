@@ -77,7 +77,7 @@ class GameplayItems(
                     if (gameStage.clickedCoordinates == null)
                         return
 
-                    if (!range.isInRange(Player.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk))) {
+                    if (!range.isInRange(Player.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))) {
                         gameplay.cancelUsage()
                         return
                     }
@@ -121,7 +121,7 @@ class GameplayItems(
                     if (gameStage.clickedCoordinates == null)
                         return
 
-                    if (!range.isInRange(Player.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk))) {
+                    if (!range.isInRange(Player.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))) {
                         gameplay.cancelUsage()
                         return
                     }

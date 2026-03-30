@@ -20,6 +20,7 @@ import com.neutrino.game.graphics.shaders.ColorOverlayShader
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.map.chunk.ChunkManager
+import com.neutrino.game.util.debug
 import com.neutrino.game.util.hasIdentity
 
 class Highlighting {
@@ -51,7 +52,10 @@ class Highlighting {
     }
 
     private fun highlightTiles(range: HasRange, center: Position, omitCenter: Boolean, color: Color) {
+        debug("Highlight", "highlighting tiles")
         for (tile in range.getTilesInRange(center, omitCenter)) {
+            if (!ChunkManager.isChunkLoaded(tile.chunkCoords))
+                continue
             for (entity in ChunkManager.getEntitiesAt(tile).asReversed()) {
                 if (entity hasIdentity Identity.Floor::class) {
                     val shader = ColorOverlayShader(color)
@@ -63,7 +67,10 @@ class Highlighting {
     }
 
     private fun highlightCharacters(range: HasRange, center: Position, omitCenter: Boolean, color: Color) {
+        debug("Highlight", "highlighting characters")
         for (tile in range.getTilesInRange(center, omitCenter)) {
+            if (!ChunkManager.isChunkLoaded(tile.chunkCoords))
+                continue
             val character = ChunkManager.getCharacterAt(tile)
 
             if (character != null) {
@@ -75,6 +82,7 @@ class Highlighting {
     }
 
     fun highlightAttackArea(range: HasRange, center: Position, requireCharacter: Boolean) {
+        debug("Highlight", "highlighting attack area")
         if (center == previousAttackPosition)
             return
 
@@ -86,6 +94,8 @@ class Highlighting {
             return
 
         for (tile in range.getTilesInRange(center)) {
+            if (!ChunkManager.isChunkLoaded(tile.chunkCoords))
+                continue
             val character = ChunkManager.getCharacterAt(tile)
             // TODO ECS Shaders
             if (character != null) {

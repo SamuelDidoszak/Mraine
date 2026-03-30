@@ -6,16 +6,9 @@ import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkManager.middleChunk
-import com.neutrino.game.util.Constants
 import squidpony.squidmath.Coord
 
 interface ChunkManagerMethods {
-
-    fun convertPositionToChunkMapPosition(position: Position): Coord {
-        val offset = getChunkOffset(position.chunk)
-        return Coord.get(position.x + (offset.first + 1) * Constants.ChunkSize,
-            position.y + (offset.first + 1) * Constants.ChunkSize)
-    }
 
     fun getChunkOffset(chunk: Chunk): Triple<Int, Int, Int> {
         return Triple(chunk.chunkCoords.x - middleChunk.chunkCoords.x,
@@ -24,7 +17,7 @@ interface ChunkManagerMethods {
     }
 
     fun getCharacterAt(coord: Coord): Entity? {
-        return getCharacterAt(Position(coord.x, coord.y, middleChunk))
+        return getCharacterAt(Position(coord.x, coord.y, middleChunk.chunkCoords))
     }
 
     fun getCharacterAt(position: Position): Entity? {

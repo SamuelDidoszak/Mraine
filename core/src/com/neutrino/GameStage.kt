@@ -16,6 +16,7 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.shaders.ShaderPrograms
+import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
@@ -234,7 +235,7 @@ class GameStage(
 
         when (highlightMode) {
             Highlighting.Companion.HighlightModes.NORMAL -> {
-                if (position.chunk.discoveredMap[position.y][position.x])
+                if (ChunkManager.isChunkLoaded(position.chunkCoords) && position.chunk.discoveredMap[position.y][position.x])
                     highlighting.highlightOnHover(position)
             }
             Highlighting.Companion.HighlightModes.AREA -> {

@@ -12,9 +12,7 @@ import com.neutrino.game.entities.systems.attack.attributes.Stats
 import com.neutrino.game.entities.systems.attack.callables.LifestealCallable
 import com.neutrino.game.entities.systems.attack.callables.StatsChangedCallable
 import com.neutrino.game.entities.systems.attack.util.StatsEnum
-import com.neutrino.game.entities.systems.skills.SkillTeleport
-import com.neutrino.game.entities.systems.skills.SkillTeleportToStairs
-import com.neutrino.game.entities.systems.skills.SkillTeleportToStairsDown
+import com.neutrino.game.entities.systems.skills.*
 import com.neutrino.game.graphics.textures.Textures
 import com.neutrino.game.util.compareDelta
 
@@ -73,4 +71,8 @@ private fun addSkills(entity: Entity) {
     skillList.addSkill(SkillTeleport(entity))
     skillList.addSkill(SkillTeleportToStairs(entity))
     skillList.addSkill(SkillTeleportToStairsDown(entity))
+    skillList.addSkill(SkillBleed(entity))
+    skillList.addSkill(SkillCripplingShot(entity))
+    skillList.addSkill(SkillCripplingSpin(entity))
+    skillList.addSkill(SkillMeteorite(entity))
 }

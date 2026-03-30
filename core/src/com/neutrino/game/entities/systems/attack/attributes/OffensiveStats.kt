@@ -198,7 +198,7 @@ class OffensiveStats(
 
     companion object {
         fun getTopAttackable(target: Position): Entity? {
-            return target.chunk.characterMap[target.y][target.x] ?: target.chunk.map[target.y][target.x].asReversed()
+            return target.chunk.characterMap[target.y][target.x] ?: target.chunk!!.map[target.y][target.x].asReversed()
                 .firstOrNull { it has DefensiveStats::class && it !is Item }
         }
 

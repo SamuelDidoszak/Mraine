@@ -16,7 +16,12 @@ class BasicGenerator: TileGenerator {
     }
 
     fun generateFloor(context: GenerationContext, area: GenerationArea, entity: EntityName): BasicGenerator {
-        area.forEachTile { x, y -> context.chunk.map[x][y][0] = Entities.new(entity) }
+        area.forEachTile { x, y ->
+            if (context.chunk.map[x][y].isEmpty())
+                context.chunk.map[x][y].add(Entities.new(entity))
+            else
+                context.chunk.map[x][y][0] = Entities.new(entity)
+        }
         return this
     }
 

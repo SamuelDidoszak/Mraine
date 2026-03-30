@@ -46,8 +46,8 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer() {
     }
 
     init {
-        width = map[0].size * TILE_SIZE
-        height = map.size * TILE_SIZE
+        width = Constants.ChunkSize * TILE_SIZE
+        height = Constants.ChunkSize * TILE_SIZE
 
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERMOVED
@@ -111,9 +111,9 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer() {
         xLeft *= 16 * SCALE_INT
         xRight *= 16 * SCALE_INT
 
-        var textureX = 0f
-        var textureY = 0f
-        var textureWidth = 0
+        var textureX: Float
+        var textureY: Float
+        var textureWidth: Int
         drawableLayers.forEach { key, layer ->
             layer.sort()
             for (layeredTexture in layer) {
@@ -176,7 +176,7 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer() {
             for (x in map[0].indices) {
                 for (entity in map[y][x]) {
                     entity addAttribute DrawPosition()
-                    entity addAttribute Position(x, y, chunk)
+                    entity addAttribute Position(x, y, chunk.chunkCoords)
                     entity.get(Texture::class)?.setTextures(null, rng)
                 }
             }

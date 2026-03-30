@@ -1,8 +1,8 @@
 package com.neutrino.game.entities.shared.util
 
 import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkManager
+import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.round
@@ -27,23 +27,23 @@ interface HasRange {
             when (rangeType) {
                 RangeType.DIAGONAL -> {
                     for (x in xPos - range .. xPos + range) {
-                        tiles.add(parsePosition(x, yPos, center.chunk))
+                        tiles.add(parsePosition(x, yPos, center.chunkCoords))
                     }
                     for (y in yPos - range .. yPos + range) {
-                        tiles.add(parsePosition(xPos, y, center.chunk))
+                        tiles.add(parsePosition(xPos, y, center.chunkCoords))
                     }
-                    tiles.remove(parsePosition(xPos, yPos, center.chunk))
+                    tiles.remove(parsePosition(xPos, yPos, center.chunkCoords))
                 }
                 RangeType.SQUARE -> {
                     for (y in yPos - range..yPos + range) {
                         for (x in xPos - range..xPos + range) {
-                            tiles.add(parsePosition(x, y, center.chunk))
+                            tiles.add(parsePosition(x, y, center.chunkCoords))
                         }
                     }
                 }
                 RangeType.CIRCLE -> {
-                    var flipX = 1
-                    var flipY = 1
+                    var flipX: Int
+                    var flipY: Int
 
                     for (i in 0 until 4) {
                         flipX = if (i % 2 == 0) 1 else -1
@@ -51,28 +51,28 @@ interface HasRange {
 
                         for (y in 1 until range) {
                             for (x in 1 until circleDistances[range][y]) {
-                                tiles.add(parsePosition(xPos + flipX * x, yPos - flipY * y, center.chunk))
+                                tiles.add(parsePosition(xPos + flipX * x, yPos - flipY * y, center.chunkCoords))
                             }
                         }
                     }
                     // Add diagonal lines
                     for (x in xPos - range .. xPos + range) {
-                        tiles.add(parsePosition(x, yPos, center.chunk))
+                        tiles.add(parsePosition(x, yPos, center.chunkCoords))
                     }
                     for (y in yPos - range .. yPos + range) {
-                        tiles.add(parsePosition(xPos, y, center.chunk))
+                        tiles.add(parsePosition(xPos, y, center.chunkCoords))
                     }
-                    tiles.remove(parsePosition(xPos, yPos, center.chunk))
+                    tiles.remove(parsePosition(xPos, yPos, center.chunkCoords))
                 }
             }
             if (omitCenter) {
-                tiles.remove(center)
+                tiles.remove(center.getCorrectPosition())
             }
             return tiles
         }
 
-        private fun parsePosition(x: Int, y: Int, chunk: Chunk): Position {
-            return ChunkManager.getCorrectPosition(Position(x, y, chunk))
+        private fun parsePosition(x: Int, y: Int, chunkCoords: ChunkCoords): Position {
+            return ChunkManager.getCorrectPosition(Position(x, y, chunkCoords))
         }
 
         fun isInRange(center: Position, target: Position, range: Int, rangeType: RangeType): Boolean {

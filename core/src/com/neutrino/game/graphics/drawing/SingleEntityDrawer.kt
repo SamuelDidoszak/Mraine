@@ -40,7 +40,7 @@ class SingleEntityDrawer(entity: Entity,
             field = value
             map[1][1][0] = field
             field.addAttribute(DrawPosition())
-            field.addAttribute(Position(1, 1, fakeChunk))
+            field.addAttribute(Position(1, 1, fakeChunk.chunkCoords))
             field.addAttribute(DrawerAttribute(this))
             val textureAttribute = field.get(Texture::class) ?:
             field.addAttribute(Texture { _, _, _ ->}).get(Texture::class)!!

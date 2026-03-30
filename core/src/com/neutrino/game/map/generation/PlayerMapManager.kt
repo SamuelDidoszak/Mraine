@@ -22,7 +22,7 @@ class PlayerMapManager {
 
         if (Player hasNot Position::class) {
             Player.addAttribute(DrawPosition())
-            Player.addAttribute(Position(0, 0, chunk))
+            Player.addAttribute(Position(0, 0, chunk.chunkCoords))
         }
         Player.addAttribute(com.neutrino.game.entities.map.attributes.Turn(0.0))
 
@@ -53,7 +53,7 @@ class PlayerMapManager {
 
         if (Player hasNot Position::class) {
             Player.addAttribute(DrawPosition())
-            Player.addAttribute(Position(0, 0, chunk))
+            Player.addAttribute(Position(0, 0, chunk.chunkCoords))
         }
         Player.addAttribute(com.neutrino.game.entities.map.attributes.Turn(0.0))
 

@@ -131,7 +131,7 @@ class Gameplay(
             else -> 0
         }
 
-        val wasdCoord = Position(Player.x + xChange, Player.y + yChange, Player.get(Position::class)!!.chunk)
+        val wasdCoord = Position(Player.x + xChange, Player.y + yChange, Player.get(Position::class)!!.chunk.chunkCoords)
         if (!ChunkManager.allowsCharacter(wasdCoord) || ChunkManager.getCharacterAt(wasdCoord) != null) {
             Player.get(PlayerAi::class)!!.playerMoving = false
             return
@@ -148,7 +148,7 @@ class Gameplay(
                 Player.getSuper(Ai::class)!!.moveList.last().x, Player.getSuper(Ai::class)!!.moveList.last().y, true)
         val tile = Player.getSuper(Ai::class)!!.getMove()
         Player.get(PlayerAi::class)!!.playerMoving = !Player.getSuper(Ai::class)!!.moveList.isEmpty()
-        Player.getSuper(Ai::class)!!.action = Action.MOVE(tile.x, tile.y)
+        Player.getSuper(Ai::class)!!.action = Action.MOVE(tile)
         if (!gameStage.lookingAround)
             gameStage.focusPlayer = true
     }
@@ -160,7 +160,7 @@ class Gameplay(
         val y = gameStage.clickedCoordinates!!.y
 
         val attackableEntity = Turn.characterArray.get(x, y) ?:
-            ChunkManager.getEntitiesAt(Position(x, y, Turn.currentChunk)).firstOrNull { it has DefensiveStats::class && it !is Item }
+            ChunkManager.getEntitiesAt(Position(x, y, Turn.currentChunk.chunkCoords)).firstOrNull { it has DefensiveStats::class && it !is Item }
 
         if(attackableEntity == Player) {
             gameStage.focusPlayer = true
@@ -181,12 +181,12 @@ class Gameplay(
         if (Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
             // Add the interactable entity as the target
             if (Turn.currentChunk.getEntityWithAction(x, y) != null)
-                Player.getSuper(Ai::class)!!.targetCoords = Position(x, y, Turn.currentChunk)
+                Player.getSuper(Ai::class)!!.targetCoords = Position(x, y, Turn.currentChunk.chunkCoords)
             else
                 Player.getSuper(Ai::class)!!.targetCoords = null
 
             // Add player movement list
-            if (!Turn.currentChunk.discoveredMap[y][x] || !ChunkManager.allowsCharacterChangesImpassable(Position(x, y, ChunkManager.middleChunk)))
+            if (!Turn.currentChunk.discoveredMap[y][x] || !ChunkManager.allowsCharacterChangesImpassable(Position(x, y, Turn.currentChunk.chunkCoords)))
                 Player.getSuper(Ai::class)!!.action = Action.NOTHING
             else
                 Player.getSuper(Ai::class)!!.setMoveList(x, y)

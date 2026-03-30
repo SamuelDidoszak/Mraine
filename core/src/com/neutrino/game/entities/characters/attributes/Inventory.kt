@@ -118,7 +118,7 @@ class Inventory(
         }
         // A hack to change item texture off screen.
         if (entity has Position::class)
-            item.addAttribute(Position(Int.MAX_VALUE, Int.MAX_VALUE, entity.get(Position::class)!!.chunk))
+            item.addAttribute(Position(Int.MAX_VALUE, Int.MAX_VALUE, entity.get(Position::class)!!.chunkCoords))
         return true
     }
 

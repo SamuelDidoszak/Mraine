@@ -11,6 +11,7 @@ import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.VectorOperations
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
+import com.neutrino.game.utility.Change
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -60,7 +61,8 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
     /**
      * Position to which the character will return after exhausting energy
      */
-    private var designatedPosition = Position(0, 0, ChunkManager.middleChunk)
+    @Change
+    private var designatedPosition = Position(0, 0, ChunkManager.middleChunk.chunkCoords)
 
     var currentBehavior: AiBehavior = AiBehavior.SENSE_ENEMIES
 
@@ -137,7 +139,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                 Visuals.showAiIntention(entity, AiIntentionIcons.WAITING())
             }
             AiBehavior.RETURN -> {
-                if (entity.get(Position::class)!!.x == designatedPosition!!.x && entity.get(Position::class)!!.y == designatedPosition!!.y) {
+                if (entity.get(Position::class)!!.x == designatedPosition.x && entity.get(Position::class)!!.y == designatedPosition.y) {
                     energy += MAX_ENERGY
                     currentBehavior = AiBehavior.SENSE_ENEMIES
                     return decide()
@@ -152,7 +154,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                     return decide()
                 }
 
-                moveTo(designatedPosition!!.x, designatedPosition!!.y)
+                moveTo(designatedPosition.x, designatedPosition.y)
 
                 energy++
             }

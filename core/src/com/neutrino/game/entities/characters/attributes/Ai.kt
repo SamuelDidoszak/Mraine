@@ -10,6 +10,7 @@ import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
+import com.neutrino.game.utility.Change
 
 open class Ai(var viewDistance: Int = 10): Attribute() {
 
@@ -75,7 +76,8 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
             action = Action.WAIT
         }
         else
-            action = Action.MOVE(position.x, position.y)
+            @Change
+            action = Action.MOVE(Position(position.x, position.y, com.neutrino.game.gameplay.turn.Turn.currentChunk.chunkCoords))
     }
 
     /**
@@ -90,18 +92,20 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
     /**
      * Finds the path to target if it isn't already set
      */
+    @Change
     fun setMoveList(xPos: Int, yPos: Int, forceUpdate: Boolean = false) {
         if (xPos == moveList.lastOrNull()?.x && yPos == moveList.lastOrNull()?.y && !forceUpdate) {
             return
         }
         moveList = ArrayDeque()
         moveList.addAll(ChunkManager.characterMethods
-            .getPath(entity, Position(xPos, yPos, entity.get(Position::class)!!.chunk)))
+            .getPath(entity, Position(xPos, yPos, entity.get(Position::class)!!.chunkCoords)))
     }
 
+    @Change
     fun canAttack(xTarget: Int, yTarget: Int): Boolean {
         return entity.get(OffensiveStats::class)!!.isInRange(
             entity.get(Position::class)!!,
-            Position(xTarget, yTarget, com.neutrino.game.gameplay.turn.Turn.currentChunk))
+            Position(xTarget, yTarget, entity.get(Position::class)!!.chunkCoords))
     }
 }

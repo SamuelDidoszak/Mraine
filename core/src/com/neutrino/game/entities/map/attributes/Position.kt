@@ -1,7 +1,6 @@
 package com.neutrino.game.entities.map.attributes
 
 import com.neutrino.game.entities.Attribute
-import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.shared.attributes.Identity
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.graphics.textures.TextureSprite
@@ -9,19 +8,22 @@ import com.neutrino.game.map.attributes.DrawPosition
 import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.map.generation.util.NameOrIdentity
+import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
+import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
 import com.neutrino.game.util.add
+import com.neutrino.game.util.warn
 import squidpony.squidmath.Coord
 import kotlin.reflect.KClass
 
 class Position(
     x: Int,
     y: Int,
-    var chunk: Chunk
+    var chunkCoords: ChunkCoords
 ): Attribute(), Cloneable<Position> {
 
-    constructor(coord: Coord, chunk: Chunk): this(coord.x, coord.y, chunk)
+    constructor(coord: Coord, chunkCoords: ChunkCoords): this(coord.x, coord.y, chunkCoords)
 
     var x: Int = x
         set(value) {
@@ -36,17 +38,16 @@ class Position(
             field = value
             try {
                 entity.get(DrawPosition::class)?.y =
-                    chunk.map.size * 16 * SCALE_INT - value * 16 * SCALE
+                    Constants.ChunkSize * 16 * SCALE_INT - value * 16 * SCALE
             } catch (_: Exception) {}
         }
+
+    val chunk: Chunk
+        get() = ChunkManager.getChunk(chunkCoords)!!
 
     override fun onEntityAttached() {
         this.x = x
         this.y = y
-    }
-
-    fun getMap(): List<List<MutableList<Entity>>> {
-        return chunk.map
     }
 
     fun getPosition(): Coord {
@@ -58,12 +59,15 @@ class Position(
         this.y = y
     }
 
+    /* Helper method to get chunk corrected position */
+    fun getCorrectPosition(): Position = ChunkManager.getCorrectPosition(this)
+
     fun moveCharacter(position: Position) {
         ChunkManager.characterMethods.moveCharacter(entity, position)
     }
 
     override fun clone(): Position {
-        return Position(x, y, chunk)
+        return Position(x, y, chunkCoords)
     }
 
     private companion object {
@@ -143,6 +147,12 @@ class Position(
 
     fun check(position: List<Int>, nameOrIdentity: NameOrIdentity, unit: () -> TextureSprite?): TextureSprite? {
         for (i in position.indices) {
+            try {
+                chunk
+            } catch (e: Error) {
+                warn("Position", "Chunk not loaded")
+                return null
+            }
             val xy = positionMap[position[i]]!!
             val x = x + xy.first
             val y = y + xy.second
@@ -194,6 +204,12 @@ class Position(
     }
 
     fun check(requirements: List<Pair<Int, NameOrIdentity>>, unit: () -> TextureSprite?): TextureSprite? {
+        try {
+            chunk
+        } catch (e: Error) {
+            warn("Position", "Chunk not loaded")
+            return null
+        }
         for (i in requirements.indices) {
             val xy = positionMap[requirements[i].first]!!
             val x = x + xy.first
@@ -295,7 +311,7 @@ class Position(
     override fun equals(other: Any?): Boolean {
         if (other !is Position)
             return false
-        return x == other.x && y == other.y && chunk == other.chunk
+        return x == other.x && y == other.y && chunkCoords == other.chunkCoords
     }
 
     override fun hashCode(): Int {

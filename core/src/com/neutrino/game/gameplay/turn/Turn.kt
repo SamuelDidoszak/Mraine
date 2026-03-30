@@ -96,8 +96,7 @@ object Turn {
             playerAction = character == Player
 
             if (updateBatch.firstOrNull() == Action.MOVE(
-                    character.get(Position::class)!!.x,
-                    character.get(Position::class)!!.y
+                    character.get(Position::class)!!.clone()
                 )
             ) {
                 updateBatch.removeFirst()
@@ -111,16 +110,16 @@ object Turn {
                 when (action) {
                     is Action.NOTHING -> return
                     is Action.MOVE -> {
-                        character.get(Position::class)!!.moveCharacter(Position(action.x, action.y, currentChunk))
-                        setMovementUpdateBatch(Action.MOVE(action.x, action.y))
-                        if (currentChunk.map[action.y][action.x] hasIdentity Identity.StairsDown::class)
+                        character.get(Position::class)!!.moveCharacter(action.position)
+                        setMovementUpdateBatch(Action.MOVE(action.position))
+                        if (action.position.chunk.map[action.position.y][action.position.x] hasIdentity Identity.StairsDown::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
                                 currentChunk.chunkCoords.x,
                                 currentChunk.chunkCoords.y,
                                 currentChunk.chunkCoords.z - 1
                             )
                             )
-                        if (currentChunk.map[action.y][action.x] hasIdentity Identity.StairsUp::class)
+                        if (action.position.chunk.map[action.position.y][action.position.x] hasIdentity Identity.StairsUp::class)
                             GlobalData.notifyObservers(GlobalDataType.LEVELCHANGED, ChunkCoords(
                                 currentChunk.chunkCoords.x,
                                 currentChunk.chunkCoords.y,
@@ -129,7 +128,7 @@ object Turn {
                             )
                     }
                     is Action.ATTACK -> {
-                        Player.get(OffensiveStats::class)!!.attack(Position(action.x, action.y, currentChunk))
+                        Player.get(OffensiveStats::class)!!.attack(Position(action.x, action.y, currentChunk.chunkCoords))
                     }
                     is Action.INTERACTION -> {
                         // Entity position(x, y) can be derived from ai.entityTargetCoords
@@ -139,8 +138,8 @@ object Turn {
                                     (Player as Character).setAnimation("crouch", "idle")
                                     GlobalData.notifyObservers(GlobalDataType.PICKUP, action.entity)
                                     Visuals.showPickedUpItem(Player, action.entity)
-                                    val coords = Player.getSuper(Ai::class)!!.targetCoords
-                                    coords!!.getMap()[coords.x][coords.y].removeLast()
+                                    val position = Player.getSuper(Ai::class)!!.targetCoords
+                                    position!!.chunk.map[position.y][position.x].removeLast()
                                 } else Visuals.showText(Player, "Inventory is full")
                             }
                             is Chest -> {
@@ -221,8 +220,6 @@ object Turn {
                     is Action.EVENT -> {
                         println("caused an event")
                     }
-
-                    else -> {}
                 }
                 playerAction = false
                 // TODO ECS Character info panel
@@ -240,18 +237,18 @@ object Turn {
                 when (action) {
                     is Action.MOVE -> {
                         if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
-                            val prevCoord = character.getSuper(Ai::class)!!.moveList.lastOrNull() ?: Position(action.x, action.y, currentChunk)
+                            val prevCoord = character.getSuper(Ai::class)!!.moveList.lastOrNull() ?: action.position
 
                             character.getSuper(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, true)
-                            val coord = character.getSuper(Ai::class)!!.getMove()
-                            action = Action.MOVE(coord.x, coord.y)
+                            val position = character.getSuper(Ai::class)!!.getMove()
+                            action = Action.MOVE(position)
                         }
 
-                        character.get(Position::class)!!.moveCharacter(Position(action.x, action.y, currentChunk))
-                        setMovementUpdateBatch(Action.MOVE(action.x, action.y))
+                        character.get(Position::class)!!.moveCharacter(action.position)
+                        setMovementUpdateBatch(Action.MOVE(action.position))
                     }
                     is Action.ATTACK -> {
-                        character.get(OffensiveStats::class)!!.attack(Position(action.x, action.y, currentChunk))
+                        character.get(OffensiveStats::class)!!.attack(Position(action.x, action.y, currentChunk.chunkCoords))
                     }
                     is Action.SKILL -> {
                         println(character.name + " used a skill")

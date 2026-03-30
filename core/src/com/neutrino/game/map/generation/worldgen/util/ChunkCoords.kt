@@ -9,12 +9,12 @@ class ChunkCoords(
     val y: Int,
     val z: Int
 ) {
-    fun toHash(): Int = "$x-$y-$z".hashCode()
+    fun toHash(): Int = "$x|$y|$z".hashCode()
 
     fun worldMin(): WorldTilePos =
         WorldTilePos(x * Constants.ChunkSize, y * Constants.ChunkSize, z)
 
     override fun toString(): String {
-        return "$x-$y-$z"
+        return "$x|$y|$z"
     }
 }

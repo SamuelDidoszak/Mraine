@@ -63,6 +63,7 @@ class GameScreen: KtxScreen {
         hudStage.initialize(uiStage)
         hudStage.addStatusIcon()
 
+        Gdx.app.logLevel = Application.LOG_DEBUG
         // setup input multiplexers
         if (Gdx.app.type == Application.ApplicationType.Android) {
             val gestureDetector = GestureDetector(GestureHandler(extendViewport))

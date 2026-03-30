@@ -53,7 +53,7 @@ class GameplaySkills(
 
                 if (!(usedSkill as HasRange).isInRange(
                         usedSkill.caster.get(Position::class)!!,
-                        Position(gameStage.clickedCoordinates!!, Turn.currentChunk))) {
+                        Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))) {
                     gameplay.cancelUsage()
                     return false
                 }
@@ -62,7 +62,7 @@ class GameplaySkills(
                 if (usedSkill is Skill.ActiveSkillCharacter)
                     clickedEntity = ChunkManager.getCharacterAt(gameStage.clickedCoordinates!!)
                 else
-                    clickedEntity = OffensiveStats.getTopAttackable(Position(gameStage.clickedCoordinates!!, Turn.currentChunk))
+                    clickedEntity = OffensiveStats.getTopAttackable(Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))
 
                 if (clickedEntity == null) {
                     gameStage.clickedCoordinates = null
@@ -86,12 +86,12 @@ class GameplaySkills(
                 if (gameStage.clickedCoordinates == null)
                     return false
 
-                if (!usedSkill.isInRange(usedSkill.caster.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk))) {
+                if (!usedSkill.isInRange(usedSkill.caster.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))) {
                     gameplay.cancelUsage()
                     return false
                 }
 
-                Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill, Position(gameStage.clickedCoordinates!!, Turn.currentChunk))
+                Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill, Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))
                 gameplay.cancelUsage()
             }
             is Skill.ActiveSkillArea -> {
@@ -105,12 +105,12 @@ class GameplaySkills(
                 if (gameStage.clickedCoordinates == null)
                     return false
 
-                if (!usedSkill.isInRange(usedSkill.caster.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk))) {
+                if (!usedSkill.isInRange(usedSkill.caster.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))) {
                     gameplay.cancelUsage()
                     return false
                 }
 
-                Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill, Position(gameStage.clickedCoordinates!!, Turn.currentChunk))
+                Player.getSuper(Ai::class)!!.action = Action.SKILL(usedSkill, Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))
                 gameplay.cancelUsage()
             }
 

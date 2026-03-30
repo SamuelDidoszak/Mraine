@@ -1,5 +1,6 @@
 package com.neutrino.game.util
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
@@ -144,3 +145,8 @@ val Entity.height: Float
         else
             return this.get(Texture::class)?.getHeightScaled()?.toFloat() ?: 64f
     }
+
+
+fun log(tag: String, message: String) = Gdx.app.log(tag, message)
+fun warn(tag: String, message: String) = Gdx.app.log(tag, "WARN $message")
+fun debug(tag: String, message: String) = Gdx.app.debug(tag, message)

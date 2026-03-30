@@ -45,7 +45,7 @@ class CharacterGenerator {
         val coord = getRandomPosition(chunk)!!
         val character: Entity = Characters.new("Mouse")
         character.addAttribute(DrawPosition())
-        character.addAttribute(Position(coord.getX(), coord.getY(), chunk))
+        character.addAttribute(Position(coord.getX(), coord.getY(), chunk.chunkCoords))
         character.addAttribute(com.neutrino.game.entities.map.attributes.Turn(currentTurn))
         // TODO ECS Characters
 //        character.randomize(params.rng)

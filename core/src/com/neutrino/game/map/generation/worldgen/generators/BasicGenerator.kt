@@ -1,6 +1,8 @@
 package com.neutrino.game.map.generation.worldgen.generators
 
 import com.neutrino.game.entities.Entities
+import com.neutrino.game.entities.Items
+import com.neutrino.game.entities.map.attributes.MapParams
 import com.neutrino.game.map.generation.worldgen.GenerationContext
 import com.neutrino.game.map.generation.worldgen.generators.util.GenerationArea
 import com.neutrino.game.util.EntityName
@@ -17,10 +19,10 @@ class BasicGenerator: TileGenerator {
 
     fun generateFloor(context: GenerationContext, area: GenerationArea, entity: EntityName): BasicGenerator {
         area.forEachTile { x, y ->
-            if (context.chunk.map[x][y].isEmpty())
-                context.chunk.map[x][y].add(Entities.new(entity))
+            if (context.chunk.map[y][x].isEmpty())
+                context.chunk.map[y][x].add(Entities.new(entity))
             else
-                context.chunk.map[x][y][0] = Entities.new(entity)
+                context.chunk.map[y][x][0] = Entities.new(entity)
         }
         return this
     }
@@ -33,6 +35,15 @@ class BasicGenerator: TileGenerator {
         val rng = Random(SeedUtil.branch(context.world.worldSeed, seedBranch))
         entities.resolve(rng)?.let { generateFloor(context, area, it) }
         return this
+    }
+
+    fun placeItem(context: GenerationContext, area: GenerationArea, item: EntityName): BasicGenerator {
+        return generate(context, area) { x, y ->
+            context.chunk.map[y][x].add(
+                Items.new(item)
+                    .addAttribute(MapParams(true, true))
+            )
+        }
     }
 
 

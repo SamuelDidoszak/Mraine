@@ -9,6 +9,8 @@ data class GenerationArea(
     val maxY: Int,
     val mask: GenerationMask? = null
 ) {
+    constructor(x: Int, y: Int): this(x, y, x + 1, y + 1)
+
     fun contains(x: Int, y: Int): Boolean {
         return mask?.contains(x, y) ?: true
     }

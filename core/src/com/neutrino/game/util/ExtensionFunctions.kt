@@ -150,3 +150,4 @@ val Entity.height: Float
 fun log(tag: String, message: String) = Gdx.app.log(tag, message)
 fun warn(tag: String, message: String) = Gdx.app.log(tag, "WARN $message")
 fun debug(tag: String, message: String) = Gdx.app.debug(tag, message)
+fun debug(message: String) = Gdx.app.debug("Debug", message)

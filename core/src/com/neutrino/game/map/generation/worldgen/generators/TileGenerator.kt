@@ -35,7 +35,7 @@ interface TileGenerator {
         entity: EntityName
     ): TileGenerator {
         return generate(context, area) { x, y ->
-            context.chunk.map[x][y].add(Entities.new(entity))
+            context.chunk.map[y][x].add(Entities.new(entity))
         }
     }
 
@@ -44,7 +44,7 @@ interface TileGenerator {
         entity: EntityName
     ): TileGenerator {
         return generate(context) { x, y ->
-            context.chunk.map[x][y].add(Entities.new(entity))
+            context.chunk.map[y][x].add(Entities.new(entity))
         }
     }
 
@@ -58,7 +58,7 @@ interface TileGenerator {
         val rng = Random(SeedUtil.branch(context.world.worldSeed, seedBranch))
 
         return generate(context, area) { x, y ->
-            entities.resolve(rng)?.let { context.chunk.map[x][y].add(Entities.new(it)) }
+            entities.resolve(rng)?.let { context.chunk.map[y][x].add(Entities.new(it)) }
         }
     }
 
@@ -70,7 +70,7 @@ interface TileGenerator {
         val rng = Random(SeedUtil.branch(context.world.worldSeed, seedBranch))
 
         return generate(context) { x, y ->
-            entities.resolve(rng)?.let { context.chunk.map[x][y].add(Entities.new(it)) }
+            entities.resolve(rng)?.let { context.chunk.map[y][x].add(Entities.new(it)) }
         }
     }
 

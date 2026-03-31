@@ -76,6 +76,8 @@ interface HasRange {
         }
 
         fun isInRange(center: Position, target: Position, range: Int, rangeType: RangeType): Boolean {
+            val center = center.toWorldTilePos()
+            val target = target.toWorldTilePos()
             when (rangeType) {
                 RangeType.DIAGONAL -> {
                     return (target.y == center.y &&

@@ -22,6 +22,7 @@ import com.neutrino.game.map.chunk.util.ChunkManagerMethods
 import com.neutrino.game.map.chunk.util.Fov
 import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.Constants
+import com.neutrino.game.util.Constants.ChunkSize
 import com.neutrino.game.util.x
 import com.neutrino.game.util.y
 import com.neutrino.game.utility.Change
@@ -110,15 +111,15 @@ object ChunkManager: ChunkManagerMethods {
      * @return Corrected position with correct chunk
      */
     fun getCorrectPosition(position: Position): Position {
-        val xOffset = if (position.x >= 0) position.x / Constants.ChunkSize else position.x / Constants.ChunkSize - 1
-        val yOffset = if (position.y >= 0) -1 * position.y / Constants.ChunkSize else -1 * position.y / Constants.ChunkSize + 1
+        val xOffset = if (position.x >= 0) position.x / ChunkSize else position.x / ChunkSize - 1
+        val yOffset = if (position.y >= 0) -1 * position.y / ChunkSize else -1 * position.y / ChunkSize + 1
 
-        val y = if (position.y >= 0) position.y % Constants.ChunkSize else yOffset * Constants.ChunkSize + position.y
+        val y = if (position.y >= 0) position.y % ChunkSize else yOffset * ChunkSize + position.y
 
         return Position(
-            position.x - xOffset * Constants.ChunkSize,
+            position.x - xOffset * ChunkSize,
             y,
-            ChunkCoords(middleChunk.chunkCoords.x + xOffset, middleChunk.chunkCoords.y + yOffset, position.chunkCoords.z)
+            ChunkCoords(position.chunkCoords.x + xOffset, position.chunkCoords.y + yOffset, position.chunkCoords.z)
         )
     }
 
@@ -238,8 +239,8 @@ object ChunkManager: ChunkManagerMethods {
 
 
         private fun generateMap(): List<List<MutableList<Entity>>> {
-            val map = List(3 * Constants.ChunkSize) {
-                List(3 * Constants.ChunkSize) { EntityList() } }
+            val map = List(3 * ChunkSize) {
+                List(3 * ChunkSize) { EntityList() } }
 
             for (y in 0 until 3) {
                 for (x in 0 until 3) {
@@ -248,7 +249,7 @@ object ChunkManager: ChunkManagerMethods {
                     val chunkMap = chunk.map
                     for (cY in chunkMap.indices) {
                         for (cX in chunkMap[0].indices) {
-                            map[y * Constants.ChunkSize + cY][x * Constants.ChunkSize + cX].addAll(chunkMap[cY][cX])
+                            map[y * ChunkSize + cY][x * ChunkSize + cX].addAll(chunkMap[cY][cX])
                         }
                     }
                 }

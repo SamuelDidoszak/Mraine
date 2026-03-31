@@ -9,6 +9,7 @@ import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.map.generation.util.NameOrIdentity
 import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
+import com.neutrino.game.map.generation.worldgen.util.WorldTilePos
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.Constants.SCALE_INT
@@ -65,6 +66,10 @@ class Position(
     fun moveCharacter(position: Position) {
         ChunkManager.characterMethods.moveCharacter(entity, position)
     }
+
+    fun toWorldTilePos(): WorldTilePos = WorldTilePos.from(this)
+
+    override fun toString(): String = "$x, $y, $chunkCoords"
 
     override fun clone(): Position {
         return Position(x, y, chunkCoords)

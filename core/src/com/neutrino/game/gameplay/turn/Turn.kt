@@ -239,7 +239,7 @@ object Turn {
                         if (updateBatch.firstOrNull() is Action.MOVE) { // Some character has moved in the meantime, so the movement map should be updated
                             val prevCoord = character.getSuper(Ai::class)!!.moveList.lastOrNull() ?: action.position
 
-                            character.getSuper(Ai::class)!!.setMoveList(prevCoord.x, prevCoord.y, true)
+                            character.getSuper(Ai::class)!!.setMoveList(prevCoord, true)
                             val position = character.getSuper(Ai::class)!!.getMove()
                             action = Action.MOVE(position)
                         }

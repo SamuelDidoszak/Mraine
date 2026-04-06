@@ -24,7 +24,7 @@ class ChunkInitialization(private val gameStage: GameStage) {
     private val chunkGenerator = ChunkGenerator(WorldContext())
     private var initializedFirstLevel = false
 
-    fun initializeChunk(chunkCoords: ChunkCoords) {
+    fun initializeChunk(chunkCoords: ChunkCoords): Chunk {
         val previousChunk: Chunk?
         if (initializedFirstLevel) {
             previousChunk = Turn.currentChunk
@@ -45,8 +45,12 @@ class ChunkInitialization(private val gameStage: GameStage) {
             levelDrawer = LevelDrawer(chunk)
             ChunkManager.addChunk(chunk, levelDrawer)
 
-            if (Player hasNot Position::class)
+            if (Player hasNot Position::class) {
                 PlayerMapManager().addPlayer(chunk)
+                ChunkManager.characterMethods.playerChunk = chunk.chunkCoords
+                ChunkManager.characterMethods.initializeFov(chunk.chunkCoords)
+                Turn.setLevel(chunk)
+            }
 
             gameStage.addActor(levelDrawer)
             val drawerXOffset = ChunkManager.getDrawer(ChunkManager.middleChunk).x +
@@ -66,13 +70,10 @@ class ChunkInitialization(private val gameStage: GameStage) {
         levelDrawer.initializeTextures(chunk.randomGenerator)
         levelDrawer.initializeCharacterTextures(chunk.characterArray)
 
-        Turn.setLevel(chunk)
-
         if (sameZLevel)
             gameStage.gameCamera.setCameraToEntity(Player)
 
-//        if (previousLevel != null)
-//            Player.move(Player.getPosition())
+        return chunk
     }
 
 

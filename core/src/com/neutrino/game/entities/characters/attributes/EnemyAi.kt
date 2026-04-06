@@ -8,9 +8,7 @@ import com.neutrino.game.entities.systems.attack.callables.GotAttackedAfterCalla
 import com.neutrino.game.entities.systems.util.visuals.Visuals
 import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.map.chunk.ChunkManager
-import com.neutrino.game.util.VectorOperations
-import com.neutrino.game.util.x
-import com.neutrino.game.util.y
+import com.neutrino.game.util.*
 import com.neutrino.game.utility.Change
 import kotlin.math.pow
 import kotlin.random.Random
@@ -99,8 +97,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
             }
             AiBehavior.TARGET_ENEMY -> {
                 designatedPosition = entity.get(Position::class)!!.clone()
-                target(
-                    targettedEnemy!!.get(Position::class)!!.x, targettedEnemy!!.get(Position::class)!!.y)
+                target(targettedEnemy!!.position)
 
                 if (action is Action.ATTACK)
                     energy += 5
@@ -122,12 +119,12 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                         return decide()
                     }
 
-                    setMoveList(designatedPosition.x, designatedPosition.y)
+                    setMoveList(designatedPosition)
                     val returnPath = moveList.toList()
                     if (returnPath.isNotEmpty())
                         designatedPosition = returnPath[Random.nextInt(returnPath.size / 2, returnPath.size)]
                     else
-                        println("Path is empty!")
+                        warn("EnemyAi.LOSE_AGGRO", "Path is empty!")
                     currentBehavior = AiBehavior.RETURN
                     return decide()
                 }
@@ -154,8 +151,7 @@ open class EnemyAi(viewDistance: Int = 10): Ai(viewDistance) {
                     return decide()
                 }
 
-                moveTo(designatedPosition.x, designatedPosition.y)
-
+                moveTo(designatedPosition)
                 energy++
             }
             else -> {

@@ -14,7 +14,6 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.map_entities.attributes.Door
 import com.neutrino.game.entities.shared.attributes.Texture
 import com.neutrino.game.entities.systems.attack.attributes.DefensiveStats
-import com.neutrino.game.gameplay.turn.Turn.characterArray
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.drawing.actions.Action
 import com.neutrino.game.map.attributes.DrawPosition
@@ -23,13 +22,7 @@ import com.neutrino.game.map.chunk.util.Fov
 import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.ChunkSize
-import com.neutrino.game.util.x
-import com.neutrino.game.util.y
-import com.neutrino.game.utility.Change
-import squidpony.squidai.DijkstraMap
-import squidpony.squidgrid.Measurement
-import squidpony.squidmath.Coord
-import kotlin.math.abs
+import com.neutrino.game.util.position
 import kotlin.random.Random
 
 object ChunkManager: ChunkManagerMethods {
@@ -75,13 +68,13 @@ object ChunkManager: ChunkManagerMethods {
         chunkDrawerMap[chunk] = levelDrawer
         if (!middleChunkSet)
             middleChunk = chunk
-        if (abs(middleChunk.chunkCoords.x - chunk.chunkCoords.x) <= 1 && abs(middleChunk.chunkCoords.y - chunk.chunkCoords.y) <= 1)
-            characterMethods.resetMap()
+        characterMethods.dijkstra.initializeChunk(chunk)
     }
 
     fun removeChunk(chunk: Chunk) {
         chunkCoordMap.remove(chunk.chunkCoords.x * 100000 + chunk.chunkCoords.y)
         chunkDrawerMap.remove(chunk)
+        characterMethods.dijkstra.removeChunk(chunk)
     }
 
     fun getChunk(chunkCoords: ChunkCoords): Chunk? {
@@ -111,6 +104,9 @@ object ChunkManager: ChunkManagerMethods {
      * @return Corrected position with correct chunk
      */
     fun getCorrectPosition(position: Position): Position {
+        if (position.x in 0 until ChunkSize && position.y in 0 until ChunkSize)
+            return position
+        
         val xOffset = if (position.x >= 0) position.x / ChunkSize else position.x / ChunkSize - 1
         val yOffset = if (position.y >= 0) -1 * position.y / ChunkSize else -1 * position.y / ChunkSize + 1
 
@@ -127,23 +123,20 @@ object ChunkManager: ChunkManagerMethods {
 
         private var fullMap:  List<List<MutableList<Entity>>> = listOf(listOf(EntityList()))
         private val fov = Fov(fullMap)
-        val dijkstraMap = DijkstraMap()
-        private var mapImpassableList: ArrayList<Coord> = ArrayList()
+
+        lateinit var playerChunk: ChunkCoords
+
         private val walkingCharacterList: ArrayList<Character> = ArrayList()
+        val dijkstra = Dijkstra()
 
-        fun resetMap() {
+        fun initializeFov() {
             fullMap = generateMap()
-            fov.map = middleChunk.map
-//            fov.map = fullMap
-
-            // terrain cost can be easily added by calling the initializeCost method.
-            dijkstraMap.measurement = Measurement.EUCLIDEAN
-            dijkstraMap.initialize(createDijkstraMap(middleChunk))
-            mapImpassableList = generateImpassableList(middleChunk)
+            fov.map = fullMap
         }
 
         fun moveCharacter(entity: Entity, position: Position) {
             val entityPosition = entity.get(Position::class)!!
+            val position = position.getCorrectPosition()
             entityPosition.chunk.characterMap[entityPosition.y][entityPosition.x] = null
             position.chunk.characterMap[position.y][position.x] = entity
             val mirror =
@@ -177,7 +170,7 @@ object ChunkManager: ChunkManagerMethods {
                     // Setting idle animations properly
                     if (!Player.get(PlayerAi::class)!!.playerMoving ||
                         (entity != Player && entity.getSuper(Ai::class)!!.moveList.isEmpty() &&
-                                !(entity.getSuper(Ai::class)!!.canAttack(Player.x, Player.y) &&
+                                !(entity.getSuper(Ai::class)!!.canAttack(Player.position) &&
                                 Player.get(PlayerAi::class)!!.playerMoving)))
                         (entity as Character).setAnimation("idle")
                     else
@@ -202,27 +195,16 @@ object ChunkManager: ChunkManagerMethods {
                 entity.getSuper(Ai::class)!!.viewDistance)
         }
 
-        fun getPath(entity: Entity, position: Position): List<Position> {
-            val entityPosition = entity.get(Position::class)!!
-            val moveList = dijkstraMap.findPath(
-                30, 30,  getImpassable(), null,
-                entityPosition.getPosition(), position.getPosition())
-            dijkstraMap.reset()
-//        entityPosition.chunk.dijkstraMap.clearGoals()
-            @Change
-        return moveList.map { Position(it, entityPosition.chunk.chunkCoords) }
-        }
-
         fun addImpassable(position: Position) {
-            mapImpassableList.add(Coord.get(position.x, position.y))
+            dijkstra.impassables.update(position, true)
         }
 
         fun removeImpassable(position: Position) {
-            mapImpassableList.remove(Coord.get(position.x, position.y))
+            dijkstra.impassables.update(position, false)
         }
 
         fun isImpassable(position: Position): Boolean {
-            for (entity in getEntitiesAt(position)) {
+            for (entity in getEntitiesAt(position.getCorrectPosition())) {
                 if (entity has ChangesImpassable::class && !entity.get(MapParams::class)!!.allowCharacterOnTop) {
                     if (entity.get(Door::class)?.open == true)
                         continue
@@ -232,11 +214,6 @@ object ChunkManager: ChunkManagerMethods {
             }
             return false
         }
-
-        private fun getImpassable(): List<Coord> {
-            return mapImpassableList.plus(characterArray.getImpassable())
-        }
-
 
         private fun generateMap(): List<List<MutableList<Entity>>> {
             val map = List(3 * ChunkSize) {
@@ -254,41 +231,7 @@ object ChunkManager: ChunkManagerMethods {
                     }
                 }
             }
-            println("Map size: ${map.size}")
             return map
         }
-    }
-
-    private fun createDijkstraMap(chunk: Chunk): Array<out CharArray> {
-        val movementMap: Array<out CharArray> = Array(chunk.sizeY) {CharArray(chunk.sizeX) {'.'} }
-        for (y in 0 until chunk.sizeY) {
-            for (x in 0 until chunk.sizeX) {
-                for (entity in chunk.map[y][x]) {
-                    if (!entity.get(MapParams::class)!!.allowCharacterOnTop && entity hasNot ChangesImpassable::class) {
-                        movementMap[x][y] = '#'
-                        break
-                    }
-                }
-            }
-        }
-        return movementMap
-    }
-
-    private fun generateImpassableList(chunk: Chunk): ArrayList<Coord> {
-        val coordList: ArrayList<Coord> = ArrayList()
-        for (y in 0 until chunk.sizeY) {
-            for (x in 0 until chunk.sizeX) {
-                for (entity in chunk.map[y][x]) {
-                    if (entity has ChangesImpassable::class && !entity.get(MapParams::class)!!.allowCharacterOnTop) {
-                        if (entity.get(Door::class)?.open == true)
-                            continue
-
-                        coordList.add(Coord.get(x, y))
-                        break
-                    }
-                }
-            }
-        }
-        return coordList
     }
 }

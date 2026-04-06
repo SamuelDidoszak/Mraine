@@ -4,7 +4,7 @@ import com.neutrino.game.util.Constants
 import com.neutrino.game.utility.Serialize
 
 @Serialize
-class ChunkCoords(
+data class ChunkCoords(
     val x: Int,
     val y: Int,
     val z: Int

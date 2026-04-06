@@ -20,8 +20,8 @@ import com.neutrino.game.graphics.shaders.ColorOverlayShader
 import com.neutrino.game.graphics.shaders.OutlineShader
 import com.neutrino.game.graphics.shaders.ShaderParametered
 import com.neutrino.game.map.chunk.ChunkManager
-import com.neutrino.game.util.debug
 import com.neutrino.game.util.hasIdentity
+import com.neutrino.game.util.position
 
 class Highlighting {
     private var outlinedOnHover: Entity? = null
@@ -52,7 +52,6 @@ class Highlighting {
     }
 
     private fun highlightTiles(range: HasRange, center: Position, omitCenter: Boolean, color: Color) {
-        debug("Highlight", "highlighting tiles")
         for (tile in range.getTilesInRange(center, omitCenter)) {
             if (!ChunkManager.isChunkLoaded(tile.chunkCoords))
                 continue
@@ -67,7 +66,6 @@ class Highlighting {
     }
 
     private fun highlightCharacters(range: HasRange, center: Position, omitCenter: Boolean, color: Color) {
-        debug("Highlight", "highlighting characters")
         for (tile in range.getTilesInRange(center, omitCenter)) {
             if (!ChunkManager.isChunkLoaded(tile.chunkCoords))
                 continue
@@ -82,7 +80,6 @@ class Highlighting {
     }
 
     fun highlightAttackArea(range: HasRange, center: Position, requireCharacter: Boolean) {
-        debug("Highlight", "highlighting attack area")
         if (center == previousAttackPosition)
             return
 
@@ -207,7 +204,7 @@ class Highlighting {
         removeShader(outlinedOnHover, shaderOnHover)
         outlinedOnHover = null
 
-        if (character == null || !Player.getSuper(Ai::class)!!.canAttack(character.get(Position::class)!!.x, character.get(Position::class)!!.y))
+        if (character == null || !Player.getSuper(Ai::class)!!.canAttack(character.position))
             return false
 
         outlinedOnHover = character

@@ -44,7 +44,11 @@ class Position(
         }
 
     val chunk: Chunk
-        get() = ChunkManager.getChunk(chunkCoords)!!
+        get() = try { ChunkManager.getChunk(chunkCoords)!! } catch (e: Exception) {
+            warn("Crashing coords", chunkCoords.toString())
+            e.printStackTrace()
+            ChunkManager.middleChunk
+        }
 
     override fun onEntityAttached() {
         this.x = x
@@ -320,7 +324,7 @@ class Position(
     }
 
     override fun hashCode(): Int {
-        var result = chunk.hashCode()
+        var result = chunkCoords.hashCode()
         result = 31 * result + x
         result = 31 * result + y
         return result

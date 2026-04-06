@@ -1,11 +1,9 @@
 package com.neutrino.game.entities.characters.attributes
 
-import com.neutrino.game.gameplay.turn.Action
 import com.neutrino.game.entities.Entity
 import com.neutrino.game.entities.characters.attributes.util.FactionEnum
-import com.neutrino.game.entities.map.attributes.Position
-import com.neutrino.game.util.x
-import com.neutrino.game.util.y
+import com.neutrino.game.gameplay.turn.Action
+import com.neutrino.game.util.position
 import kotlin.math.abs
 
 class FamiliarAi(viewDistance: Int = 10, private val master: Entity): EnemyAi(viewDistance) {
@@ -24,15 +22,17 @@ class FamiliarAi(viewDistance: Int = 10, private val master: Entity): EnemyAi(vi
         if (!isInMasterBounds()) {
             currentBehavior = AiBehavior.GOTO_CHARACTER
         }
+        val masterWorldPos = master.position.toWorldTilePos()
+        val entityWorldPos = entity.position.toWorldTilePos()
         when (currentBehavior) {
             AiBehavior.GOTO_CHARACTER -> {
-                if (abs(entity.get(Position::class)!!.x - master.get(Position::class)!!.x) <= 3 && abs(
-                        entity.get(Position::class)!!.y - master.get(Position::class)!!.y) <= 3) {
+                if (abs(entityWorldPos.x - masterWorldPos.x) <= 3 && abs(
+                        entityWorldPos.y - masterWorldPos.y) <= 3) {
                     currentBehavior = AiBehavior.SENSE_ENEMIES
                     return decide()
                 }
 
-                moveTo(master.get(Position::class)!!.x, master.get(Position::class)!!.y)
+                moveTo(master.position)
             }
             AiBehavior.SENSE_ENEMIES -> {
                 searchTarget()
@@ -43,12 +43,12 @@ class FamiliarAi(viewDistance: Int = 10, private val master: Entity): EnemyAi(vi
                     return decide()
                 }
 
-                if (abs(entity.x - master.x) <= 2 && abs(entity.y - master.y) <= 2) {
+                if (abs(entityWorldPos.x - masterWorldPos.x) <= 2 && abs(entityWorldPos.y - masterWorldPos.y) <= 2) {
                     entity.getSuper(Ai::class)!!.action = Action.WAIT
                     return
                 }
 
-                moveTo(master.x, master.y)
+                moveTo(master.position)
             }
 
             else -> {
@@ -59,6 +59,8 @@ class FamiliarAi(viewDistance: Int = 10, private val master: Entity): EnemyAi(vi
     }
 
     private fun isInMasterBounds(): Boolean {
-        return (abs(entity.x - master.x) <= 10 && abs(entity.y - master.y) <= 10)
+        val masterWorldPos = master.position.toWorldTilePos()
+        val entityWorldPos = entity.position.toWorldTilePos()
+        return (abs(entityWorldPos.x - masterWorldPos.x) <= 10 && abs(entityWorldPos.y - masterWorldPos.y) <= 10)
     }
 }

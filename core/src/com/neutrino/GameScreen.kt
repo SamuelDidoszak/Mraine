@@ -211,6 +211,13 @@ class GameScreen: KtxScreen {
         GlobalData.registerObserver(object: GlobalDataObserver {
             override val dataType: GlobalDataType = GlobalDataType.PLAYERMOVED
             override fun update(data: Any?): Boolean {
+                val playerChunk = Player.get(Position::class)!!.chunkCoords
+                val newChunk = playerChunk != ChunkManager.characterMethods.playerChunk
+                if (newChunk) {
+                    ChunkManager.characterMethods.playerChunk = playerChunk
+                    ChunkManager.characterMethods.initializeFov(playerChunk)
+                    Turn.setLevel(ChunkManager.getChunk(playerChunk)!!)
+                }
                 return true
             }
         })
@@ -219,7 +226,13 @@ class GameScreen: KtxScreen {
             override val dataType: GlobalDataType = GlobalDataType.CHUNKBORDER
             // Load new chunk
             override fun update(data: Any?): Boolean {
-//                if (data == )
+                return true
+                val loadChunk = ChunkCoords(0, 0, 0)
+                val newChunk = worldChunkManager.initializeChunk(loadChunk)
+
+                val removeChunk = ChunkManager.getChunk(ChunkCoords(0, 0, 0))
+                    ?.also { ChunkManager.removeChunk(it) }
+
                 return true
             }
         })

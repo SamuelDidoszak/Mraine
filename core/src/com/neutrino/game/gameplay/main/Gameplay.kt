@@ -131,21 +131,21 @@ class Gameplay(
             else -> 0
         }
 
-        val wasdCoord = Position(Player.x + xChange, Player.y + yChange, Player.get(Position::class)!!.chunk.chunkCoords)
+        val wasdCoord = Position(Player.x + xChange, Player.y + yChange, Player.get(Position::class)!!.chunk.chunkCoords).getCorrectPosition()
         if (!ChunkManager.allowsCharacter(wasdCoord) || ChunkManager.getCharacterAt(wasdCoord) != null) {
             Player.get(PlayerAi::class)!!.playerMoving = false
             return
         }
 
         Player.get(PlayerAi::class)!!.playerMoving = Player.get(Position::class)!! != wasdCoord
-        Player.getSuper(Ai::class)!!.moveTo(wasdCoord.x, wasdCoord.y)
+        Player.getSuper(Ai::class)!!.moveTo(wasdCoord)
         gameStage.lookingAround = false
     }
 
     private fun moveOrStop() {
         if (Turn.updateBatch.firstOrNull() is Action.MOVE) // Some character has moved in the meantime, so the movement map should be updated
             Player.getSuper(Ai::class)!!.setMoveList(
-                Player.getSuper(Ai::class)!!.moveList.last().x, Player.getSuper(Ai::class)!!.moveList.last().y, true)
+                Player.getSuper(Ai::class)!!.moveList.last(), true)
         val tile = Player.getSuper(Ai::class)!!.getMove()
         Player.get(PlayerAi::class)!!.playerMoving = !Player.getSuper(Ai::class)!!.moveList.isEmpty()
         Player.getSuper(Ai::class)!!.action = Action.MOVE(tile)
@@ -156,16 +156,17 @@ class Gameplay(
     /** Parses every action that Player could have made */
     private fun parseAction() {
         // get coordinates
+        val clickedCoordinates = gameStage.clickedCoordinates!!
         val x = gameStage.clickedCoordinates!!.x
         val y = gameStage.clickedCoordinates!!.y
 
         val attackableEntity = Turn.characterArray.get(x, y) ?:
-            ChunkManager.getEntitiesAt(Position(x, y, Turn.currentChunk.chunkCoords)).firstOrNull { it has DefensiveStats::class && it !is Item }
+            ChunkManager.getEntitiesAt(clickedCoordinates).firstOrNull { it has DefensiveStats::class && it !is Item }
 
         if(attackableEntity == Player) {
             gameStage.focusPlayer = true
             gameStage.lookingAround = false
-            if (Turn.currentChunk.getTopItem(x, y) != null)
+            if (clickedCoordinates.chunk.getTopItem(x, y) != null)
                 Player.getSuper(Ai::class)!!.action = Action.NOTHING
             else {
                 // TODO add defend action
@@ -174,22 +175,22 @@ class Gameplay(
             }
         }
         // Attack the enemy
-        else if (attackableEntity != null && Player.getSuper(Ai::class)!!.canAttack(x, y))
+        else if (attackableEntity != null && Player.getSuper(Ai::class)!!.canAttack(clickedCoordinates))
             Player.getSuper(Ai::class)!!.action = Action.ATTACK(x, y)
 
         // Calculate move list
         if (Player.getSuper(Ai::class)!!.action is Action.NOTHING) {
             // Add the interactable entity as the target
-            if (Turn.currentChunk.getEntityWithAction(x, y) != null)
-                Player.getSuper(Ai::class)!!.targetCoords = Position(x, y, Turn.currentChunk.chunkCoords)
+            if (clickedCoordinates.chunk.getEntityWithAction(x, y) != null)
+                Player.getSuper(Ai::class)!!.targetCoords = clickedCoordinates
             else
                 Player.getSuper(Ai::class)!!.targetCoords = null
 
             // Add player movement list
-            if (!Turn.currentChunk.discoveredMap[y][x] || !ChunkManager.allowsCharacterChangesImpassable(Position(x, y, Turn.currentChunk.chunkCoords)))
+            if (!clickedCoordinates.chunk.discoveredMap[y][x] || !ChunkManager.allowsCharacterChangesImpassable(clickedCoordinates))
                 Player.getSuper(Ai::class)!!.action = Action.NOTHING
             else
-                Player.getSuper(Ai::class)!!.setMoveList(x, y)
+                Player.getSuper(Ai::class)!!.setMoveList(clickedCoordinates)
 
             // Focus player either if he's off screen or if he clicked near his current position
             if (!gameStage.gameCamera.isInCamera(Player.x, Player.y) ||

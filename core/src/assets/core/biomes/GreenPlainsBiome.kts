@@ -19,11 +19,9 @@ Biomes.add(Biome(
         generateOnFloorProbability = 0.65f
     ),
     biomeGenerator = { context ->
-        val chunkX = context.chunk.chunkCoords.x * 10
-        val chunkY = context.chunk.chunkCoords.y
         BasicGenerator()
             .generateFloor(context, "DungeonFloor")
-            .place(context, GenerationArea(chunkX, chunkY, chunkX + 1, chunkY + 1), "WoodenChestMid")
-            .place(context, GenerationArea(chunkX + 5, chunkY, chunkX + 5 + 1, chunkY + 1), "StonePillar")
+            .place(context, GenerationArea(1, 1), "WoodenChestMid")
+            .place(context, GenerationArea(0, 0), "StonePillar")
     }
 ))

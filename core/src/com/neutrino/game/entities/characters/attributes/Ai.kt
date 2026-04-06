@@ -61,23 +61,21 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
 
     open fun decide() {}
 
-    fun target(xPos: Int, yPos: Int) {
-        if (canAttack(xPos, yPos)) {
-            action = Action.ATTACK(xPos, yPos)
+    fun target(position: Position) {
+        if (canAttack(position)) {
+            action = Action.ATTACK(position.x, position.y)
             return
         }
-        moveTo(xPos, yPos)
+        moveTo(position)
     }
 
-    fun moveTo(xPos: Int, yPos: Int) {
-        setMoveList(xPos, yPos)
+    fun moveTo(position: Position) {
+        setMoveList(position)
         val position = getMove()
-        if (position.x == entity.x && position.y == entity.y) {
+        if (position.x == entity.x && position.y == entity.y)
             action = Action.WAIT
-        }
         else
-            @Change
-            action = Action.MOVE(Position(position.x, position.y, com.neutrino.game.gameplay.turn.Turn.currentChunk.chunkCoords))
+            action = Action.MOVE(position)
     }
 
     /**
@@ -93,19 +91,19 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
      * Finds the path to target if it isn't already set
      */
     @Change
-    fun setMoveList(xPos: Int, yPos: Int, forceUpdate: Boolean = false) {
-        if (xPos == moveList.lastOrNull()?.x && yPos == moveList.lastOrNull()?.y && !forceUpdate) {
+    fun setMoveList(position: Position, forceUpdate: Boolean = false) {
+        if (position == moveList.lastOrNull() && !forceUpdate) {
             return
         }
         moveList = ArrayDeque()
-        moveList.addAll(ChunkManager.characterMethods
-            .getPath(entity, Position(xPos, yPos, entity.get(Position::class)!!.chunkCoords)))
+        moveList.addAll(ChunkManager.characterMethods.dijkstra
+            .getPath(entity, position))
     }
 
     @Change
-    fun canAttack(xTarget: Int, yTarget: Int): Boolean {
+    fun canAttack(position: Position): Boolean {
         return entity.get(OffensiveStats::class)!!.isInRange(
             entity.get(Position::class)!!,
-            Position(xTarget, yTarget, entity.get(Position::class)!!.chunkCoords))
+            position)
     }
 }

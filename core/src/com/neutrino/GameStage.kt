@@ -18,7 +18,6 @@ import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.utility.Highlighting
-import squidpony.squidmath.Coord
 import java.lang.Integer.max
 import kotlin.math.abs
 
@@ -30,7 +29,7 @@ class GameStage(
     val gameCamera = GameCamera(camera, this)
 
     var waitForPlayerInput: Boolean = true
-    var clickedCoordinates: Coord? = null
+    var clickedCoordinates: Position? = null
     var focusPlayer: Boolean = false
     var lookingAround: Boolean = false
 
@@ -117,7 +116,7 @@ class GameStage(
         dragging = false
 
         if (waitForPlayerInput) {
-            clickedCoordinates = Coord.get(tile.x, tile.y)
+            clickedCoordinates = tile
             waitForPlayerInput = false
         }
 

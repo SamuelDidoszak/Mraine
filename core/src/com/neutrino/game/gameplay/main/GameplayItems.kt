@@ -18,7 +18,6 @@ import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.entities.shared.util.RangeType
 import com.neutrino.game.gameplay.turn.Action
-import com.neutrino.game.gameplay.turn.Turn
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.utility.Highlighting
 import squidpony.squidmath.Coord
@@ -77,7 +76,7 @@ class GameplayItems(
                     if (gameStage.clickedCoordinates == null)
                         return
 
-                    if (!range.isInRange(Player.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))) {
+                    if (!range.isInRange(Player.get(Position::class)!!, gameStage.clickedCoordinates!!)) {
                         gameplay.cancelUsage()
                         return
                     }
@@ -121,7 +120,7 @@ class GameplayItems(
                     if (gameStage.clickedCoordinates == null)
                         return
 
-                    if (!range.isInRange(Player.get(Position::class)!!, Position(gameStage.clickedCoordinates!!, Turn.currentChunk.chunkCoords))) {
+                    if (!range.isInRange(Player.get(Position::class)!!, gameStage.clickedCoordinates!!)) {
                         gameplay.cancelUsage()
                         return
                     }

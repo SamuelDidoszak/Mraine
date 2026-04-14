@@ -22,6 +22,7 @@ import com.neutrino.game.map.chunk.util.Fov
 import com.neutrino.game.map.generation.worldgen.util.ChunkCoords
 import com.neutrino.game.util.Constants
 import com.neutrino.game.util.Constants.ChunkSize
+import com.neutrino.game.util.Constants.SCALE
 import com.neutrino.game.util.position
 import kotlin.random.Random
 
@@ -129,7 +130,7 @@ object ChunkManager: ChunkManagerMethods {
         private val walkingCharacterList: ArrayList<Character> = ArrayList()
         val dijkstra = Dijkstra()
 
-        fun initializeFov() {
+        fun initializeFov(chunkCoords: ChunkCoords) {
             fullMap = generateMap()
             fov.map = fullMap
         }
@@ -140,12 +141,17 @@ object ChunkManager: ChunkManagerMethods {
             entityPosition.chunk.characterMap[entityPosition.y][entityPosition.x] = null
             position.chunk.characterMap[position.y][position.x] = entity
             val mirror =
-                if (position.x == entityPosition.x)
+                if (position.toWorldTilePos().x == entityPosition.toWorldTilePos().x)
                     entity.get(Texture::class)!!.textures.isMirrored()
-                else position.x < entityPosition.x
+                else position.toWorldTilePos().x < entityPosition.toWorldTilePos().x
 
-            var xDiff = entity.get(DrawPosition::class)!!.x
-            var yDiff = entity.get(DrawPosition::class)!!.y
+            val entityDrawPosition = entity.get(DrawPosition::class)!!
+
+            val xDiff = (position.toWorldTilePos().x - entityPosition.toWorldTilePos().x) * 16 * SCALE
+            val yDiff = -1 * (position.toWorldTilePos().y - entityPosition.toWorldTilePos().y) * 16 * SCALE
+
+            if (position.chunkCoords != entityPosition.chunkCoords)
+                entity.get(Texture::class)!!.textures.changeChunk(position.chunk)
 
             entityPosition.x = position.x
             entityPosition.y = position.y
@@ -153,11 +159,9 @@ object ChunkManager: ChunkManagerMethods {
             entity.getSuper(Ai::class)!!.updateFov()
             entity.call(VisionChangedCallable::class)
 
-            xDiff = entity.get(DrawPosition::class)!!.x - xDiff
-            yDiff = entity.get(DrawPosition::class)!!.y - yDiff
+            entityDrawPosition.x -= xDiff
+            entityDrawPosition.y -= yDiff
 
-            entity.get(DrawPosition::class)!!.x -= xDiff
-            entity.get(DrawPosition::class)!!.y -= yDiff
             // if there are movement bugs, it may be because there were multiple movement calls and actions stacked
             entity.addAttribute(ActionBlock())
             if (!entity.get(Texture::class)!!.textures[0].name.endsWith("Walk"))

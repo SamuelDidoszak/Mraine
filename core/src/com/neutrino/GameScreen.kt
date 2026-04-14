@@ -78,6 +78,8 @@ class GameScreen: KtxScreen {
         Gdx.input.inputProcessor = gameInputMultiplexer
 
         worldChunkManager.initializeChunk(ChunkCoords(0, 0, 0))
+        worldChunkManager.initializeChunk(ChunkCoords(-1, 0, 0))
+        worldChunkManager.initializeChunk(ChunkCoords(0, 1, 0))
         gameStage.gameCamera.setCameraToEntity(Player)
 
         gameStage.cancelSkill = gameplay::cancelUsage

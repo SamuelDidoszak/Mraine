@@ -29,6 +29,7 @@ open class Ai(var viewDistance: Int = 10): Attribute() {
     var action: Action = Action.NOTHING
 
     fun updateFov() {
+        return
         ChunkManager.characterMethods.updateFov(entity)
     }
 

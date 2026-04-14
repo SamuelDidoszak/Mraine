@@ -6,6 +6,7 @@ import com.neutrino.game.entities.characters.Player
 import com.neutrino.game.entities.map.attributes.Position
 import com.neutrino.game.entities.util.Cloneable
 import com.neutrino.game.graphics.textures.TextureSprite
+import com.neutrino.game.map.chunk.Chunk
 import com.neutrino.game.map.chunk.ChunkManager
 import com.neutrino.game.util.Constants
 import kotlin.math.roundToInt
@@ -114,6 +115,15 @@ class Texture(
             var notMirroredCount = 0
             this.forEach { if (it.mirrorX) mirroredCount++ else notMirroredCount++  }
             return mirroredCount > notMirroredCount
+        }
+
+        fun changeChunk(newChunk: Chunk) {
+            textures.forEach { removeFromLevel(it) }
+            val drawer = ChunkManager.getDrawer(newChunk)
+            textures.forEach {
+                if (it.z != 0)
+                    drawer.addTexture(entity, it)
+            }
         }
 
         private fun addToLevel(element: TextureSprite) {

@@ -58,13 +58,13 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer() {
         })
     }
 
-    override fun draw(batch: Batch?, parentAlpha: Float) {
+    fun drawTiles(batch: Batch?) {
         val gameCamera = parent.stage.camera as OrthographicCamera
 
-        var yTop = MathUtils.floor((height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)) / TILE_SIZE_INT) + 1
-        var yBottom = MathUtils.ceil((height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)) / TILE_SIZE_INT) + 2
-        var xLeft: Int = MathUtils.floor((gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f) / TILE_SIZE_INT)
-        var xRight = MathUtils.ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f) / TILE_SIZE_INT)
+        var yTop = MathUtils.floor((height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f - y)) / TILE_SIZE_INT) + 1
+        var yBottom = MathUtils.ceil((height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f - y)) / TILE_SIZE_INT) + 2
+        var xLeft = MathUtils.floor((gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f - x) / TILE_SIZE_INT)
+        var xRight = MathUtils.ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f - x) / TILE_SIZE_INT)
 
         // Make sure that values are in range
         yTop = if (yTop <= 0) 0 else if (yTop > map.size) map.size else yTop
@@ -72,8 +72,8 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer() {
         xLeft = if (xLeft <= 0) 0 else if (xLeft > map[0].size) map[0].size else xLeft
         xRight = if (xRight <= 0) 0 else if (xRight > map[0].size) map[0].size else xRight
 
-        var screenX = xLeft * TILE_SIZE
-        var screenY = height - (yTop * TILE_SIZE)
+        var screenX = x + xLeft * TILE_SIZE
+        var screenY = y + height - (yTop * TILE_SIZE)
 
         for (y in yTop until yBottom) {
             for (x in xLeft until xRight) {
@@ -103,13 +103,17 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer() {
                 screenX += TILE_SIZE_INT
             }
             screenY -= TILE_SIZE_INT
-            screenX = xLeft * TILE_SIZE
+            screenX = this.x + xLeft * TILE_SIZE
         }
+    }
 
-        yTop = Math.round(gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)
-        yBottom = Math.round(gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)
-        xLeft *= 16 * SCALE_INT
-        xRight *= 16 * SCALE_INT
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        val gameCamera = parent.stage.camera as OrthographicCamera
+
+        val yTop = Math.round(gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f - y)
+        val yBottom = Math.round(gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f - y)
+        val xLeft = MathUtils.floor(gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f - x)
+        val xRight = MathUtils.ceil(gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f - x)
 
         var textureX: Float
         var textureY: Float
@@ -135,7 +139,6 @@ open class LevelDrawer(chunk: Chunk): EntityDrawer() {
         }
 
         drawLights(batch)
-
 
         if (fogOfWar.drawFovFow % 3 == 0) {
             batch?.shader = ShaderPrograms.defaultShader

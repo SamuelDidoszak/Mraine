@@ -64,7 +64,7 @@ class ChunkGenerator(
         )
 
         biome.generate(context)
-        addEnemies(biome, context)
+//        addEnemies(biome, context)
         addItems(biome, context)
 
         chunk.afterMapGeneration()

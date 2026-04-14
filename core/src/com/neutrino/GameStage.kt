@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.Viewport
@@ -17,6 +18,7 @@ import com.neutrino.game.entities.shared.util.HasRange
 import com.neutrino.game.graphics.drawing.LevelDrawer
 import com.neutrino.game.graphics.shaders.ShaderPrograms
 import com.neutrino.game.map.chunk.ChunkManager
+import com.neutrino.game.util.compareDelta
 import com.neutrino.game.utility.Highlighting
 import java.lang.Integer.max
 import kotlin.math.abs
@@ -253,5 +255,26 @@ class GameStage(
 
 
         return super.mouseMoved(screenX, screenY)
+    }
+
+    override fun addActor(actor: Actor?) {
+        super.addActor(actor)
+        actors.sort { o1, o2 -> o1.y.compareDelta(o2.y) }
+    }
+
+    override fun draw() {
+        val camera = viewport.camera
+        camera.update()
+        if (!root.isVisible) return
+
+        val batch = this.batch
+        batch.projectionMatrix = camera.combined
+        batch.begin()
+        actors.forEach { if (it is LevelDrawer) it.drawTiles(batch) }
+        root.draw(batch, 1f)
+        batch.end()
+
+        // drawing debug requires private stage.drawDebug method
+        // super.draw()
     }
 }

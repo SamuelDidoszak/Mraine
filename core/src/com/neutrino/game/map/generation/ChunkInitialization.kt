@@ -55,7 +55,7 @@ class ChunkInitialization(private val gameStage: GameStage) {
             gameStage.addActor(levelDrawer)
             val drawerXOffset = ChunkManager.getDrawer(ChunkManager.middleChunk).x +
                     (chunk.chunkCoords.x - ChunkManager.middleChunk.chunkCoords.x) * levelDrawer.width
-            val drawerYOffset = ChunkManager.getDrawer(ChunkManager.middleChunk).y -
+            val drawerYOffset = ChunkManager.getDrawer(ChunkManager.middleChunk).y +
                     (chunk.chunkCoords.y - ChunkManager.middleChunk.chunkCoords.y) * levelDrawer.height
             levelDrawer.setPosition(drawerXOffset, drawerYOffset)
         }
